@@ -1,5 +1,30 @@
+import { Streamer } from '@rocket.chat/streamer';
+
 import { Publication } from './Publication';
 import { makeSession, makeSubscription, sentPackets } from './__tests__/helpers';
+
+const mockLoggerError = jest.fn();
+
+jest.mock('@rocket.chat/logger', () => ({
+	Logger: jest.fn().mockReturnValue({
+		error: (...args: unknown[]) => mockLoggerError(...args),
+	}),
+}));
+
+// The streamer is abstract; this spec only needs _publish and the activity check.
+class TestStreamer extends Streamer<any> {
+	registerPublication(): void {
+		// publication registration belongs to the transport, not to this spec
+	}
+
+	registerMethod(): void {
+		// method dispatch is not exercised here
+	}
+
+	changedPayload(): string {
+		return 'payload';
+	}
+}
 
 describe('Publication', () => {
 	let session: ReturnType<typeof makeSession>;
@@ -51,6 +76,47 @@ describe('Publication', () => {
 
 		expect(first).toHaveBeenCalledTimes(1);
 		expect(second).toHaveBeenCalledTimes(1);
+	});
+
+	it('cleans up the other publications when a stop callback fails on disconnect', () => {
+		const other = new Publication(session, { ...makeSubscription(), id: 'other-id' });
+		const failure = new Error('cleanup failed');
+		const onOtherStop = jest.fn();
+		publication.onStop(() => {
+			throw failure;
+		});
+		other.onStop(onOtherStop);
+
+		expect(() => session.emit('close')).not.toThrow();
+
+		expect(mockLoggerError).toHaveBeenCalledWith({ msg: 'Publication cleanup failed on disconnect', err: failure });
+		expect(onOtherStop).toHaveBeenCalledTimes(1);
+		expect(other._isDeactivated()).toBe(true);
+		expect(session.subscriptions.size).toBe(0);
+		expect(session.send).not.toHaveBeenCalled();
+	});
+
+	it('runs all stop callbacks before rethrowing the first failure', () => {
+		const failure = new Error('first cleanup failed');
+		const first = jest.fn(() => {
+			throw failure;
+		});
+		const second = jest.fn(() => {
+			throw new Error('second cleanup failed');
+		});
+		const last = jest.fn();
+		publication.onStop(first);
+		publication.onStop(second);
+		publication.onStop(last);
+
+		expect(() => publication.stop()).toThrow(failure);
+		publication.stop();
+		session.emit('close');
+
+		expect(first).toHaveBeenCalledTimes(1);
+		expect(second).toHaveBeenCalledTimes(1);
+		expect(last).toHaveBeenCalledTimes(1);
+		expect(session.subscriptions.size).toBe(0);
 	});
 
 	it('removes its session close listener when stopped', () => {
@@ -141,5 +207,102 @@ describe('Publication', () => {
 		expect(() => publication.unblock()).not.toThrow();
 		expect(session.send).not.toHaveBeenCalled();
 		expect(session.subscriptions.get('test-id')).toBe(publication);
+	});
+
+	it('retires the publication when the session closes, so a later continuation cannot revive it', () => {
+		session.emit('close');
+
+		expect(publication._isDeactivated()).toBe(true);
+		expect(publication._session).toBeNull();
+	});
+
+	it('runs a cleanup registered after the publication already stopped', () => {
+		const cleanup = jest.fn();
+
+		session.emit('close');
+		publication.onStop(cleanup);
+
+		expect(cleanup).toHaveBeenCalledTimes(1);
+	});
+
+	it('runs a cleanup registered after an explicit stop, and only once', () => {
+		const cleanup = jest.fn();
+
+		publication.stop();
+		publication.onStop(cleanup);
+		session.emit('close');
+
+		expect(cleanup).toHaveBeenCalledTimes(1);
+	});
+
+	it('stops once no matter how many times stop is called', () => {
+		publication.stop();
+		publication.stop();
+		publication.stop();
+
+		expect(sentPackets(session)).toEqual([{ msg: 'nosub', id: 'test-id' }]);
+	});
+
+	it('lets the streamer remove a listener registered before a mid-await disconnect', () => {
+		const listeners = new Set(['room1']);
+
+		session.emit('close');
+		publication.onStop(() => listeners.delete('room1'));
+
+		expect(listeners.size).toBe(0);
+	});
+
+	it('does not register a subscription if the client disconnects during its permission check', async () => {
+		const streamer = new TestStreamer('disconnect-during-authorization');
+		let allowRead!: (value: boolean) => void;
+		const permission = new Promise<boolean>((resolve) => {
+			allowRead = resolve;
+		});
+		const checkPermission = jest.fn(() => permission);
+		streamer.allowRead('rooms-changed', checkPermission);
+		const onStop = jest.spyOn(publication, 'onStop');
+
+		const publish = streamer._publish(publication, 'rooms-changed', false);
+		expect(checkPermission).toHaveBeenCalledTimes(1);
+
+		session.emit('close');
+		allowRead(true);
+
+		await expect(publish).rejects.toThrow('publication-client-disconnected');
+		expect(streamer.subscriptions.size).toBe(0);
+		expect(onStop).not.toHaveBeenCalled();
+	});
+
+	it('does not attach a listener when the client disconnects during a publish', async () => {
+		const streamer = new TestStreamer('disconnect-race');
+		streamer.allowRead('all');
+
+		let resumeLookup: () => void = () => undefined;
+		const lookup = new Promise<void>((resolve) => {
+			resumeLookup = resolve;
+		});
+
+		const attached: string[] = [];
+		streamer.on('_afterPublish', async (_streamer, published) => {
+			await lookup; // the awaited database lookup the notification module does
+
+			if (!Streamer.isPublicationActive(published)) {
+				return;
+			}
+
+			attached.push('room1');
+			published.onStop(() => {
+				attached.pop();
+			});
+		});
+
+		await streamer._publish(publication, 'rooms-changed', false);
+
+		session.emit('close'); // the client disconnects while the lookup is in flight
+		resumeLookup();
+		await lookup;
+
+		expect(attached).toEqual([]);
+		expect(streamer.subscriptions.size).toBe(0);
 	});
 });
