@@ -37,7 +37,7 @@ function ToastBar({
 	const role = variant === 'error' ? 'alert' : 'status';
 
 	return (
-		<Box className={`rcx-toastbar rcx-toastbar--${variant} ${className}`} id={id} elevation='2nb' borderRadius='medium' {...props}>
+		<Box className={`rcx-toastbar rcx-toastbar--${variant} ${className}`} id={id} {...props}>
 			<div className='rcx-toastbar_inner'>
 				<Icon className={`rcx-toastbar_icon--${variant}`} size='x20' name={iconName} />
 				<div role={role} className='rcx-toastbar_content'>

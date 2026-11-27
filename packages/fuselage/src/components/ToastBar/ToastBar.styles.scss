@@ -2,6 +2,7 @@
 @use '../../styles/lengths.scss';
 @use '../../styles/typography.scss' as *;
 @use '../../styles/functions.scss' as *;
+@use '../../styles/mixins/elevation.scss' as *;
 
 $toastbar-color: theme('toastbar-color', colors.font(default));
 
@@ -29,6 +30,7 @@ $toastbar-progressbar-background-color: theme('toastbar-progressbar-background-c
 
 	background-color: $toastbar-background-color;
 
+	@include elevation-level(2, $border: false);
 	@include use-font-scale(p2);
 
 	&::before {
