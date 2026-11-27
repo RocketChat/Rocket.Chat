@@ -5,7 +5,9 @@ import type { DmCreateProps } from './DmCreateProps';
 import type { DmFileProps } from './DmFileProps';
 import type { DmHistoryProps } from './DmHistoryProps';
 import type { DmLeaveProps } from './DmLeaveProps';
+import type { DmListProps, DmListEveryoneProps } from './DmListProps';
 import type { DmMemberProps } from './DmMembersProps';
+import type { DmMessagesOthersProps } from './DmMessagesOthersProps';
 import type { DmMessagesProps } from './DmMessagesProps';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 
@@ -74,12 +76,12 @@ export type ImEndpoints = {
 		GET: (params: DmHistoryProps) => { messages: IMessage[]; firstUnread?: IMessage; unreadNotLoaded?: number };
 	};
 	'/v1/im.messages.others': {
-		GET: (params?: never) => { messages: IMessage[]; offset: number; count: number; total: number };
+		GET: (params: DmMessagesOthersProps) => { messages: IMessage[]; offset: number; count: number; total: number };
 	};
 	'/v1/im.list': {
-		GET: (params?: never) => { ims: IRoom[]; offset: number; count: number; total: number };
+		GET: (params: DmListProps) => { ims: IRoom[]; offset: number; count: number; total: number };
 	};
 	'/v1/im.list.everyone': {
-		GET: (params?: never) => { ims: IRoom[]; offset: number; count: number; total: number };
+		GET: (params: DmListEveryoneProps) => { ims: IRoom[]; offset: number; count: number; total: number };
 	};
 };

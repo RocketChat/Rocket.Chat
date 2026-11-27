@@ -949,6 +949,20 @@ describe('[Direct Messages]', () => {
 					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
+		it('should fail when roomId is missing', async () => {
+			await updateSetting('API_Enable_Direct_Message_History_EndPoint', true);
+			await updatePermission('view-room-administration', ['admin']);
+			await request
+				.get(api('im.messages.others'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
+		});
+
 		it('should succeed when the endpoint is enabled and user has permission', async () => {
 			await updateSetting('API_Enable_Direct_Message_History_EndPoint', true);
 			await updatePermission('view-room-administration', ['admin']);
