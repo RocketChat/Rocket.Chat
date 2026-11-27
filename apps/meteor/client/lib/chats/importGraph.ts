@@ -2,51 +2,49 @@
 import fs from 'fs';
 import path from 'path';
 
-export const CLIENT_ROOT = path.resolve(__dirname, '../..');
+export const APP_ROOT = path.resolve(__dirname, '../../..');
 
-// Client-relative paths, matched as the path itself or anything below it.
+// Relative to apps/meteor, matched as the file itself or anything below it. Every entry must exist on disk.
 export const FORBIDDEN_PATHS = [
-	'lib/SDKClient',
-	'sdk',
-	'stores',
-	'lib/settings',
-	'lib/user',
-	'lib/toast',
-	'lib/authorization',
-	'lib/e2ee',
-	'lib/rooms/roomCoordinator',
-	'lib/utils/threadMessageUtils',
-	'lib/queryClient',
+	'client/lib/SDKClient',
+	'client/lib/sdk',
+	'client/lib/baseURI',
+	'client/lib/RestApiClient',
+	'client/stores',
+	'client/lib/settings',
+	'client/lib/user',
+	'client/lib/toast',
+	'client/lib/authorization',
+	'client/lib/e2ee',
+	'client/lib/rooms/roomCoordinator',
+	'client/lib/utils/threadMessageUtils',
+	'client/lib/queryClient',
 	'lib/i18n',
-	'lib/getPermaLink',
-	'lib/UserAction',
-	'lib/chats/uploads',
-	'lib/chats/data',
-	'lib/chats/flows',
-	'lib/chats/ChatMessages',
-	'lib/messageBoxFormatting',
-	'lib/createComposerAPICore',
-	'lib/composerStateCore',
-	'meteor',
-	'views',
-	'providers',
-	'components',
-	'hooks',
+	'client/lib/getPermaLink',
+	'client/lib/getURL',
+	'client/lib/UserAction',
+	'client/lib/slashCommand',
+	'client/lib/onClientBeforeSendMessage',
+	'client/lib/onClientMessageReceived',
+	'client/lib/chats/uploads',
+	'client/lib/chats/data',
+	'client/lib/chats/flows',
+	'client/lib/ChatMessages',
+	'client/lib/messageBoxFormatting',
+	'client/lib/createComposerAPICore',
+	'client/lib/composerStateCore',
+	'client/meteor',
+	'client/views',
+	'client/providers',
+	'client/components',
+	'client/hooks',
 ];
 
-export const FORBIDDEN_PACKAGES = [
-	'meteor/',
-	'react',
-	'react-dom',
-	'@rocket.chat/ui-client',
-	'@rocket.chat/ui-contexts',
-	'@rocket.chat/fuselage',
-];
+// What a core may import at runtime. Anything else fails the guard until a person adds it here on purpose.
+export const ALLOWED_PACKAGES = ['@rocket.chat/core-typings', '@rocket.chat/emitter'];
 
-const isForbiddenPackage = (specifier: string, forbidden: string[]): boolean =>
-	forbidden.some((prefix) =>
-		prefix.endsWith('/') ? specifier.startsWith(prefix) : specifier === prefix || specifier.startsWith(`${prefix}/`),
-	);
+const isAllowedPackage = (specifier: string, allowed: string[]): boolean =>
+	allowed.some((name) => specifier === name || specifier.startsWith(`${name}/`));
 
 const isForbiddenPath = (file: string, forbidden: string[], root: string): boolean => {
 	const relative = path
@@ -59,8 +57,7 @@ const isForbiddenPath = (file: string, forbidden: string[], root: string): boole
 
 const EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx'];
 
-const resolveRelative = (from: string, specifier: string): string | undefined => {
-	const base = path.resolve(path.dirname(from), specifier);
+const resolveFile = (base: string): string | undefined => {
 	for (const candidate of [base, ...EXTENSIONS.map((ext) => base + ext), ...EXTENSIONS.map((ext) => path.join(base, `index${ext}`))]) {
 		if (fs.existsSync(candidate) && fs.statSync(candidate).isFile()) {
 			return candidate;
@@ -69,9 +66,106 @@ const resolveRelative = (from: string, specifier: string): string | undefined =>
 	return undefined;
 };
 
+const resolveRelative = (from: string, specifier: string): string | undefined => resolveFile(path.resolve(path.dirname(from), specifier));
+
+export const forbiddenPathExists = (entry: string, root = APP_ROOT): boolean =>
+	fs.existsSync(path.join(root, entry)) || resolveFile(path.join(root, entry)) !== undefined;
+
 type Edge = { specifier: string; dynamic: boolean };
 
-const stripComments = (code: string): string => code.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:'"`\\])\/\/.*$/gm, '$1');
+const REGEX_PRECEDERS = /[(,=:[!&|?{};+\-*%<>~^]$|(?:^|[^\w$.])(?:return|typeof|case|do|else|in|of|void|delete|throw|new|yield|await)$/;
+
+// Drops comments only. Strings, template literals and regex literals are copied through, so a `//` or `/*` inside one is never a comment.
+export const stripComments = (code: string): string => {
+	let out = '';
+	let i = 0;
+	let braceDepth = 0;
+	const templateResume: number[] = [];
+
+	const copyString = (quote: string): void => {
+		out += code[i++];
+		while (i < code.length && code[i] !== quote && code[i] !== '\n') {
+			if (code[i] === '\\') {
+				out += code[i++];
+			}
+			out += code[i++] ?? '';
+		}
+		out += code[i++] ?? '';
+	};
+
+	const copyTemplate = (): void => {
+		while (i < code.length) {
+			if (code[i] === '\\') {
+				out += code[i++];
+			} else if (code[i] === '`') {
+				out += code[i++];
+				return;
+			} else if (code[i] === '$' && code[i + 1] === '{') {
+				out += '${';
+				i += 2;
+				templateResume.push(braceDepth++);
+				return;
+			}
+			out += code[i++] ?? '';
+		}
+	};
+
+	const copyRegex = (): boolean => {
+		let inClass = false;
+		for (let j = i + 1; j < code.length && code[j] !== '\n'; j++) {
+			if (code[j] === '\\') {
+				j++;
+			} else if (code[j] === '[') {
+				inClass = true;
+			} else if (code[j] === ']') {
+				inClass = false;
+			} else if (code[j] === '/' && !inClass) {
+				out += code.slice(i, j + 1);
+				i = j + 1;
+				return true;
+			}
+		}
+		return false;
+	};
+
+	while (i < code.length) {
+		const char = code[i];
+		const next = code[i + 1];
+
+		if (char === '/' && next === '/') {
+			while (i < code.length && code[i] !== '\n') {
+				i++;
+			}
+		} else if (char === '/' && next === '*') {
+			const end = code.indexOf('*/', i + 2);
+			const stop = end === -1 ? code.length : end + 2;
+			out += code.slice(i, stop).replace(/[^\n]/g, ' ');
+			i = stop;
+		} else if (char === '"' || char === "'") {
+			copyString(char);
+		} else if (char === '`') {
+			out += code[i++];
+			copyTemplate();
+		} else if (char === '/' && REGEX_PRECEDERS.test(out.trimEnd()) && copyRegex()) {
+			continue;
+		} else {
+			if (char === '{') {
+				braceDepth++;
+			} else if (char === '}') {
+				braceDepth--;
+				if (templateResume.length && templateResume[templateResume.length - 1] === braceDepth) {
+					templateResume.pop();
+					out += code[i++];
+					copyTemplate();
+					continue;
+				}
+			}
+			out += code[i++];
+		}
+	}
+
+	return out;
+};
 
 const isTypeOnlyClause = (clause: string): boolean => {
 	if (/^type\s/.test(clause)) {
@@ -87,8 +181,9 @@ const isTypeOnlyClause = (clause: string): boolean => {
 	);
 };
 
-// Conservative regex scan (the TypeScript compiler of this repo has no JS API). Imports whose clause is `type` are erased and skipped;
-// anything that looks like a dynamic import or a require counts, even when its argument is computed.
+// Regex scan (the TypeScript compiler of this repo has no JS API) over source with comments removed. It can over-report, never hide: an
+// import written inside a string or template literal still counts. Imports whose clause is `type` are erased and skipped; anything that
+// looks like a dynamic import or a require counts, even when its argument is computed.
 export const readImports = (file: string): Edge[] => {
 	const code = stripComments(fs.readFileSync(file, 'utf8'));
 	const edges: Edge[] = [];
@@ -116,10 +211,10 @@ export type GraphReport = { violations: string[]; files: string[]; packages: Map
 export const walkImports = (
 	entries: string[],
 	{
-		root = CLIENT_ROOT,
+		root = APP_ROOT,
 		forbiddenPaths = FORBIDDEN_PATHS,
-		forbiddenPackages = FORBIDDEN_PACKAGES,
-	}: { root?: string; forbiddenPaths?: string[]; forbiddenPackages?: string[] } = {},
+		allowedPackages = ALLOWED_PACKAGES,
+	}: { root?: string; forbiddenPaths?: string[]; allowedPackages?: string[] } = {},
 ): GraphReport => {
 	const violations: string[] = [];
 	const seen = new Set<string>();
@@ -149,8 +244,8 @@ export const walkImports = (
 				continue;
 			}
 
-			if (isForbiddenPackage(specifier, forbiddenPackages)) {
-				violations.push(`${file}: imports forbidden package '${specifier}'`);
+			if (!isAllowedPackage(specifier, allowedPackages)) {
+				violations.push(`${file}: imports package '${specifier}' outside the allow-list`);
 			}
 			packages.set(specifier, [...(packages.get(specifier) ?? []), file]);
 		}
