@@ -11,6 +11,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import border from '@rocket.chat/fuselage-tokens/dist/border.json';
+import size from '@rocket.chat/fuselage-tokens/dist/size.json';
 import spacing from '@rocket.chat/fuselage-tokens/dist/spacing.json';
 import typography from '@rocket.chat/fuselage-tokens/dist/typography.json';
 import zIndex from '@rocket.chat/fuselage-tokens/dist/zIndex.json';
@@ -46,13 +47,6 @@ const keysOf = (value: object) => Object.keys(value).join();
 if (keysOf(themes.light) !== keysOf(themes.dark) || keysOf(themes.light) !== keysOf(themes['high-contrast'])) {
 	throw new Error('The light, dark and high-contrast palettes do not hold the same colors');
 }
-
-// `fuselage-tokens` has no size scale. This one is what a stylesheet could state through `lengths.size()`, 1, 2 and the
-// multiples of 4, up to the largest icon, plus the steps only the icon scale has.
-const LARGEST_SIZE = 64;
-const ICON_ONLY_SIZES = [15, 18, 22];
-const sizes = [1, 2, ...Array.from({ length: LARGEST_SIZE / 4 }, (_, index) => (index + 1) * 4), ...ICON_ONLY_SIZES].sort((a, b) => a - b);
-const size = Object.fromEntries(sizes.map((pixels) => [`x${pixels}`, pixels]));
 
 const tokens = { space: spacing, size, radius, zIndex };
 
