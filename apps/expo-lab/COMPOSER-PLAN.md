@@ -1173,3 +1173,62 @@ Pixel diff against the earlier screenshots; side by side with the web composer; 
 - Import guard: `FORBIDDEN_PATHS` now also forbids `client/lib/emoji` (a direct import of `emoji/lib` passed before), `banners`, `notificationManager`, `openNotifications`, `userStatuses`, `messageBox`, `MessageAction`, `meteorRuntimeConfig`, `utils/getConfig` and `omnichannel/businessHours/businessHourManager`: modules whose own imports are all allowed but that hold module state or read page globals. Guard cases added for each; mutation-checked with a forbidden import in a core.
 - `SendMessageChat` and `SetReactionChat` list only the members the cores call, so a native chat satisfies them without the web `ChatAPI`; `core/nativeChat.types.spec.ts` builds such objects with `satisfies`.
 - Not done: sharing the adapter dependency builder with the differential specs (the specs must stay unedited).
+
+## Step 2.4 results: send and Return (2026-11-27)
+
+Commit `db4680ca6a2` `feat(expo-lab): send from the button and the Return key`.
+
+### What was built
+
+- `composer/composerSend.ts` (new, React-free so node can test it): `createComposerSend({ api, onSubmit, sendOnEnter })` returns `submit`, `onChangeText`, `onKeyPress`. `submit` sends only when the text is not blank, clears the field, refocuses it, passes `closeUnclosedCodeBlock(text.trim())` (imported from `apps/meteor/lib/utils/closeUnclosedCodeBlock.ts`, import-free) to `onSubmit`, and puts the raw text back if `onSubmit` resolves `false` and the field is still empty. Clearing before sending is what makes a button press plus Return send once.
+- `useNativeComposer({ onSubmit, sendOnEnter })` wraps it with stable handlers that read the latest props; it now returns `onKeyPress` and `submit`. `ComposerField` lost its `onSubmit` prop and uses `composer.submit`; `ComposerInput` takes `onKeyPress` (one `unknown` cast to Box's DOM-typed handler, commented).
+- `FuselageRoom`: `useNativeComposer({ onSubmit: sendText, sendOnEnter })`; `sendOnEnter` is local state, default on (the setting is not wired), with a dev toggle row under `EXPO_PUBLIC_COMPOSER_DEMO=1` in mock mode ("sendOnEnter: on (tap to toggle)").
+- `test/hooks.mjs` also loads `apps/meteor/lib/*.ts` as ES modules.
+- `useRoom.sendText` already trims; the second trim is harmless.
+
+### Event order (P3 still open)
+
+- Key first: on Return with `sendOnEnter` on, the line break the field is about to report is computed (text with `\n` at the selection) and armed; the next `onChangeText` equal to it is dropped, any other change or key disarms it. The send already used the text without it.
+- Change first: a change that is exactly the previous text plus one `\n` at a collapsed caret records where. A Return key right after removes exactly that character (`replaceText`), then sends. Any other event in between forgets it, so an earlier typed line break is never stripped.
+- `sendOnEnter` off: Return does nothing in either order, the field's own line break is kept.
+- Return on a blank field with `sendOnEnter` on sends nothing and its line break is dropped, in both orders.
+- Shift+Return: `onKeyPress` has no modifier flags (spec), so it cannot be told from Return; with `sendOnEnter` on it sends. Not handled.
+
+### Requirement coverage
+
+| Req | Proof | Where |
+|---|---|---|
+| R5 | U | send button sends with `sendOnEnter` on and off; once-only when the button fires twice, and Return plus button |
+| R6 | U | `''`, spaces, `\n\n`, mixed whitespace send nothing and leave the field unchanged |
+| R7 | U (both orders); I probe below with injected events; real key not run | key first, change first, caret in the middle, blank Return, one-change swallow, earlier break kept |
+| R8 | U (both orders); I probe | text gains `\n`, nothing sent, setting toggled live |
+| R9 | U | fence closed and trimmed through the shared function (its own spec is the web one) |
+| R12 | U | field empty and focused after an accepted send; text restored on failure, not over newer typing. Quotes and attachments do not exist yet, so only the field part is covered |
+
+### Tests and gates
+
+- `composerSend.test.ts`: 17 cases; whole expo-lab suite 53 tests, all pass (`node --import ./test/register.mjs --test "src/**/*.test.ts"`). `tsc --noEmit`: exit 0.
+- Default `CI=1 expo export --platform ios`: exit 0, 2590 modules (2588 before, +2: `composerSend.ts`, `closeUnclosedCodeBlock.ts`). Probe mode (`EXPO_PUBLIC_SHARED_PROBE=1`): exit 0, 6789 modules. `grep -a -c` of `NodeRandomGenerator`, `react-dom/server`, `ui-client/dist` on the Hermes bundle: 0 in both.
+
+### Simulator probe (mock room, Metro 8086, temporary and not committed)
+
+A fiber walk from the TextInput's host instance to the fiber holding `onKeyPress` and `onChangeText`, and from the root to the `Send message` button's `onPress`, called the real handlers with injected events. Observed (SENT is what `onSubmit` received; text is the composer text 600 ms later):
+
+- key first, Return, on: SENT "hello A", text "".
+- change first, Return, on: SENT "hello B", text "".
+- key first, caret mid-text: SENT "abcd", text "".
+- button: SENT "via button", text "". Button twice: one SENT "once only".
+- button on `"  \n "`: nothing sent, text unchanged.
+- `sendOnEnter` off, key first: text "off 1\n", nothing sent. Change first: text "off 2\n", nothing sent. Button: SENT "off button".
+
+### Not verified
+
+- The real order of `onKeyPress` and `onChangeText` and what a real keyboard does: no idb. Injected events are the two orders the code handles, not the device's. A third order (a change that carries more than the line break, autocorrect at the same moment) would pass through as an ordinary edit.
+- Whether iOS re-syncs the native field to the cleared controlled value after the swallowed line break, and whether the keyboard stays up after a button press (focus is requested, not observed).
+- Shift+Return, hardware keyboards, the Android `Enter` key value.
+- The `sendOnEnter` user setting itself (local state plus the demo toggle).
+- Real send path and failure restore on screen (mock send only); the "too long" flow and optimistic message are 2.5.
+
+### Files needing a Metro restart
+
+None are config files; Metro fast refresh picks up the source. The running demo on 8081 and 8082 should reload to see the toggle (`FuselageRoom.tsx`); `test/hooks.mjs` only affects node tests.
