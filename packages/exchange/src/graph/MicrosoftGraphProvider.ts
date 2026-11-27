@@ -415,8 +415,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 		}
 
 		const resolved: GraphEvent[] = [];
-		const unresolvedSeries = new Set<string>();
-		let unresolved = 0;
+		const unresolvedSeries: string[] = [];
 
 		for (const event of raw) {
 			if (event.type === 'seriesMaster' && !event['@removed']) {
@@ -433,8 +432,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 			const master = masters.get(masterId);
 
 			if (!master) {
-				unresolved += 1;
-				unresolvedSeries.add(masterId);
+				unresolvedSeries.push(masterId);
 				continue;
 			}
 
@@ -442,11 +440,11 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 			resolved.push({ ...master, ...event });
 		}
 
-		if (unresolved) {
-			logger.warn({ msg: 'Occurrences left out of this round, so the stored events keep what they have', mailbox, unresolved });
+		if (unresolvedSeries.length) {
+			logger.warn({ msg: 'Occurrences left out of this round, so the stored events keep what they have', mailbox, unresolved: unresolvedSeries.length });
 		}
 
-		return { events: resolved, unresolvedSeries: [...unresolvedSeries] };
+		return { events: resolved, unresolvedSeries };
 	}
 
 	/**
