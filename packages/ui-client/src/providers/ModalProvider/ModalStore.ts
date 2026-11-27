@@ -6,10 +6,12 @@ type ModalInstance = {
 	cancel: () => void;
 };
 
-type ModalWithRegion = { node: ReactNode; region?: symbol };
+export type ModalWithRegion = { id: number; node: ReactNode; region?: symbol };
 
 class ModalStore extends Emitter<{ update: void }> {
 	private modalStack: ModalWithRegion[] = [];
+
+	private nextId = 0;
 
 	update(): void {
 		this.emit('update');
@@ -17,7 +19,7 @@ class ModalStore extends Emitter<{ update: void }> {
 
 	// open function erases all other modals from the stack
 	open = (node: ReactNode, region?: symbol): ModalInstance => {
-		const modal = { node, region };
+		const modal: ModalWithRegion = { id: this.nextId++, node, region };
 		this.modalStack = [modal];
 		this.update();
 
@@ -25,7 +27,7 @@ class ModalStore extends Emitter<{ update: void }> {
 	};
 
 	push = (node: ReactNode, region?: symbol): ModalInstance => {
-		const modal = { node, region };
+		const modal: ModalWithRegion = { id: this.nextId++, node, region };
 		this.modalStack = [...this.modalStack, modal];
 		this.update();
 
@@ -58,6 +60,8 @@ class ModalStore extends Emitter<{ update: void }> {
 	};
 
 	getSnapshot = (): ModalWithRegion | null => this.current;
+
+	getStackSnapshot = (): readonly ModalWithRegion[] => this.modalStack;
 
 	get current(): ModalWithRegion | null {
 		return this.modalStack[this.modalStack.length - 1] ?? null;
