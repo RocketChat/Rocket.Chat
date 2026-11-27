@@ -159,7 +159,12 @@ const syncAvatars = async (
 			withPhoto.add(photo.externalId);
 		}
 	} catch (err) {
-		await deleteContactAvatars(removed);
+		try {
+			await deleteContactAvatars(removed);
+		} catch (cleanupErr) {
+			logger.warn({ msg: 'Could not drop the removed Exchange contact photos', uid, folderId, err: scrubForLog(cleanupErr) });
+		}
+
 		throw err;
 	}
 
