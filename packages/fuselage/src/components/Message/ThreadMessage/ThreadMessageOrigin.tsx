@@ -1,3 +1,4 @@
+import { styled, View } from '@tamagui/web';
 import type { HTMLAttributes, ReactNode } from 'react';
 
 import { cx } from '../../../helpers/composeClassNames';
@@ -7,10 +8,15 @@ export type ThreadMessageOriginProps = {
 	system?: boolean;
 } & HTMLAttributes<HTMLDivElement>;
 
+const ThreadMessageOriginFrame = styled(View, {});
+
 const ThreadMessageOrigin = ({ children, system, className, ...props }: ThreadMessageOriginProps) => (
-	<div {...props} className={cx('rcx-message-thread__origin', system && 'rcx-message-thread__origin--system', className)}>
+	<ThreadMessageOriginFrame
+		className={cx('rcx-message-thread__origin', system && 'rcx-message-thread__origin--system', className)}
+		render={<div {...props} />}
+	>
 		{children}
-	</div>
+	</ThreadMessageOriginFrame>
 );
 
 export default ThreadMessageOrigin;

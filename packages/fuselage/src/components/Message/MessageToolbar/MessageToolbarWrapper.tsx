@@ -1,3 +1,4 @@
+import { styled, View } from '@tamagui/web';
 import type { HTMLAttributes, RefAttributes } from 'react';
 
 export type MessageToolbarWrapperProps = HTMLAttributes<HTMLDivElement> &
@@ -6,12 +7,16 @@ export type MessageToolbarWrapperProps = HTMLAttributes<HTMLDivElement> &
 		visible?: boolean;
 	};
 
-function MessageToolbarWrapper({ className, visible, ...props }: MessageToolbarWrapperProps) {
+const ToolbarWrapperFrame = styled(View, {});
+
+function MessageToolbarWrapper({ className, visible, children, ...props }: MessageToolbarWrapperProps) {
 	return (
-		<div
+		<ToolbarWrapperFrame
 			className={['rcx-message-toolbar__wrapper', visible && 'rcx-message-toolbar__wrapper--visible', className].filter(Boolean).join(' ')}
-			{...props}
-		/>
+			render={<div {...props} />}
+		>
+			{children}
+		</ToolbarWrapperFrame>
 	);
 }
 

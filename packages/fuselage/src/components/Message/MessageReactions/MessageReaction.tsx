@@ -1,3 +1,4 @@
+import { styled, View } from '@tamagui/web';
 import type { HTMLAttributes, ReactNode, RefAttributes } from 'react';
 
 export type MessageReactionProps = RefAttributes<HTMLDivElement> & {
@@ -5,16 +6,16 @@ export type MessageReactionProps = RefAttributes<HTMLDivElement> & {
 	children?: ReactNode;
 } & HTMLAttributes<HTMLDivElement>;
 
+const ReactionFrame = styled(View, {});
+
 function MessageReaction({ mine, children, className, ...props }: MessageReactionProps) {
 	return (
-		<div
+		<ReactionFrame
 			className={[`rcx-message-reactions__reaction`, mine && 'rcx-message-reactions__reaction--mine', className].filter(Boolean).join(' ')}
-			role='button'
-			tabIndex={0}
-			{...props}
+			render={<div role='button' tabIndex={0} {...props} />}
 		>
 			{children}
-		</div>
+		</ReactionFrame>
 	);
 }
 
