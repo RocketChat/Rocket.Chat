@@ -1,8 +1,24 @@
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 import type { IMessage } from '@rocket.chat/core-typings';
-import { parse } from '@rocket.chat/message-parser';
+import type { Root } from '@rocket.chat/message-parser';
+import { parse as peggyParse } from '@rocket.chat/message-parser';
 
 import { getMessageMaxParseLength } from '../../../../lib/getMessageMaxParseLength';
+
+let napiParse: ((input: string) => Root) | undefined;
+
+if (process.env.EXPERIMENTAL_NAPI_PARSER === 'true') {
+	try {
+		// eslint-disable-next-line @typescript-eslint/no-require-imports
+		const napi = require('@rocket.chat/message-parser-napi');
+		napiParse = (input: string) => napi.parse(input) as Root;
+		console.info('Using experimental N-API message parser (logos DFA + recursive descent)');
+	} catch (e) {
+		console.warn('EXPERIMENTAL_NAPI_PARSER enabled but native addon failed to load, falling back to Peggy', e);
+	}
+}
+
+const parse = napiParse ?? peggyParse;
 
 type ParserConfig = {
 	colors?: boolean;

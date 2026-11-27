@@ -1,0 +1,21 @@
+{
+	"name": "@rocket.chat/message-parser-napi",
+	"version": "0.1.0-experimental",
+	"private": true,
+	"description": "Experimental N-API message parser using logos DFA lexer (12.8x faster than Peggy)",
+	"main": "index.js",
+	"types": "index.d.ts",
+	"napi": {
+		"name": "message-parser-napi",
+		"triples": {
+			"defaults": true
+		}
+	},
+	"scripts": {
+		"build": "napi build --release",
+		"prepublishOnly": "napi prepublish -t npm"
+	},
+	"devDependencies": {
+		"@napi-rs/cli": "^2.18.0"
+	}
+}

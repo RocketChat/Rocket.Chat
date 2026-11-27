@@ -5628,6 +5628,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@napi-rs/cli@npm:^2.18.0":
+  version: 2.18.4
+  resolution: "@napi-rs/cli@npm:2.18.4"
+  bin:
+    napi: scripts/index.js
+  checksum: 10/b9bdb0e0f96328315a5ad7846df5c72f5f00c707aa58bf2e8b753ad419c4a45989ba6967c8a27acf1552051d2693ae43a9be9ab2c173671040c1861e6d920ac6
+  languageName: node
+  linkType: hard
+
 "@napi-rs/lzma-linux-x64-gnu@npm:1.5.1":
   version: 1.5.1
   resolution: "@napi-rs/lzma-linux-x64-gnu@npm:1.5.1"
@@ -10814,6 +10823,14 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:~"
     jest: "npm:~30.5.2"
     typescript: "npm:~7.0.2"
+  languageName: unknown
+  linkType: soft
+
+"@rocket.chat/message-parser-napi@workspace:packages/message-parser-napi":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/message-parser-napi@workspace:packages/message-parser-napi"
+  dependencies:
+    "@napi-rs/cli": "npm:^2.18.0"
   languageName: unknown
   linkType: soft
 
