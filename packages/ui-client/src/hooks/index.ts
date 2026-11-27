@@ -7,6 +7,7 @@ export * from './useDefaultSettingFeaturePreviewList';
 export * from './useDeferredMenuMount';
 export * from './useDocumentTitle';
 export * from './useDontAskAgain';
+export * from './useDraftStorage';
 export * from './useDropdownVisibility';
 export * from './useEmbeddedLayout';
 export * from './useEndpointMutation';
