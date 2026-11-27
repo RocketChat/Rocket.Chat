@@ -72,7 +72,7 @@ describe('[PaletteStyleTag theme keys]', () => {
 		const themeKeys = themeKeysOf(theme);
 
 		expect(css.match(/\{/g)).toHaveLength(1);
-		expect(Object.keys(themeKeys)).toHaveLength(130);
+		expect(Object.keys(themeKeys)).toHaveLength(132);
 		expect(declarations).toMatchObject(themeKeys);
 		// A key the config does not have would be a property no frame reads
 		expect(Object.keys(declarations)).toHaveLength(2 * Object.keys(palette).length);

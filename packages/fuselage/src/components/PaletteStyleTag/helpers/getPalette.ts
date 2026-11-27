@@ -62,6 +62,8 @@ export const getThemePalette = (theme: Themes) => {
 				{ name: 'surface-featured-hover', color: surface.featuredHover },
 				{ name: 'surface-overlay', color: surface.overlay },
 				{ name: 'surface-sidebar', color: surface.sidebar },
+				{ name: 'surface-scrollbar-thumb', color: surface.scrollbarThumb },
+				{ name: 'surface-scrollbar-thumb-hover', color: surface.scrollbarThumbHover },
 			],
 		},
 		{
