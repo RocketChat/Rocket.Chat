@@ -37,7 +37,8 @@ import {
 
 import { parse, type Root } from '@rocket.chat/message-parser';
 
-import { AppAvatar } from './AppAvatar';
+import { AppAvatar, SvgAvatar, trimSvg } from './AppAvatar';
+import { largeImageUrl, realRoomSvg, realUserSvg, svgVariants } from './avatarSamples';
 import Markup from './markup/Markup';
 import { mockAvatar, mockMessages } from './mockData';
 import { UiKitMessage } from './uikit/SurfaceRenderer';
@@ -269,6 +270,15 @@ export function Content() {
 							<AppAvatar url={url} size='x24' rounded />
 						</View>
 						<RNText style={{ fontSize: 10 }}>{label}</RNText>
+					</View>
+				))}
+			</Cell>
+			<Cell name='Avatar real formats (x24 and x36 beside a title)'>
+				{[['real user svg', realUserSvg], ['real room svg', realRoomSvg], ...Object.entries(svgVariants), ['large jpeg 1800x1200', undefined]].map(([label, xml]) => (
+					<View key={label} style={{ width: '100%', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+						{xml ? <SvgAvatar xml={trimSvg(xml)} size='x24' /> : <AppAvatar url={largeImageUrl} size='x24' />}
+						{xml ? <SvgAvatar xml={trimSvg(xml)} /> : <AppAvatar url={largeImageUrl} />}
+						<RNText style={{ fontSize: 12, flexShrink: 1 }}>{label}</RNText>
 					</View>
 				))}
 			</Cell>

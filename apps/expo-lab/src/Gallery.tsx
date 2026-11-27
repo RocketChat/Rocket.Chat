@@ -6,6 +6,7 @@ import '@tamagui/core';
 
 import { tamaguiConfig } from '../../../packages/fuselage/src/tamagui.config';
 import { Content } from './GalleryContent';
+import { LayoutOverlay } from './layoutDebug';
 
 // The probes show each caught error inline; the dev overlay would cover them
 LogBox.ignoreAllLogs();
@@ -33,6 +34,7 @@ export function Gallery({ onBack }: { onBack: () => void }) {
 				<ScrollView style={{ flex: 1 }} contentInsetAdjustmentBehavior='never' contentOffset={{ x: 0, y: Number(process.env.EXPO_PUBLIC_GALLERY_SCROLL ?? 0) }}>
 					<Content />
 				</ScrollView>
+				<LayoutOverlay />
 			</View>
 		</TamaguiProvider>
 	);
