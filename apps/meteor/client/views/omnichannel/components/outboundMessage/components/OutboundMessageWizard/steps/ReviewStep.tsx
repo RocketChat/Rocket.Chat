@@ -1,9 +1,10 @@
-import { Box, Button, Scrollable } from '@rocket.chat/fuselage';
+import { Button } from '@rocket.chat/fuselage';
 import { WizardActions, WizardBackButton } from '@rocket.chat/ui-client';
 import { useMutation } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import OutboundMessageStep from '../../../layout/OutboundMessageStep';
 import OutboundMessagePreview from '../../OutboundMessagePreview';
 
 export type ReviewStepProps = ComponentProps<typeof OutboundMessagePreview> & {
@@ -16,19 +17,19 @@ const ReviewStep = ({ onSend, ...props }: ReviewStepProps) => {
 	const sendMutation = useMutation({ mutationFn: onSend });
 
 	return (
-		<Box display='flex' flexDirection='column' height='100%'>
-			<Scrollable vertical>
-				<OutboundMessagePreview {...props} maxHeight={500} />
-			</Scrollable>
+		<OutboundMessageStep
+			actions={
+				<WizardActions annotation={t('Messages_cannot_be_unsent')}>
+					<WizardBackButton />
 
-			<WizardActions annotation={t('Messages_cannot_be_unsent')}>
-				<WizardBackButton />
-
-				<Button variant='primary' icon='send' loading={sendMutation.isPending} onClick={() => sendMutation.mutate()}>
-					{t('Send')}
-				</Button>
-			</WizardActions>
-		</Box>
+					<Button variant='primary' icon='send' loading={sendMutation.isPending} onClick={() => sendMutation.mutate()}>
+						{t('Send')}
+					</Button>
+				</WizardActions>
+			}
+		>
+			<OutboundMessagePreview {...props} />
+		</OutboundMessageStep>
 	);
 };
 

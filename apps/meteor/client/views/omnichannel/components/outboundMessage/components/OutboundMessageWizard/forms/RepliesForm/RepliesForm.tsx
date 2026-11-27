@@ -1,7 +1,8 @@
 import type { Serialized, ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
-import { Box, Button, FieldGroup, Scrollable } from '@rocket.chat/fuselage';
+import { Button, FieldGroup } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
+import { WizardActions } from '@rocket.chat/ui-client';
 import { useEndpoint, usePermission, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
@@ -13,7 +14,7 @@ import AgentField from './components/AgentField';
 import DepartmentField from './components/DepartmentField';
 import { useAllowedAgents } from './hooks/useAllowedAgents';
 import { omnichannelQueryKeys } from '../../../../../../../../lib/queryKeys';
-import Form from '../../components/OutboundMessageForm';
+import OutboundMessageStep from '../../../../layout/OutboundMessageStep';
 import { FormFetchError } from '../../utils/errors';
 
 export type RepliesFormData = {
@@ -118,38 +119,40 @@ const RepliesForm = (props: RepliesFormProps) => {
 	});
 
 	return (
-		<Form id={repliesFormId} onSubmit={handleSubmit(submit)} noValidate>
-			<Scrollable vertical>
-				<Box>
-					<FieldGroup>
-						<DepartmentField
-							control={control}
-							onlyMyDepartments={!canAssignAllDepartments}
-							isError={isErrorDepartment}
-							isFetching={isFetchingDepartment}
-							onRefetch={refetchDepartment}
-							onChange={() => setValue('agentId', '')}
-						/>
+		<OutboundMessageStep
+			is='form'
+			id={repliesFormId}
+			onSubmit={handleSubmit(submit)}
+			noValidate
+			actions={
+				customActions ?? (
+					<WizardActions>
+						<Button type='submit' variant='primary' loading={isSubmitting}>
+							{t('Submit')}
+						</Button>
+					</WizardActions>
+				)
+			}
+		>
+			<FieldGroup>
+				<DepartmentField
+					control={control}
+					onlyMyDepartments={!canAssignAllDepartments}
+					isError={isErrorDepartment}
+					isFetching={isFetchingDepartment}
+					onRefetch={refetchDepartment}
+					onChange={() => setValue('agentId', '')}
+				/>
 
-						<AgentField
-							control={control}
-							agents={agents}
-							canAssignAgent={canAssignAnyAgent || canAssignSelfOnlyAgent}
-							disabled={!departmentId}
-							isLoading={isFetchingDepartment}
-						/>
-					</FieldGroup>
-				</Box>
-			</Scrollable>
-
-			{customActions ?? (
-				<Box marginBlockStart={24} display='flex' justifyContent='end'>
-					<Button type='submit' variant='primary' loading={isSubmitting}>
-						{t('Submit')}
-					</Button>
-				</Box>
-			)}
-		</Form>
+				<AgentField
+					control={control}
+					agents={agents}
+					canAssignAgent={canAssignAnyAgent || canAssignSelfOnlyAgent}
+					disabled={!departmentId}
+					isLoading={isFetchingDepartment}
+				/>
+			</FieldGroup>
+		</OutboundMessageStep>
 	);
 };
 

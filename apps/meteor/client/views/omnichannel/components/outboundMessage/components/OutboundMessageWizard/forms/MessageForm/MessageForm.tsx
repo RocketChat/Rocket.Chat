@@ -1,7 +1,8 @@
 import type { IOutboundProviderTemplate, Serialized, ILivechatContact } from '@rocket.chat/core-typings';
-import { Box, Button, FieldGroup, Scrollable } from '@rocket.chat/fuselage';
+import { Button, FieldGroup } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
+import { WizardActions } from '@rocket.chat/ui-client';
 import type { ReactNode } from 'react';
 import { useId, useMemo } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
@@ -10,9 +11,9 @@ import { useTranslation } from 'react-i18next';
 import TemplateField from './components/TemplateField';
 import TemplatePlaceholderField from './components/TemplatePlaceholderField';
 import TemplatePreviewForm from './components/TemplatePreviewField';
+import OutboundMessageStep from '../../../../layout/OutboundMessageStep';
 import type { TemplateParameters } from '../../../../types/template';
 import { extractParameterMetadata } from '../../../../utils/template';
-import Form from '../../components/OutboundMessageForm';
 import { FormFetchError } from '../../utils/errors';
 
 export type MessageFormData = {
@@ -78,29 +79,31 @@ const MessageForm = (props: MessageFormProps) => {
 	});
 
 	return (
-		<Form id={messageFormId} onSubmit={handleSubmit(submit)} noValidate>
-			<Scrollable vertical>
-				<Box>
-					<FieldGroup>
-						<TemplateField control={control} templates={templates} onChange={() => setValue('templateParameters', {})} />
+		<OutboundMessageStep
+			is='form'
+			id={messageFormId}
+			onSubmit={handleSubmit(submit)}
+			noValidate
+			actions={
+				customActions ?? (
+					<WizardActions>
+						<Button type='submit' variant='primary' loading={isSubmitting}>
+							{t('Submit')}
+						</Button>
+					</WizardActions>
+				)
+			}
+		>
+			<FieldGroup>
+				<TemplateField control={control} templates={templates} onChange={() => setValue('templateParameters', {})} />
 
-						{parametersMetadata.map((metadata) => (
-							<TemplatePlaceholderField key={metadata.id} control={control} metadata={metadata} contact={contact} />
-						))}
+				{parametersMetadata.map((metadata) => (
+					<TemplatePlaceholderField key={metadata.id} control={control} metadata={metadata} contact={contact} />
+				))}
 
-						{template ? <TemplatePreviewForm control={control} template={template} /> : null}
-					</FieldGroup>
-				</Box>
-			</Scrollable>
-
-			{customActions ?? (
-				<Box marginBlockStart={24} display='flex' justifyContent='end'>
-					<Button type='submit' variant='primary' loading={isSubmitting}>
-						{t('Submit')}
-					</Button>
-				</Box>
-			)}
-		</Form>
+				{template ? <TemplatePreviewForm control={control} template={template} /> : null}
+			</FieldGroup>
+		</OutboundMessageStep>
 	);
 };
 

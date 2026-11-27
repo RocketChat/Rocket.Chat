@@ -1,4 +1,3 @@
-import { Box } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import {
@@ -16,7 +15,6 @@ import { useEffect, useLayoutEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import OutboundMessageWizardErrorState from './components/OutboundMessageWizardErrorState';
-import OutboubdMessageWizardSkeleton from './components/OutboundMessageWizardSkeleton';
 import type { SubmitPayload } from './forms/SubmitPayload';
 import { ReviewStep, MessageStep, RecipientStep, RepliesStep } from './steps';
 import ReportableErrorBoundary from '../../../../../../components/ErrorReport/ReportableErrorBoundary';
@@ -24,6 +22,8 @@ import { formatPhoneNumber } from '../../../../../../lib/formatPhoneNumber';
 import { omnichannelQueryKeys } from '../../../../../../lib/queryKeys';
 import { useOmnichannelEnabled } from '../../../../hooks/useOmnichannelEnabled';
 import useOutboundProvidersList from '../../hooks/useOutboundProvidersList';
+import OutboundMessageWizardSkeleton from '../../layout/OutboundMessageWizardSkeleton';
+import OutboundMessageWizardSteps from '../../layout/OutboundMessageWizardSteps';
 import { useOutboundMessageUpsellModal } from '../../modals';
 import { formatOutboundMessagePayload, isMessageStepValid, isRecipientStepValid, isRepliesStepValid } from '../../utils/outbound-message';
 
@@ -162,7 +162,7 @@ const OutboundMessageWizard = ({ defaultValues = {}, onSuccess, onError }: Outbo
 	}
 
 	if (isLoadingModule || isLoadingProviders) {
-		return <OutboubdMessageWizardSkeleton />;
+		return <OutboundMessageWizardSkeleton />;
 	}
 
 	if (isErrorProviders) {
@@ -176,7 +176,7 @@ const OutboundMessageWizard = ({ defaultValues = {}, onSuccess, onError }: Outbo
 			<Wizard api={wizardApi} display='flex' flexDirection='column' height='100%'>
 				<WizardTabs />
 
-				<Box marginBlockStart={16} minHeight={0} flexGrow={1}>
+				<OutboundMessageWizardSteps>
 					<WizardContent id='recipient'>
 						<RecipientStep defaultValues={state} onDirty={handleDirtyStep} onSubmit={handleSubmit} />
 					</WizardContent>
@@ -203,7 +203,7 @@ const OutboundMessageWizard = ({ defaultValues = {}, onSuccess, onError }: Outbo
 							onSend={handleSend}
 						/>
 					</WizardContent>
-				</Box>
+				</OutboundMessageWizardSteps>
 			</Wizard>
 		</ReportableErrorBoundary>
 	);

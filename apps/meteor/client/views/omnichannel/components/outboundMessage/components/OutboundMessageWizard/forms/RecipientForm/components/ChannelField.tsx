@@ -1,5 +1,5 @@
 import type { Serialized, ILivechatContact } from '@rocket.chat/core-typings';
-import { Box, Field, FieldError, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { Field, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useId, useMemo } from 'react';
 import type { ComponentProps } from 'react';
 import type { Control } from 'react-hook-form';
@@ -7,9 +7,9 @@ import { useController } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useTimeFromNow } from '../../../../../../../../../hooks/useTimeFromNow';
+import FieldErrorWithRetry from '../../../../../layout/FieldErrorWithRetry';
 import { findLastChatFromChannel } from '../../../../../utils/findLastChatFromChannel';
 import AutoCompleteOutboundProvider from '../../../../AutoCompleteOutboundProvider';
-import RetryButton from '../../../components/RetryButton';
 import { cxp } from '../../../utils/cx';
 import type { RecipientFormData } from '../RecipientForm';
 
@@ -75,12 +75,9 @@ const ProviderField = ({
 				/>
 			</FieldRow>
 			{providerFieldError && (
-				<FieldError aria-live='assertive' id={`${channelFieldId}-error`}>
-					<Box display='flex' alignItems='center' gap={4}>
-						{providerFieldError.message}
-						{isError && <RetryButton loading={isFetching} onClick={onRetry} />}
-					</Box>
-				</FieldError>
+				<FieldErrorWithRetry id={`${channelFieldId}-error`} canRetry={isError} retrying={isFetching} onRetry={onRetry}>
+					{providerFieldError.message}
+				</FieldErrorWithRetry>
 			)}
 			{providerLastChat && (
 				<FieldHint id={`${channelFieldId}-hint`}>{t('Last_contact__time__', { time: getTimeFromNow(providerLastChat) })}</FieldHint>
