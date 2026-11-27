@@ -9,5 +9,8 @@ export const createComposerStateCore = (params: ComposerStateCoreParams): Compos
 	createComposerState(params, {
 		createUploads: (room) => createUploadsAPI(room),
 		getFormattingButtons: () => formattingButtons,
+		// Coarse-grained: fires on every setting change, but the only condition()
+		// today is Katex_Enabled and the recompute is a cheap zustand read, so the
+		// extra work per unrelated setting change is negligible.
 		observeSettings: (callback) => settings.observe('*', callback),
 	});
