@@ -28,6 +28,7 @@ type Payload = {
 	groupable?: IMessage['groupable'];
 	tmid?: IMessage['tmid'];
 	customFields?: IMessage['customFields'];
+	sentWithAI?: IMessage['sentWithAI'];
 };
 
 type DefaultValues = {
@@ -105,6 +106,7 @@ const buildMessage = (messageObj: Payload, defaultValues: DefaultValues) => {
 		groupable: messageObj.groupable !== undefined ? messageObj.groupable : false,
 		tmid: messageObj.tmid,
 		customFields: messageObj.customFields,
+		...(messageObj.sentWithAI === true && { sentWithAI: true }),
 	};
 
 	if (!_.isEmpty(messageObj.icon_url) || !_.isEmpty(messageObj.avatar)) {
