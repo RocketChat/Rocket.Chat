@@ -1,7 +1,8 @@
-import type { ComponentRef, Ref } from 'react';
+import { Box } from '@rocket.chat/fuselage';
+import type { RefObject } from 'react';
 import type { LayoutChangeEvent, TextInputSelectionChangeEvent } from 'react-native';
-import { TextInput } from 'react-native';
 
+import type { FieldHandle } from './createNativeComposerAPI.ts';
 import { composerTokens } from './tokens.ts';
 
 const t = composerTokens('light');
@@ -10,7 +11,7 @@ const t = composerTokens('light');
 export const composerHeight = { min: t.size.x52, max: 155 } as const;
 
 type Props = {
-	ref?: Ref<ComponentRef<typeof TextInput>>;
+	ref: RefObject<FieldHandle | null>;
 	value: string;
 	selection: { start: number; end: number };
 	onChangeText: (text: string) => void;
@@ -21,28 +22,27 @@ type Props = {
 	nudge?: number;
 };
 
-// Web counterpart: packages/ui-composer/src/MessageComposer/MessageComposerInput.tsx (color default, fontScale p2, padding 12/16, 52 to 155)
+// Web counterpart: packages/ui-composer/src/MessageComposer/MessageComposerInput.tsx, the same Box textarea and props
 export function ComposerInput({ ref, value, selection, onChangeText, onSelectionChange, onLayout, placeholder, nudge = 0 }: Props) {
+	// The native-only props are not in Box's web-facing types (multiline,selection, placeholderTextColor, onChangeText, onSelectionChange, accessibilityLabel, onLayout)
+	const nativeProps = { multiline: true, selection, onChangeText, onSelectionChange, onLayout, accessibilityLabel: 'Message', placeholderTextColor: t.font.annotation };
 	return (
-		<TextInput
-			ref={ref}
-			multiline
-			value={value}
-			selection={selection}
-			onChangeText={onChangeText}
-			onSelectionChange={onSelectionChange}
-			onLayout={onLayout}
-			placeholder={placeholder}
-			placeholderTextColor={t.font.annotation}
-			accessibilityLabel='Message'
-			style={{
-				minHeight: composerHeight.min + (nudge % 2) * 0.01,
-				maxHeight: composerHeight.max,
-				paddingHorizontal: t.space.x12,
-				paddingVertical: t.space.x16,
-				...t.fontScale.p2,
-				color: t.font.default,
+		<Box
+			is='textarea'
+			ref={(el) => {
+				ref.current = el;
 			}}
+			value={value}
+			placeholder={placeholder}
+			color='default'
+			borderWidth='none'
+			width='full'
+			minHeight={composerHeight.min + (nudge % 2) * 0.01}
+			maxHeight={composerHeight.max}
+			paddingInline={12}
+			paddingBlock={16}
+			fontScale='p2'
+			{...nativeProps}
 		/>
 	);
 }

@@ -1,25 +1,23 @@
+import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
-import { View } from 'react-native';
 
-import { composerTokens } from './tokens.ts';
-
-const t = composerTokens('light');
-
-// Web counterpart: packages/ui-composer/src/MessageComposer/MessageComposer.tsx (the bordered wrapper, rcx-input-box__wrapper)
+// Web counterpart: packages/ui-composer/src/MessageComposer/MessageComposer.tsx. The input-box wrapper's chrome, drawn from the
+// same tokens the InputBox native twin uses (borderWidth, borderColor, borderRadius, backgroundColor), plus the composer's overrides
 export function ComposerContainer({ children }: { children: ReactNode }) {
 	return (
-		<View
-			accessibilityRole='none'
-			style={{
-				marginTop: t.size.x2,
-				overflow: 'hidden',
-				borderWidth: t.borderWidth,
-				borderColor: t.stroke.light,
-				borderRadius: t.radius.medium,
-				backgroundColor: t.surface.light,
-			}}
+		<Box
+			rcx-input-box__wrapper
+			marginBlockStart={2}
+			display='flex'
+			flexDirection='column'
+			overflow='hidden'
+			padding={0}
+			borderWidth='default'
+			borderColor='light'
+			borderRadius='medium'
+			backgroundColor='light'
 		>
 			{children}
-		</View>
+		</Box>
 	);
 }

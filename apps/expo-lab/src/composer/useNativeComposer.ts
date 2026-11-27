@@ -1,13 +1,13 @@
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ComponentRef } from 'react';
-import type { TextInput, TextInputSelectionChangeEvent } from 'react-native';
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import type { TextInputSelectionChangeEvent } from 'react-native';
 
-import { createNativeComposerAPI } from './createNativeComposerAPI.ts';
+import { createNativeComposerAPI, type FieldHandle } from './createNativeComposerAPI.ts';
 
 // The API owns { text, selection }; the field gets both back in the same render through its controlled props
 export function useNativeComposer() {
 	const [api] = useState(() => createNativeComposerAPI());
 	const state = useSyncExternalStore(api.subscribe, api.getState);
-	const inputRef = useRef<ComponentRef<typeof TextInput>>(null);
+	const inputRef = useRef<FieldHandle | null>(null);
 
 	useEffect(() => {
 		api.attachField({ focus: () => inputRef.current?.focus(), blur: () => inputRef.current?.blur() });
