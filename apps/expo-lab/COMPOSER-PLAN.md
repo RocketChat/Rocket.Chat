@@ -277,3 +277,62 @@ Class as in the spec: U unit, S simulator, I injected keystrokes, R real device,
 | R57 | 4.4 | E: web jest on touched folders, run unedited |
 | R58 | 4.4 | E: the Playwright composer specs |
 | R59 | 4.4 | U: `git diff --stat` of each phase 1 commit shows no spec edit |
+
+## Baseline 0.4 (2026-11-26)
+
+Tip `92e7adc2ab9`, before any phase 1 change. This worktree needed `yarn install --immutable` (links under `apps/meteor/node_modules/@rocket.chat`) and `yarn turbo run build --filter=@rocket.chat/meteor^...` before jest could resolve the workspace packages.
+
+Commands (from `apps/meteor` unless noted, Node 22.22.3):
+
+- `yarn .testunit:jest --coverage=false client/views/room/composer client/lib/chats client/lib/createComposerAPICore`
+- `yarn jest --coverage=false` in `packages/ui-client`
+- `npx tsc --noEmit --skipLibCheck` in `apps/meteor`
+
+Web composer specs, 18 suites, 166 tests, all passing:
+
+| Spec (under `apps/meteor/client/`) | Pass |
+| --- | --- |
+| `views/room/composer/messageBox/wrapSelection.spec.ts` | 11 |
+| `views/room/composer/messageBox/createComposerAPI.spec.ts` | 9 |
+| `views/room/composer/messageBox/messageBoxHelpers.spec.ts` | 32 |
+| `views/room/composer/messageBox/MessageBox.spec.tsx` | 4 |
+| `views/room/composer/messageBox/MessageBoxHint.spec.tsx` | 11 |
+| `views/room/composer/messageBox/RichTextMessageBox.spec.tsx` | 2 |
+| `views/room/composer/messageBox/hooks/useDraft.spec.tsx` | 41 |
+| `views/room/composer/messageBox/MessageBoxActionsToolbar/hooks/useFileUploadAction.spec.ts` | 1 |
+| `views/room/composer/ComposerBoxPopup.spec.tsx` | 7 |
+| `views/room/composer/ComposerContainer.spec.tsx` | 3 |
+| `views/room/composer/ComposerAbacLocked.spec.tsx` | 9 |
+| `views/room/composer/ComposerFederation/ComposerFederation.spec.tsx` | 4 |
+| `views/room/composer/ComposerOmnichannel/ComposerOmnichannelCallout.spec.tsx` | 3 |
+| `views/room/composer/lib/composerState.spec.ts` | 16 |
+| `lib/chats/flows/sendMessage.spec.ts` | 4 |
+| `lib/chats/flows/replyBroadcast.spec.ts` | 1 |
+| `lib/chats/uploads.spec.ts` | 2 |
+| `lib/chats/readStateManager.spec.ts` | 6 |
+
+`packages/ui-client`: 44 suites, 226 tests, all passing. No existing spec covers the DOM `wrapSelection` (`createComposerAPI.spec.ts` covers `replaceText` and `clear` only) or the popup trigger regex directly; step 1.1 and 1.2 add specs for them.
+
+`tsc --noEmit --skipLibCheck` in `apps/meteor`: 2 errors, both `TS2307 Cannot find module '@rocket.chat/ui-contacts'` (`client/views/contacts/ContactsPageFilters.tsx`, `ContactsTab.tsx`), not composer related. The turbo build also stops at `@rocket.chat/fuselage-ui-kit` (`ImageBlock.tsx(71,45)` TS2322, `style` on `Skeleton`), unrelated and untouched. Baseline: 2 errors; the refactors must add none.
+
+Not run: the Playwright specs (`message-composer.spec.ts`, `message-composer-history.spec.ts`, `message-mentions.spec.ts`, `quote-messages.spec.ts`). They need a local Meteor server, which this job does not start.
+
+## Phase 1 results (2026-11-26)
+
+Every step ran the unedited existing specs of the touched folders, `tsc` after the last edit (still the 2 baseline errors), `oxlint` and `prettier --check` on the touched files. `git diff --name-status 92e7adc2ab9 HEAD` shows only added spec files; no existing spec is modified. "Applies on develop" is `git merge-tree --write-tree --merge-base=<commit>^ origin/develop <commit>`, a cherry-pick of the commit alone onto `origin/develop` (`04882f1525b`): clean for all four. The commits touch disjoint files, so they can be taken in any order; none depends on the Tamagui cherry-picks. The only touched file that differs between develop and this branch is `createComposerAPICore.ts` (one line in `triggerEvent`, outside the commit's hunks).
+
+| Step | Commit | Reqs | Proof | Applies on develop | Deviations |
+| --- | --- | --- | --- | --- | --- |
+| 1.1 | `30c8c3f37b5` | R29, R30, R59 | Existing `createComposerAPI.spec.ts` 9 and `wrapSelection.spec.ts` 11 unchanged. New `wrapSelectionText.spec.ts` 16 and `createComposerAPI.wrapSelection.spec.ts` 8 (the DOM version, written and passed on the untouched code first, then again after the extraction) share eight cases: wrap, empty selection, start of text, fence, toggle off, toggle off fence, only the opening marker, a `$&` in the selection. | yes | The pure function also returns `toggledOff` and `replacement` (the replaced span), which the DOM caller needs to keep its exact sequence of edit commands; not in the plan's `{ text, selection }`. The old DOM code expands `$&` and similar tokens in the selection through `String.replace`; this is kept and pinned by a case. |
+| 1.2 | `106b2730529` | none directly (enables R21 to R25) | `ComposerBoxPopup.spec.tsx` 7, `MessageBox.spec.tsx` 4 unchanged. New `composerPopupTrigger.spec.ts` 43, including a grid that holds the three functions to the previous inline regexes over 22 texts and 5 option shapes. | yes | The plan says two builds; there were three (select, match, filter). The matching build used a non-capturing second group; the unified regex captures it, which `test` and `match()[0]` cannot tell apart. |
+| 1.3 | `6a075486dc9` | none directly (enables 2.2) | `createComposerAPI.spec.ts` 9, `sendMessage.spec.ts` 4, `MessageBox.spec.tsx` 4, `RichTextMessageBox.spec.tsx` 2 unchanged; new `composerStateCore.spec.ts` 6; `tsc` unchanged proves the exported signature and return keys. | yes | `composerRef` is not in the state core (the plan says no `HTMLElement` in its signature); the DOM part adds it back, so the returned object has the same keys. `quoteMessage` stays in the DOM part (focus), over `addQuotedMessage` in the state core. `createRichTextComposerAPI` also calls the core and is covered only by `tsc` and `RichTextMessageBox.spec.tsx`. |
+| 1.4 | `2a5ba554fb8` | none directly (enables R43 to R47) | `useDraft.spec.tsx` 41 unchanged; new `useDraftStorage.spec.ts` 5 in `packages/ui-client` (226 to 231 there). | yes | Same key, same `getItem`, `setItem`, `removeItem` calls. `@rocket.chat/ui-client` must be rebuilt (`yarn build` in the package) for `apps/meteor` jest and `tsc` to see the new export. No `.native.ts` twin yet. |
+| 1.5 | not done | R36, R37 enabling | `tsc` experiment, below | n/a | Stopped, tree left at 1.4. |
+
+### 1.5 stopped: not a type-only widening
+
+Widening `Upload.file` to `File | { uri, name, type, size? }` (with `UploadsAPI.send`, `UploadsStore.send` and `uploadFiles`) was tried and reverted. `tsc` then reports 11 new errors in 8 files: `uploadFiles.ts` (48 and 76: `e2eRoom.encryptFile` and `EncryptedFile` need a `File`), `uploads.ts` (94: `new File([upload.file], ...)`; 159: `sdk.rest.upload` takes a `File`), `processMessageUploads.ts` (61: `URL.createObjectURL`; 88 and 89: `size` becomes optional), `MessageComposerFileItem.tsx` (18), `MessageComposerGenericFile.tsx` (31, 49) and `MessageComposerImageFile.tsx` (6). Each reads `File`-only members. Fixing them takes runtime narrowing in web upload, encryption and preview code, which is a behavior change on web, not a type change. Narrowing only at the entry of `uploadFiles` would need a branch for a descriptor that web never reaches, and what that branch does (a twin store, or an adapter to a `File`) is a design decision for 2.14. Proposed: do 1.5 inside 2.14 once the native upload path is chosen; a person decides.
+
+### Spec wording
+
+`COMPOSER-SPEC.md` lists `wrapSelection.ts` as pure. It holds DOM event handlers (`handleSelectionWrapping`); the pure arithmetic was in `createComposerAPI.ts` (lines 68 to 123, re-verified) and is now `wrapSelectionText.ts`. The spec text is unchanged.
