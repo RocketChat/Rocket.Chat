@@ -138,6 +138,7 @@ const ALLOWED_TOOL_NAMES = new Set<string>([
 	'post_rooms_open',
 	'post_rooms_saveDraft',
 	'post_rooms_saveRoomSettings',
+	'post_rooms_sendFile',
 	'post_rooms_unbanUser',
 	'post_rooms_unmuteUser',
 	// subscriptions — writing

@@ -49,6 +49,7 @@ import {
 } from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
 
+import { getMimeType } from '../../../lib/mimeTypes';
 import { adminFields } from '../../../lib/rooms/adminFields';
 import { omit } from '../../../lib/utils/omit';
 import { canAccessRoomAsync, canAccessRoomIdAsync, roomAccessAttributes } from '../../lib/authorization/canAccessRoom';
@@ -91,6 +92,7 @@ import { composeRoomWithLastMessage } from '../lib/composeRoomWithLastMessage';
 import { getPaginationItems } from '../lib/getPaginationItems';
 import { getRoomClassificationBanner } from '../lib/getRoomClassificationBanner';
 import { getUserFromParams } from '../lib/getUserFromParams';
+import { hideFieldsOfRejectedBody } from '../lib/hideFieldsOfRejectedBody';
 import { normalizeLegacyUfsLocation } from '../lib/normalizeLegacyUfsLocation';
 import {
 	findAdminRoom,
@@ -373,6 +375,147 @@ API.v1.addRoute(
 				message,
 			});
 		},
+	},
+);
+
+type RoomsSendFileBody = {
+	rid: IRoom['_id'];
+	fileName: string;
+	content: string;
+	encoding?: 'base64' | 'utf8';
+	mimeType?: string;
+	msg?: string;
+	description?: string;
+	tmid?: IMessage['_id'];
+};
+
+// Why a file sent as JSON has a limit of its own: ../../../../../docs/features/mcp-server.md#sending-files
+const SEND_FILE_MAX_SIZE_MIB = 10;
+const SEND_FILE_MAX_SIZE = SEND_FILE_MAX_SIZE_MIB * 1024 * 1024;
+const SEND_FILE_SIZE_RULE = `up to ${SEND_FILE_MAX_SIZE_MIB} MiB, or up to the workspace maximum file size when that is lower`;
+
+const isPaddedBase64 = (value: string): boolean => value.length % 4 === 0 && /^[A-Za-z0-9+/]*={0,2}$/.test(value);
+
+const sendFileBodySchema = hideFieldsOfRejectedBody(
+	ajv.compile<RoomsSendFileBody>({
+		type: 'object',
+		description: `Upload a file to a room and post it as a message, in a thread when \`tmid\` is given. The file can have ${SEND_FILE_SIZE_RULE}, and its media type must be one the workspace accepts.`,
+		properties: {
+			rid: { type: 'string', minLength: 1, description: 'The ID of the room to send the file to.' },
+			fileName: {
+				type: 'string',
+				minLength: 1,
+				maxLength: 255,
+				description: 'The name of the file, including its extension. A path is reduced to its last segment.',
+			},
+			content: {
+				type: 'string',
+				minLength: 1,
+				description: 'The file content, encoded as `encoding` says. Base64 is the standard alphabet, padded, with no line breaks.',
+			},
+			encoding: {
+				type: 'string',
+				enum: ['base64', 'utf8'],
+				default: 'base64',
+				description: 'How `content` is encoded: `base64` for any file, `utf8` to send a text file as plain text.',
+			},
+			mimeType: {
+				type: 'string',
+				maxLength: 255,
+				pattern: '^[a-z0-9][a-z0-9!#$&^_.+-]*/[a-z0-9][a-z0-9!#$&^_.+-]*$',
+				description:
+					'The media type of the file, in lower case and without parameters, as in `text/markdown`. When omitted, it is inferred from the extension of `fileName`.',
+			},
+			msg: { type: 'string', description: 'The text of the message the file is posted with.' },
+			description: { type: 'string', description: 'A description of the file.' },
+			tmid: { type: 'string', minLength: 1, pattern: '^[^.$]+$', description: 'The ID of the thread to post the file in.' },
+		},
+		required: ['rid', 'fileName', 'content'],
+		additionalProperties: false,
+	}),
+	['content'],
+);
+
+const sendFileResponseSchema = ajv.compile<{ message: IMessage | null }>({
+	type: 'object',
+	properties: {
+		message: { type: ['object', 'null'] },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['message', 'success'],
+	additionalProperties: false,
+});
+
+const roomsSendFileEndpoint = API.v1.post(
+	'rooms.sendFile',
+	{
+		authRequired: true,
+		body: sendFileBodySchema,
+		response: {
+			200: sendFileResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const { rid, fileName, content, encoding = 'base64', mimeType, msg, description, tmid } = this.bodyParams;
+
+		if (!(await canAccessRoomIdAsync(rid, this.userId))) {
+			return API.v1.forbidden();
+		}
+
+		const maxFileSize = settings.get<number>('FileUpload_MaxFileSize');
+		const sizeLimit = maxFileSize > -1 ? Math.min(maxFileSize, SEND_FILE_MAX_SIZE) : SEND_FILE_MAX_SIZE;
+		if (Buffer.byteLength(content, encoding) > sizeLimit) {
+			throw new ClientSafeError('error-file-too-large', `The file is too large. rooms.sendFile accepts ${SEND_FILE_SIZE_RULE}.`);
+		}
+
+		if (encoding === 'base64' && !isPaddedBase64(content)) {
+			throw new ClientSafeError(
+				'error-invalid-params',
+				'`content` is not valid base64. To send a text file as plain text, set `encoding` to `utf8`.',
+			);
+		}
+
+		const name = fileName.split(/[\\/]/).pop();
+		if (!name || name === '.' || name === '..') {
+			throw new ClientSafeError('error-invalid-params', '`fileName` does not name a file.');
+		}
+
+		if ((description?.length ?? 0) > settings.get<number>('Message_MaxAllowedSize')) {
+			throw new ClientSafeError('error-message-size-exceeded');
+		}
+
+		const buffer = Buffer.from(content, encoding);
+
+		// Temporary until the message exists, so the upload of a send that throws expires instead of staying behind.
+		const expiresAt = new Date();
+		expiresAt.setHours(expiresAt.getHours() + 24);
+
+		const uploadedFile = await FileUpload.getStore('Uploads').insert(
+			{
+				name,
+				size: buffer.length,
+				type: getMimeType(mimeType ?? 'application/octet-stream', name),
+				rid,
+				userId: this.userId,
+				expiresAt,
+			},
+			buffer,
+		);
+
+		await Uploads.updateFileComplete(uploadedFile._id, this.userId, omit(uploadedFile, '_id'));
+
+		await applyAirGappedRestrictionsValidation(() =>
+			sendFileMessage(this.userId, { roomId: rid, file: { ...uploadedFile, description }, msgData: { msg, tmid } }),
+		);
+
+		await Uploads.confirmTemporaryFile(uploadedFile._id, this.userId);
+
+		const message = await Messages.getMessageByFileIdAndUsername(uploadedFile._id, this.userId);
+
+		return API.v1.success({ message });
 	},
 );
 
@@ -1849,7 +1992,8 @@ export const roomEndpoints = API.v1
 type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
 	ExtractRoutesFromAPI<typeof roomDeleteEndpoint> &
 	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint> &
-	ExtractRoutesFromAPI<typeof roomsSaveDraftEndpoint>;
+	ExtractRoutesFromAPI<typeof roomsSaveDraftEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsSendFileEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// oxlint-disable-next-line typescript/no-empty-interface, typescript/no-empty-object-type
