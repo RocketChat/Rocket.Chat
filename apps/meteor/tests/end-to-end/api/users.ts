@@ -6062,7 +6062,16 @@ describe('[Users]', () => {
 		it('should logout the current user and invalidate the session', async () => {
 			const userCredentials = await login(user.username, password);
 
-			await request.post(api('logout')).set(userCredentials).expect('Content-Type', 'application/json').expect(200);
+			await request
+				.post(api('logout'))
+				.set(userCredentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('status', 'success');
+					expect(res.body).to.have.nested.property('data.message', "You've been logged out!");
+				});
 
 			const meRes = await request.get(api('me')).set(userCredentials);
 			expect(meRes.statusCode).to.equal(401);

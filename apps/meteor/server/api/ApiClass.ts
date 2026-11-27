@@ -1053,14 +1053,14 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 			},
 		);
 
-		const logout = async function <
-			This extends TypedThis<{
+		const logout = async (
+			context: TypedThis<{
 				authRequired: true;
 				response: any;
 			}>,
-		>(this: This): Promise<{ status: string; data: { message: string } }> {
+		): Promise<SuccessResult<{ status: string; data: { message: string } }>> => {
 			// Remove the given auth token from the user's account
-			const hashedToken = this.token;
+			const hashedToken = context.token;
 			const tokenLocation = 'services.resume.loginTokens.hashedToken';
 			const index = tokenLocation?.lastIndexOf('.') || 0;
 			const tokenPath = tokenLocation?.substring(0, index) || '';
@@ -1070,22 +1070,22 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 			const tokenRemovalQuery: Record<string, any> = {};
 			tokenRemovalQuery[tokenPath] = tokenToRemove;
 			await Users.updateOne(
-				{ _id: this.userId },
+				{ _id: context.userId },
 				{
 					$pull: tokenRemovalQuery,
 				},
 			);
 
-			await Sessions.logoutBySessionIdAndUserId({ loginToken: hashedToken, userId: this.userId });
+			await Sessions.logoutBySessionIdAndUserId({ loginToken: hashedToken, userId: context.userId });
 			void notifyOnUserChangeAsync(async () => {
-				const userTokens = await Users.findOneById(this.userId, { projection: { [tokenPath]: 1 } });
+				const userTokens = await Users.findOneById(context.userId, { projection: { [tokenPath]: 1 } });
 				if (!userTokens) {
 					return;
 				}
 
 				const diff = { [tokenPath]: getNestedProp(userTokens, tokenPath) };
 
-				return { clientAction: 'updated', id: this.userId, diff };
+				return { clientAction: 'updated', id: context.userId, diff };
 			});
 
 			const response = {
@@ -1095,7 +1095,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				},
 			};
 
-			return response;
+			return self.success(response);
 		};
 
 		/*
@@ -1112,12 +1112,10 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				async get() {
 					console.warn('Warning: Default logout via GET will be removed in Restivus v1.0. Use POST instead.');
 					console.warn('    See https://github.com/kahmali/meteor-restivus/issues/100');
-					// oxlint-disable-next-line typescript/no-unsafe-return -- logout's result does not match the endpoint's declared response
-					return logout.call(this as any) as any;
+					return logout(this as any);
 				},
 				async post() {
-					// oxlint-disable-next-line typescript/no-unsafe-return -- logout's result does not match the endpoint's declared response
-					return logout.call(this as any) as any;
+					return logout(this as any);
 				},
 			},
 		);
