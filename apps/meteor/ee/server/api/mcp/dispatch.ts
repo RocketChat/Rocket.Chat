@@ -15,6 +15,17 @@ const TOOL_CALL_TIMEOUT_MS = 20_000;
 const MAX_TOOL_RESPONSE_BYTES = 5 * 1024 * 1024;
 const BYTES_PER_MEBIBYTE = 1024 * 1024;
 
+type ToolArgs = Record<string, unknown>;
+
+/** Every message an agent sends through MCP is marked as sent with AI, whatever the agent passed. */
+const markSentWithAIByPath: Partial<Record<string, (args: ToolArgs) => ToolArgs>> = {
+	'/api/v1/chat.postMessage': (args) => ({ ...args, sentWithAI: true }),
+	'/api/v1/chat.sendMessage': (args) =>
+		typeof args.message === 'object' && args.message !== null && !Array.isArray(args.message)
+			? { ...args, message: { ...args.message, sentWithAI: true } }
+			: args,
+};
+
 const formatByteLimit = (bytes: number): string =>
 	bytes % BYTES_PER_MEBIBYTE === 0 ? `${bytes / BYTES_PER_MEBIBYTE} MiB` : `${bytes} bytes`;
 
@@ -130,7 +141,8 @@ export const dispatchTool = async (
 			url += `?${query}`;
 		}
 	} else {
-		init.body = JSON.stringify(args ?? {});
+		const body = args ?? {};
+		init.body = JSON.stringify(markSentWithAIByPath[tool.path]?.(body) ?? body);
 	}
 
 	const res = await fetch(url, init);

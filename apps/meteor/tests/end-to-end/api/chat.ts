@@ -2142,6 +2142,80 @@ describe('[Chat]', () => {
 		});
 	});
 
+	describe('sentWithAI', () => {
+		it('should store sentWithAI on a message posted with chat.postMessage', async () => {
+			const res = await request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({ roomId: testChannel._id, text: 'posted with AI', sentWithAI: true })
+				.expect(200);
+
+			expect(res.body.message).to.have.property('sentWithAI', true);
+			expect(await getMessageById({ msgId: res.body.message._id })).to.have.property('sentWithAI', true);
+		});
+
+		it('should store sentWithAI on a message sent with chat.sendMessage', async () => {
+			const res = await request
+				.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({ message: { rid: testChannel._id, msg: 'sent with AI', sentWithAI: true } })
+				.expect(200);
+
+			expect(res.body.message).to.have.property('sentWithAI', true);
+			expect(await getMessageById({ msgId: res.body.message._id })).to.have.property('sentWithAI', true);
+		});
+
+		it('should not set sentWithAI when the caller leaves it out', async () => {
+			const res = await sendSimpleMessage({ roomId: testChannel._id });
+
+			expect(await getMessageById({ msgId: res.body.message._id })).to.not.have.property('sentWithAI');
+		});
+
+		it('should reject sentWithAI: false on chat.postMessage', async () => {
+			const res = await request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({ roomId: testChannel._id, text: 'not with AI', sentWithAI: false })
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+		});
+
+		it('should reject sentWithAI: false on chat.sendMessage', async () => {
+			const res = await request
+				.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({ message: { rid: testChannel._id, msg: 'not with AI', sentWithAI: false } })
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+		});
+
+		it('should not let chat.update set sentWithAI', async () => {
+			const sent = await sendSimpleMessage({ roomId: testChannel._id });
+
+			await request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({ roomId: testChannel._id, msgId: sent.body.message._id, text: 'edited', sentWithAI: true })
+				.expect(400);
+
+			expect(await getMessageById({ msgId: sent.body.message._id })).to.not.have.property('sentWithAI');
+		});
+
+		it('should keep sentWithAI when the message is edited', async () => {
+			const sent = await request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({ roomId: testChannel._id, text: 'posted with AI', sentWithAI: true })
+				.expect(200);
+
+			await updateMessage({ msgId: sent.body.message._id, roomId: testChannel._id, updatedMessage: 'edited by a person' }).expect(200);
+
+			expect(await getMessageById({ msgId: sent.body.message._id })).to.have.property('sentWithAI', true);
+		});
+	});
+
 	describe('/chat.update', () => {
 		const siteUrl = process.env.SITE_URL || process.env.TEST_API_URL || 'http://localhost:3000';
 		let simpleMessageId: IMessage['_id'];

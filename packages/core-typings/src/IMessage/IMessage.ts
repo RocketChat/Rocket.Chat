@@ -209,6 +209,7 @@ export interface IMessage extends IRocketChatRecord {
 	/* @deprecated */
 	bot?: Record<string, any>;
 	sentByEmail?: boolean;
+	sentWithAI?: true;
 	webRtcCallEndTs?: Date;
 	role?: string;
 
