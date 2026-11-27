@@ -140,14 +140,27 @@ const syncAvatars = async (
 	}
 
 	const withPhoto = new Set<string>();
+	const removed: string[] = [];
 
-	for await (const photo of provider.getContactPhotos(mailbox, folderId, [...contactIds.keys()])) {
-		const contactId = contactIds.get(photo.externalId);
+	try {
+		for await (const photo of provider.getContactPhotos(mailbox, folderId, [...contactIds.keys()])) {
+			const contactId = contactIds.get(photo.externalId);
 
-		if (contactId) {
+			if (!contactId) {
+				continue;
+			}
+
+			if (photo.kind === 'deleted') {
+				removed.push(contactId);
+				continue;
+			}
+
 			await saveContactAvatar(uid, contactId, photo);
 			withPhoto.add(photo.externalId);
 		}
+	} catch (err) {
+		await deleteContactAvatars(removed);
+		throw err;
 	}
 
 	const withoutPhoto = [...contactIds].filter(([externalId]) => !withPhoto.has(externalId)).map(([, contactId]) => contactId);

@@ -81,13 +81,18 @@ const providerReturning = (id: 'graph' | 'ews', ...pages: Page<ExchangeContact>[
 	} as unknown as IExchangeProvider;
 };
 
-const photosOf = (provider: IExchangeProvider, photos: ExchangeContactPhoto[]): void => {
+const photosOf = (provider: IExchangeProvider, photos: ExchangeContactPhoto[], failure?: Error): void => {
 	(provider as any).getContactPhotos = jest.fn(async function* () {
 		yield* photos;
+
+		if (failure) {
+			throw failure;
+		}
 	});
 };
 
 const photo = (externalId: string): ExchangeContactPhoto => ({
+	kind: 'upsert',
 	externalId,
 	data: new Uint8Array([1, 2, 3]),
 	contentType: 'image/jpeg',
@@ -339,6 +344,19 @@ describe('syncContactFolder', () => {
 				await syncContactFolder(provider, UID, MAILBOX, FOLDER, REGION);
 
 				expect(deleteContactAvatars).toHaveBeenCalledWith(['c2']);
+			});
+
+			it('drops the avatar of a contact whose photo was taken down, even when another photo could not be read', async () => {
+				storedContacts([
+					{ _id: 'c1', externalId: 'A' },
+					{ _id: 'c2', externalId: 'B' },
+				]);
+				const provider = providerReturning('graph', page([upsert('A'), upsert('B')], { coverage: 'full' }));
+				photosOf(provider, [{ kind: 'deleted', externalId: 'A' }], new Error('B could not be read'));
+
+				await syncContactFolder(provider, UID, MAILBOX, FOLDER, REGION);
+
+				expect(deleteContactAvatars.mock.calls).toEqual([[['c1']]]);
 			});
 		});
 

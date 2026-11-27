@@ -482,6 +482,7 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 			}
 
 			photos.push({
+				kind: 'upsert',
 				data,
 				contentType: textOf(firstByTag(attachment, TYPES_NS, 'ContentType')) ?? 'image/jpeg',
 				externalId,

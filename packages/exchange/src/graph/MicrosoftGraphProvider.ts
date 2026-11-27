@@ -273,12 +273,17 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 					continue;
 				}
 
-				if (res.status !== 200 && res.status !== 404) {
+				if (res.status === 404) {
+					batch.push({ kind: 'deleted', externalId: res.id });
+					continue;
+				}
+
+				if (res.status !== 200) {
 					failedStatus ??= res.status;
 					continue;
 				}
 
-				if (res.status !== 200 || !res.body) {
+				if (!res.body) {
 					continue;
 				}
 
@@ -313,6 +318,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 				const contentType = res.headers?.['Content-Type'] ?? res.headers?.['content-type'] ?? 'image/jpeg';
 
 				batch.push({
+					kind: 'upsert',
 					externalId: res.id,
 					data,
 					contentType,

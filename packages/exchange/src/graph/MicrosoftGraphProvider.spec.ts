@@ -494,12 +494,28 @@ describe('MicrosoftGraphProvider', () => {
 			expect(requestedIds(2)).toEqual([`c${BATCH_SIZE}`]);
 		});
 
-		it('skips a contact Graph says has no photo', async () => {
+		it('hands over a contact Graph says has no photo as a removed photo', async () => {
 			mockTokenThen(graphResponse({ responses: [entry(CONTACT_ID, { status: 404, body: undefined }), entry(OTHER_CONTACT_ID)] }));
 
 			const photos = await getContactPhotosAnswering([CONTACT_ID, OTHER_CONTACT_ID]);
 
-			expect(photos.map(({ externalId }) => externalId)).toEqual([OTHER_CONTACT_ID]);
+			expect(photos).toMatchObject([
+				{ kind: 'deleted', externalId: CONTACT_ID },
+				{ kind: 'upsert', externalId: OTHER_CONTACT_ID },
+			]);
+		});
+
+		it('still hands over a removed photo when another read in the batch failed', async () => {
+			mockTokenThen(
+				graphResponse({
+					responses: [entry(CONTACT_ID, { status: 404, body: undefined }), entry(OTHER_CONTACT_ID, { status: 503, body: undefined })],
+				}),
+			);
+
+			const { photos, error } = await getContactPhotosUntilError([CONTACT_ID, OTHER_CONTACT_ID]);
+
+			expect(photos).toEqual([CONTACT_ID]);
+			expect(error).toMatchObject({ code: 'unexpected-response' });
 		});
 
 		it('hands over the photos it read, then fails, when Graph could not read one', async () => {
@@ -578,7 +594,10 @@ describe('MicrosoftGraphProvider', () => {
 
 			const photos = await getContactPhotosAnswering([CONTACT_ID, OTHER_CONTACT_ID]);
 
-			expect(photos.map(({ contentType }) => contentType)).toEqual([PNG_CONTENT_TYPE, DEFAULT_CONTENT_TYPE]);
+			expect(photos.filter((photo) => photo.kind === 'upsert').map(({ contentType }) => contentType)).toEqual([
+				PNG_CONTENT_TYPE,
+				DEFAULT_CONTENT_TYPE,
+			]);
 		});
 	});
 });
