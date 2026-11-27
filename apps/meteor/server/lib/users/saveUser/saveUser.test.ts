@@ -445,7 +445,7 @@ describe('saveUser', () => {
 			await saveUser('admin', userData);
 
 			expect(updateFilter).to.deep.equal({ $set: { 'services.password.bcrypt': 'hash:random-pw', 'requirePasswordChange': true } });
-			expect(sendPasswordEmail.calledOnceWith(userData)).to.be.true;
+			expect(sendPasswordEmail.calledOnceWith({ ...userData, username: 'jane', name: undefined })).to.be.true;
 			expect(userData).to.not.have.property('setRandomPassword');
 		});
 

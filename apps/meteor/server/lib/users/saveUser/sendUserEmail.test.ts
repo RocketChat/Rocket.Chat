@@ -4,13 +4,18 @@ import { ClientSafeError } from '@rocket.chat/core-services';
 import { expect } from 'chai';
 import Sinon from 'sinon';
 
-type SendUserEmailFn = (subject: string, html: string, user: { email?: string; password?: string; name?: string }) => Promise<void>;
-type SendHelperFn = (user: { email?: string; password?: string; name?: string }) => Promise<void>;
+type SendUserEmailFn = (
+	subject: string,
+	html: string,
+	user: { email?: string; password?: string; name?: string; username?: string },
+) => Promise<void>;
+type SendHelperFn = (user: { email?: string; password?: string; name?: string; username?: string }) => Promise<void>;
 
 const userData = {
 	email: 'test@example.com',
-	password: '123456',
+	password: 'mock-test-password-token',
 	name: 'Test User',
+	username: 'test.user',
 };
 
 const makeStubs = () => {
@@ -85,7 +90,16 @@ describe('sendUserEmail', () => {
 				email: userData.email,
 				password: userData.password,
 				name: userData.name,
+				username: userData.username,
 			});
+		});
+
+		it('should omit username from email data if username is not provided', async () => {
+			await sendUserEmail('subject', '<p>html</p>', { ...userData, username: undefined });
+
+			Sinon.assert.calledOnce(MailerStub.send);
+			const callArg = MailerStub.send.getCall(0).args[0];
+			expect(callArg.data).to.not.have.property('username');
 		});
 
 		it('should throw ClientSafeError if Mailer.send fails', async () => {
@@ -128,6 +142,7 @@ describe('sendUserEmail', () => {
 				email: userData.email,
 				password: userData.password,
 				name: userData.name,
+				username: userData.username,
 			});
 		});
 	});
@@ -141,6 +156,12 @@ describe('sendUserEmail', () => {
 			expect(callArg).to.include({
 				subject: 'Password Changed',
 				to: userData.email,
+			});
+			expect(callArg.data).to.deep.equal({
+				email: userData.email,
+				password: userData.password,
+				name: userData.name,
+				username: userData.username,
 			});
 		});
 	});

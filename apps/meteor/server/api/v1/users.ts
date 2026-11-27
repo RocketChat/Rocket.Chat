@@ -947,7 +947,7 @@ API.v1.post(
 			});
 		}
 
-		const user = await Users.findOneByEmailAddress(email.trim(), { projection: { name: 1 } });
+		const user = await Users.findOneByEmailAddress(email.trim(), { projection: { name: 1, username: 1 } });
 
 		if (!user) {
 			throw new ClientSafeError('error-invalid-user', 'Invalid user', {
