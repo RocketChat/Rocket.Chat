@@ -745,3 +745,112 @@ Two benign differences between old and new, both known and accepted:
 Test numbers after the review: `chats/core` specs 3 suites, 167 tests (`importGuard` 62, `messagePayload.differential` 53, `createComposerState.differential` 52); existing composer set and goldens unchanged (25 suites 306 tests; 9 suites 240 tests); `packages/ui-client` 45 suites 231 tests; `tsc --noEmit --skipLibCheck` in `apps/meteor` at the 2 baseline `TS2307`; `oxlint` and `prettier --check` clean.
 
 For the later pull request split (`docs/change-organization.md`): commit `1b3703f772e` mixes the message payload extraction with the import guard tooling (`importGraph.ts`, `importGuard.spec.ts`). It was not rewritten. The guard belongs in its own commit or pull request, with the payload extraction after it.
+
+## Phase 1b steps 1b.5 and 1b.6 results (2026-11-27)
+
+Commits on `feat/expo-lab-all` (nothing pushed): 1b.5 `2870f1c5211`, 1b.6 `e3ae1b58c61`. `git diff --name-status 214712e3ead HEAD` shows `A` for every new file and `M` only for `flows/processSlashCommand.ts` and `flows/processTooLongMessage.ts` (the two adapters); no existing spec, golden or golden helper changed. No allow-list change: the guard still allows only `@rocket.chat/core-typings` and `@rocket.chat/emitter`.
+
+### 1b.5 processSlashCommand
+
+Files (new): `chats/core/processSlashCommand.ts`, `chats/core/processSlashCommand.differential.spec.ts`, `chats/legacySlashReference.ts` (frozen copy of `214712e3ead`). Edited: `chats/flows/processSlashCommand.ts` (adapter, same path, same export and signature; no `async` keyword: it returns the core's promise directly).
+
+```ts
+type SlashCommandChat = Pick<ChatAPI, 'composer' | 'data' | 'uid' | 'ActionManager'>;
+type SlashCommandDeps = {
+  getCommand(name: string): SlashCommand | undefined;
+  isUnrecognizedAllowed(): boolean | undefined;
+  hasAtLeastOnePermission(permission: string | string[], rid: string): boolean;
+  postTelemetry(event: { eventName: 'slashCommandsStats'; timestamp: number; command: string }): Promise<unknown>;
+  runCommand(params: { command: string; params: string; roomId: string; tmid?: string; triggerId?: string }): Promise<{ result: unknown }>;
+  t(key: 'No_such_command' | 'You_do_not_have_permission_to_execute_this_command' | 'Something_went_wrong_while_executing_command', options: { command: string }): string;
+  escapeHTML(text: string): string;
+  randomId(): string;
+};
+processSlashCommandCore(deps, chat, message): Promise<boolean>
+```
+
+Deviation from the plan's `SlashCommandDeps`: `rest` became two typed calls (`postTelemetry`, `runCommand`, so the endpoint strings and the typed params stay in the adapter and the core needs no `Pick<sdk.rest>` type), `settings` became `isUnrecognizedAllowed`, `getCommand` kept, and `escapeHTML` and `randomId` were added. `escapeHTML` is injected, so `@rocket.chat/tools` stays out of the core and the allow-list is untouched. The core imports only types (`@rocket.chat/core-typings`, `ChatAPI`).
+
+Live-read audit (all at call time, in the old order). `getCommand` is `slashCommands.commands[name]`, read after the regex matches (inherited names such as `constructor`, `toString`, `__proto__` resolve as before); `settings.peek('Message_AllowUnrecognizedSlashCommand')` only for an unrecognized command; `hasAtLeastOnePermission(permission, rid)` only when the command has a permission; `chat.composer?.clear`, `chat.uid`, `chat.ActionManager.*` and `chat.data.pushEphemeralMessage` are read from the `chat` object at each use; `sdk.rest.post` is read at each call (telemetry first, `void`ed, then `generateTriggerId`, then the `try` with `notifyBusy`, `clear`, `commands.run`); `Random.id()` after `console.error` and before the push; `Date.now()` and two `new Date()` stay in the core. Await order unchanged: only the warning push and the run are awaited; `notifyIdle` is skipped when the result handler throws inside the `catch`.
+
+Quirks preserved and pinned by the differential: `/constructor` resolves `Object.prototype.constructor` and posts `commands.run` with `command: undefined`; `//` is the unrecognized command `/`; a result handler that throws on success is routed to the `catch` and called again with the error; a result handler that throws inside the `catch` rejects the flow and skips `notifyIdle`; a rejecting `pushEphemeralMessage` rejects the flow; a missing `msg` rejects.
+
+Not pinned: a rejecting telemetry post is an unhandled rejection in old and new alike (jest aborts the process on one), so it is not in the table.
+
+### 1b.6 processTooLongMessage
+
+Files (new): `chats/core/processTooLongMessage.ts`, `chats/core/processTooLongMessage.differential.spec.ts`, `chats/legacyTooLongReference.ts`. Edited: `chats/flows/processTooLongMessage.ts` (adapter; no `async`; the modal code stays in the adapter file as `offerAttachment`).
+
+```ts
+type TooLongChat = Pick<ChatAPI, 'composer' | 'currentEditingMessage' | 'flows'>;
+type TooLongDeps = {
+  getMaxAllowedSize(): number | undefined;
+  isFileUploadEnabled(): boolean | undefined;
+  isConvertToAttachmentAllowed(): boolean | undefined;
+  notifyTooLong(): void;
+  offerAttachment?(msg: string, chat: TooLongChat): Promise<void>;   // absent (native v1): toast and restore the text
+};
+processTooLongMessageCore(deps, chat, { msg }): Promise<boolean>
+```
+
+Deviations from the plan's `TooLongDeps`: `settings` became three getters; `toast` and `t` became `notifyTooLong` (the adapter builds the error in the same position: `t` is evaluated, then the toast is dispatched, then `setText`); the Blob, File, `getUser`, `imperativeModal` and `GenericModal` code is the body of the web `offerAttachment` and never enters the core, so the core touches no `File`, `Blob` or `Date`. `msg.length <= maxAllowedSize` became `maxAllowedSize !== undefined && msg.length <= maxAllowedSize`: with the old code `n <= undefined` is false, so the two are equal for every value; the guard only keeps the type honest (pinned by a table case and a mutation).
+
+Live-read audit. Three `settings.peek` calls in the old order (limit; then uploads enabled and conversion allowed, both always read once the message is too long); `chat.currentEditingMessage.getMID()` is called after those and before the flags are tested; `chat.composer?.setText` and `chat.flows.uploadFiles` are read from `chat` when used (the latter inside `onConfirm`, as before); `getUser()` is read inside `onConfirm` after the Blob and before `new File`; `Date.now()` and `new Date().toString()` inside `onConfirm`. The core awaits `offerAttachment` directly, so the tick count equals the old `await new Promise`.
+
+Quirks preserved: a rejecting `uploadFiles` inside `onConfirm` leaves the flow pending forever (the handler rejects, `resolve` never runs); a missing `File` or `Blob` makes `onConfirm` reject with a `ReferenceError` (File: after the `getUser` read; Blob: before it) and before `composer.clear`; `onClose` and `onCancel` are the same function; a second `onClose`, or an `onConfirm` after `onClose`, runs again; an empty username stays empty (`??`, not `||`).
+
+### Third-party imports per core
+
+| Core | Runtime packages |
+| --- | --- |
+| `processSlashCommand.ts` | none (type-only `@rocket.chat/core-typings` and `ChatAPI`) |
+| `processTooLongMessage.ts` | none (type-only) |
+
+The adapters keep `@rocket.chat/random`, `@rocket.chat/tools` and `@rocket.chat/ui-client`. No Hermes proof is needed for these two cores.
+
+### Differential specs and mutation checks
+
+Method as in 1b.3 and 1b.4: each case runs the frozen legacy copy, the adapter and the core, with recording fakes from `goldenFakes.ts` and `goldenChat.ts`, and compares the outcome (value or error text), the ordered call log, the `Messages` store and, for the too-long flow, the trace of each modal step (pending or settled after every handler call, handler result, uploaded file name, type, size, time and text). Microtask tests count the ticks to settle for legacy, adapter and core (for the modal, from the handler call): equal.
+
+- Slash: 56 tests, covering every golden case plus empty command, unicode and newline params, a leading tab, an empty `tmid`, inherited names (`constructor`, `toString`, `__proto__`, `hasOwnProperty`, `valueOf`), a permission check that throws, a permission array and an empty permission, a client callback that throws, a result handler that throws on success and in the `catch`, a push that rejects, a run that throws synchronously, rejects with a string, or resolves `undefined`.
+- Too long: 46 tests, covering every golden case plus limit undefined, a string limit, limit zero, settings undefined, astral and accented lengths, confirm with multi-byte text, no composer, confirm and close twice, close then confirm, no user, user without username, empty username, upload rejecting with an error and with a non-error, a rejecting upload then close, no `File`, no `Blob`, `open` throwing, `close` throwing on confirm and on close, a message without `msg`, and the core run with no `offerAttachment`.
+
+Mutations (each restored; the step's golden and differential ran together):
+
+| Core | Mutation | Failing tests |
+| --- | --- | --- |
+| slash | `message.tmid && {...}` to `??` | 2 |
+| slash | `notifyBusy` after `composer.clear` | 6 |
+| slash | `clientOnly && chat.uid` to `clientOnly` | 2 |
+| slash | one extra `await Promise.resolve()` after the parse | 35 |
+| slash | `await` dropped on the unrecognized warning | the run aborts on an unhandled rejection (also a detection) |
+| too long | `await offerAttachment` to `void` | 29 |
+| too long | `getMID()` after the flags | 6 |
+| too long | swap the two flag reads | 35 |
+| too long | `setText` before the toast | 10 |
+| too long | `<=` to `<` | 5 |
+| too long | `!== undefined` guard inverted | 1 |
+
+### Test numbers
+
+| | before (`214712e3ead`) | after 1b.5 | after 1b.6 |
+| --- | --- | --- | --- |
+| existing composer set (25 suites, 306 tests) | passing | passing | passing |
+| goldens (9 suites, 240 tests) | passing | passing | passing |
+| 1b.3/1b.4 specs (3 suites, 167 tests) | passing | passing | passing |
+| new differential specs | | 1 suite, 56 | +1 suite, 46 |
+| whole composer command incl. `client/lib/UserAction` | 37 suites | 38 suites, 770 tests | 39 suites, 817 tests |
+| `packages/ui-client` | 45, 231 | not re-run | 45, 231 |
+
+`tsc --noEmit --skipLibCheck` in `apps/meteor` after the last edit, specs included: the 2 baseline `TS2307` errors. `oxlint client/lib/chats` and `prettier --check` are clean. The import guard (`importGuard.spec.ts`) ran with both cores as entries and found no violation; no fixture was needed.
+
+### Behavior no spec pins
+
+- `chat.flows.*` wiring in `ChatMessages.ts` is covered only by the goldens' own chat and Playwright.
+- The too-long modal rendering (`GenericModal`, focus, keys) and real `Blob` and `File` bytes in a browser (jsdom is used).
+- `settings.peek` keeps its `this` in the adapters (called as a method inside an arrow), but the golden fake is a plain object, so a lost `this` would show only in the browser.
+- A rejected telemetry request is an unhandled rejection, unchanged and untested.
+
+### Deviations
+
+The dependency shapes above differ from the plan text as listed; no `deps.ts` file was created (each core exports its own types, as in 1b.3 and 1b.4); the native too-long path has no test beyond the core run without `offerAttachment`.
