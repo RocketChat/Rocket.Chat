@@ -87,6 +87,7 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
   - [uikit/](docs/features/uikit/README.md) — UiKit blocks, surfaces, rendering, interactions; field reference and per-surface support matrix
   - [client-boot.md](docs/features/client-boot.md) — the path to the first screen, and why components on it must not suspend
   - [web-client-hosting.md](docs/features/web-client-hosting.md) — how the server serves the Vite-built client (manifest, entry injection, CDN, cache) and how to serve the client from another host
+  - [fuselage-tokens.md](docs/features/fuselage-tokens.md) — how the design tokens are layered (base colors, specialized colors per theme, scales), a token's path against its `dist` shape, who reads each output, the names Fuselage writes, Fuselage's Tamagui config, adding a token and its dark and high-contrast values
 - [docs/proposals/](docs/proposals/) — design proposals, not yet implemented
   - [serve-client-without-meteor-webapp.md](docs/proposals/serve-client-without-meteor-webapp.md) — serving the client without Meteor's `web.browser` program
   - [finish-moving-http-and-ddp-off-meteor.md](docs/proposals/finish-moving-http-and-ddp-off-meteor.md) — what still reaches Meteor's HTTP and DDP servers, and the order to move it
