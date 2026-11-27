@@ -4638,11 +4638,6 @@ export type OmnichannelEndpoints = {
 	'/v1/livechat/agent.next/:token': {
 		GET: (params: GETAgentNextToken) => { agent: ILivechatAgent | { hiddenInfo: true } } | void;
 	};
-	'/v1/livechat/config': {
-		GET: (params: GETLivechatConfigParams) => {
-			config: { [k: string]: string | boolean } & { room?: IOmnichannelRoom; agent?: ILivechatAgent };
-		};
-	};
 	'/v1/livechat/custom.field': {
 		POST: (params: POSTLivechatCustomFieldParams) => { field: { key: string; value: string; overwrite: boolean } };
 	};
