@@ -102,6 +102,10 @@ const useRoomsGroups = (): [RoomsNavigationGroup, UnreadGroupDataMap] => {
 					return;
 				}
 
+				if (getSubscriptionDraft(room)) {
+					setGroupRoom('drafts', room);
+				}
+
 				if (isOmnichannelRoom(room) && showOmnichannel) {
 					if (room.onHold) {
 						return setGroupRoom('onHold', room);
@@ -118,10 +122,6 @@ const useRoomsGroups = (): [RoomsNavigationGroup, UnreadGroupDataMap] => {
 
 				if (room.f) {
 					setGroupRoom('favorites', room);
-				}
-
-				if (getSubscriptionDraft(room)) {
-					setGroupRoom('drafts', room);
 				}
 
 				if (isDiscussionEnabled && isDiscussion(room)) {
