@@ -1,5 +1,5 @@
 import type { IExchangeContactSyncState, IUser } from '@rocket.chat/core-typings';
-import type { DeleteResult, UpdateResult } from 'mongodb';
+import type { DeleteResult, Document, UpdateResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -20,5 +20,6 @@ export interface IExchangeContactSyncStateModel extends IBaseModel<IExchangeCont
 	): Promise<UpdateResult>;
 	setLastError(uid: IUser['_id'], folderId: string, lastError: string): Promise<UpdateResult>;
 	clearCursor(uid: IUser['_id'], folderId: string): Promise<UpdateResult>;
+	clearLastSyncByUserId(uid: IUser['_id']): Promise<Document | UpdateResult>;
 	deleteByUserIdAndFolders(uid: IUser['_id'], folderIds: string[]): Promise<DeleteResult>;
 }

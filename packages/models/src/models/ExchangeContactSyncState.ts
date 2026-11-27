@@ -1,6 +1,6 @@
 import type { IExchangeContactSyncState, IUser } from '@rocket.chat/core-typings';
 import type { ExchangeContactSyncIdentity, IExchangeContactSyncStateModel } from '@rocket.chat/model-typings';
-import type { Db, DeleteResult, IndexDescription, UpdateResult } from 'mongodb';
+import type { Db, DeleteResult, Document, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -56,6 +56,10 @@ export class ExchangeContactSyncStateRaw extends BaseRaw<IExchangeContactSyncSta
 
 	public async clearCursor(uid: IUser['_id'], folderId: string): Promise<UpdateResult> {
 		return this.updateOne({ uid, folderId }, { $unset: { cursor: 1 } });
+	}
+
+	public async clearLastSyncByUserId(uid: IUser['_id']): Promise<Document | UpdateResult> {
+		return this.updateMany({ uid }, { $unset: { lastSyncAt: 1 } });
 	}
 
 	public deleteByUserIdAndFolders(uid: IUser['_id'], folderIds: string[]): Promise<DeleteResult> {
