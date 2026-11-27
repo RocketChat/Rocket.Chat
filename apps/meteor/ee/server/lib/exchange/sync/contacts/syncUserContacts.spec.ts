@@ -7,6 +7,8 @@ const findFolderIdsByUserId = jest.fn();
 const deleteByUserIdAndFolders = jest.fn();
 const syncContactFolder = jest.fn();
 const deleteFolderContactAvatars = jest.fn();
+const findOneUserById = jest.fn();
+const deleteUserContacts = jest.fn();
 
 jest.mock('@rocket.chat/models', () => ({
 	Contacts: { deleteImportedByFolder: (...args: unknown[]) => deleteImportedByFolder(...args) },
@@ -14,11 +16,16 @@ jest.mock('@rocket.chat/models', () => ({
 		findFolderIdsByUserId: (...args: unknown[]) => findFolderIdsByUserId(...args),
 		deleteByUserIdAndFolders: (...args: unknown[]) => deleteByUserIdAndFolders(...args),
 	},
+	Users: { findOneById: (...args: unknown[]) => findOneUserById(...args) },
 }));
 
 jest.mock('./syncContactFolder', () => ({ syncContactFolder: (...args: unknown[]) => syncContactFolder(...args) }));
 
 jest.mock('./contactAvatars', () => ({ deleteFolderContactAvatars: (...args: unknown[]) => deleteFolderContactAvatars(...args) }));
+
+jest.mock('../../../../../../server/lib/users/deleteUserContacts', () => ({
+	deleteUserContacts: (...args: unknown[]) => deleteUserContacts(...args),
+}));
 
 const UID = 'uid';
 const MAILBOX = 'user@corp.example';
@@ -52,6 +59,7 @@ describe('syncUserContacts', () => {
 		deleteByUserIdAndFolders.mockResolvedValue({ deletedCount: 0 });
 		deleteFolderContactAvatars.mockResolvedValue(undefined);
 		syncContactFolder.mockResolvedValue(outcome());
+		findOneUserById.mockResolvedValue({ _id: UID });
 	});
 
 	describe('walking the mailbox folders', () => {
@@ -121,6 +129,23 @@ describe('syncUserContacts', () => {
 
 			expect(deleteImportedByFolder).not.toHaveBeenCalled();
 			expect(deleteByUserIdAndFolders).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('a user deleted while their sync ran', () => {
+		it('drops what the sync wrote after the deletion already cleaned up', async () => {
+			findOneUserById.mockResolvedValue(null);
+
+			await syncUserContacts(providerListing('graph', [folder('default')]), UID, MAILBOX, REGION);
+
+			expect(deleteUserContacts).toHaveBeenCalledWith(UID);
+			expect(deleteUserContacts.mock.invocationCallOrder[0]).toBeGreaterThan(syncContactFolder.mock.invocationCallOrder[0]);
+		});
+
+		it('leaves the contacts of a user who still exists', async () => {
+			await syncUserContacts(providerListing('graph', [folder('default')]), UID, MAILBOX, REGION);
+
+			expect(deleteUserContacts).not.toHaveBeenCalled();
 		});
 	});
 });

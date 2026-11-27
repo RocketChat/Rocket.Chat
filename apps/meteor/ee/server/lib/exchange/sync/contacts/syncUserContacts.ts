@@ -1,10 +1,11 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { FATAL_CODES, isExchangeError, logger, scrubForLog } from '@rocket.chat/exchange';
 import type { IExchangeProvider } from '@rocket.chat/exchange';
-import { Contacts, ExchangeContactSyncState } from '@rocket.chat/models';
+import { Contacts, ExchangeContactSyncState, Users } from '@rocket.chat/models';
 
 import { deleteFolderContactAvatars } from './contactAvatars';
 import { syncContactFolder } from './syncContactFolder';
+import { deleteUserContacts } from '../../../../../../server/lib/users/deleteUserContacts';
 
 export type UserContactSyncOutcome = {
 	folders: number;
@@ -38,6 +39,18 @@ const dropVanishedFolders = async (uid: IUser['_id'], liveFolderIds: string[]): 
 	await ExchangeContactSyncState.deleteByUserIdAndFolders(uid, vanished);
 
 	logger.info({ msg: 'Dropped Exchange contact folders that are no longer in the mailbox', uid, folders: vanished.length });
+};
+
+const dropContactsIfUserDeleted = async (uid: IUser['_id']): Promise<void> => {
+	try {
+		if (await Users.findOneById(uid, { projection: { _id: 1 } })) {
+			return;
+		}
+
+		await deleteUserContacts(uid);
+	} catch (err) {
+		logger.warn({ msg: 'Could not drop the contacts of a user deleted during their contact sync', uid, err: scrubForLog(err) });
+	}
 };
 
 export const syncUserContacts = async (
@@ -86,5 +99,7 @@ export const syncUserContacts = async (
 		logger.warn({ msg: 'Exchange contact sync failed for a mailbox', uid, code, err: scrubForLog(err) });
 
 		return { ...summary, failed: summary.failed + 1, fatal: FATAL_CODES.has(code), error: summary.error ?? err };
+	} finally {
+		await dropContactsIfUserDeleted(uid);
 	}
 };

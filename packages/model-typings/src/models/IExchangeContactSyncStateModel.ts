@@ -20,5 +20,6 @@ export interface IExchangeContactSyncStateModel extends IBaseModel<IExchangeCont
 	): Promise<UpdateResult>;
 	setLastError(uid: IUser['_id'], folderId: string, lastError: string): Promise<UpdateResult>;
 	clearCursor(uid: IUser['_id'], folderId: string): Promise<UpdateResult>;
+	deleteByUserId(uid: IUser['_id']): Promise<DeleteResult>;
 	deleteByUserIdAndFolders(uid: IUser['_id'], folderIds: string[]): Promise<DeleteResult>;
 }

@@ -194,4 +194,8 @@ export class ContactsRaw extends BaseRaw<IContact> implements IContactsModel {
 	public deleteImportedByFolder(uid: IUser['_id'], folderId: string): Promise<DeleteResult> {
 		return this.deleteMany({ uid, source: OUTLOOK, folderId });
 	}
+
+	public deleteByUserId(uid: IUser['_id']): Promise<DeleteResult> {
+		return this.deleteMany({ uid });
+	}
 }

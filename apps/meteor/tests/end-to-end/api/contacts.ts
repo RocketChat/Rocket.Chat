@@ -1,7 +1,7 @@
 import { after, before, describe, it } from 'node:test';
 
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IContact, ISetting, IUser } from '@rocket.chat/core-typings';
+import type { IContact, IExchangeContactSyncState, ISetting, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { MongoClient } from 'mongodb';
 
@@ -20,6 +20,7 @@ describe('[Contacts]', () => {
 	let ownLocalContactId: string;
 
 	const contacts = () => connection.db().collection<IContact>('rocketchat_contacts');
+	const syncStates = () => connection.db().collection<IExchangeContactSyncState>('rocketchat_exchange_contact_sync_state');
 
 	const createContact = async (as: Credentials, payload: Record<string, unknown>): Promise<string> => {
 		const res = await request.post(api('contacts.create')).set(as).send(payload).expect(200);
@@ -337,6 +338,40 @@ describe('[Contacts]', () => {
 
 				expect(await contacts().findOne({ _id: ownLocalContactId })).to.be.null;
 			});
+		});
+	});
+
+	describe('[deleting the owner]', () => {
+		it('should remove every contact and contact sync state the deleted user owned', async () => {
+			const owner = await createUser();
+			const ownerCredentials = await login(owner.username, password);
+			await createContact(ownerCredentials, { givenName: `Owner${stamp}`, phones: [{ raw: '+5511987654321' }] });
+			await contacts().insertOne({
+				_id: `contacts.owner-synced-${stamp}`,
+				_updatedAt: new Date(),
+				uid: owner._id,
+				source: 'outlook',
+				syncProvider: 'graph',
+				externalId: `contacts.owner-external-${stamp}`,
+				folderId: 'default',
+				displayName: `Owner synced ${stamp}`,
+				emails: [],
+				phones: [],
+			});
+			await syncStates().insertOne({
+				_id: `contacts.owner-state-${stamp}`,
+				_updatedAt: new Date(),
+				uid: owner._id,
+				folderId: 'default',
+				mailbox: 'owner@corp.example',
+				provider: 'graph',
+			});
+
+			await deleteUser(owner);
+
+			expect(await contacts().countDocuments({ uid: owner._id })).to.be.equal(0);
+			expect(await syncStates().countDocuments({ uid: owner._id })).to.be.equal(0);
+			expect(await contacts().findOne({ _id: syncedId })).to.not.be.null;
 		});
 	});
 

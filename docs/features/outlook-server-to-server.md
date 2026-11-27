@@ -91,7 +91,10 @@ Nothing to set up, which is the point.
   Rocket.Chat, the same way as the contacts they created here.
 
 Contacts are **private to each user**. A person's Outlook contacts are visible only to them: nothing is
-shared across the workspace, and no administrator view of them exists.
+shared across the workspace, and no administrator view of them exists. Deleting a user deletes all their
+contacts with them, the ones they created and the ones synced from Outlook, and the state of their
+Outlook contact sync. It also deletes the photos of these contacts. If storage cannot delete a photo,
+the server logs a warning and the photo stays in storage.
 
 ## What does not change
 

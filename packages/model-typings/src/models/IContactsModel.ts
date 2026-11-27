@@ -51,4 +51,5 @@ export interface IContactsModel extends IBaseModel<IContact> {
 	deleteImportedByExternalIds(uid: IUser['_id'], folderId: string, externalIds: string[]): Promise<DeleteResult>;
 	deleteImportedOutsideSet(uid: IUser['_id'], folderId: string, keepExternalIds: string[]): Promise<DeleteResult>;
 	deleteImportedByFolder(uid: IUser['_id'], folderId: string): Promise<DeleteResult>;
+	deleteByUserId(uid: IUser['_id']): Promise<DeleteResult>;
 }

@@ -58,6 +58,10 @@ export class ExchangeContactSyncStateRaw extends BaseRaw<IExchangeContactSyncSta
 		return this.updateOne({ uid, folderId }, { $unset: { cursor: 1 } });
 	}
 
+	public deleteByUserId(uid: IUser['_id']): Promise<DeleteResult> {
+		return this.deleteMany({ uid });
+	}
+
 	public deleteByUserIdAndFolders(uid: IUser['_id'], folderIds: string[]): Promise<DeleteResult> {
 		return this.deleteMany({ uid, folderId: { $in: folderIds } });
 	}

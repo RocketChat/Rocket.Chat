@@ -37,4 +37,8 @@ export class AvatarsRaw extends BaseUploadModelRaw implements IAvatarsModel {
 	findContactAvatars(contactIds: IContact['_id'][], options?: FindOptions<IAvatar>): FindCursor<IAvatar> {
 		return this.find({ contactId: { $in: contactIds } }, options);
 	}
+
+	findContactAvatarsByUserId(userId: IUser['_id'], options?: FindOptions<IAvatar>): FindCursor<IAvatar> {
+		return this.find({ userId, contactId: { $exists: true } }, options);
+	}
 }
