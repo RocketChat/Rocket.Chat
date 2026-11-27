@@ -14,12 +14,6 @@ export function composerTokens(theme: ComposerTheme = 'light') {
 			annotation: palette['rcx-font-annotation'],
 			disabled: palette['rcx-font-disabled'],
 		},
-		button: {
-			primary: palette['rcx-button-background-primary-default'],
-			primaryDisabled: palette['rcx-button-background-primary-disabled'],
-			onPrimary: palette['rcx-button-font-on-primary'],
-			onPrimaryDisabled: palette['rcx-button-font-on-primary-disabled'],
-		},
 		radius: { medium: tokens.radius.medium },
 		borderWidth: 1,
 		space: tokens.space,
