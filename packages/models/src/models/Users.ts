@@ -3462,6 +3462,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.countDocuments(query, options);
 	}
 
+	countByUsernameWithNumericSuffix(username: string) {
+		return this.countDocuments({ username: new RegExp(`^${escapeRegExp(username)}-[0-9]+`) });
+	}
+
 	// here
 	async getActiveLocalUserCount() {
 		return Promise.all([

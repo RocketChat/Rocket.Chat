@@ -640,6 +640,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	createIfNotExists(data: Partial<IUser> & Pick<IUser, '_id'>): Promise<UpdateResult>;
 	removeById(userId: string): Promise<DeleteResult>;
 	countActiveUsersByService(service: string, options?: FindOptions<IUser>): Promise<number>;
+	countByUsernameWithNumericSuffix(username: string): Promise<number>;
 	getActiveLocalUserCount(): Promise<number>;
 	getActiveLocalGuestCount(exceptions?: IUser['_id'] | IUser['_id'][]): Promise<number>;
 	removeOlderResumeTokensByUserId(userId: string, fromDate: Date): Promise<UpdateResult>;
