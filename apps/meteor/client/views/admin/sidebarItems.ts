@@ -151,7 +151,9 @@ export const {
 		i18nLabel: 'Feature_preview',
 		icon: 'flask',
 		permissionGranted: (): boolean =>
-			hasAllPermission(['manage-feature-preview', 'edit-privileged-setting']) && defaultFeaturesPreview?.length > 0,
+			hasAtLeastOnePermission(SETTINGS_MANAGEMENT_PERMISSIONS) &&
+			hasPermission('manage-feature-preview') &&
+			defaultFeaturesPreview?.length > 0,
 	},
 	{
 		href: '/admin/settings',
