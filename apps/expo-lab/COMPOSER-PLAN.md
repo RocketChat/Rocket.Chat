@@ -854,3 +854,48 @@ Mutations (each restored; the step's golden and differential ran together):
 ### Deviations
 
 The dependency shapes above differ from the plan text as listed; no `deps.ts` file was created (each core exports its own types, as in 1b.3 and 1b.4); the native too-long path has no test beyond the core run without `offerAttachment`.
+
+## Steps 2.2 and 2.3 results (2026-11-27)
+
+Commits `37c7c5c3784` (2.2) and `41e95b76a10` (2.3), on top of `448bb9515ca`. Everything is in `apps/expo-lab`; nothing under `apps/meteor` or `packages/` changed.
+
+### Files
+
+- New, `src/composer/`: `createNativeComposerAPI.ts`, `useNativeComposer.ts`, `ComposerField.tsx`, `composerDemo.ts`, `createNativeComposerAPI.test.ts`. New test tooling: `test/register.mjs`, `test/hooks.mjs`. New screenshots: `docs/composer/composer-field-empty.png`, `composer-field-growth.png`, `composer-wrap-selection.png`.
+- Edited: `src/fuselage/FuselageRoom.tsx` (the field replaces the old input; the plain `Room.tsx` is untouched), `src/useRoom.ts` (adds `sendText(text)`, which resolves false on failure; `send` calls it), `package.json` (`test` script), `tsconfig.json` (`allowImportingTsExtensions`). No dependency added; `yarn.lock` unchanged.
+- Deviations from the plan: the plan names `MessageBox.tsx` and `ComposerView.tsx`; the field is one component, `ComposerField.tsx`, since there is nothing else to compose yet. State comes from a native implementation, not `composerStateCore`: that core is not proven on Hermes (1b.9), so the swap is later. The web file `wrapSelectionText.ts` is imported as is (it loads light, step 2.1).
+
+### API members (`createNativeComposerAPI`)
+
+Implemented over `{ text, selection }`: `text`, `selection`, `setText` (web semantics: with a selection option the text replaces the current selection, then the option places the range; without it the value is replaced and the caret goes to the end), `insertText`, `insertNewLine`, `replaceText`, `substring`, `clear`, `wrapSelection` (the web's `wrapSelectionText`, including toggle off and empty selection), `getCursorPosition`, `setCursorToEnd`, `setCursorToStart`, `replyWith`, `focus` and `blur` (forwarded to the field attached by the hook), `release`. Minimal state: `quotedMessages` with `quoteMessage`, `dismissQuotedMessage`, `dismissAllQuotedMessages` (deduped by id), `editing` with `setEditingMode`. Inert: `recording`, `recordingVideo`, `isMicrophoneDenied` (constant `false`) and their setters, `formatters` (`[]`), `composerRef` (`{ current: null }`). Not present: `uploads` (step 2.14). Native-only additions: `getState`, `subscribe`, `setSelection`, `userEdit`, `attachField`.
+
+### How selection and height are handled
+
+- Selection is write-only (findings 2a, surprise 1): the API owns it and the field receives it through the controlled `selection` prop, in the same render as the text, because both come from one `getState()` snapshot read with `useSyncExternalStore` (findings 2e, 2f; `ref.setSelection` is never used, findings 2c, 2d).
+- Echo guard: `setSelection` is what `onSelectionChange` calls; a report equal to the state changes nothing and notifies nobody. Native does not report our own writes (code-read), so a report that differs is a user move.
+- Typed text: `onChangeText` calls `userEdit`, which moves the caret by the length difference so the controlled prop never sends a stale range back while native has not yet reported the selection. Not observed under real typing.
+- Height is styles only, `minHeight` 52 and `maxHeight` 155 on the `TextInput` itself (findings row 5 and the recommendation not to drive height from `onContentSizeChange`). No `onContentSizeChange` and no `onScroll` handler exists; the clamp is native. `onLayout` is read only to show the measured height in the demo label.
+- Observed and not in the findings: after a programmatic text change the field's size lagged one update (a 9-line text stayed 52 px, a one-line text after a clamped one stayed 155 px, until the next render). A layout-neutral change of `minHeight` (52 to 52.01 and back) 50 ms after each text change forces the commit and fixed it in the demo (checked through `onLayout` logs and screenshots). This is a workaround to revisit; the cause was not found.
+- Keyboard: the room's existing `KeyboardAvoidingView` (`behavior='padding'` on iOS) wraps the field; nothing new was added.
+
+### Requirements
+
+| Req | Status | Evidence |
+| --- | --- | --- |
+| R1 | observation only | the field shows at the bottom of the mock room (S); typed text was not tried (no typing) |
+| R2 | not verified | the simulator uses the hardware keyboard, so no soft keyboard appeared; the room's `KeyboardAvoidingView` is the mechanism |
+| R3 | observation (S) | 52 px empty and with one line, 155 px with 9 lines, back to 52 on clear (`composer-field-growth.png`, `composer-field-empty.png`) |
+| R4 | observation (S) | the demo step with 600 unbroken characters reached 155 px (height read through `onLayout`; screenshot not committed) |
+| R5, R6 | partial | the button is disabled on `text.trim() === ''` and `submit` returns early; no hook spec yet (step 2.4) |
+| R56 | partial | `accessibilityLabel` on the field and the button, `accessibilityRole='button'` and the disabled state on the button; no accessibility tree dump |
+| 2.2's API proofs | unit | 33 specs, all pass |
+
+### Bundle and tests
+
+- Default `expo export` (iOS, `CI=1`): exit 0, 2578 modules (2573 before: +5, the four composer modules and `wrapSelectionText`). Guard greps on the non-bytecode bundle: `NodeRandomGenerator` 0, `react-dom/server` 0, `ui-client/dist` 0, `SharedProbeScreen` 0. Probe export (`EXPO_PUBLIC_SHARED_PROBE=1`): exit 0, 6781 modules (6773 before).
+- Tests: `node --import ./test/register.mjs --test "src/**/*.test.ts"` from `apps/expo-lab` (the package script `test` is the same command; `yarn` itself needs Node 22.22.3 or later, as the repo demands): 33 tests, 33 pass. No jest and no new dependency: Node's built-in runner strips types (Node 22.22) and a small loader hook marks the web client file as an ES module, since `apps/meteor/package.json` says `commonjs`. The specs cover each member, toggle off and empty selection, surrogate pairs, ZWJ and combining marks as UTF-16 offsets, selection clamping, one notification per edit with text and selection together, and the echo guard. There is no spec for the clamp: no pure height function exists, as the clamp is styles.
+- `tsc --noEmit` in `apps/expo-lab`: exit 0. `yarn install --immutable`: exit 0.
+
+### What was not verified
+
+Real typing, caret placement after an edit (the highlight of a non-empty selection was seen; a collapsed caret was seen only at the end of the text), IME, keyboard avoidance with a soft keyboard, the `userEdit` caret estimate and the size-lag workaround under real typing, Android, and a send in a real session (the send path is the same function as before, now through `sendText`, but only mock mode ran). The plain UI (`EXPO_PUBLIC_CHAT_UI=plain`) was checked in mock mode and renders as before.
