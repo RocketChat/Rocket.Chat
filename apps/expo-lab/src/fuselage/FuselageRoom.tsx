@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { FlatList, KeyboardAvoidingView, Platform, Text as RNText, View } from 'react-native';
 import {
 	Button,
@@ -10,12 +10,14 @@ import {
 	MessageName,
 	MessageTimestamp,
 	MessageUsername,
-	TextInput,
 } from '@rocket.chat/fuselage';
 
 import { AppAvatar } from '../AppAvatar';
 import { userAvatarUrl, type RoomItem } from '../api';
 import { mock } from '../chatConfig';
+import { ComposerField } from '../composer/ComposerField.tsx';
+import { composerDemo, useComposerDemo } from '../composer/composerDemo.ts';
+import { useNativeComposer } from '../composer/useNativeComposer.ts';
 import { measure } from '../layoutDebug';
 import { EmojiServerContext } from '../markup/Emoji';
 import Markup from '../markup/Markup';
@@ -31,7 +33,11 @@ const time = (ts: string) => new Date(ts).toLocaleTimeString([], { hour: '2-digi
 const Fit = ({ children }: { children: ReactNode }) => <View style={{ width: 96 }}>{children}</View>;
 
 export function FuselageRoom({ session, room, onBack }: Props) {
-	const { messages, draft, setDraft, error, live, send } = useRoom(session, room);
+	const { messages, error, live, sendText } = useRoom(session, room);
+	const composer = useNativeComposer();
+	const demo = mock && composerDemo;
+	const [demoStep, setDemoStep] = useState('starting');
+	useComposerDemo(composer.api, demo, setDemoStep);
 
 	return (
 		<EmojiServerContext.Provider value={mock ? undefined : session.serverUrl}>
@@ -80,18 +86,10 @@ export function FuselageRoom({ session, room, onBack }: Props) {
 						</View>
 					)}
 				/>
-				<View style={{ padding: 12, gap: 8, flexDirection: 'row', alignItems: 'center' }}>
-					<View style={{ flex: 1 }}>
-						<View style={{ borderWidth: 1, borderColor: '#9ea2a8', borderRadius: 4, paddingHorizontal: 8, paddingVertical: 6 }}>
-							<TextInput value={draft} onChange={(value: unknown) => setDraft(String(value))} placeholder='Message' />
-						</View>
+					<View style={{ padding: 12, gap: 4 }}>
+						{demo && <RNText style={{ fontSize: 11, color: '#9b2c2c' }}>DEMO (dev only): {demoStep}</RNText>}
+						<ComposerField composer={composer} onSubmit={sendText} showHeight={demo} />
 					</View>
-					<Fit>
-						<Button variant='primary' onPress={send}>
-							Send
-						</Button>
-					</Fit>
-				</View>
 			</View>
 		</KeyboardAvoidingView>
 		</EmojiServerContext.Provider>

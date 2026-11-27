@@ -34,17 +34,25 @@ export function useRoom(session: Session, room: RoomItem) {
 		};
 	}, [session, room]);
 
+	// Resolves false when the send failed, so a caller that owns its field can put the text back
+	const sendText = async (text: string) => {
+		const msg = text.trim();
+		if (!msg) return true;
+		try {
+			await sendMessage(session, room.rid, msg);
+			return true;
+		} catch (e) {
+			setError(errorText(e));
+			return false;
+		}
+	};
+
 	const send = async () => {
 		const msg = draft.trim();
 		if (!msg) return;
 		setDraft('');
-		try {
-			await sendMessage(session, room.rid, msg);
-		} catch (e) {
-			setError(errorText(e));
-			setDraft(msg);
-		}
+		if (!(await sendText(msg))) setDraft(msg);
 	};
 
-	return { messages, draft, setDraft, error, live, send };
+	return { messages, draft, setDraft, error, live, send, sendText };
 }
