@@ -22,6 +22,8 @@ npm install @rocket.chat/api-client
 
 `@rocket.chat/rest-typings` and `@rocket.chat/core-typings` come in as dependencies.
 
+If this package pulls in `@rocket.chat/core-typings` `8.4.0` through `8.9.1`, npm cannot resolve its Yarn `patch:` URL for `typia` and reports `EUNSUPPORTEDPROTOCOL`. To work around this in npm, add `"overrides": { "typia": "9.7.2" }` to your project's root `package.json`. See **npm workaround for affected releases** in the `@rocket.chat/core-typings` README for npm version requirements and the caveats for projects that also depend on `typia`.
+
 The package is published as CommonJS. It relies on the global `fetch`, `FormData` and `File`, so it runs in browsers and in recent Node.js versions. `upload()` uses `XMLHttpRequest` and only works in browsers.
 
 ## Usage
