@@ -67,9 +67,10 @@ export default function App() {
 	}
 
 	// Dev only: EXPO_PUBLIC_SHARED_PROBE=1 lists which shared web composer modules load under Metro and Hermes
+	// metro.config.js swaps the empty slot for the screen only in that mode
 	if (process.env.EXPO_PUBLIC_SHARED_PROBE === '1') {
-		const { SharedProbeScreen } = require('./src/SharedProbeScreen') as typeof import('./src/SharedProbeScreen');
-		return <SharedProbeScreen />;
+		const { SharedProbeScreen } = require('./src/probeScreenSlot') as typeof import('./src/probeScreenSlot');
+		if (SharedProbeScreen) return <SharedProbeScreen />;
 	}
 
 	if (process.env.EXPO_PUBLIC_SESSION_LAB === '1') {

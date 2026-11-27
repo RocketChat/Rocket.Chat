@@ -23,8 +23,8 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
 	if (native && /\.s?css$/.test(moduleName)) return { type: 'sourceFile', filePath: emptyModule };
 	if (native && moduleName === '@rocket.chat/fuselage') return { type: 'sourceFile', filePath: path.join(fuselageSrc, 'index.runtime.ts') };
 	if (moduleName === '@tamagui/web') return resolve(context, tamaguiWeb, platform);
-	// The probe screen drags in the whole web client: outside probe mode it must not enter the app bundle
-	if (!probeMode && /\/SharedProbeScreen$/.test(moduleName)) return { type: 'sourceFile', filePath: emptyModule };
+	// The probe screen drags in the whole web client: only probe mode swaps the empty slot for it, so no other config or mode ever bundles it
+	if (probeMode && /\/probeScreenSlot$/.test(moduleName)) return { type: 'sourceFile', filePath: path.join(__dirname, 'src/SharedProbeScreen.tsx') };
 	// The package maps `browser` to the client build; Metro's native conditions pick the Node one (`node:crypto`)
 	if (native && moduleName === '@rocket.chat/random') return { type: 'sourceFile', filePath: randomClient };
 	// gazzodown-alt imports it for `renderComposerMarkup`, the only caller; the composer never calls that
