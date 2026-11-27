@@ -1,195 +1,54 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import { t } from '../../../../lib/i18n';
-import { closeUnclosedCodeBlock } from '../../../../lib/utils/closeUnclosedCodeBlock';
-import { Messages, Rooms } from '../../../stores';
-import { onClientBeforeSendMessage } from '../../onClientBeforeSendMessage';
-import { dispatchToastMessage } from '../../toast';
-import type { ChatAPI } from '../ChatAPI';
 import { afterSendMessageCallback } from './afterSendMessageCallback';
 import { processMessageEditing } from './processMessageEditing';
 import { processMessageUploads } from './processMessageUploads';
 import { processSetReaction } from './processSetReaction';
 import { processSlashCommand } from './processSlashCommand';
 import { processTooLongMessage } from './processTooLongMessage';
+import { t } from '../../../../lib/i18n';
 import { trim } from '../../../../lib/utils/stringUtils';
+import { Messages, Rooms } from '../../../stores';
 import { sdk } from '../../SDKClient';
+import { onClientBeforeSendMessage } from '../../onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../../onClientMessageReceived';
 import { settings } from '../../settings';
+import { dispatchToastMessage } from '../../toast';
 import { getUserId, getUser } from '../../user';
 import { upsertThreadMessageInCache } from '../../utils/threadMessageUtils';
+import type { ChatAPI } from '../ChatAPI';
+import { sendMessageCore } from '../core/sendMessage';
 
-const runOptimisticSendMessage = async (message: Partial<IMessage> & { rid: IMessage['rid']; msg: IMessage['msg'] }): Promise<void> => {
-	const uid = getUserId();
-	if (!uid || trim(message.msg) === '') {
-		return;
-	}
-	const messageAlreadyExists = message._id && Messages.state.get(message._id);
-	if (messageAlreadyExists) {
-		dispatchToastMessage({ type: 'error', message: t('Message_Already_Sent') });
-		return;
-	}
-	const user = getUser();
-	if (!user?.username) {
-		return;
-	}
-
-	const room = Rooms.state.get(message.rid);
-	if (room?.federated) {
-		return;
-	}
-
-	const optimistic: IMessage = {
-		...(message as IMessage),
-		ts: new Date(),
-		u: {
-			_id: uid,
-			username: user.username,
-			name: user.name || '',
-		},
-		temp: true,
-		...(settings.peek('Message_Read_Receipt_Enabled') ? { unread: true } : {}),
-	};
-
-	const processed = await onClientMessageReceived(optimistic);
-	Messages.state.store(processed);
-
-	if (processed.tmid) {
-		upsertThreadMessageInCache(processed, processed.rid, processed.tmid);
-	}
-};
-
-const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[], isSlashCommandAllowed?: boolean): Promise<void> => {
-	const mid = chat.currentEditingMessage.getMID();
-
-	if (await processSetReaction(chat, message)) {
-		return;
-	}
-
-	if (await processTooLongMessage(chat, message)) {
-		return;
-	}
-
-	if (isSlashCommandAllowed && (await processSlashCommand(chat, message))) {
-		return;
-	}
-
-	if (await processMessageUploads(chat, message)) {
-		chat.composer?.clear();
-		return;
-	}
-
-	message = (await onClientBeforeSendMessage({ ...message, isEditing: !!mid })) as IMessage & { isEditing?: boolean };
-
-	// e2e should be a client property only
-	delete message.e2e;
-	delete (message as IMessage & { isEditing?: boolean }).isEditing;
-
-	if (await processMessageEditing(chat, message, previewUrls)) {
-		return;
-	}
-
-	chat.composer?.clear();
-	await runOptimisticSendMessage(message);
-
-	await sdk.rest.post('/v1/chat.sendMessage', { message, previewUrls });
-
-	// Clear the optimistic `temp` flag only if the messages stream hasn't already
-	// replaced the record. Overwriting with the server response can clobber stream
-	// updates that arrive first — e.g. read-receipt-driven `unread: false`, async
-	// URL/quote attachments, or E2EE decrypt — leading to stale UI state.
-	Messages.state.update(
-		(record) => record._id === message._id && record.temp === true,
-		({ temp: _, ...record }) => record,
-	);
-};
-
-export const sendMessage = async (
+export const sendMessage = (
 	chat: ChatAPI,
-	{
-		text,
-		tshow,
-		previewUrls,
-		isSlashCommandAllowed,
-	}: { text: string; tshow?: boolean; previewUrls?: string[]; isSlashCommandAllowed?: boolean; tmid?: IMessage['tmid'] },
-): Promise<boolean> => {
-	if (!(await chat.data.isSubscribedToRoom())) {
-		try {
-			await chat.data.joinRoom();
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-			return false;
-		}
-	}
-
-	chat.readStateManager.clearUnreadMark();
-
-	const uploadsStore = chat.composer?.uploads;
-
-	text = text.trim();
-	text = closeUnclosedCodeBlock(text);
-	const mid = chat.currentEditingMessage.getMID();
-
-	const hasFiles = uploadsStore && uploadsStore.get().length > 0;
-	if (!text && !mid && !hasFiles) {
-		// Nothing to do
-		return false;
-	}
-
-	if (text || hasFiles) {
-		const message = await chat.data.composeMessage(text, {
-			sendToChannel: tshow,
-			quotedMessages: chat.composer?.quotedMessages.get() ?? [],
-			originalMessage: mid ? await chat.data.findMessageByID(mid) : null,
-		});
-
-		// When editing an encrypted message with files, preserve the original attachments/files
-		// This ensures they're included in the re-encryption process
-		if (mid) {
-			const originalMessage = await chat.data.findMessageByID(mid);
-
-			if (originalMessage?.t === 'e2e' && originalMessage.attachments && originalMessage.attachments.length > 0) {
-				message.attachments = originalMessage.attachments;
-				message.file = originalMessage.file;
-			}
-		}
-
-		try {
-			// Dismiss quoted messages optimistically — they are already baked into
-			// `message` by composeMessage above, so the composer preview must unmount
-			// regardless of whether the send request resolves. Keeping it coupled to a
-			// resolved request leaves the quote stuck in the composer when the REST call
-			// rejects even though the message was already broadcast over the stream.
-			chat.composer?.dismissAllQuotedMessages();
-			await process(chat, message, previewUrls, isSlashCommandAllowed);
-			await afterSendMessageCallback(message, message.rid);
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-		return true;
-	}
-
-	if (mid) {
-		const originalMessage = await chat.data.findMessageByID(mid);
-
-		if (!originalMessage) {
-			dispatchToastMessage({ type: 'warning', message: t('Message_not_found') });
-			return false;
-		}
-
-		try {
-			if (await chat.flows.processMessageEditing({ ...originalMessage, msg: '' }, previewUrls)) {
-				chat.currentEditingMessage.stop();
-				return false;
-			}
-
-			await chat.currentEditingMessage.reset();
-			await chat.flows.requestMessageDeletion(originalMessage);
-			return false;
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	}
-
-	return false;
-};
+	params: { text: string; tshow?: boolean; previewUrls?: string[]; isSlashCommandAllowed?: boolean; tmid?: IMessage['tmid'] },
+): Promise<boolean> =>
+	sendMessageCore<ChatAPI>(
+		{
+			getUserId: () => getUserId(),
+			getUser: () => getUser(),
+			trim: (text) => trim(text),
+			getMessage: (id) => Messages.state.get(id),
+			storeMessage: (message) => Messages.state.store(message),
+			updateMessage: (predicate, modifier) => Messages.state.update(predicate, modifier),
+			getRoom: (rid) => Rooms.state.get(rid),
+			isReadReceiptEnabled: () => settings.peek('Message_Read_Receipt_Enabled'),
+			onClientMessageReceived: (message) => onClientMessageReceived(message),
+			onClientBeforeSendMessage: (message) => onClientBeforeSendMessage(message),
+			upsertThreadMessage: (message, rid, tmid) => upsertThreadMessageInCache(message, rid, tmid),
+			postMessage: (body) => sdk.rest.post('/v1/chat.sendMessage', body),
+			afterSendMessage: (message, rid) => afterSendMessageCallback(message, rid),
+			notifyError: (error) => dispatchToastMessage({ type: 'error', message: error }),
+			notifyAlreadySent: () => dispatchToastMessage({ type: 'error', message: t('Message_Already_Sent') }),
+			notifyMessageNotFound: () => dispatchToastMessage({ type: 'warning', message: t('Message_not_found') }),
+			flows: {
+				processSetReaction: (target, message) => processSetReaction(target, message),
+				processTooLongMessage: (target, message) => processTooLongMessage(target, message),
+				processSlashCommand: (target, message) => processSlashCommand(target, message),
+				processMessageUploads: (target, message) => processMessageUploads(target, message),
+				processMessageEditing: (target, message, previewUrls) => processMessageEditing(target, message, previewUrls),
+			},
+		},
+		chat,
+		params,
+	);
