@@ -14,6 +14,22 @@ describe('createPredicateFromFilter', () => {
 		expect(fn({ foo: 'c' })).toBe(false);
 	});
 
+	it('matches literal empty object equality only for plain empty objects', () => {
+		const fn = createPredicateFromFilter({ foo: {} });
+		expect(fn({ foo: {} })).toBe(true);
+		expect(fn({ foo: 'bar' })).toBe(false);
+		expect(fn({ foo: [] })).toBe(false);
+		expect(fn({ foo: new Date() })).toBe(false);
+	});
+
+	it('matches $in with empty object as literal value only for plain empty objects', () => {
+		const fn = createPredicateFromFilter({ foo: { $in: [{}] } });
+		expect(fn({ foo: {} })).toBe(true);
+		expect(fn({ foo: 'bar' })).toBe(false);
+		expect(fn({ foo: [] })).toBe(false);
+		expect(fn({ foo: new Date() })).toBe(false);
+	});
+
 	it('matches $nin', () => {
 		const fn = createPredicateFromFilter({ foo: { $nin: ['a', 'b'] } });
 		expect(fn({ foo: 'a' })).toBe(false);

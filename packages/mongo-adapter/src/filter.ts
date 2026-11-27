@@ -33,12 +33,16 @@ const regexpElementMatcher =
 	};
 
 const equalityElementMatcher = (elementSelector: unknown) => {
-	if (isOperatorObject(elementSelector)) {
+	if (isOperatorObject(elementSelector) && Object.keys(elementSelector).length > 0) {
 		throw new Error("Can't create equalityValueSelector for operator object");
 	}
 
 	if (elementSelector === null || elementSelector === undefined) {
 		return (value: unknown): boolean => value === null || value === undefined;
+	}
+
+	if (isPlainObject(elementSelector)) {
+		return (value: unknown): boolean => isPlainObject(value) && equals(elementSelector, value);
 	}
 
 	return (value: unknown): boolean => equals(elementSelector, value);
@@ -178,7 +182,7 @@ const $in = (operand: unknown): ((value: unknown) => boolean) => {
 			return regexpElementMatcher(option);
 		}
 
-		if (isOperatorObject(option)) {
+		if (isOperatorObject(option) && Object.keys(option).length > 0) {
 			throw new Error('cannot nest $ under $in');
 		}
 
@@ -495,7 +499,7 @@ const logicalOperators = {
 
 const isLogicalOperator = (operator: string): operator is keyof typeof logicalOperators => operator in logicalOperators;
 
-const isOperatorObject = <TOperator extends `$${string}`>(
+export const isOperatorObject = <TOperator extends `$${string}`>(
 	valueSelector: unknown,
 	inconsistentOK = false,
 ): valueSelector is Record<TOperator, any> => {
@@ -526,7 +530,7 @@ const compileValueSelector = (valueSelector: unknown) => {
 		return convertElementMatcherToBranchedMatcher(regexpElementMatcher(valueSelector));
 	}
 
-	if (isOperatorObject(valueSelector)) {
+	if (isOperatorObject(valueSelector) && Object.keys(valueSelector).length > 0) {
 		return operatorBranchedMatcher(valueSelector);
 	}
 
@@ -560,6 +564,11 @@ export const createDocumentMatcherFromFilter = <T>(filter: Filter<T>) => {
 		.filter(isTruthy);
 
 	return (doc: T) => everyMatches(docMatchers, (fn) => fn(doc));
+};
+
+export const createPredicateFromValueSelector = (valueSelector: unknown): ((value: unknown) => boolean) => {
+	const valueMatcher = compileValueSelector(valueSelector);
+	return (value: unknown) => valueMatcher([{ value }]).result;
 };
 
 export const createPredicateFromFilter = <T>(filter: Filter<T>): ((doc: T) => boolean) => {
