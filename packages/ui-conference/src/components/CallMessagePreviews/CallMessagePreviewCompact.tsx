@@ -37,7 +37,7 @@ const CallMessagePreviewCompact = ({
 		<Box is='li' ref={ref} display='block'>
 			<Tile ref={swipeRef} elevation='2' flush className={`${surfaceClassName} ${swipeClassName}`}>
 				<Box display='flex' alignItems='center' gap='x8' padding='x8' position='relative'>
-					{avatar}
+					<Box flexShrink={0}>{avatar}</Box>
 					<Box
 						is='button'
 						type='button'
