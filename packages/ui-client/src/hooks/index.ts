@@ -1,5 +1,6 @@
 export * from './useClipboardWithToast';
 export * from './useConfirmAction';
+export * from './useCopyWithToast';
 export * from './useCopyErrorReport';
 export * from './useCreateFontStyleElement';
 export * from './useCurrent';

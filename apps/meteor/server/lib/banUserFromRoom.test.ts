@@ -1,5 +1,6 @@
 import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import * as coreTypings from '@rocket.chat/core-typings';
 import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
@@ -38,6 +39,7 @@ let banUserFromRoomMethod: typeof import('./banUserFromRoom').banUserFromRoomMet
 before(async () => {
 	mock.module('@rocket.chat/core-typings', {
 		exports: {
+			...coreTypings,
 			isBannedSubscription: (sub: { status?: string } | null) => sub?.status === 'BANNED',
 		},
 	});

@@ -34,6 +34,7 @@ import './v1/stats';
 import './v1/subscriptions';
 import './v1/users';
 import './v1/videoConference';
+import './v1/videoConferenceRooms';
 import './v1/autotranslate';
 import './v1/oauthapps';
 import './v1/custom-sounds';

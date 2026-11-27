@@ -1,12 +1,13 @@
 import { faker } from '@faker-js/faker';
-import type { APIRequestContext, Browser, Page } from '@playwright/test';
+import type { Browser, Page } from '@playwright/test';
 
-import { BASE_API_URL, IS_EE } from './config/constants';
+import { IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import type { IUserState } from './fixtures/userStates';
 import { Users } from './fixtures/userStates';
 import { ConferenceWindow, HomeChannel } from './page-objects';
-import { createTargetChannel, deleteChannel, isChannelMember, setSettingValueById } from './utils';
+import type { JoinableCall } from './utils';
+import { createTargetChannel, deleteChannel, isChannelMember, leaveCallAs, listJoinableCalls, setSettingValueById } from './utils';
 import { preserveSettings } from './utils/preserveSettings';
 import type { BaseTest } from './utils/test';
 import { expect, test } from './utils/test';
@@ -14,25 +15,6 @@ import { expect, test } from './utils/test';
 test.use({ storageState: Users.user1.state });
 
 type Session = { page: Page; poHomeChannel: HomeChannel };
-
-type JoinableCall = { callId: string; name: string; joined: boolean };
-
-const asUser = (user: IUserState) => ({ 'X-Auth-Token': user.data.loginToken, 'X-User-Id': user.data._id });
-
-/** The calls `user` would be offered in the navbar right now — what the ongoing-calls button counts. */
-const listJoinableCalls = async (request: APIRequestContext, user: IUserState): Promise<JoinableCall[]> => {
-	const response = await request.get(`${BASE_API_URL}/video-conference.joinable`, { headers: asUser(user) });
-	expect(response.status()).toBe(200);
-
-	const { calls } = (await response.json()) as { calls: JoinableCall[] };
-	return calls;
-};
-
-/** Takes `user` out of a call on the server, whatever state their call window was left in. */
-const leaveCallAs = async (request: APIRequestContext, user: IUserState, callId: string): Promise<void> => {
-	const response = await request.post(`${BASE_API_URL}/video-conference.leave`, { headers: asUser(user), data: { callId } });
-	expect(response.status()).toBe(200);
-};
 
 /**
  * Every user this suite puts in a call. Nothing else runs against the workspace at the same time

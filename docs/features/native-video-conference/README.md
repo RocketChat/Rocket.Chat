@@ -29,6 +29,22 @@ on top of `videoconference-enterprise`. The provider is registered only while th
 as soon as a license without it is applied, no restart needed. `video-conference.callConfig` checks it too, since a call
 started while it was licensed outlives the license: from then on nobody can join or rejoin it.
 
+## Conference links
+
+A room's [conference links](../video-conference.md#conference-links) exist only with this provider. A link is
+created, and a conference started from one, only while the active provider runs its calls inside Rocket.Chat: a
+start from a link after the workspace has moved to another provider is refused, and omnichannel rooms have no
+links.
+
+The call window serves a link's address itself. It shows the call running from the link, the start preflight
+with the link's title (which cannot be changed there), or the not-started page, and never moves the browser to
+another address: starting from the preflight puts the call in the same window at the same address, and a reload
+comes back to the same conference.
+
+With this provider the room header's video call button is a menu. At phone width the button stays on the header
+and opens the same menu. Its dialogs and sub menus stay on screen, but while a sub menu is open the page can be
+panned a few pixels sideways.
+
 ## Settings
 
 Under **Video Conference → LiveKit** (the `video-conference-native` module):
@@ -158,5 +174,8 @@ The preflight's **Ring participants** switch lets the caller decide, and is reme
 
 - The resolution picker restarts the camera with a capture preset, which is a hint to the camera rather than a cap on
   the encoder. Publish options would be the right tool.
-- No e2e coverage for the native flow yet.
+- End-to-end coverage of conference links runs on placeholder LiveKit settings: creating, copying, opening a link to
+  its start preflight, renaming, deleting, a second user offered to join a conference running from it, and phone
+  width. Being in the call from a link (starting, joining, reloading) is covered only when the suite is given a
+  real LiveKit server, and nothing covers the call's media.
 - Background blur ships in a follow-up.

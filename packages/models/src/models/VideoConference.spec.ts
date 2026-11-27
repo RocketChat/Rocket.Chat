@@ -229,3 +229,115 @@ describe('VideoConferenceRaw.setUserDeclinedById', () => {
 		expect(Object.keys(updateOne.mock.calls[0][1].$set)).not.toContain('users.$[user].joined');
 	});
 });
+
+const LIVE = { $in: [0, 1] };
+
+const setupFinders = () => {
+	const findOne = jest.fn().mockResolvedValue(null);
+	const find = jest.fn().mockReturnValue({});
+	const insertOne = jest.fn().mockResolvedValue({ insertedId: 'call-1' });
+	const model = new VideoConferenceRaw({ collection: () => ({}) } as never);
+	Object.defineProperty(model, 'findOne', { value: findOne });
+	Object.defineProperty(model, 'find', { value: find });
+	Object.defineProperty(model, 'insertOne', { value: insertOne });
+
+	return { model, findOne, find, insertOne };
+};
+
+describe('VideoConferenceRaw live conferences of a link', () => {
+	// The unique partial index is the only thing standing between two concurrent starts from one link and two
+	// conferences: the loser's insert fails with a duplicate key. A conference without a link stays out of it.
+	it('indexes', () => {
+		const { model } = setupFinders();
+		const indexes = (model as unknown as { modelIndexes: () => { key: object }[] }).modelIndexes();
+		const live = { conferenceRoomId: { $exists: true }, status: LIVE };
+
+		expect(indexes).toHaveLength(6);
+		expect(indexes.slice(0, 4).map(({ key }) => key)).toEqual([
+			{ rid: 1, createdAt: 1 },
+			{ type: 1, status: 1 },
+			{ discussionRid: 1, createdAt: 1 },
+			{ status: 1, createdAt: -1 },
+		]);
+		expect(indexes[4]).toEqual({ key: { conferenceRoomId: 1 }, unique: true, partialFilterExpression: live });
+		expect(indexes[5]).toEqual({ key: { customUrl: 1 }, unique: false, partialFilterExpression: live });
+	});
+
+	// The `{ customUrl: 1 }` index is partial on linked conferences, so the query must name that too.
+	it('findOneActiveByCustomUrl names the live statuses and linked conferences', async () => {
+		const { model, findOne } = setupFinders();
+
+		await model.findOneActiveByCustomUrl('weekly', { projection: { _id: 1 } });
+
+		expect(findOne).toHaveBeenCalledWith(
+			{ customUrl: 'weekly', conferenceRoomId: { $exists: true }, status: LIVE },
+			{ projection: { _id: 1 } },
+		);
+	});
+
+	it('findOneActiveByConferenceRoomId names the live statuses', async () => {
+		const { model, findOne } = setupFinders();
+
+		await model.findOneActiveByConferenceRoomId('link-1');
+
+		expect(findOne).toHaveBeenCalledWith({ conferenceRoomId: 'link-1', status: LIVE }, undefined);
+	});
+
+	it('findActiveByConferenceRoomIds names the live statuses', () => {
+		const { model, find } = setupFinders();
+
+		model.findActiveByConferenceRoomIds(['link-1', 'link-2'], { projection: { conferenceRoomId: 1 } });
+
+		expect(find).toHaveBeenCalledWith(
+			{ conferenceRoomId: { $in: ['link-1', 'link-2'] }, status: LIVE },
+			{ projection: { conferenceRoomId: 1 } },
+		);
+	});
+
+	it('findActiveCustomUrlsStartingWith matches an anchored, literal prefix among live conferences', () => {
+		const { model, find } = setupFinders();
+
+		model.findActiveCustomUrlsStartingWith('a.b+');
+
+		const [filter] = find.mock.calls[0];
+		expect(filter.status).toEqual(LIVE);
+		// The `{ customUrl: 1 }` index is partial on linked conferences, so the query must name that too.
+		expect(filter.conferenceRoomId).toEqual({ $exists: true });
+		const pattern = new RegExp(filter.customUrl.$regex);
+		expect(pattern.test('a.b+-2')).toBe(true);
+		expect(pattern.test('axbb')).toBe(false);
+		expect(pattern.test('xa.b+')).toBe(false);
+	});
+});
+
+describe('VideoConferenceRaw.createGroup', () => {
+	const details = {
+		rid: 'room-1',
+		title: 'Weekly',
+		createdBy: { _id: 'u', name: 'U', username: 'u' },
+		providerName: 'LiveKit',
+		ringing: false,
+	};
+
+	it('createGroup stores both fields', async () => {
+		const { model, insertOne } = setupFinders();
+
+		await model.createGroup({ ...details, conferenceRoomId: 'link-1', customUrl: 'weekly' });
+
+		expect(insertOne.mock.calls[0][0]).toMatchObject({ conferenceRoomId: 'link-1', customUrl: 'weekly', providerName: 'livekit' });
+	});
+
+	// Without `ignoreUndefined` the driver stores `undefined` as `null`, and `$exists` matches `null`: every
+	// conference without a link would then collide in the unique link index.
+	it('createGroup leaves undefined fields out', async () => {
+		const { model, insertOne } = setupFinders();
+
+		await model.createGroup({ ...details, conferenceRoomId: undefined, customUrl: undefined });
+		await model.createGroup(details);
+
+		for (const [doc] of insertOne.mock.calls) {
+			expect(Object.keys(doc)).not.toContain('conferenceRoomId');
+			expect(Object.keys(doc)).not.toContain('customUrl');
+		}
+	});
+});

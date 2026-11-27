@@ -10,6 +10,8 @@ type ConferenceStatePageProps = {
 	subtitle?: ReactNode;
 	/** What the user can do about it, if anything. A state with nothing on offer simply says what happened. */
 	action?: { label: string; onClick: () => void };
+	/** `neutral` for a state where nothing went wrong. */
+	variation?: 'danger' | 'neutral';
 };
 
 /**
@@ -19,7 +21,7 @@ type ConferenceStatePageProps = {
  * say what happened and carry whatever way out it has. It keeps the conference's own header so the window
  * still reads as the call it was opened for.
  */
-const ConferenceStatePage = ({ icon, title, subtitle, action }: ConferenceStatePageProps) => {
+const ConferenceStatePage = ({ icon, title, subtitle, action, variation = 'danger' }: ConferenceStatePageProps) => {
 	const { t } = useTranslation();
 
 	return (
@@ -27,7 +29,7 @@ const ConferenceStatePage = ({ icon, title, subtitle, action }: ConferenceStateP
 			<PageHeader title={t('Video_Conference')} />
 			<PageContent display='flex' alignItems='center' justifyContent='center'>
 				<States>
-					<StatesIcon name={icon} variation='danger' />
+					<StatesIcon name={icon} variation={variation === 'danger' ? 'danger' : undefined} />
 					<StatesTitle>{title}</StatesTitle>
 					{subtitle && <StatesSubtitle>{subtitle}</StatesSubtitle>}
 					{action && (

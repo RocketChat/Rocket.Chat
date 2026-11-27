@@ -1,10 +1,15 @@
-import type { JSONSchemaType } from 'ajv';
-
 import { ajv } from '../Ajv';
 
-export type VideoConfStartProps = { roomId: string; title?: string; allowRinging?: boolean };
+export type VideoConfStartProps = {
+	roomId: string;
+	title?: string;
+	allowRinging?: boolean;
+	/** The address of a link of the room to start its conference, or to answer the one already live from it. */
+	customUrl?: string;
+};
 
-const videoConfStartPropsSchema: JSONSchemaType<VideoConfStartProps> = {
+// Not a `JSONSchemaType`: it would make the optional `customUrl` nullable, and a `null` address is no address.
+const videoConfStartPropsSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
@@ -19,9 +24,13 @@ const videoConfStartPropsSchema: JSONSchemaType<VideoConfStartProps> = {
 			type: 'boolean',
 			nullable: true,
 		},
+		customUrl: {
+			type: 'string',
+			minLength: 1,
+		},
 	},
 	required: ['roomId'],
 	additionalProperties: false,
 };
 
-export const isVideoConfStartProps = ajv.compile(videoConfStartPropsSchema);
+export const isVideoConfStartProps = ajv.compile<VideoConfStartProps>(videoConfStartPropsSchema);

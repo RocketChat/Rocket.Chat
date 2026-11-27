@@ -210,6 +210,7 @@ export const videoConferenceQueryKeys = {
 	joinable: () => [...videoConferenceQueryKeys.all, 'joinable'] as const,
 	/** What the provider can be told about devices — asked before any conference exists. */
 	capabilities: () => [...videoConferenceQueryKeys.all, 'capabilities'] as const,
+	persistentRooms: (roomId: IRoom['_id']) => [...videoConferenceQueryKeys.all, 'persistent-rooms', roomId] as const,
 } as const;
 
 export const messagesQueryKeys = {

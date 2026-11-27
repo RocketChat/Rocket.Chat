@@ -26,6 +26,7 @@ import type { ITeam } from './ITeam';
 import type { IUploadWithUser } from './IUpload';
 import type { IUser, IDirectoryUserResult } from './IUser';
 import type { VideoConference, VideoConferenceInstructions } from './IVideoConference';
+import type { IVideoConferenceRoom } from './IVideoConferenceRoom';
 import type { SlashCommand } from './SlashCommands';
 import type { VideoConferenceCapabilities } from './VideoConferenceCapabilities';
 import type { IImport } from './import/IImport';
@@ -53,6 +54,7 @@ export const schemas = typia.json.schemas<
 			| IUser
 			| IDirectoryUserResult
 			| VideoConference
+			| IVideoConferenceRoom
 			| VideoConferenceCapabilities
 			| VideoConferenceInstructions
 			| CloudConfirmationPollData

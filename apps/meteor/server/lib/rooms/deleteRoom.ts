@@ -1,4 +1,4 @@
-import { Messages, Rooms, Subscriptions } from '@rocket.chat/models';
+import { Messages, Rooms, Subscriptions, VideoConferenceRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../callbacks';
 import { FileUpload } from '../media/file-upload';
@@ -18,6 +18,8 @@ export const deleteRoom = async function (rid: string): Promise<void> {
 	});
 
 	await FileUpload.getStore('Avatars').deleteByRoomId(rid);
+
+	await VideoConferenceRooms.removeByRoomId(rid);
 
 	await callbacks.run('afterDeleteRoom', rid);
 

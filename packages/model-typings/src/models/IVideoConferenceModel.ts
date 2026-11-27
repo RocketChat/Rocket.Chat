@@ -8,9 +8,10 @@ import type {
 	VideoConferenceStatus,
 	IVoIPVideoConference,
 } from '@rocket.chat/core-typings';
-import type { FindCursor, UpdateOptions, UpdateFilter, UpdateResult, FindOptions } from 'mongodb';
+import type { Document, FindCursor, UpdateOptions, UpdateFilter, UpdateResult, FindOptions } from 'mongodb';
 
 import type { FindPaginated, IBaseModel, InsertionModel } from './IBaseModel';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
 
 export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	findPaginatedByRoomId(
@@ -31,7 +32,8 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	createGroup({
 		providerName,
 		...callDetails
-	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName'>>): Promise<string>;
+	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName'>> &
+		Pick<IGroupVideoConference, 'conferenceRoomId' | 'customUrl'>): Promise<string>;
 
 	createLivechat({
 		providerName,
@@ -96,4 +98,34 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	unsetDiscussionRid(discussionRid: IRoom['_id']): Promise<void>;
 
 	createVoIP(call: InsertionModel<IVoIPVideoConference>): Promise<string | undefined>;
+
+	/** Live means calling or started. */
+	findOneActiveByCustomUrl<T extends Document = VideoConference, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		customUrl: NonNullable<IGroupVideoConference['customUrl']>,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+
+	findOneActiveByConferenceRoomId<
+		T extends Document = VideoConference,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		conferenceRoomId: NonNullable<IGroupVideoConference['conferenceRoomId']>,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
+
+	findActiveByConferenceRoomIds<
+		T extends Document = VideoConference,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		conferenceRoomIds: NonNullable<IGroupVideoConference['conferenceRoomId']>[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+
+	findActiveCustomUrlsStartingWith<
+		T extends Document = VideoConference,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		prefix: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 }

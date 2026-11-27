@@ -1,4 +1,5 @@
 import { ConferencePreflight } from '@rocket.chat/ui-conference';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import ConferencePageError from './ConferencePageError';
@@ -24,7 +25,12 @@ const ConferenceStartPage = ({ rid }: ConferenceStartPageProps) => {
 	useConfinedNavigation();
 
 	const { t } = useTranslation();
-	const { name, isDirect, canRing, capabilities, loading, error, starting, start } = useStartConference(rid);
+	const router = useRouter();
+	const { name, isDirect, canRing, capabilities, loading, error, starting, start } = useStartConference(rid, {
+		// Replaces this screen in history, so reloading the window — or reaching it again from anywhere else —
+		// lands on the conference rather than starting a second one.
+		onStarted: (callId) => router.navigate({ name: 'conference', params: { id: callId } }, { replace: true }),
+	});
 
 	if (error) {
 		return <ConferencePageError />;

@@ -13,6 +13,8 @@ import {
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import VideoCallMenuWithData from '../../views/room/Header/VideoCallMenu/VideoCallMenuWithData';
+import { useEmbeddedVideoConfProvider } from '../../views/room/Header/VideoCallMenu/useEmbeddedVideoConfProvider';
 import { useRoom, useUserIsSubscribed } from '../../views/room/contexts/RoomContext';
 import { useVideoConfWarning } from '../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
 
@@ -54,6 +56,8 @@ export const useVideoCallRoomAction = () => {
 	);
 
 	const visible = groups.length > 0;
+	const offersLinks = room.t !== 'l';
+	const native = useEmbeddedVideoConfProvider(preflight && visible && offersLinks);
 	const allowed = visible && permittedToCallManagement && (!user?.username || !room.muted?.includes(user.username)) && !ownUser;
 	const unavailable = federated || (!!room.ro && !permittedToPostReadonly) || room.archived;
 	// A room open only as a preview can't start a call: the call is the members', so the user is told to join first
@@ -88,23 +92,44 @@ export const useVideoCallRoomAction = () => {
 		}
 	});
 
-	return useMemo((): RoomToolboxActionConfig | undefined => {
-		if (!allowed) {
-			return undefined;
-		}
+	const start = useStableCallback(() => {
+		void handleOpenVideoConf();
+	});
 
-		return {
+	return useMemo((): RoomToolboxActionConfig | undefined => {
+		const item = {
 			id: 'start-video-call',
 			title: 'Video_call',
 			icon: 'video',
 			featured: true,
-			action: () => {
-				void handleOpenVideoConf();
-			},
 			order: 1,
 			groups,
 			disabled,
 			tooltip,
+		} as const;
+
+		if (!native) {
+			return allowed ? { ...item, action: start } : undefined;
+		}
+
+		// Members who may not start still reach the room's links through the menu.
+		return {
+			...item,
+			...(allowed && { action: start }),
+			renderToolboxItem: ({ id, title, icon, className }) => (
+				<VideoCallMenuWithData
+					key={id}
+					rid={room._id}
+					title={t(title)}
+					icon={icon}
+					className={className}
+					canStart={allowed}
+					canManage={permittedToCallManagement}
+					startDisabled={disabled}
+					startDisabledReason={tooltip}
+					onStart={start}
+				/>
+			),
 		};
-	}, [allowed, groups, disabled, handleOpenVideoConf, tooltip]);
+	}, [native, allowed, groups, disabled, tooltip, start, room._id, t, permittedToCallManagement]);
 };

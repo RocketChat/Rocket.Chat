@@ -1,7 +1,8 @@
 # Video conferences
 
-How a conference is modelled on the server: who belongs to it, how it ends, and why its chat is a separate
-question from the call itself — and how the window that renders it is put together.
+How a conference is modelled on the server: who belongs to it, how it ends, why its chat is a separate
+question from the call itself, and how a room keeps a stable address for its conferences — and how the window
+that renders it is put together.
 
 This is the model, not the mechanism. Names of functions and constants are deliberately absent — read the code
 for those.
@@ -140,6 +141,78 @@ The claim is released when the member leaves — including when leaving was infe
 crashed tab is exactly the kind of thing nobody thinks to fix by hand.
 
 Nothing about presence is allowed to fail a join. It is a courtesy; joining is not.
+
+## Conference links
+
+A conference exists only from the moment someone starts it, and its address is its id, so a room has nothing
+stable to hand out for a meeting that recurs. A **conference link** is that: a named record owned by a room, with
+an address of its own made from its title — lower case, words joined by hyphens, and `-2`, `-3`… on the end when
+that address is taken. Renaming a link gives it the address of its new title. Opening the address shows the
+conference behind it, and the browser address stays the link's from the moment it is opened until the call is
+left.
+
+Links are created and started only with a provider that runs calls inside Rocket.Chat; see
+[native video conference](native-video-conference/README.md#conference-links). Omnichannel rooms have none.
+
+### Who may do what
+
+Starting a conference from a link is starting a conference in its room, under the same rule: the right to manage
+calls in that room, held globally or for the room, and the right to post there. Creating a link takes the same.
+Renaming or deleting one takes the right to manage calls in the link's room *and* access to that room: every user
+holds that right by default, so on its own it would let anyone holding a link's id change the links of a private
+room they are not in. There is no rule reserving a link to whoever created it. Seeing a room's links takes access
+to the room.
+
+Someone who may not start a link's conference and opens it while nothing runs is told it has not started yet. The
+page turns into the join page when someone starts it.
+
+### One live conference per link
+
+A link has at most one live conference at a time. Starting from a link that already has one answers that one, and
+two starts at the same moment end in a single conference: the second is refused as a duplicate, and answers the
+one that won.
+
+A conference started from a link is a group conference named after the link, and it records the link and the
+address it was started under (`customUrl`). Ringing is chosen on the preflight and the call message is posted, as
+for any start. A one-to-one direct message does not ring from a link: the call that rings there is a direct call,
+which has no name of its own to carry the link's.
+
+### How an address resolves
+
+One address reaches one thing, tried in this order:
+
+1. a conference id;
+2. a live conference started under that address;
+3. the link at that address — its live conference, or, with nothing live, a stand-in shaped like a conference that
+   says it has not started.
+
+An address that is none of these is refused the way an unknown call is. A link's address is never shaped like a
+conference id, never equal to an existing one, and never the word that opens the start screen, so an address is
+only ever a link or a call. The second step is what keeps a running conference at the address people already have
+once its link is renamed or deleted, and while it runs no other link is given that address.
+
+### The not-started status
+
+The stand-in carries a status of its own, *not started*, and says whether the reader may start it. It is never
+stored: it exists only in the answer for a link with nothing live, so it is in no history and no list of calls.
+
+### Renaming and deleting
+
+Neither touches a running conference. It keeps its title and stays reachable at the address it was started under
+until it ends; from then on that address stops working. A rename moves the link to its new address at once, and
+the old one opens nothing unless a conference is still running from it. A delete stops the link's address at
+once, a running conference apart. Deleting a room deletes its links.
+
+### The room header
+
+With a provider that runs calls inside Rocket.Chat, the room header's video call button opens a menu: start a
+conference, create a link, and the room's links, each marked while a conference runs from it, with its own actions
+— join or open, copy the address, and for those who may, rename and delete. Members who may not start a conference
+still get the button, for the links. With any other provider, and in omnichannel rooms, the button is what it
+always was.
+
+A conference starting or ending in the room shows on its link as the room is told of it. Someone else creating,
+renaming or deleting a link shows the next time the room's links are read, not before.
 
 ## The conference window
 

@@ -1,6 +1,7 @@
 import type { ConferenceContextValue, ConferenceFailure, ConferencePanel } from '@rocket.chat/ui-conference';
 import { ConferenceContext, useCallDevicesInitialState } from '@rocket.chat/ui-conference';
 import { useEndpoint, usePermission, useSetting, useUserId, useUserPreference, useUserSubscription } from '@rocket.chat/ui-contexts';
+import type { VideoConferenceInfo } from '@rocket.chat/ui-video-conf';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { Suspense, useCallback, useMemo, useState } from 'react';
@@ -23,6 +24,12 @@ import { useLeaveConferenceOnClose } from '../hooks/useLeaveConferenceOnClose';
 import { useProviderPlugin } from '../hooks/useProviderPlugin';
 import { conferencePreflightMedia } from '../lib/conferencePreflightMedia';
 
+export type ConferenceProviderProps = {
+	callId: string;
+	initialInfo?: VideoConferenceInfo;
+	children: ReactNode;
+};
+
 const emptyUnreadData = { alert: false, userMentions: 0, unread: 0, groupMentions: 0 } as const;
 
 /**
@@ -41,8 +48,8 @@ const failureFor = (error: unknown): ConferenceFailure | undefined =>
  * workspace — the reads, the five things that can be done to a call, the effects that keep a participant
  * counted as present, the parts of the window only the product can build, and the provider of a call that runs in here.
  */
-const ConferenceProvider = ({ callId, children }: { callId: string; children: ReactNode }) => {
-	const { call, room, conference } = useConferenceEmbedded(callId);
+const ConferenceProvider = ({ callId, initialInfo, children }: ConferenceProviderProps) => {
+	const { call, room, conference } = useConferenceEmbedded(callId, { initialInfo });
 	const queryClient = useQueryClient();
 
 	const ring = useEndpoint('POST', '/v1/video-conference.ring');

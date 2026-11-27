@@ -64,7 +64,7 @@ import type {
 } from './types/IUiKitCoreApp';
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from './types/IUploadService';
 import type { IUserService } from './types/IUserService';
-import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVideoConfService';
+import type { IVideoConfService, VideoConferenceJoinOptions, VideoConferenceRoomWithOngoingCall } from './types/IVideoConfService';
 import type { IXMPPServerService } from './types/IXMPPServerService';
 
 export type { AppStatusReport } from './types/IAppsEngineService';
@@ -161,6 +161,7 @@ export type {
 	TelemetryEvents,
 	TelemetryMap,
 	VideoConferenceJoinOptions,
+	VideoConferenceRoomWithOngoingCall,
 	ISendFileLivechatMessageParams,
 	ISendFileMessageParams,
 	IUploadFileParams,

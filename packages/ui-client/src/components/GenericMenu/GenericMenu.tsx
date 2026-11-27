@@ -1,8 +1,8 @@
-import { IconButton, MenuItem, MenuSection, Menu } from '@rocket.chat/fuselage';
+import { IconButton, MenuItem, MenuSection, MenuSubmenuTrigger, Menu } from '@rocket.chat/fuselage';
 import { cloneElement, type ComponentProps, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { GenericMenuItemProps } from './GenericMenuItem';
+import type { GenericMenuItemProps, GenericMenuSubItemProps } from './GenericMenuItem';
 import GenericMenuItem from './GenericMenuItem';
 import { useHandleMenuAction } from './hooks/useHandleMenuAction';
 
@@ -30,6 +30,52 @@ type GenericMenuConditionalProps =
 
 export type GenericMenuProps = GenericMenuCommonProps & GenericMenuConditionalProps & Omit<ComponentProps<typeof Menu>, 'children'>;
 
+const getTextValue = ({ textValue, content }: GenericMenuItemProps) => textValue ?? (typeof content === 'string' ? content : undefined);
+
+const alignItems = <TItem extends GenericMenuItemProps>(items: TItem[], hasIcon: boolean): TItem[] =>
+	hasIcon ? items.map((item) => ({ ...item, gap: item.gap ?? (!item.icon && !item.status) })) : items;
+
+const renderSubItem = (item: GenericMenuSubItemProps) => {
+	const textValue = getTextValue(item);
+
+	// A sub menu keeps its own collection, out of reach of the root menu's `disabledKeys`; `isDisabled` on the item
+	// is what react-stately reads there.
+	return (
+		<MenuItem key={item.id} {...(textValue && { textValue })} {...(item.disabled && { isDisabled: true })}>
+			<GenericMenuItem {...item} />
+		</MenuItem>
+	);
+};
+
+const renderItem = (item: GenericMenuItemProps) => {
+	if (!item.items?.length) {
+		return (
+			<MenuItem key={item.id} {...(item.textValue && { textValue: item.textValue })}>
+				<GenericMenuItem {...item} />
+			</MenuItem>
+		);
+	}
+
+	const textValue = getTextValue(item);
+
+	return (
+		<MenuSubmenuTrigger key={item.id} {...(textValue && { textValue })}>
+			<MenuItem>
+				<GenericMenuItem {...item} />
+			</MenuItem>
+			<MenuSection
+				aria-label={textValue}
+				items={alignItems(
+					item.items,
+					item.items.some(({ icon }) => icon),
+				)}
+			>
+				{renderSubItem}
+			</MenuSection>
+		</MenuSubmenuTrigger>
+	);
+};
+
 const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction, button, className, ...props }: GenericMenuProps) => {
 	const { t, i18n } = useTranslation();
 
@@ -42,8 +88,7 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 	const handleAction = useHandleMenuAction(itemsList || [], callbackAction);
 
 	const hasIcon = itemsList.some(({ icon }) => icon);
-	const handleItems = (items: GenericMenuItemProps[]) =>
-		hasIcon ? items.map((item) => ({ ...item, gap: item.gap ?? (!item.icon && !item.status) })) : items;
+	const handleItems = (items: GenericMenuItemProps[]) => alignItems(items, hasIcon);
 
 	const isMenuEmpty = !(sections && sections.length > 0) && !(items && items.length > 0);
 
@@ -75,11 +120,7 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 							items={handleItems(items)}
 							key={typeof title === 'string' ? `${title}-${key}` : key}
 						>
-							{(item) => (
-								<MenuItem key={item.id} {...(item.textValue && { textValue: item.textValue })}>
-									<GenericMenuItem {...item} />
-								</MenuItem>
-							)}
+							{renderItem}
 						</MenuSection>
 					))}
 				</Menu>
@@ -94,11 +135,7 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 					{...(disabledKeys && { disabledKeys })}
 					{...props}
 				>
-					{handleItems(items).map((item) => (
-						<MenuItem key={item.id} {...(item.textValue && { textValue: item.textValue })}>
-							<GenericMenuItem {...item} />
-						</MenuItem>
-					))}
+					{handleItems(items).map(renderItem)}
 				</Menu>
 			)}
 		</>

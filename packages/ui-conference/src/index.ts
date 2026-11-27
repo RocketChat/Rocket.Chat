@@ -21,6 +21,8 @@ export type {
 export { default as ConferenceWindow } from './views/ConferenceWindow.js';
 export { default as ConferencePreflight } from './views/ConferencePreflight.js';
 export { default as ConferenceStatePage } from './views/ConferenceStatePage.js';
+export { default as ConferenceNotStarted } from './views/ConferenceNotStarted.js';
+export type { ConferenceNotStartedProps } from './views/ConferenceNotStarted.js';
 export { default as ConferenceThreadModal } from './views/ConferenceThreadModal.js';
 export { default as ConferenceViewport } from './views/ConferenceViewport.js';
 export { default as OngoingCallsDropdown } from './views/OngoingCallsDropdown.js';

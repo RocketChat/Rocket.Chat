@@ -6,3 +6,4 @@ export * from './getUserStatusAsViewer';
 export * from './updatePermissions';
 export * from './setUserPreferences';
 export * from './updateOwnUserInfo';
+export * from './video-conference';

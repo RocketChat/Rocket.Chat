@@ -23,3 +23,6 @@ export type PersistentChatMode = 'thread' | 'main_room';
 export const EMPTY_CALL_GRACE_MS = 10_000;
 
 export const shouldRingRecipients = (recipientCount: number): boolean => recipientCount > 0 && recipientCount <= RING_RECIPIENTS_LIMIT;
+
+/** The conference address that stands for a conference not created yet. */
+export const NEW_CONFERENCE_ID = 'new';

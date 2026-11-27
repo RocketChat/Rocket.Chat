@@ -3,6 +3,7 @@ import { mock } from 'node:test';
 import type {
 	IGroupVideoConference,
 	IDirectVideoConference,
+	IVideoConferenceRoom,
 	IVideoConferenceUser,
 	VideoConference,
 	VideoConferenceCapabilities,
@@ -95,8 +96,20 @@ export const commonServiceStubs = {
 		},
 	},
 	'../../lib/videoConfTypes': { videoConfTypes: { isCallManagedByApp: () => false, getTypeForRoom: () => ({}) } },
+	'../../lib/videoConference/getConferenceRoomUrl': { getConferenceRoomUrl: async (title: string) => title },
 	'../../meteor-methods/rooms/addUsersToRoom': { addUsersToRoomMethod: async () => undefined },
 	'../../settings': { settings: { get: (key: string) => settingValues[key] } },
+};
+
+/** `commonServiceStubs`' providers, with one active: the specs that start or create something need it. */
+export const activeProviderStubs = {
+	'../../lib/videoConfProviders': {
+		videoConfProviders: {
+			...commonServiceStubs['../../lib/videoConfProviders'].videoConfProviders,
+			hasAnyProvider: () => true,
+			getActiveProvider: () => 'livekit',
+		},
+	},
 };
 
 /**
@@ -232,3 +245,18 @@ export const buildDirectCall = (
 	users,
 	...overrides,
 });
+
+export const buildLink = (overrides: Partial<IVideoConferenceRoom> = {}): IVideoConferenceRoom => ({
+	_id: 'link1',
+	rid: 'room1',
+	title: 'Weekly sync',
+	url: 'weekly-sync',
+	providerName: 'livekit',
+	createdBy,
+	createdAt: new Date('2026-01-01T00:00:00.000Z'),
+	_updatedAt: new Date('2026-01-02T00:00:00.000Z'),
+	...overrides,
+});
+
+/** What the database driver throws when a unique index already holds the value. */
+export const duplicateKeyError = (): Error => Object.assign(new Error('E11000 duplicate key error'), { code: 11000 });

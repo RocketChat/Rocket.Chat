@@ -12010,6 +12010,7 @@ __metadata:
     "@react-aria/dialog": "npm:^3.5.21"
     "@react-aria/overlays": "npm:^3.25.0"
     "@react-aria/toolbar": "npm:^3.0.0-nightly.5042"
+    "@react-aria/visually-hidden": "npm:^3.8.27"
     "@rocket.chat/core-typings": "workspace:~"
     "@rocket.chat/css-in-js": "workspace:~"
     "@rocket.chat/emitter": "workspace:~"

@@ -1,7 +1,7 @@
 import { Apps } from '@rocket.chat/apps';
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps/dist/server/managers/AppVideoConfProviderManager';
 import type { VideoConfData, VideoConfDataExtended } from '@rocket.chat/apps-engine/definition/videoConfProviders';
-import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
+import type { IVideoConfService, VideoConferenceJoinOptions, VideoConferenceRoomWithOngoingCall } from '@rocket.chat/core-services';
 import { api, ServiceClassInternal, Message, Presence, Room } from '@rocket.chat/core-services';
 import type {
 	IDirectVideoConference,
@@ -26,6 +26,7 @@ import type {
 	Optional,
 	ExternalVideoConference,
 	IVoIPVideoConference,
+	IVideoConferenceRoom,
 } from '@rocket.chat/core-typings';
 import {
 	UserStatus,
@@ -38,7 +39,7 @@ import {
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import type { InsertionModel } from '@rocket.chat/model-typings';
-import { Users, VideoConference as VideoConferenceModel, Rooms, Messages, Subscriptions } from '@rocket.chat/models';
+import { Users, VideoConference as VideoConferenceModel, VideoConferenceRooms, Rooms, Messages, Subscriptions } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { wrapExceptions } from '@rocket.chat/tools';
@@ -50,6 +51,7 @@ import { conferenceNameFor } from '../../../lib/videoConference/conferenceName';
 import { availabilityErrors, CALL_FACES_SHOWN, EMPTY_CALL_GRACE_MS, shouldRingRecipients } from '../../../lib/videoConference/constants';
 import { canRingConferenceMember, isUnaskedConferenceMember } from '../../../lib/videoConference/memberStatus';
 import { expiredPresenceLeases, INFERRED_LEAVE_REASONS } from '../../../lib/videoConference/presence';
+import { isDuplicateKeyError } from '../../database/isDuplicateKeyError';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { db } from '../../database/utils';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
@@ -72,10 +74,14 @@ import { getUserAvatarURL } from '../../lib/utils/getUserAvatarURL';
 import { getUserPreference } from '../../lib/utils/lib/getUserPreference';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
+import { getConferenceRoomUrl } from '../../lib/videoConference/getConferenceRoomUrl';
 import { addUsersToRoomMethod } from '../../meteor-methods/rooms/addUsersToRoom';
 import { settings } from '../../settings';
 
 const logger = new Logger('VideoConference');
+
+/** How many times a link write retries its address after another write took it first. */
+const LINK_URL_ATTEMPTS = 3;
 
 export class VideoConfService extends ServiceClassInternal implements IVideoConfService {
 	protected name = 'video-conference';
@@ -126,10 +132,14 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	public async start(
 		caller: IUser['_id'],
 		rid: string,
-		{ title, allowRinging }: { title?: string; allowRinging?: boolean },
+		{ title, allowRinging, customUrl }: { title?: string; allowRinging?: boolean; customUrl?: IVideoConferenceRoom['url'] },
 	): Promise<VideoConferenceInstructions> {
 		return wrapExceptions(async () => {
 			const providerName = await this.getValidatedProvider();
+			if (customUrl !== undefined) {
+				return this.startFromLink(caller, rid, providerName, customUrl, Boolean(allowRinging));
+			}
+
 			const initialData = await this.getTypeForNewVideoConference(rid, Boolean(allowRinging));
 
 			const data = {
@@ -151,6 +161,226 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			});
 			throw err;
 		});
+	}
+
+	/**
+	 * Starts the link's conference, or answers the one already live from it: a link never has two at once.
+	 *
+	 * Always a group conference titled after the link.
+	 */
+	private async startFromLink(
+		caller: IUser['_id'],
+		rid: IRoom['_id'],
+		providerName: string,
+		customUrl: IVideoConferenceRoom['url'],
+		allowRinging: boolean,
+	): Promise<ConferenceInstructions> {
+		if (!this.isEmbeddedProvider(providerName)) {
+			throw new Error('error-video-conf-links-not-supported');
+		}
+
+		const link = await VideoConferenceRooms.findOneByUrl(customUrl);
+		if (!link || link.rid !== rid) {
+			throw new Error('error-invalid-conference-room');
+		}
+
+		const live = await this.getLiveConferenceOfLink(link._id);
+		if (live) {
+			return live;
+		}
+
+		const data = {
+			...(await this.getTypeForLink(rid, allowRinging)),
+			createdBy: caller,
+			rid,
+			providerName,
+		};
+		if (data.type !== 'videoconference') {
+			throw new Error('error-video-conf-links-not-supported');
+		}
+		data.title = link.title;
+		data.conferenceRoomId = link._id;
+		data.customUrl = link.url;
+
+		try {
+			return (await this.create(data, false)) as ConferenceInstructions;
+		} catch (error) {
+			if (!isDuplicateKeyError(error)) {
+				throw error;
+			}
+
+			// Another start from the same link won the race; its conference is the one to answer.
+			const winner = await this.getLiveConferenceOfLink(link._id);
+			if (!winner) {
+				throw error;
+			}
+			return winner;
+		}
+	}
+
+	private async getLiveConferenceOfLink(linkId: IVideoConferenceRoom['_id']): Promise<ConferenceInstructions | null> {
+		const call = await VideoConferenceModel.findOneActiveByConferenceRoomId<Pick<VideoConference, '_id' | 'rid'>>(linkId, {
+			projection: { _id: 1, rid: 1 },
+		});
+
+		return call && { type: 'videoconference', callId: call._id, rid: call.rid };
+	}
+
+	/** The type a start from a link takes in this room. A one-to-one DM drops the ring rather than make a direct call. */
+	private async getTypeForLink(rid: IRoom['_id'], allowRinging: boolean): Promise<AtLeast<VideoConferenceCreateData, 'type'>> {
+		const withRinging = await this.getTypeForNewVideoConference(rid, allowRinging);
+
+		return withRinging.type === 'direct' ? this.getTypeForNewVideoConference(rid, false) : withRinging;
+	}
+
+	public async getRoom(roomId: IVideoConferenceRoom['_id']): Promise<IVideoConferenceRoom | null> {
+		return VideoConferenceRooms.findOneById(roomId);
+	}
+
+	public async createRoom(uid: IUser['_id'], rid: IRoom['_id'], title: string): Promise<IVideoConferenceRoom> {
+		const providerName = await this.getValidatedProvider();
+		if (!this.isEmbeddedProvider(providerName)) {
+			throw new Error('error-video-conf-links-not-supported');
+		}
+
+		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't'>>(rid, { projection: { t: 1 } });
+		if (!room) {
+			throw new Error('invalid-room');
+		}
+
+		if (room.t === 'l') {
+			throw new Error('error-video-conf-links-not-supported');
+		}
+
+		const user = await Users.findOneById<Pick<IUser, '_id' | 'name' | 'username'>>(uid, { projection: { name: 1, username: 1 } });
+		if (!user) {
+			throw new Error('failed-to-load-own-data');
+		}
+
+		const name = title.trim();
+		const linkId = await this.retryLinkUrl(async () =>
+			VideoConferenceRooms.create({
+				rid,
+				providerName,
+				title: name,
+				url: await getConferenceRoomUrl(name),
+				createdBy: { _id: user._id, name: user.name, username: user.username },
+			}),
+		);
+
+		const link = await VideoConferenceRooms.findOneById(linkId);
+		if (!link) {
+			throw new Error('error-invalid-conference-room');
+		}
+
+		return link;
+	}
+
+	/** Renames a link and moves it to the address of its new title. A conference live from it keeps its own. */
+	public async renameRoom(roomId: IVideoConferenceRoom['_id'], title: string): Promise<IVideoConferenceRoom> {
+		const link = await VideoConferenceRooms.findOneById<Pick<IVideoConferenceRoom, '_id' | 'url'>>(roomId, { projection: { url: 1 } });
+		if (!link) {
+			throw new Error('error-invalid-conference-room');
+		}
+
+		const name = title.trim();
+		const renamed = await this.retryLinkUrl(async () =>
+			VideoConferenceRooms.setTitleAndUrlById(link._id, name, await getConferenceRoomUrl(name, { currentUrl: link.url })),
+		);
+		if (!renamed) {
+			throw new Error('error-invalid-conference-room');
+		}
+
+		return renamed;
+	}
+
+	/** Removes a link. A conference live from it keeps running under its own address. */
+	public async deleteRoom(roomId: IVideoConferenceRoom['_id']): Promise<void> {
+		const { deletedCount } = await VideoConferenceRooms.removeById(roomId);
+		if (!deletedCount) {
+			throw new Error('error-invalid-conference-room');
+		}
+	}
+
+	/** The room's links, oldest first, each with the conference live from it. */
+	public async listRooms(rid: IRoom['_id']): Promise<VideoConferenceRoomWithOngoingCall[]> {
+		const links = await VideoConferenceRooms.findByRoomId(rid).toArray();
+		if (!links.length) {
+			return [];
+		}
+
+		const live = await VideoConferenceModel.findActiveByConferenceRoomIds<Pick<IGroupVideoConference, '_id' | 'conferenceRoomId'>>(
+			links.map(({ _id }) => _id),
+			{ projection: { conferenceRoomId: 1 } },
+		).toArray();
+		const ongoingCallIds = new Map(live.map(({ _id, conferenceRoomId }) => [conferenceRoomId, _id]));
+
+		return links.map((link) => {
+			const ongoingCallId = ongoingCallIds.get(link._id);
+			return ongoingCallId ? { ...link, ongoingCallId } : link;
+		});
+	}
+
+	/**
+	 * The conference an address reaches: a conference id, the address a live conference was started under, or a
+	 * link — its live conference, or a conference-shaped stand-in that is never stored when nothing is live.
+	 */
+	public async resolve(idOrUrl: string): Promise<Omit<VideoConference, 'providerData'> | null> {
+		const projection = { providerData: 0 } as const;
+
+		const call = await VideoConferenceModel.findOneById<Omit<VideoConference, 'providerData'>>(idOrUrl, { projection });
+		if (call) {
+			return call;
+		}
+
+		const startedUnderAddress = await VideoConferenceModel.findOneActiveByCustomUrl<Omit<VideoConference, 'providerData'>>(idOrUrl, {
+			projection,
+		});
+		if (startedUnderAddress) {
+			return startedUnderAddress;
+		}
+
+		const link = await VideoConferenceRooms.findOneByUrl(idOrUrl);
+		if (!link) {
+			return null;
+		}
+
+		const live = await VideoConferenceModel.findOneActiveByConferenceRoomId<Omit<VideoConference, 'providerData'>>(link._id, {
+			projection,
+		});
+
+		return live ?? this.getNotStartedConference(link);
+	}
+
+	private getNotStartedConference(link: IVideoConferenceRoom): IGroupVideoConference {
+		return {
+			_id: link._id,
+			_updatedAt: link._updatedAt,
+			type: 'videoconference',
+			status: VideoConferenceStatus.NOT_STARTED,
+			title: link.title,
+			rid: link.rid,
+			providerName: link.providerName,
+			createdAt: link.createdAt,
+			createdBy: { _id: link.createdBy._id, username: link.createdBy.username ?? '', name: link.createdBy.name ?? '' },
+			conferenceRoomId: link._id,
+			customUrl: link.url,
+			users: [],
+			messages: {},
+			anonymousUsers: 0,
+		};
+	}
+
+	private async retryLinkUrl<T>(write: () => Promise<T>): Promise<T> {
+		for (let attempt = 1; ; attempt++) {
+			try {
+				return await write();
+			} catch (error) {
+				if (!isDuplicateKeyError(error) || attempt >= LINK_URL_ATTEMPTS) {
+					throw error;
+				}
+			}
+		}
 	}
 
 	public async join(uid: IUser['_id'] | undefined, callId: VideoConference['_id'], options: VideoConferenceJoinOptions): Promise<string> {
@@ -1725,6 +1955,28 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return (await this.resolveChatAccess(uid, callId)).access;
 	}
 
+	/** Where the chat of a conference not started yet in the room would live. It has no members to leave out. */
+	public async getRoomChatAccess(uid: IUser['_id'], rid: IRoom['_id']): Promise<VideoConferenceChatAccess> {
+		const room = await Rooms.findOneById(rid);
+		if (!room) {
+			throw new Error('invalid-room');
+		}
+
+		return this.buildChatAccess(uid, room, []);
+	}
+
+	private async buildChatAccess(uid: IUser['_id'], room: IRoom, membersWithoutAccess: IUser['_id'][]): Promise<VideoConferenceChatAccess> {
+		return {
+			rid: room._id,
+			name: room.fname || room.name || '',
+			type: room.t,
+			membersWithoutAccess,
+			// Ask the room whether it can take new members rather than testing for a DM: the room type owns that
+			// rule, and it accounts for cases a `t === 'd'` check would miss, like a federated DM that *can* grow.
+			canInvite: await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.INVITE, uid),
+		};
+	}
+
 	/**
 	 * `getChatAccess`, plus the usernames of the members it decided about.
 	 *
@@ -1752,15 +2004,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const withoutAccess = new Set(membersWithoutAccess);
 
 		return {
-			access: {
-				rid,
-				name: room.fname || room.name || '',
-				type: room.t,
-				membersWithoutAccess,
-				// Ask the room whether it can take new members rather than testing for a DM: the room type owns that
-				// rule, and it accounts for cases a `t === 'd'` check would miss, like a federated DM that *can* grow.
-				canInvite: await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.INVITE, uid),
-			},
+			access: await this.buildChatAccess(uid, room, membersWithoutAccess),
 			usernamesWithoutAccess: call.users
 				.filter(({ _id }) => withoutAccess.has(_id))
 				.map(({ username }) => username)

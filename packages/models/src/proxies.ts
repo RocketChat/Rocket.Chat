@@ -63,6 +63,7 @@ import type {
 	IUsersSessionsModel,
 	IUsersModel,
 	IVideoConferenceModel,
+	IVideoConferenceRoomsModel,
 	ICalendarEventModel,
 	IContactsModel,
 	IExchangeContactSyncStateModel,
@@ -160,6 +161,7 @@ export const Uploads = proxify<IUploadsModel>('IUploadsModel');
 export const UserDataFiles = proxify<IUserDataFilesModel>('IUserDataFilesModel');
 export const UsersSessions = proxify<IUsersSessionsModel>('IUsersSessionsModel');
 export const VideoConference = proxify<IVideoConferenceModel>('IVideoConferenceModel');
+export const VideoConferenceRooms = proxify<IVideoConferenceRoomsModel>('IVideoConferenceRoomsModel');
 export const CalendarEvent = proxify<ICalendarEventModel>('ICalendarEventModel');
 export const Contacts = proxify<IContactsModel>('IContactsModel');
 export const ExchangeContactSyncState = proxify<IExchangeContactSyncStateModel>('IExchangeContactSyncStateModel');
