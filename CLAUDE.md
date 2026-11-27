@@ -91,3 +91,5 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
   - [serve-client-without-meteor-webapp.md](docs/proposals/serve-client-without-meteor-webapp.md) — serving the client without Meteor's `web.browser` program
   - [finish-moving-http-and-ddp-off-meteor.md](docs/proposals/finish-moving-http-and-ddp-off-meteor.md) — what still reaches Meteor's HTTP and DDP servers, and the order to move it
   - [view-isolation-migration.md](docs/proposals/view-isolation-migration.md) — what still ties the views to Meteor and the browser, and the phases to apply the view isolation rules
+  - [pull-request-style.md](docs/proposals/pull-request-style.md) — how to write a pull request's title (per type, what not how) and description
+  - [changesets.md](docs/proposals/changesets.md) — when a pull request needs a changeset, which packages and bump, how to word it
