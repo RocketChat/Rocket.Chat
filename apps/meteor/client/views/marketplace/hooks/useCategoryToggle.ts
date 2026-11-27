@@ -9,28 +9,31 @@ export const useCategoryToggle = (
 	const onSelected = useCallback(
 		(item: CategoryDropdownItem) =>
 			setData((prev) => {
-				const categories = prev.flatMap((group) => group.items);
-
-				const categoriesWithoutAll = categories.filter(({ id }) => id !== 'all');
-				const allCategoriesOption = categories.find(({ id }) => id === 'all');
-				const toggledCategory = categories.find(({ id }) => id === item.id);
-
 				const isAllCategoriesToggled = item.id === 'all';
-				if (isAllCategoriesToggled) {
-					categoriesWithoutAll.forEach((currentItem) => {
-						currentItem.checked = !item.checked;
-					});
+				const allCategoriesOption = prev.flatMap((group) => group.items).find(({ id }) => id === 'all');
+				const allCategoriesChecked = !allCategoriesOption?.checked;
+
+				const toggled = prev.map((group) => ({
+					...group,
+					items: group.items.map((category) => {
+						if (isAllCategoriesToggled) {
+							return { ...category, checked: allCategoriesChecked };
+						}
+
+						return category.id === item.id ? { ...category, checked: !category.checked } : category;
+					}),
+				}));
+
+				const someCategoryUnchecked = toggled.some((group) => group.items.some(({ id, checked }) => id !== 'all' && checked === false));
+
+				if (!someCategoryUnchecked) {
+					return toggled;
 				}
 
-				if (toggledCategory) {
-					toggledCategory.checked = !toggledCategory.checked;
-				}
-
-				if (allCategoriesOption && categoriesWithoutAll.some((currentCategory) => currentCategory.checked === false)) {
-					allCategoriesOption.checked = false;
-				}
-
-				return [...prev];
+				return toggled.map((group) => ({
+					...group,
+					items: group.items.map((category) => (category.id === 'all' ? { ...category, checked: false } : category)),
+				}));
 			}),
 		[setData],
 	);
