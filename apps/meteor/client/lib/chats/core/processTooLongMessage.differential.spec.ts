@@ -221,6 +221,32 @@ const cases: Case[] = [
 			});
 		},
 	},
+	...([Number.NaN, null, '', Number.POSITIVE_INFINITY, -1] as const).flatMap((limit): Case[] =>
+		['', 'x'].map((msg) => ({
+			name: `limit ${String(limit) || "''"} with ${JSON.stringify(msg)}`,
+			msg,
+			setup: () => {
+				behavior.settings.Message_MaxAllowedSize = limit;
+			},
+			script: ['onClose'],
+		})),
+	),
+	...([null, 0, '', '0'] as const).flatMap((value): Case[] => [
+		{
+			name: `file upload setting ${JSON.stringify(value)}`,
+			setup: () => {
+				behavior.settings.FileUpload_Enabled = value;
+			},
+			script: ['onClose'],
+		},
+		{
+			name: `conversion setting ${JSON.stringify(value)}`,
+			setup: () => {
+				behavior.settings.Message_AllowConvertLongMessagesToAttachment = value;
+			},
+			script: ['onClose'],
+		},
+	]),
 	{ name: 'message without msg', noMessage: true },
 ];
 
