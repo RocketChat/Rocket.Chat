@@ -5,7 +5,7 @@ import type { ChatAPI, DataAPI } from './ChatAPI';
 import type { Upload } from './Upload';
 import { createDataAPI } from './data';
 import { processMessageEditing } from './flows/processMessageEditing';
-import { record } from './goldenFakes';
+import { behavior, record } from './goldenFakes';
 import { Messages, Rooms, Subscriptions } from '../../stores';
 
 type ChatOptions = {
@@ -46,6 +46,10 @@ export const createGoldenChat = (options: ChatOptions = {}) => {
 			},
 			setProcessingUploads: (processing: boolean) => record('chat.composer.uploads.setProcessingUploads', processing),
 			removeUpload: (id: string) => record('chat.composer.uploads.removeUpload', id),
+			send: (file: unknown, encrypted?: unknown) => {
+				record('chat.composer.uploads.send', file, encrypted);
+				return behavior.uploadSend(file, encrypted);
+			},
 		},
 		quotedMessages: {
 			get: () => {

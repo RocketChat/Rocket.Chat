@@ -63,6 +63,7 @@ export const defaults = () => ({
 	readOnly: false,
 	triggerId: undefined as string | undefined,
 	permaLinks: {} as Record<string, string>,
+	uploadSend: (async () => undefined) as (file: unknown, encrypted?: unknown) => Promise<void>,
 	permaLinkError: undefined as Error | undefined,
 	e2eRoom: undefined as unknown,
 	callbackResult: undefined as unknown,
@@ -75,9 +76,48 @@ export const resetFakes = (): void => {
 	Object.assign(behavior, defaults());
 };
 
+export type FakeXhr = {
+	readyState: number;
+	DONE: number;
+	status: number;
+	responseText: string;
+	onload: (() => void) | null;
+	abort: () => void;
+};
+
+export type UploadEvents = { load: (event: unknown) => void; progress: (event: unknown) => void; error: (event: unknown) => void };
+
+export const upload: { xhr: FakeXhr; events: UploadEvents | undefined } = {
+	xhr: undefined as unknown as FakeXhr,
+	events: undefined,
+};
+
+export const newXhr = (): FakeXhr => ({
+	readyState: 4,
+	DONE: 4,
+	status: 0,
+	responseText: '',
+	onload: null,
+	abort: () => record('xhr.abort'),
+});
+
+export const streams: { handler: ((...args: unknown[]) => void) | undefined } = { handler: undefined };
+
 export const sdkModule = {
 	sdk: {
+		publish: (...args: unknown[]) => record('sdk.publish', ...args),
+		stream: (name: string, params: unknown, handler: (...args: unknown[]) => void) => {
+			record('sdk.stream', name, params);
+			streams.handler = handler;
+			return { stop: () => record('sdk.stream.stop') };
+		},
 		rest: {
+			upload: (endpoint: string, params: unknown, events: UploadEvents) => {
+				record('sdk.rest.upload', endpoint, params);
+				upload.xhr = newXhr();
+				upload.events = events;
+				return upload.xhr;
+			},
 			post: (endpoint: string, params: unknown) => {
 				record('sdk.rest.post', endpoint, params);
 				return behavior.post(endpoint, params);
@@ -154,9 +194,12 @@ export const roomCoordinatorModule = {
 	},
 };
 
+const translate = (key: string, options?: Record<string, unknown>) =>
+	options && Object.keys(options).length > 0 ? `${key} ${JSON.stringify(options)}` : key;
+
 export const i18nModule = {
-	t: (key: string, options?: Record<string, unknown>) => (options ? `${key} ${JSON.stringify(options)}` : key),
-	i18n: { t: (key: string, options?: Record<string, unknown>) => (options ? `${key} ${JSON.stringify(options)}` : key) },
+	t: translate,
+	i18n: { t: translate },
 };
 
 let randomCount = 0;
@@ -222,5 +265,17 @@ export const e2eModule = {
 			record('e2e.getInstanceByRoomId', rid);
 			return behavior.e2eRoom;
 		},
+	},
+};
+
+export const userActionModule = {
+	USER_ACTIVITIES: {
+		USER_RECORDING: 'user-recording',
+		USER_TYPING: 'user-typing',
+		USER_UPLOADING: 'user-uploading',
+		USER_PLAYING: 'user-playing',
+	},
+	UserAction: {
+		stop: (...args: unknown[]) => record('UserAction.stop', ...args),
 	},
 };
