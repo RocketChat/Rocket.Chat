@@ -1,9 +1,12 @@
-import type { HTMLAttributes } from 'react';
+import { Sidebar, type SidebarProps } from '../Sidebar/Sidebar';
 
-export type SidepanelProps = HTMLAttributes<HTMLDivElement>;
-// TODO: Make this a variation of the sidebar
+export type SidepanelProps = SidebarProps;
+
 const Sidepanel = ({ className, ...props }: SidepanelProps) => (
-	<div className={['rcx-sidepanel', className].filter(Boolean).join(' ')} {...props} />
+	<Sidebar
+		className={['rcx-sidepanel', className].filter(Boolean).join(' ')}
+		{...props}
+	/>
 );
 
 export default Sidepanel;
