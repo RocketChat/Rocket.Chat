@@ -2,7 +2,7 @@
 
 ## Status
 
-Implemented on branch `toastbar-composable-item-7d6870`, not yet opened as a pull request. The visual changes below were measured before and after in Storybook and wait for design to settle them; the visual regression baselines are not regenerated yet. What is left is listed under "Handoff".
+Implemented on branch `toastbar-composable-item-7d6870`. The visual changes below were measured before and after in Storybook and wait for design to settle them; the visual regression baselines are regenerated with them. What is left is listed under "Handoff".
 
 ## Decision
 
@@ -86,13 +86,13 @@ API and markup:
 2. `feat(fuselage)`: the parts, and `ToastBar` as their default composition.
 3. `test(fuselage)`: one story per composition (icon + message + close + progress; message only; avatar + stretched `ItemLink` title + large description + close, with and without progress), and a spec with axe for each, also as list items, plus forwarding, `is='li'`, roles, close and paused progress for each part.
 4. This proposal and the changeset.
+5. `test`: the visual regression baselines, regenerated with `yarn workspace @rocket.chat/fuselage visual-regression-update`: the five `ToastBar` stories change, and the four composition stories get their first baseline.
 
 Verified: `ToastBar.spec.tsx` and `ToastBar.characterization.stories.tsx` pass unedited, in jest and in Chromium against a Storybook build (`test:stories`); Fuselage jest, `tsc`, oxlint, stylelint, `verify:css-hacks:check` and `verify:selectors:check`; `fuselage-toastbar` jest against the new Fuselage; Storybook screenshots of every `ToastBar` story before and after in light, dark and RTL.
 
 ### Not done
 
-- **Design review** of the deltas under "Compatibility": inline padding, gaps, touch padding and the hover surface with a link.
-- **Visual regression baselines**: once design accepts the deltas, regenerate them in their own `test:` commit with `yarn workspace @rocket.chat/fuselage visual-regression-update`. The composition stories have no baseline yet.
+- **Design review** of the deltas under "Compatibility": inline padding, gaps, touch padding and the hover surface with a link. If design changes any of them, regenerate the baselines again.
 - **App e2e** (`apps/meteor/tests/e2e`) has not run against the branch.
 - **Tamagui L1 batch** (#43653) adds `ToastBar.classContract.stories.tsx` on the old inner classes, so it needs a rebase after this lands.
 
