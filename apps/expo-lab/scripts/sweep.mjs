@@ -10,11 +10,11 @@ import { parseArgs } from 'node:util';
 
 const { values } = parseArgs({
 	options: {
-		out: { type: 'string', default: 'sweep-results.md' },
-		port: { type: 'string', default: '8099' },
+		'out': { type: 'string', default: 'sweep-results.md' },
+		'port': { type: 'string', default: '8099' },
 		'metro-port': { type: 'string', default: '8081' },
-		platform: { type: 'string', default: 'ios' },
-		open: { type: 'boolean', default: false },
+		'platform': { type: 'string', default: 'ios' },
+		'open': { type: 'boolean', default: false },
 	},
 });
 
@@ -25,7 +25,7 @@ const sink = `http://${host}:${values.port}`;
 
 const cell = (text) =>
 	String(text ?? '')
-		.replace(/\|/g, '\\|')
+		.replace(/[\\|]/g, '\\$&')
 		.replace(/\s+/g, ' ');
 
 const toMarkdown = (results) => {
