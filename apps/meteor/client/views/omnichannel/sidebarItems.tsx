@@ -1,3 +1,5 @@
+import { SETTINGS_MANAGEMENT_PERMISSIONS } from '@rocket.chat/ui-contexts';
+
 import { hasAtLeastOnePermission, hasPermission } from '../../lib/authorization';
 import { createSidebarItems } from '../../lib/createSidebarItems';
 
@@ -83,6 +85,6 @@ export const {
 		href: '/omnichannel/security-privacy',
 		icon: 'shield-check',
 		i18nLabel: 'Security_and_privacy',
-		permissionGranted: () => hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']),
+		permissionGranted: () => hasAtLeastOnePermission(SETTINGS_MANAGEMENT_PERMISSIONS),
 	},
 ]);

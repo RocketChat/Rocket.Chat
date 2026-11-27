@@ -1,4 +1,5 @@
 import { defaultFeaturesPreview } from '@rocket.chat/ui-client';
+import { SETTINGS_MANAGEMENT_PERMISSIONS } from '@rocket.chat/ui-contexts';
 
 import { hasPermission, hasAtLeastOnePermission, hasAllPermission } from '../../lib/authorization';
 import { createSidebarItems } from '../../lib/createSidebarItems';
@@ -51,8 +52,7 @@ export const {
 		i18nLabel: 'AI_Center',
 		icon: 'stars',
 		tag: 'Beta',
-		permissionGranted: (): boolean =>
-			hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']),
+		permissionGranted: (): boolean => hasAtLeastOnePermission(SETTINGS_MANAGEMENT_PERMISSIONS),
 	},
 	{
 		href: '/admin/invites',
@@ -157,7 +157,6 @@ export const {
 		href: '/admin/settings',
 		i18nLabel: 'Settings',
 		icon: 'customize',
-		permissionGranted: (): boolean =>
-			hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']),
+		permissionGranted: (): boolean => hasAtLeastOnePermission(SETTINGS_MANAGEMENT_PERMISSIONS),
 	},
 ]);

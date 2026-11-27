@@ -16,7 +16,7 @@ export {
 } from './RoomToolboxContext';
 export { ServerContext, type ServerContextValue, type UploadResult } from './ServerContext';
 export { SessionContext, type SessionContextValue } from './SessionContext';
-export { SettingsContext, type SettingsContextValue, type SettingsContextQuery } from './SettingsContext';
+export { SettingsContext, type SettingsContextValue, type SettingsContextQuery, SETTINGS_MANAGEMENT_PERMISSIONS } from './SettingsContext';
 export { ToastMessagesContext, type ToastMessagesContextValue } from './ToastMessagesContext';
 export { TooltipContext, type TooltipContextValue } from './TooltipContext';
 export { TranslationContext, type TranslationContextValue, type TranslationKey, type TranslationLanguage } from './TranslationContext';

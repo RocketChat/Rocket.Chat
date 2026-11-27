@@ -3,7 +3,7 @@ import { isSettingCode } from '@rocket.chat/core-typings';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import { isTruthy } from '@rocket.chat/tools';
 import type { SettingsContextQuery, SettingsContextValue } from '@rocket.chat/ui-contexts';
-import { SettingsContext, useAtLeastOnePermission, useEndpoint } from '@rocket.chat/ui-contexts';
+import { SettingsContext, useAtLeastOnePermission, useEndpoint, SETTINGS_MANAGEMENT_PERMISSIONS } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
@@ -15,14 +15,12 @@ import { applyQueryOptions } from '../lib/cachedStores/applyQueryOptions';
 import { getCodeSettingError } from '../lib/utils/getCodeSettingError';
 import PageLoading from '../views/root/PageLoading';
 
-const settingsManagementPermissions = ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'];
-
 export type SettingsProviderProps = {
 	children?: ReactNode;
 };
 
 const SettingsProvider = ({ children }: SettingsProviderProps) => {
-	const canManageSettings = useAtLeastOnePermission(settingsManagementPermissions);
+	const canManageSettings = useAtLeastOnePermission(SETTINGS_MANAGEMENT_PERMISSIONS);
 
 	const cachedCollection = canManageSettings ? PrivateSettingsCachedStore : PublicSettingsCachedStore;
 

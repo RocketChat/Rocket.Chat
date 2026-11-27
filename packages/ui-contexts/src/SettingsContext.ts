@@ -27,3 +27,5 @@ export const SettingsContext = createContext<SettingsContextValue>({
 	querySettings: () => [(): (() => void) => (): void => undefined, (): ISetting[] => []],
 	dispatch: async () => undefined,
 });
+
+export const SETTINGS_MANAGEMENT_PERMISSIONS = ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'];
