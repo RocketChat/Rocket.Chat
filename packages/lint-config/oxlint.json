@@ -196,7 +196,6 @@
 		"react/jsx-fragments": ["error", "syntax"],
 		"react/no-multi-comp": "error",
 		"anti-trojan-source/no-bidi": "error",
-		"prettier/prettier": "error",
 		"array-callback-return": [
 			"error",
 			{
@@ -791,10 +790,6 @@
 		{
 			"name": "anti-trojan-source",
 			"specifier": "eslint-plugin-anti-trojan-source"
-		},
-		{
-			"name": "prettier",
-			"specifier": "eslint-plugin-prettier"
 		},
 		{
 			"name": "testing-library",

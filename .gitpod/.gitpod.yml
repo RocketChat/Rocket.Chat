@@ -16,4 +16,4 @@ ports:
 
 vscode:
   extensions:
-    - esbenp.prettier-vscode
+    - oxc.oxc-vscode

@@ -1,9 +1,8 @@
 {
-	"plugins": ["stylelint-order", "stylelint-scss", "stylelint-prettier"],
+	"plugins": ["stylelint-order", "stylelint-scss"],
 	"customSyntax": "postcss-scss",
 	"ignoreFiles": ["src/**/*.js"],
 	"rules": {
-		"prettier/prettier": true,
 		"block-no-empty": true,
 		"color-hex-length": "long",
 		"color-no-invalid-hex": true,

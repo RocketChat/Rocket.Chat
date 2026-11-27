@@ -2,9 +2,8 @@ import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import prettier from 'prettier';
-
 import { fontReferenceProblems, moduleProblems, transformProblems } from './check.mts';
+import { formatSource } from './format.mts';
 import { END, START } from './markers.mts';
 import type { Target } from './target.mts';
 import { unresolvedReferences } from './tokens.mts';
@@ -39,7 +38,7 @@ export const generateFrameValues = async (targets: Target[], check: boolean) => 
 			continue;
 		}
 
-		const body = await prettier.format(generate(), { ...((await prettier.resolveConfig(file)) ?? {}), parser: 'typescript' });
+		const body = await formatSource(file, generate());
 		const fontProblems = fontReferenceProblems(file, body);
 		if (fontProblems.length) {
 			problems.push(...fontProblems);
