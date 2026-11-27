@@ -11,6 +11,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import border from '@rocket.chat/fuselage-tokens/dist/border.json';
+import breakpoints from '@rocket.chat/fuselage-tokens/dist/breakpoints.json';
 import size from '@rocket.chat/fuselage-tokens/dist/size.json';
 import spacing from '@rocket.chat/fuselage-tokens/dist/spacing.json';
 import typography from '@rocket.chat/fuselage-tokens/dist/typography.json';
@@ -53,6 +54,13 @@ const tokens = { space: spacing, size, radius, zIndex };
 // The stylesheets these tokens replace wrote a size and a radius in `rem` and a spacing in pixels.
 const IN_REM: ReadonlySet<string> = new Set(['size', 'radius']);
 
+// `xs` has no minimum width, so it is no media query.
+const media = Object.fromEntries(
+	Object.entries(breakpoints)
+		.filter(([, { minViewportWidth }]) => minViewportWidth !== null)
+		.map(([name, { minViewportWidth }]) => [name, { minWidth: minViewportWidth }]),
+);
+
 // A weight is a string: Tamagui gives a numeric one a pixel unit.
 const fontScale = Object.fromEntries(
 	Object.entries(typography.fontScale).map(([name, { fontSize, lineHeight, fontWeight, letterSpacing }]) => [
@@ -93,6 +101,9 @@ export const webTokens = ${JSON.stringify(webTokens)} as const;
  * the values of its step.
  */
 export const fontScale = ${JSON.stringify(fontScale)} as const;
+
+/** A media query per breakpoint, by its minimum width in pixels. */
+export const media = ${JSON.stringify(media)} as const;
 
 export const themes = ${JSON.stringify(themes)} as const;
 `,

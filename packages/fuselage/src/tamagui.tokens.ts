@@ -91,6 +91,16 @@ export const fontScale = {
 	micro: { fontSize: 10, lineHeight: 12, fontWeight: '700', letterSpacing: 0 },
 } as const;
 
+/** A media query per breakpoint, by its minimum width in pixels. */
+export const media = {
+	sm: { minWidth: 600 },
+	md: { minWidth: 768 },
+	lg: { minWidth: 1024 },
+	xl: { minWidth: 1280 },
+	xxl: { minWidth: 1600 },
+	xxxl: { minWidth: 1920 },
+} as const;
+
 export const themes = {
 	'light': {
 		'rcx-stroke-extra-light': '#ebecef',
