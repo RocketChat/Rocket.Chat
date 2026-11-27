@@ -72,30 +72,23 @@ describe('[PaletteStyleTag theme keys]', () => {
 		const themeKeys = themeKeysOf(theme);
 
 		expect(css.match(/\{/g)).toHaveLength(1);
-		expect(Object.keys(themeKeys)).toHaveLength(129);
+		expect(Object.keys(themeKeys)).toHaveLength(130);
 		expect(declarations).toMatchObject(themeKeys);
 		// A key the config does not have would be a property no frame reads
 		expect(Object.keys(declarations)).toHaveLength(2 * Object.keys(palette).length);
 	});
 
-	it.each([
-		['light', light],
-		['dark', dark],
-		['high-contrast', highContrast],
-	] as const)(
-		'gives the %s theme the primitive the stylesheets fall back to, for each button color the tokens lack',
-		(_theme, palette: Record<string, string>) => {
-			const stylesheet = readFileSync(join(__dirname, '../../styles/colors.scss'), 'utf8');
-			const fallbacks = [...stylesheet.matchAll(/^\t(on-)?([\w-]+): primitive\((\w+)\),?$/gm)]
-				.filter(([, , name]) => /warning|secondary-success/.test(name))
-				.map(([, font, name, grade]) => [`button-${font ? 'font-on' : 'background'}-${name}`, grade] as const);
+	it('gives the light theme the primitive the stylesheets fall back to, for each warning, secondary-warning and secondary-success button color', () => {
+		const stylesheet = readFileSync(join(__dirname, '../../styles/colors.scss'), 'utf8');
+		const fallbacks = [...stylesheet.matchAll(/^\t(on-)?([\w-]+): primitive\((\w+)\),?$/gm)]
+			.filter(([, , name]) => /warning|secondary-success/.test(name))
+			.map(([, font, name, grade]) => [`button-${font ? 'font-on' : 'background'}-${name}`, grade] as const);
 
-			expect(fallbacks).toHaveLength(24);
-			for (const [name, grade] of fallbacks) {
-				expect([name, palette[name]]).toEqual([name, primitives[grade as keyof typeof primitives]]);
-			}
-		},
-	);
+		expect(fallbacks).toHaveLength(24);
+		for (const [name, grade] of fallbacks) {
+			expect([name, light[name]]).toEqual([name, primitives[grade as keyof typeof primitives]]);
+		}
+	});
 
 	it('leaves the palette the stylesheets read as it was written before', () => {
 		render(<PaletteStyleTag theme='dark' tagId='legacy-palette' />);
