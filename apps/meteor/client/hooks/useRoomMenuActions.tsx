@@ -1,4 +1,5 @@
 import type { RoomType } from '@rocket.chat/core-typings';
+import { ToggleSwitch } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { usePermission, useSetting, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
@@ -6,9 +7,15 @@ import { useTranslation } from 'react-i18next';
 
 import { useLeaveRoomAction } from './menuActions/useLeaveRoom';
 import { useToggleFavoriteAction } from './menuActions/useToggleFavoriteAction';
+import { useToggleNotificationAction } from './menuActions/useToggleNotificationsAction';
 import { useToggleReadAction } from './menuActions/useToggleReadAction';
 import { useHideRoomAction } from './useHideRoomAction';
 import { useOmnichannelPrioritiesMenu } from '../views/omnichannel/hooks/useOmnichannelPrioritiesMenu';
+
+export type RoomMenuSection = {
+	title: string;
+	items: GenericMenuItemProps[];
+};
 
 type RoomMenuActionsProps = {
 	rid: string;
@@ -28,7 +35,7 @@ export const useRoomMenuActions = ({
 	cl,
 	roomOpen,
 	hideDefaultOptions,
-}: RoomMenuActionsProps): { title: string; items: GenericMenuItemProps[] }[] => {
+}: RoomMenuActionsProps): RoomMenuSection[] => {
 	const { t } = useTranslation();
 	const subscription = useUserSubscription(rid);
 
@@ -36,6 +43,8 @@ export const useRoomMenuActions = ({
 	const canLeaveChannel = usePermission('leave-c');
 	const canLeavePrivate = usePermission('leave-p');
 	const canFavorite = useSetting('Favorite_Rooms') as boolean;
+	const hasSubscription = Boolean(subscription);
+	const isNotificationEnabled = !subscription?.disableNotifications;
 
 	const canLeave = ((): boolean => {
 		if (type === 'c' && !canLeaveChannel) {
@@ -51,6 +60,7 @@ export const useRoomMenuActions = ({
 	const handleToggleFavorite = useToggleFavoriteAction({ rid, isFavorite });
 	const handleToggleRead = useToggleReadAction({ rid, isUnread, subscription });
 	const handleLeave = useLeaveRoomAction({ rid, type, name, roomOpen });
+	const handleToggleNotification = useToggleNotificationAction({ rid, isNotificationEnabled, roomName: name });
 
 	const isOmnichannelRoom = type === 'l';
 	const prioritiesMenu = useOmnichannelPrioritiesMenu(rid);
@@ -100,6 +110,26 @@ export const useRoomMenuActions = ({
 		],
 	);
 
+	// The room's notifications, under a section of their own: the item says what it does next ("Turn off" while
+	// they are sent), which is also how a screen reader learns the state; the switch beside it only shows the same
+	// state, so it is kept out of the accessibility tree and the tab order. An omnichannel room has no such preference.
+	const notificationsMenuOptions = useMemo<GenericMenuItemProps[]>(
+		() =>
+			!hideDefaultOptions && !isOmnichannelRoom && hasSubscription
+				? [
+						{
+							id: 'notifications',
+							icon: 'bell',
+							content: isNotificationEnabled ? t('Turn_OFF') : t('Turn_ON'),
+							textValue: isNotificationEnabled ? t('Turn_OFF') : t('Turn_ON'),
+							onClick: handleToggleNotification,
+							addon: <ToggleSwitch checked={isNotificationEnabled} aria-hidden tabIndex={-1} onChange={() => undefined} />,
+						},
+					]
+				: [],
+		[hideDefaultOptions, isOmnichannelRoom, hasSubscription, isNotificationEnabled, t, handleToggleNotification],
+	);
+
 	if (isOmnichannelRoom && prioritiesMenu.length > 0) {
 		return [
 			...(menuOptions.length > 0 ? [{ title: '', items: menuOptions }] : []),
@@ -107,5 +137,8 @@ export const useRoomMenuActions = ({
 		];
 	}
 
-	return menuOptions.length > 0 ? [{ title: '', items: menuOptions }] : [];
+	return [
+		...(menuOptions.length > 0 ? [{ title: '', items: menuOptions }] : []),
+		...(notificationsMenuOptions.length > 0 ? [{ title: t('Notifications'), items: notificationsMenuOptions }] : []),
+	];
 };
