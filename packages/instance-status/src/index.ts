@@ -1,7 +1,10 @@
 import { randomUUID } from 'node:crypto';
 
 import type { IInstanceStatus } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { InstanceStatus as InstanceStatusModel } from '@rocket.chat/models';
+
+const logger = new Logger('InstanceStatus');
 
 export const defaultPingInterval = parseInt(String(process.env.MULTIPLE_INSTANCES_PING_INTERVAL)) || 10;
 export const indexExpire = (parseInt(String(process.env.MULTIPLE_INSTANCES_EXPIRE)) || Math.ceil((defaultPingInterval * 3) / 60)) * 60;
@@ -30,34 +33,26 @@ function stop() {
 }
 
 let createIndexes = async () => {
-	await InstanceStatusModel.col
-		.indexes()
-		.catch(() => [])
-		.then((result) =>
-			result.some((index) => {
-				if (index.key?._updatedAt === 1) {
-					if (index.expireAfterSeconds !== indexExpire && index.name) {
-						void InstanceStatusModel.col.dropIndex(index.name);
-						return false;
-					}
-					return true;
-				}
-				return false;
-			}),
-		)
-		.then((created) => {
-			if (!created) {
-				void InstanceStatusModel.col.createIndex({ _updatedAt: 1 }, { expireAfterSeconds: indexExpire });
-			}
-		});
-
 	createIndexes = async () => {
 		// noop
 	};
+
+	const indexes = await InstanceStatusModel.col.indexes().catch(() => []);
+	const expirationIndex = indexes.find((index) => index.key?._updatedAt === 1);
+
+	if (expirationIndex?.expireAfterSeconds === indexExpire) {
+		return;
+	}
+
+	if (expirationIndex?.name) {
+		await InstanceStatusModel.col.dropIndex(expirationIndex.name);
+	}
+
+	await InstanceStatusModel.col.createIndex({ _updatedAt: 1 }, { expireAfterSeconds: indexExpire });
 };
 
 async function registerInstance(name: string, extraInformation: Partial<IInstanceStatus['extraInformation']>): Promise<unknown> {
-	void createIndexes();
+	void createIndexes().catch((err) => logger.error({ msg: 'Error creating the instance status expiration index', err }));
 
 	currentInstance.name = name;
 	currentInstance.extraInformation = extraInformation;
