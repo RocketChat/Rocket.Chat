@@ -23,13 +23,15 @@ export type ChatMessage = Serialized<
 		>
 >;
 
-type Subscription = { rid: string; t: RoomType; name: string; fname?: string; open: boolean; unread: number; lr?: string; _updatedAt: string };
+type Subscription = { rid: string; t: RoomType; name: string; fname?: string; open: boolean; unread: number; lr?: string; ts?: string; _updatedAt: string };
 
 export async function listRooms({ sdk }: Session): Promise<RoomItem[]> {
 	if (mock) return mockRooms;
 	// Not in rest-typings, so no typed `rest.get`.
-	const response = await sdk.rest.send('/v1/subscriptions.get', 'GET');
+	const [response, roomsResponse] = await Promise.all([sdk.rest.send('/v1/subscriptions.get', 'GET'), sdk.rest.send('/v1/rooms.get', 'GET')]);
 	const { update } = (await response.json()) as { update: Subscription[] };
+	const { update: rooms } = (await roomsResponse.json()) as { update: { _id: string; lm?: string }[] };
+	const lastMessage = new Map(rooms.map((r) => [r._id, r.lm]));
 	return update
 		.filter((s) => s.open)
 		.map((s) => ({
@@ -38,7 +40,8 @@ export async function listRooms({ sdk }: Session): Promise<RoomItem[]> {
 			name: s.name,
 			title: s.fname || s.name,
 			unread: s.unread,
-			sortKey: String(s.lr ?? s._updatedAt),
+			// Activity order, as the web sidebar: last message, or the subscription date for a room with none
+			sortKey: String(lastMessage.get(s.rid) ?? s.ts ?? s._updatedAt),
 		}))
 		.sort((a, b) => b.sortKey.localeCompare(a.sortKey));
 }
