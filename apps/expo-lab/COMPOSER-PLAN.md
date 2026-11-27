@@ -1232,3 +1232,68 @@ A fiber walk from the TextInput's host instance to the fiber holding `onKeyPress
 ### Files needing a Metro restart
 
 None are config files; Metro fast refresh picks up the source. The running demo on 8081 and 8082 should reload to see the toggle (`FuselageRoom.tsx`); `test/hooks.mjs` only affects node tests.
+
+## Phase 1b steps 1b.9, 1b.10 and 1b.14 results (2026-11-27)
+
+Steps 1b.11 to 1b.13 moved to native step 2.14 (decision 2026-11-27): the uploads store, uploadFiles and processMessageUploads are native twins, not web extractions.
+
+### 1b.9 Hermes probe for the send group
+
+Commit `e60b0dac02e`. Files (new): `src/sharedFlowsSmoke.ts`. Edited: `src/sharedModulesProbe.ts` (6 core rows), `src/SharedProbeScreen.tsx` (smoke results section).
+
+- **Probe bundle** (`EXPO_PUBLIC_SHARED_PROBE=1`): 6790 modules, `expo export --platform ios` exits 0.
+- **All 6 cores load**: `messagePayload`, `createComposerState`, `processSlashCommand`, `processTooLongMessage`, `processSetReaction`, `sendMessage`.
+- **Both smokes pass**: `processSlashCommandCore` (unrecognized `/help` returns `true`), `sendMessageCore` (plain text send returns `true`).
+- **Default bundle**: 2590 modules (+12 from the core requires in the always-bundled probe table; baseline was 2578 after step 2.3).
+- No `node:crypto`, `react-dom/server` or `ui-client` barrel in the core graph; the only non-core import is `closeUnclosedCodeBlock`.
+
+### 1b.10 Typing core
+
+Commit `77303ccf1b9`. Files (new): `chats/core/createUserAction.ts`. Edited: `lib/UserAction.ts` (adapter).
+
+```ts
+type UserActionDeps = {
+  publish(topic: 'notify-room', args: [string, string | undefined, string[], IExtras]): void;
+  stream(topic: 'notify-room', args: [string], handler: (...) => void): { stop(): void };
+  useRealName(): boolean;
+  getUser(): IUser | null | undefined;
+  getUserId(): string | undefined;
+  getUserState(uid: string): IUser | undefined;
+  debounce<T extends (...args: any[]) => any>(fn: T, wait: number): T;
+};
+createUserAction(deps): UserActionInstance
+```
+
+- **Import guard**: 88 tests pass, no new package (lodash `debounce` is injected, not imported in the core).
+- **Callers unchanged**: `ChatMessages.ts`, `uploads.ts`, `ComposerUserActionIndicator.tsx`, `VideoMessageRecorder.tsx`, `RoomProvider.tsx` all import from `lib/UserAction` as before. `USER_ACTIVITIES` re-exported from the adapter.
+- **tsc**: no errors.
+
+### 1b.14 Hermes probe for typing
+
+Commit `6c0d93f666b`. Edited: `src/sharedModulesProbe.ts` (1 row: `createUserAction`).
+
+- **Probe bundle**: 6791 modules (+1).
+- **Default bundle**: 2590 modules (unchanged — the core's deps were already reachable from the send cores).
+- `createUserAction` loads on Hermes.
+
+### Phase 1b summary
+
+| Step | Commit | Status |
+| --- | --- | --- |
+| 1b.1 | `c08d51862d3` | done (golden) |
+| 1b.2 | `075220d81c0` | done (golden) |
+| 1b.3 | `5ba5b93dc05` | done |
+| 1b.4 | `c0760f1f4b1` | done |
+| 1b.5 | `2870f1c5211` | done |
+| 1b.6 | `e3ae1b58c61` | done |
+| 1b.7 | `7853c46152e` | done |
+| 1b.8 | `904308b81da` | done |
+| 1b.9 | `e60b0dac02e` | done |
+| 1b.10 | `77303ccf1b9` | done |
+| 1b.11 | — | moved to 2.14 |
+| 1b.12 | — | moved to 2.14 |
+| 1b.13 | — | moved to 2.14 |
+| 1b.14 | `6c0d93f666b` | done |
+| 1b.15 | (this commit) | done |
+
+**Remaining gates**: Playwright on a local Meteor (send group after 1b.8, the full set before leaving draft). The person runs it.
