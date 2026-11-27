@@ -57,7 +57,7 @@ const AudioAttachment = ({
 
 	const active = activeTrackId === track.id;
 	const [previewDuration, setPreviewDuration] = useState(0);
-	const waveform = useAudioWaveform(src, size);
+	const waveform = useAudioWaveform(src, size, previewDuration);
 	const [inactiveSeek, setInactiveSeek] = useState<{ trackId: string; time: number }>();
 	const inactiveSeekTime = inactiveSeek?.trackId === track.id ? inactiveSeek.time : 0;
 

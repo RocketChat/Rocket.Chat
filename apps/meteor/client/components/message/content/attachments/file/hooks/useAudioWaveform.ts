@@ -5,6 +5,12 @@ const BAR_COUNT = 40;
 // Decoding means downloading the whole file, so only short clips such as voice messages get a waveform.
 const MAX_SIZE = 2 * 1024 * 1024;
 
+// Decoded PCM grows with the length rather than the file size, so a long low-bitrate clip under MAX_SIZE is skipped too.
+const MAX_DURATION_SECONDS = 10 * 60;
+
+// The lowest rate every browser must support, still far more samples than the bars need.
+const SAMPLE_RATE = 8000;
+
 /** Reduces samples to `count` peaks, scaled so the loudest is 1. */
 export const toPeaks = (samples: Float32Array, count: number): number[] => {
 	const block = Math.floor(samples.length / count);
@@ -71,20 +77,20 @@ const fetchPeaks = async (src: string, signal: AbortSignal) => {
 		discardBody(response);
 		throw new Error(`Failed to fetch audio: ${response.status}`);
 	}
-	const context = new OfflineAudioContext(1, 1, 44100);
-	// TODO: Bound the decoded size of audio waveforms, not only the download
-	// MAX_SIZE limits compressed bytes; a long low-bitrate clip under it decodes to hundreds of MiB of PCM.
-	// Skipping clips over a duration limit (known from the attachment's metadata) would cap it.
+	const context = new OfflineAudioContext(1, 1, SAMPLE_RATE);
 	const buffer = await context.decodeAudioData(await readBodyUpTo(response, MAX_SIZE));
 	return toPeaks(buffer.getChannelData(0), BAR_COUNT);
 };
 
-/** The waveform of a short audio file, or `undefined` while loading, when too large or when it can't be decoded. */
-export const useAudioWaveform = (src: string, size?: number) =>
+/**
+ * The waveform of a short audio file, or `undefined` while loading or while its `duration` is unknown, when too large or
+ * too long, or when it can't be decoded.
+ */
+export const useAudioWaveform = (src: string, size?: number, duration?: number) =>
 	useQuery({
 		queryKey: ['audio-waveform', src],
 		queryFn: ({ signal }) => fetchPeaks(src, signal),
-		enabled: !!src && !!size && size <= MAX_SIZE,
+		enabled: !!src && !!size && size <= MAX_SIZE && !!duration && duration <= MAX_DURATION_SECONDS,
 		staleTime: Infinity,
 		gcTime: Infinity,
 		retry: false,
