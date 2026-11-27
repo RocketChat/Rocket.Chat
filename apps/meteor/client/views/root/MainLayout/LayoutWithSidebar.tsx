@@ -1,9 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn, useFeaturePreview } from '@rocket.chat/ui-client';
 import type { IRouterPaths } from '@rocket.chat/ui-contexts';
 import { useLayout, useSetting, useCurrentRoutePath, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import AccessibilityShortcut from './AccessibilityShortcut';
 import MainContent from './MainContent';
@@ -16,18 +16,38 @@ import NavigationRegion from '../../navigation';
 import RoomsNavigationProvider from '../../navigation/providers/RoomsNavigationProvider';
 
 const INVALID_ROOM_NAME_PREFIXES = ['#', '?'] as const;
+const SIDEBAR_CLOSING_ROUTES = /^\/(directory|omnichannel-directory)(\/|$)/;
 
 export type LayoutWithSidebarProps = { children: ReactNode };
 
 const LayoutWithSidebar = ({ children }: LayoutWithSidebarProps) => {
 	const {
 		isEmbedded: embeddedLayout,
-		sidebar: { shouldToggle },
+		sidebar: { shouldToggle, overlayed },
 	} = useLayout();
 
 	const currentRoutePath = useCurrentRoutePath();
 	const router = useRouter();
-	const removeSidenav = embeddedLayout && !currentRoutePath?.startsWith('/admin');
+	const sidebarRailActive = useFeaturePreview('sidebarRail') && !shouldToggle && !embeddedLayout;
+	const isSidebarClosingRoute = SIDEBAR_CLOSING_ROUTES.test(currentRoutePath ?? '');
+	const [sidebarClosed, setSidebarClosed] = useState(() => sidebarRailActive && isSidebarClosingRoute);
+
+	useEffect(() => {
+		if (sidebarRailActive && isSidebarClosingRoute) {
+			setSidebarClosed(true);
+		}
+	}, [sidebarRailActive, isSidebarClosingRoute]);
+
+	const removeSidenav = (embeddedLayout && !currentRoutePath?.startsWith('/admin')) || (sidebarRailActive && sidebarClosed && !overlayed);
+
+	const handleToggleInbox = () => {
+		if (overlayed) {
+			setSidebarClosed(false);
+			router.navigate('/home');
+			return;
+		}
+		setSidebarClosed((closed) => !closed);
+	};
 
 	const firstChannelAfterLogin = useSetting<string>('First_Channel_After_Login', '');
 	const roomName = (firstChannelAfterLogin.startsWith('#') ? firstChannelAfterLogin.slice(1) : firstChannelAfterLogin).trim();
@@ -79,7 +99,7 @@ const LayoutWithSidebar = ({ children }: LayoutWithSidebarProps) => {
 				<MainLayoutStyleTags />
 				<FeaturePreview feature='sidebarRail' disabled={shouldToggle || embeddedLayout}>
 					<FeaturePreviewOn>
-						<SidebarRail />
+						<SidebarRail inboxOpen={!sidebarClosed && !overlayed} onToggleInbox={handleToggleInbox} />
 					</FeaturePreviewOn>
 					<FeaturePreviewOff>{null}</FeaturePreviewOff>
 				</FeaturePreview>

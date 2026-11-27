@@ -3,7 +3,7 @@ import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRouter, useLayout, useSetting, useCurrentRoutePath } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes } from 'react';
 
-export type NavBarItemHomePageProps = Omit<HTMLAttributes<HTMLElement>, 'is' | 'color'>;
+export type NavBarItemHomePageProps = Omit<HTMLAttributes<HTMLElement>, 'is' | 'color'> & { pressed?: boolean };
 
 const NavBarItemHomePage = (props: NavBarItemHomePageProps) => {
 	const router = useRouter();
@@ -18,7 +18,7 @@ const NavBarItemHomePage = (props: NavBarItemHomePageProps) => {
 	const homeRoute = currentRoute?.includes('/home');
 
 	return showHome ? (
-		<NavBarItem {...props} icon='home' onClick={handleHome} aria-current={homeRoute ? 'page' : undefined} pressed={homeRoute} />
+		<NavBarItem icon='home' onClick={handleHome} aria-current={homeRoute ? 'page' : undefined} pressed={homeRoute} {...props} />
 	) : null;
 };
 
