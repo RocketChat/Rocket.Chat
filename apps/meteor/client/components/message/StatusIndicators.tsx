@@ -29,6 +29,7 @@ const StatusIndicators = ({ message }: StatusIndicatorsProps) => {
 			{following && <MessageStatusIndicatorItem name='bell' title={t('Following')} />}
 
 			{message.sentByEmail && <MessageStatusIndicatorItem name='mail' title={t('Message_sent_by_email')} />}
+			{message.sentWithAI && <MessageStatusIndicatorItem name='stars' title={t('Sent_with_AI')} />}
 			{isEditedMessage(message) && (
 				<MessageStatusIndicatorItem
 					name='edit'
