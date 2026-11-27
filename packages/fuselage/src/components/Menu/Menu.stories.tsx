@@ -134,9 +134,7 @@ export const MenuDisplayExample = (args: Omit<MenuProps<object>, 'children'>) =>
 					<MenuItemIcon name='user-rounded' />
 					<MenuItemContent>Avatars</MenuItemContent>
 					<MenuItemInput>
-						<Box display='flex' marginInlineEnd={16}>
-							<ToggleSwitch onChange={() => setAvatarDisplay(!avatarDisplay)} checked={avatarDisplay} />
-						</Box>
+						<ToggleSwitch onChange={() => setAvatarDisplay(!avatarDisplay)} checked={avatarDisplay} />
 					</MenuItemInput>
 				</MenuItem>
 			</MenuSection>
