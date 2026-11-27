@@ -4,7 +4,31 @@ import { ActivityIndicator, Alert, Pressable, Text, View } from 'react-native';
 import type { RoomItem } from './src/api';
 import { fuselageUi, mockStart } from './src/chatConfig';
 import { mockRooms } from './src/mockData';
-import { login, signOut, useRestoreSession, type Session } from './src/session';
+import { login, signOutWithPrompts, useRestoreSession, type Session, type SignOutUi } from './src/session';
+
+const signOutUi: SignOutUi = {
+	askRevoke: () =>
+		new Promise((resolve) =>
+			Alert.alert(
+				'Also revoke this session on the server?',
+				'This older saved session may be a personal access token that other integrations also use. Revoking it would sign them out too.',
+				[
+					{ text: 'Only sign out here', onPress: () => resolve(false) },
+					{ text: 'Revoke', style: 'destructive', onPress: () => resolve(true) },
+				],
+				{ cancelable: false },
+			),
+		),
+	clearFailed: (canRetry) =>
+		new Promise((resolve) =>
+			Alert.alert(
+				'Could not clear the saved session',
+				'You may be signed in again the next time you open the app.',
+				[...(canRetry ? [{ text: 'Try again', onPress: () => resolve(true) }] : []), { text: 'Dismiss', onPress: () => resolve(false) }],
+				{ cancelable: false },
+			),
+		),
+};
 
 export default function App() {
 	const [session, setSession] = useState<Session>();
@@ -20,11 +44,12 @@ export default function App() {
 		if (restoration.state.status === 'restored') setSession(restoration.state.session);
 	}, [restoration.state]);
 
-	const logout = () => {
+	const logout = async () => {
+		const leaving = session;
 		restoration.skip();
-		signOut(session).catch((e: unknown) => Alert.alert(e instanceof Error ? e.message : 'Could not clear the saved session'));
 		setRoom(undefined);
 		setSession(undefined);
+		await signOutWithPrompts(leaving, signOutUi);
 	};
 
 	// Dev only: EXPO_PUBLIC_COMPOSER_LAB=1 opens the TextInput probe, Fuselage included, instead of the chat

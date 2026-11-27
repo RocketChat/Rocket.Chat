@@ -2,7 +2,7 @@ import { DDPSDK } from '@rocket.chat/ddp-client';
 import { useEffect, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 
-import { login, loginDeps, restore, revokeSession, signOut, type RestoreDeps, type RestoreState, type Session } from './session';
+import { login, loginDeps, restore, revokeSession, signOut, signOutWithPrompts, type RestoreDeps, type RestoreState, type Session } from './session';
 import { clearSession, isValidServerUrl, loadSession, saveSession, secureStoreAvailable, storage, type StoredSession } from './sessionStore';
 
 // Dev only (EXPO_PUBLIC_SESSION_LAB=1): fake values, under a key the real app never uses.
@@ -12,13 +12,14 @@ const fakeSession: Session = { sdk: DDPSDK.create(fake.serverUrl), userId: fake.
 
 // A stand-in for the SDK that records what is called; no network.
 function fakeSdk(opts: { me?: boolean; connect?: boolean } = {}) {
-	const calls = { close: 0, post: [] as string[] };
+	const calls = { close: 0, post: [] as string[], init: [] as (RequestInit | undefined)[] };
 	const sdk = {
 		account: { setCredentials: () => undefined },
 		rest: {
 			get: () => Promise.resolve({ success: opts.me ?? true }),
-			post: (path: string) => {
+			post: (path: string, _params?: unknown, init?: RequestInit) => {
 				calls.post.push(path);
+				calls.init.push(init);
 				return Promise.resolve({});
 			},
 		},
@@ -203,6 +204,111 @@ async function urlChecks(): Promise<Row[]> {
 	return rows;
 }
 
+async function hardenedChecks(): Promise<Row[]> {
+	const rows: Row[] = [];
+	const add = (name: string, ok: boolean, detail?: string) => rows.push({ name, ok, detail });
+	const sessionOf = (kind: Session['kind']) => {
+		const f = fakeSdk();
+		return { f, session: { sdk: f.sdk, userId: fake.userId, serverUrl: fake.serverUrl, kind } satisfies Session };
+	};
+	const failDelete = () => Promise.reject(new Error('Could not clear the saved session'));
+
+	// Low 1: failed delete, retry at most 3 times
+	{
+		const { f, session } = sessionOf('token');
+		const asked: boolean[] = [];
+		let clears = 0;
+		await signOutWithPrompts(
+			session,
+			{ askRevoke: () => Promise.resolve(false), clearFailed: (canRetry) => (asked.push(canRetry), Promise.resolve(true)) },
+			() => (clears++, failDelete()),
+		);
+		add('Low1 retry stops after 3 retries (4 deletes, last alert has no retry)', clears === 4 && JSON.stringify(asked) === '[true,true,true,false]' && f.calls.close === 1, `deletes ${clears}, asked ${asked}`);
+	}
+	{
+		const { f, session } = sessionOf('token');
+		let clears = 0;
+		let alerts = 0;
+		await signOutWithPrompts(
+			session,
+			{ askRevoke: () => Promise.resolve(false), clearFailed: () => (alerts++, Promise.resolve(true)) },
+			() => (clears++, clears < 3 ? failDelete() : Promise.resolve()),
+		);
+		add('Low1 retry that succeeds ends the chain', clears === 3 && alerts === 2 && f.calls.close === 1, `deletes ${clears}, alerts ${alerts}`);
+	}
+	{
+		const { session } = sessionOf('token');
+		let clears = 0;
+		await signOutWithPrompts(session, { askRevoke: () => Promise.resolve(false), clearFailed: () => Promise.resolve(false) }, () => (clears++, failDelete()));
+		add('Low1 Dismiss does not retry', clears === 1, `deletes ${clears}`);
+	}
+
+	// Low 2: unknown kind asks once, the answer picks the revoke
+	for (const answer of [true, false]) {
+		const { f, session } = sessionOf('unknown');
+		let asks = 0;
+		await signOutWithPrompts(session, { askRevoke: () => (asks++, Promise.resolve(answer)), clearFailed: () => Promise.resolve(false) }, () => Promise.resolve());
+		add(`Low2 unknown, ${answer ? 'Revoke' : 'Only sign out here'}: asked once, logout posts ${answer ? 1 : 0}`, asks === 1 && f.calls.post.length === (answer ? 1 : 0) && f.calls.close === 1, `asks ${asks}, posts ${f.calls.post.length}`);
+	}
+	for (const kind of ['password', 'token'] as const) {
+		const { f, session } = sessionOf(kind);
+		let asks = 0;
+		await signOutWithPrompts(session, { askRevoke: () => (asks++, Promise.resolve(true)), clearFailed: () => Promise.resolve(false) }, () => Promise.resolve());
+		add(`Low2 ${kind} is never asked, posts ${kind === 'password' ? 1 : 0}`, asks === 0 && f.calls.post.length === (kind === 'password' ? 1 : 0));
+	}
+
+	// Low 3: manual redirect, non-2xx is not revoked
+	const respond = (r: unknown) => ({ seen: [] as (RequestInit | undefined)[], fetch: undefined as unknown as typeof fetch, r });
+	for (const [name, response, expected] of [
+		['2xx', { ok: true, status: 200, type: 'basic' }, true],
+		['302', { ok: false, status: 302, type: 'basic' }, false],
+		['opaque redirect', { ok: false, status: 0, type: 'opaqueredirect' }, false],
+	] as const) {
+		const c = respond(response);
+		c.fetch = ((_u: string, init?: RequestInit) => (c.seen.push(init), Promise.resolve(c.r))) as typeof fetch;
+		const revoked = await revokeSession(fake, c.fetch);
+		add(`Low3 revoke ${name}: redirect manual, revoked ${expected}`, c.seen[0]?.redirect === 'manual' && revoked === expected, `revoked ${revoked}`);
+	}
+	add('Low3 revoke on a network error is not revoked', !(await revokeSession(fake, (() => Promise.reject(new TypeError('x'))) as typeof fetch)));
+	{
+		const { f, session } = sessionOf('password');
+		await signOut(session);
+		add('Low3 sign-out logout passes redirect manual through the SDK', f.calls.init[0]?.redirect === 'manual');
+	}
+
+	// Low 4: revoke URL normalization
+	for (const [server, expected] of [
+		['https://x.example.invalid/websocket', 'https://x.example.invalid/api/v1/logout'],
+		['https://x.example.invalid/websocket/', 'https://x.example.invalid/api/v1/logout'],
+		['https://x.example.invalid/', 'https://x.example.invalid/api/v1/logout'],
+		['https://x.example.invalid/chat', 'https://x.example.invalid/chat/api/v1/logout'],
+	]) {
+		let url = '';
+		await revokeSession({ ...fake, serverUrl: server }, ((u: string) => ((url = u), Promise.resolve({ ok: true }))) as unknown as typeof fetch);
+		add(`Low4 revoke URL for ${server}`, url === expected, url);
+	}
+
+	// Low 5: an older restore refused after a newer session was saved must not delete it
+	{
+		const newer: StoredSession = { ...fake, authToken: 'fake-newer-token-not-real' };
+		let store: StoredSession | undefined = fake;
+		const deps = (): RestoreDeps => ({
+			load: () => Promise.resolve(store),
+			clear: () => ((store = undefined), Promise.resolve()),
+			resume: () => new Promise((_, rej) => setTimeout(() => ((store = newer), rej({ status: 401 })), 50)),
+			timeoutMs: 500,
+		});
+		const [a, b] = await Promise.all([restore(deps()), restore(deps())]);
+		add('Low5 older restore 401 after a newer save keeps the newer session', a.status === 'rejected' && b.status === 'rejected' && store === newer, `${a.status} ${b.status} ${store?.authToken === newer.authToken}`);
+		store = fake;
+		const d = deps();
+		d.resume = () => Promise.reject({ status: 401 });
+		await restore(d);
+		add('Low5 401 with the same stored token still deletes it', store === undefined);
+	}
+	return rows;
+}
+
 async function lateResumeChecks(): Promise<Row[]> {
 	const late = fakeSdk();
 	await restore({
@@ -220,7 +326,9 @@ export function SessionLab() {
 
 	useEffect(() => {
 		(async () => {
-			setRows([...(await storeChecks()), ...(await machineChecks()), ...(await urlChecks()), ...(await lateResumeChecks())]);
+			const all = [...(await storeChecks()), ...(await machineChecks()), ...(await urlChecks()), ...(await lateResumeChecks()), ...(await hardenedChecks())];
+			for (const r of all) if (!r.ok) console.log(`[session-lab] FAIL ${r.name} (${r.detail ?? ''})`);
+			setRows(all);
 		})();
 	}, []);
 

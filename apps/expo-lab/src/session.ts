@@ -19,19 +19,27 @@ const normalizeUrl = (url: string) =>
 
 // Test hook: the lab swaps the SDK factory to run login without a network.
 export const loginDeps = { create: (url: string): DDPSDK => DDPSDK.create(url), revoke: (s: StoredSession) => revokeSession(s) };
+// The lab swaps these in dev builds only.
+if (!__DEV__) Object.freeze(loginDeps);
+
+// Same normalization as toRestUrl in packages/ddp-client/src/DDPSDK.ts (not exported there).
+const toRestUrl = (url: string) => url.replace(/\/websocket\/?$/, '').replace(/\/$/, '');
 
 // Best effort and bounded: signing in must never wait on the server we are leaving.
-export async function revokeSession(stored: StoredSession, request: typeof fetch = fetch, timeoutMs = 3000): Promise<void> {
+// Redirects are not followed, so the token header never leaves the stored server; any non-2xx (or opaque redirect) means not revoked.
+export async function revokeSession(stored: StoredSession, request: typeof fetch = fetch, timeoutMs = 3000): Promise<boolean> {
 	const controller = new AbortController();
 	const timer = setTimeout(() => controller.abort(), timeoutMs);
 	try {
-		await request(`${stored.serverUrl}/api/v1/logout`, {
+		const response = await request(`${toRestUrl(stored.serverUrl)}/api/v1/logout`, {
 			method: 'POST',
 			headers: { 'X-User-Id': stored.userId, 'X-Auth-Token': stored.authToken },
+			redirect: 'manual',
 			signal: controller.signal,
 		});
+		return response.ok;
 	} catch {
-		// ignored on purpose
+		return false;
 	} finally {
 		clearTimeout(timer);
 	}
@@ -77,16 +85,44 @@ export async function login(rawUrl: string, credentials: Credentials, askCode: A
 
 // Sign out: the local copy always goes. The server-side token is revoked only for a password login:
 // /v1/logout removes the token from the user's login tokens, which is where personal access tokens live too.
-export async function signOut(session: Session | undefined, clear: () => Promise<void> = clearSession): Promise<void> {
+export async function signOut(session: Session | undefined, clear: () => Promise<void> = clearSession, revoke = session?.kind === 'password'): Promise<void> {
 	let failure: unknown;
 	try {
 		await clear();
 	} catch (e) {
 		failure = e;
 	}
-	if (session?.kind === 'password') session.sdk.rest.post('/v1/logout').catch(() => undefined);
+	// The SDK's REST client forwards the init, so redirects are not followed here either.
+	if (revoke) session?.sdk.rest.post('/v1/logout', undefined, { redirect: 'manual' }).catch(() => undefined);
 	session?.sdk.connection.close();
 	if (failure) throw failure;
+}
+
+export type SignOutUi = {
+	askRevoke: () => Promise<boolean>;
+	// Resolves true to retry the delete; canRetry is false once the retries are used up.
+	clearFailed: (canRetry: boolean) => Promise<boolean>;
+};
+
+const MAX_CLEAR_RETRIES = 3;
+
+// A password session is always revoked, a PAT never; an old v1 item of unknown origin is the user's call, asked once and not stored.
+export async function signOutWithPrompts(session: Session | undefined, ui: SignOutUi, clear: () => Promise<void> = clearSession): Promise<void> {
+	const revoke = session?.kind === 'unknown' ? await ui.askRevoke() : session?.kind === 'password';
+	let failure: unknown;
+	try {
+		await signOut(session, clear, revoke);
+	} catch (e) {
+		failure = e;
+	}
+	for (let retries = 0; failure; retries++) {
+		const canRetry = retries < MAX_CLEAR_RETRIES;
+		if (!(await ui.clearFailed(canRetry)) || !canRetry) return;
+		failure = await clear().then(
+			() => undefined,
+			(e: unknown) => e,
+		);
+	}
 }
 
 export type RestoreState =
@@ -138,7 +174,9 @@ export async function restore(deps: RestoreDeps): Promise<RestoreState> {
 		if (timedOut) attempt.then((late) => late.sdk.connection.close(), () => undefined);
 		if (isRefused(e)) {
 			if (__DEV__) console.log('[session] session rejected (' + (e as { status: number }).status + ')');
-			await deps.clear().catch(() => undefined);
+			// A newer login may have saved another session while this attempt was in flight.
+			const current = await deps.load().catch(() => undefined);
+			if (current?.authToken === stored.authToken) await deps.clear().catch(() => undefined);
 			return { status: 'rejected' };
 		}
 		if (__DEV__) console.log('[session] server unreachable, session kept');
