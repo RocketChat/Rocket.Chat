@@ -115,7 +115,9 @@ const writePersistedUploads = (storageKey: string, entries: PersistedUpload[], r
 const parsePersistedUploadIds = (value: string | null): PersistedUpload['id'][] => {
 	try {
 		const persisted: unknown = value ? JSON.parse(value) : [];
-		return Array.isArray(persisted) ? persisted.map((entry) => entry?.id).filter((id): id is string => typeof id === 'string') : [];
+		return Array.isArray(persisted)
+			? persisted.map((entry: { id?: unknown } | null | undefined) => entry?.id).filter((id): id is string => typeof id === 'string')
+			: [];
 	} catch {
 		return [];
 	}
