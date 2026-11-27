@@ -22,6 +22,7 @@ import type {
 	MessageTypesValues,
 	ILivechatContact,
 } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import {
 	Rooms,
 	LivechatRooms,
@@ -43,6 +44,7 @@ import { keepPublicAuthorFields } from './messages/keepPublicAuthorFields';
 import { shouldHideSystemMessage } from './systemMessage/hideSystemMessage';
 import { subscriptionFields } from '../../lib/publishFields';
 
+const logger = new Logger('NotifyListener');
 type ClientAction = 'inserted' | 'updated' | 'removed';
 
 export const notifyOnLivechatPriorityChanged = async (
@@ -59,7 +61,13 @@ export const notifyOnRoomChanged = async <T extends IRocketChatRecord>(
 ): Promise<void> => {
 	const items = Array.isArray(data) ? data : [data];
 	for (const item of items) {
-		void api.broadcast('watch.rooms', { clientAction, room: item });
+		void api.broadcast('watch.rooms', { clientAction, room: item }).catch((error: unknown) => {
+			logger.error({
+				msg: 'Failed to broadcast room change',
+				roomId: item._id,
+				err: error,
+			});
+		});
 	}
 };
 
@@ -70,7 +78,13 @@ export const notifyOnRoomChangedById = async <T extends IRocketChatRecord>(
 	const eligibleIds = Array.isArray(ids) ? ids : [ids];
 	const items = Rooms.findByIds(eligibleIds);
 	for await (const item of items) {
-		void api.broadcast('watch.rooms', { clientAction, room: item });
+		void api.broadcast('watch.rooms', { clientAction, room: item }).catch((error: unknown) => {
+			logger.error({
+				msg: 'Failed to broadcast room change',
+				roomId: item._id,
+				err: error,
+			});
+		});
 	}
 };
 
@@ -81,7 +95,13 @@ export const notifyOnRoomChangedByUsernamesOrUids = async <T extends IRoom>(
 ): Promise<void> => {
 	const items = Rooms.findByUsernamesOrUids(uids, usernames);
 	for await (const item of items) {
-		void api.broadcast('watch.rooms', { clientAction, room: item });
+		void api.broadcast('watch.rooms', { clientAction, room: item }).catch((error: unknown) => {
+			logger.error({
+				msg: 'Failed to broadcast room change',
+				roomId: item._id,
+				err: error,
+			});
+		});
 	}
 };
 

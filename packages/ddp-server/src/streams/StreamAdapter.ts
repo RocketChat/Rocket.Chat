@@ -36,6 +36,7 @@ export const createStreamAdapter = (server: Server): StreamConstructor =>
 			}
 
 			const frames = preframe(getMsg);
+			const checkPermission = this.createEmissionPermissionCheck(eventName);
 
 			for (const { subscription } of subscriptions) {
 				// Every publication in this process is our Publication, so its client is our Session.
@@ -51,7 +52,7 @@ export const createStreamAdapter = (server: Server): StreamConstructor =>
 					continue;
 				}
 
-				if (!(await this.isEmitAllowed(subscription, eventName, ...args))) {
+				if (!(await checkPermission(subscription, ...args))) {
 					continue;
 				}
 

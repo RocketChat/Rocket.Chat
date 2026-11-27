@@ -22,6 +22,7 @@ import type {
 	ITeamStats,
 	AtLeast,
 } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { Team, Rooms, Subscriptions, Users, TeamMember } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/tools';
@@ -40,6 +41,7 @@ import { omitStatusVisibilityConfig } from '../../lib/statusVisibility/redactSta
 import { checkUsernameAvailability } from '../../lib/users/checkUsernameAvailability';
 import { settings } from '../../settings';
 
+const logger = new Logger('TeamService');
 const isAbacError = (error: unknown): boolean => {
 	if (isClientSafeError(error)) {
 		return String(error.error).startsWith('error-abac-');
@@ -483,7 +485,45 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			await Message.saveSystemMessage('user-converted-to-channel', team.roomId, room.name || '', user);
 		}
 
-		await Rooms.unsetTeamId(team._id);
+		const detachedRoomIds: IRoom['_id'][] = [];
+
+		try {
+			const concurrency = 5;
+
+			while (true) {
+				const results = await Promise.allSettled(Array.from({ length: concurrency }, () => Rooms.detachOneRoomFromTeam(team._id)));
+
+				let detachedAny = false;
+
+				for (const result of results) {
+					if (result.status === 'fulfilled' && result.value) {
+						detachedRoomIds.push(result.value._id);
+						detachedAny = true;
+					}
+				}
+
+				const failure = results.find((result) => result.status === 'rejected');
+				if (failure?.status === 'rejected') {
+					throw failure.reason;
+				}
+
+				if (!detachedAny) {
+					break;
+				}
+			}
+		} finally {
+			if (detachedRoomIds.length > 0) {
+				try {
+					await notifyOnRoomChangedById(detachedRoomIds, 'updated');
+				} catch (error) {
+					logger.error({
+						msg: 'Failed to notify room changes after removing team associations',
+						teamId: team._id,
+						err: error,
+					});
+				}
+			}
+		}
 	}
 
 	async updateRoom(uid: string, rid: string, isDefault: boolean, canUpdateAnyRoom = false): Promise<IRoom> {
