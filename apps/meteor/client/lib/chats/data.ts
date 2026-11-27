@@ -1,9 +1,10 @@
-import { isEncryptedMessageContent, type IEditedMessage, type IMessage, type IRoom, type ISubscription } from '@rocket.chat/core-typings';
+import type { IEditedMessage, IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Random } from '@rocket.chat/random';
 import { differenceInMinutes } from 'date-fns/differenceInMinutes';
 
 import type { DataAPI } from './ChatAPI';
+import { composeMessageCore, getUpdateMessageParams, type PayloadDeps } from './core/messagePayload';
 import { Messages, Rooms, Subscriptions } from '../../stores';
 import { sdk } from '../SDKClient';
 import { hasAtLeastOnePermission, hasPermission } from '../authorization';
@@ -14,25 +15,15 @@ import { prependReplies } from '../utils/prependReplies';
 import { upsertThreadMessageInCache } from '../utils/threadMessageUtils';
 
 export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage['_id'] | undefined }): DataAPI => {
+	const payloadDeps: PayloadDeps = {
+		prependReplies: (text, quoted) => prependReplies(text, quoted),
+		randomId: () => Random.id(),
+	};
+
 	const composeMessage = async (
 		text: string,
-		{ sendToChannel, quotedMessages, originalMessage }: { sendToChannel?: boolean; quotedMessages: IMessage[]; originalMessage?: IMessage },
-	): Promise<IMessage> => {
-		const msg = await prependReplies(text, quotedMessages);
-
-		const effectiveRID = originalMessage?.rid ?? rid;
-		const effectiveTMID = originalMessage ? originalMessage.tmid : tmid;
-
-		return {
-			_id: originalMessage?._id ?? Random.id(),
-			rid: effectiveRID,
-			...(effectiveTMID && {
-				tmid: effectiveTMID,
-				...(sendToChannel && { tshow: sendToChannel }),
-			}),
-			msg,
-		} as IMessage;
-	};
+		options: { sendToChannel?: boolean; quotedMessages: IMessage[]; originalMessage?: IMessage },
+	): Promise<IMessage> => composeMessageCore(payloadDeps, { rid, tmid }, text, options);
 
 	const findMessageByID = async (mid: IMessage['_id']): Promise<IMessage | null> =>
 		Messages.state.find((record) => record._id === mid && record._hidden !== true) ??
@@ -174,20 +165,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const updateMessage = async (message: IEditedMessage, previewUrls?: string[]): Promise<void> => {
-		const params = isEncryptedMessageContent(message)
-			? {
-					msgId: message._id,
-					roomId: message.rid,
-					content: message.content,
-					e2eMentions: message.e2eMentions,
-				}
-			: {
-					previewUrls,
-					msgId: message._id,
-					roomId: message.rid,
-					customFields: message.customFields,
-					text: message.msg,
-				};
+		const params = getUpdateMessageParams(message, previewUrls);
 
 		await sdk.rest.post('/v1/chat.update', params);
 	};
