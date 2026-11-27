@@ -44,9 +44,10 @@ export const configurePassport = (settings: ICachedSettings) => {
 			}),
 			cookie: {
 				httpOnly: true,
-				secure: process.env.NODE_ENV === 'production',
+				secure: 'auto',
 				maxAge: 5 * 60 * 1000, // 5 minutes
-				sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+				// express-session supports 'auto' (none over HTTPS, lax over HTTP), but its types don't list it yet
+				sameSite: 'auto' as unknown as 'none',
 			},
 		}),
 	);
