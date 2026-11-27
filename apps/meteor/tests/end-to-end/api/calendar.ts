@@ -1,13 +1,14 @@
 import { after, before, describe, it } from 'node:test';
 
 import type { Credentials } from '@rocket.chat/api-client';
-import type { ICalendarEvent, ISetting, IUser } from '@rocket.chat/core-typings';
+import type { ICalendarEvent, IExchangeCalendarSyncState, ISetting, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { MongoClient } from 'mongodb';
 import type { Response } from 'supertest';
 
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { withDatabase } from '../../data/database.helper';
 import { getSettingValueById, updateSetting } from '../../data/permissions.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
@@ -667,6 +668,50 @@ describe('[Calendar Events]', () => {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400);
+		});
+	});
+
+	describe('[deleting the owner]', () => {
+		it('should remove every calendar event and the calendar sync state the deleted user owned', async () => {
+			const owner = await createUser();
+			const ownerCredentials = await login(owner.username, password);
+			const stamp = Date.now();
+
+			await Promise.all(
+				['First', 'Second'].map((subject) =>
+					request
+						.post(api('calendar-events.create'))
+						.set(ownerCredentials)
+						.send({ startTime: new Date().toISOString(), subject, description: 'Description' })
+						.expect(200),
+				),
+			);
+			await withDatabase((db) =>
+				db.collection<IExchangeCalendarSyncState>('rocketchat_exchange_calendar_sync_state').insertOne({
+					_id: `calendar-events.owner-state-${stamp}`,
+					_updatedAt: new Date(),
+					uid: owner._id,
+					mailbox: 'owner@corp.example',
+					provider: 'graph',
+					syncWindowDays: 30,
+					windowStart: new Date(),
+				}),
+			);
+
+			expect(
+				await withDatabase((db) => db.collection<ICalendarEvent>('rocketchat_calendar_event').countDocuments({ uid: owner._id })),
+			).to.be.equal(2);
+
+			await deleteUser(owner);
+
+			const [events, syncStates] = await withDatabase((db) =>
+				Promise.all([
+					db.collection<ICalendarEvent>('rocketchat_calendar_event').countDocuments({ uid: owner._id }),
+					db.collection<IExchangeCalendarSyncState>('rocketchat_exchange_calendar_sync_state').countDocuments({ uid: owner._id }),
+				]),
+			);
+			expect(events).to.be.equal(0);
+			expect(syncStates).to.be.equal(0);
 		});
 	});
 
