@@ -281,3 +281,39 @@ Deviation from the first design: the offline state is a small gate screen in `Ap
 - The login body (password, 2FA code) is resent by iOS on 307/308 redirects. Android was not assessed; OkHttp keeps custom headers (`X-Auth-Token`) on cross-host redirects.
 - Recommended change in `packages/ddp-client` (not made here): `Connection.ts` line 110 sets `ssl` with the case-sensitive `url.startsWith('https') || url.startsWith('wss')`, and lines 111-114 strip only lowercase schemes; line 192 then falls back to `ws://` for anything not `ssl`. `Https://host` therefore becomes plaintext `ws://https://host`... The constructor should parse the scheme case-insensitively and throw on an unknown scheme instead of falling back to `ws://`. The app lowercases the scheme and validates it itself in the meantime.
 - Lab results: `docs/session/session-lab-hardened.jpg` (53 cases, fake values, no network).
+
+## UiKit step u1: message blocks natively
+
+`src/uikit/` is a hybrid native renderer (decision x7 of the checklist): `NativeSurfaceRenderer` extends `UiKit.SurfaceRenderer` from `@rocket.chat/ui-kit`, one small file per block group in `blocks/`, `context.ts` (`onAction({ appId, blockId, actionId, value })`, surface kind), `payloads.ts` (invented samples). Nothing touches the network: `onAction` is a prop. The gallery cell "UiKit (message blocks)" shows 10 payloads (`EXPO_PUBLIC_GALLERY=1 EXPO_PUBLIC_GALLERY_ONLY=UiKit`), and the mock room (`EXPO_PUBLIC_CHAT_MOCK=room`) carries one message with `blocks` (rendered only in mock mode). Screenshots: `docs/uikit/uikit-message-blocks.png` (top) and `-2.png` (scrolled).
+
+### Coverage (message surface)
+
+| Block or element | Status | Note |
+| --- | --- | --- |
+| `plain_text`, `mrkdwn` | supported | `mrkdwn` through `message-parser` `parse` and the native `Markup`; in a context block `plain_text` is 12/16 muted, `mrkdwn` keeps the 14/20 body size; `text.i18n` lookup not ported |
+| `section` (text, fields) | degraded | fields are two wrapping columns (`flexBasis: 45%`), not CSS grid |
+| section accessory `button`, `image` | supported | other accessories show the placeholder |
+| `divider`, `header`, `markdown` | supported | header is 16/24 bold as `fontScale h4` |
+| `actions` + `button` | supported | hand-styled `Pressable` (Fuselage `Button` is not centred nor coloured by variant natively); "Show more..." after 5 |
+| `context` (text, image) | supported | |
+| `image` block, image element | supported | RN `Image`, absolute `https` only, falls back to the alt text on error |
+| `callout`, `alert` | supported | Fuselage `Callout`; the callout accessory goes through the same element path |
+| `input`, `card`, `carousel`, `container`, `context_actions`, `data_table`, `data_visualization`, `file`, `info_card`, `layout`, `plan`, `preview`, `rich_text`, `table`, `task_card`, `video`, `video_conf` | placeholder | dev-only text `not supported yet: <type>`, nothing in release |
+| every select, `overflow`, pickers, inputs, `icon_button`, `feedback_buttons`, ... as elements | placeholder | same |
+| malformed payloads (null block, non-array fields, bad scheme) | no throw | a block that fails to mount is caught per block, dev placeholder |
+
+### Copied from fuselage-ui-kit
+
+Structure and values, by file (comments in the code name each): `surfaces/FuselageSurfaceRenderer.tsx` (method per type, null outside the BLOCK context), `FuselageMessageSurfaceRenderer.tsx` (message allowlist), `blocks/SectionBlock*.tsx`, `ActionsBlock*.tsx`, `ContextBlock*.tsx`, `ImageBlock.tsx` (360 px cap), `CalloutBlock.tsx`, `AlertBlock.tsx` (level mapping), `HeaderBlock.tsx`, `DividerBlock.tsx`, `MarkdownBlock.tsx`, `elements/ButtonElement.tsx` (`getVariant`), `ImageElement.tsx` (88 and 20 px). Button colours are Fuselage palette values written by hand.
+
+### typia and Metro findings
+
+- `@rocket.chat/ui-kit` has a built `dist` (ESM, `.js` specifiers, `"type": "module"`). Metro resolves it through the workspace link with `unstable_enablePackageExports`; no alias or polyfill was needed.
+- `dist` imports `typia` (7 files, validators pre-generated). The app bundle (2693 modules) loads and runs on Hermes on the iPhone 17 Pro simulator with no Metro or Hermes error. No validator (`isModalView` etc.) is called by this renderer, so none was exercised.
+- A trap: Metro started with `CI=1` does not watch files, so edits were not served and an old bundle kept failing. Use `CI=1` only for `export`.
+
+### Not verified
+
+Presses (no touch tool; handler wiring only by reading), a comparison with the web Storybook, dark theme, Android, `isSafeUrl` (not called yet). A `{type:'button'}` without `text` draws an empty button; a small image block keeps blank space around it (contain inside the capped box).
+
+u2 needs: the trigger id and `ui.interaction` POST behind `onAction`, `Alert` for `confirm`, `Linking` after `isSafeUrl` for a button `url`, the `notify-user` stream, and `rid`/`mid` passed to a `UiKitMessage` with the stack's prop shape.
