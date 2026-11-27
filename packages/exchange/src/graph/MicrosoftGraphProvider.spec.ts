@@ -253,6 +253,17 @@ describe('MicrosoftGraphProvider', () => {
 			expect(serverFetch.mock.calls[1][0]).toBe(NEXT_LINK);
 		});
 
+		it('names the series whose master could not be read, so its stored occurrences are not pruned', async () => {
+			mockTokenThen(
+				graphResponse({ value: [{ id: 'occ', type: 'occurrence', seriesMasterId: 'M', start: { dateTime: '2026-08-21T10:00:00' } }] }),
+				graphResponse({ error: { code: 'ErrorItemNotFound' } }, 404),
+			);
+
+			const page = await new MicrosoftGraphProvider(config).listEvents(MAILBOX, timeWindow);
+
+			expect(page).toMatchObject({ items: [], coverage: 'partial', resyncedSeries: [], unresolvedSeries: ['M'] });
+		});
+
 		it('never claims a page is full window: Graph only ever answers with what changed', async () => {
 			mockTokenThen(graphResponse({ 'value': [], '@odata.deltaLink': DELTA_LINK }));
 

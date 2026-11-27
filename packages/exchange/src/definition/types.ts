@@ -50,7 +50,7 @@ export type ExchangeEvent = ExchangeEventUpsert | ExchangeEventDeletion;
  * `resyncedSeries` names the series whose expansion this page carries in full, so whatever is
  * stored for them and missing from it is gone.
  */
-export type EventPage = Page<ExchangeEvent> & { resyncedSeries?: string[] };
+export type EventPage = Page<ExchangeEvent> & { resyncedSeries?: string[]; unresolvedSeries?: string[] };
 
 export type ExchangeContactPhone = {
 	/** As it came from Exchange, kept for display and audit. */

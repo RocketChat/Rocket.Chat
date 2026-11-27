@@ -174,15 +174,16 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 
 		const raw = Array.isArray(payload.value) ? (payload.value as GraphEvent[]) : [];
 		const nextLink = asString(payload['@odata.nextLink']);
-		const { events, complete } = await this.resolveSeries(mailbox, raw);
+		const { events, unresolvedSeries } = await this.resolveSeries(mailbox, raw);
 
 		return {
 			items: events.map((event) => this.toExchangeEvent(event)).filter((event): event is ExchangeEvent => event !== undefined),
 			// A `nextLink` resumes this round, a `deltaLink` opens the next one. Both come back as the cursor.
 			cursor: nextLink ?? asString(payload['@odata.deltaLink']),
 			hasMore: Boolean(nextLink),
-			coverage: complete ? 'delta' : 'partial',
+			coverage: unresolvedSeries.length ? 'partial' : 'delta',
 			resyncedSeries: this.resyncedSeries(raw),
+			unresolvedSeries,
 		};
 	}
 
@@ -383,7 +384,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 	 * stub per occurrence: the stub carries the times and nothing else, so it is read on top of its master,
 	 * and the master itself is dropped because the occurrences are what happens in the window.
 	 */
-	private async resolveSeries(mailbox: string, raw: GraphEvent[]): Promise<{ events: GraphEvent[]; complete: boolean }> {
+	private async resolveSeries(mailbox: string, raw: GraphEvent[]): Promise<{ events: GraphEvent[]; unresolvedSeries: string[] }> {
 		const masters = new Map<string, GraphEvent>();
 		for (const event of raw) {
 			const id = asString(event.id);
@@ -414,6 +415,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 		}
 
 		const resolved: GraphEvent[] = [];
+		const unresolvedSeries = new Set<string>();
 		let unresolved = 0;
 
 		for (const event of raw) {
@@ -432,6 +434,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 
 			if (!master) {
 				unresolved += 1;
+				unresolvedSeries.add(masterId);
 				continue;
 			}
 
@@ -443,7 +446,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 			logger.warn({ msg: 'Occurrences left out of this round, so the stored events keep what they have', mailbox, unresolved });
 		}
 
-		return { events: resolved, complete: unresolved === 0 };
+		return { events: resolved, unresolvedSeries: [...unresolvedSeries] };
 	}
 
 	/**

@@ -126,6 +126,22 @@ describe('syncCalendarWindow', () => {
 			expect(pruneImportedSeries).not.toHaveBeenCalled();
 		});
 
+		it('spares a series a later page left occurrences out of, and still prunes the others', async () => {
+			const provider = providerReturning(
+				'graph',
+				page([occurrence('first'), upsert('weekly', { seriesMasterId: 'other' })], {
+					resyncedSeries: ['master', 'other'],
+					hasMore: true,
+					cursor: 'next',
+				}),
+				page([], { coverage: 'partial', unresolvedSeries: ['master'] }),
+			);
+
+			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
+
+			expect(pruneImportedSeries).toHaveBeenCalledWith(UID, timeWindow, ['other'], ['first', 'weekly'], { deferSideEffects: true });
+		});
+
 		it('asks for a deletion by the master id alone, which is all Graph sends for a deleted series', async () => {
 			const provider = providerReturning('graph', page([deletion('master')]));
 
