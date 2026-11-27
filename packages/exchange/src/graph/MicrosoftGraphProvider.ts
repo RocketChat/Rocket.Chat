@@ -288,8 +288,11 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 				}
 
 				let padding = 0;
-				if (res.body.endsWith('==')) padding = 2;
-				else if (res.body.endsWith('=')) padding = 1;
+				if (res.body.endsWith('==')) {
+					padding = 2;
+				} else if (res.body.endsWith('=')) {
+					padding = 1;
+				}
 
 				const estimatedByteLength = (base64Length * 3) / 4 - padding;
 				if (estimatedByteLength > MAX_CONTACT_PHOTO_BYTES) {
