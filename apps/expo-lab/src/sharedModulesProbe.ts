@@ -29,6 +29,7 @@ const loaders: [string, () => unknown][] = [
 	['core/processTooLongMessage', () => require('../../meteor/client/lib/chats/core/processTooLongMessage')],
 	['core/processSetReaction', () => require('../../meteor/client/lib/chats/core/processSetReaction')],
 	['core/sendMessage', () => require('../../meteor/client/lib/chats/core/sendMessage')],
+	['core/createUserAction', () => require('../../meteor/client/lib/chats/core/createUserAction')],
 ];
 
 export const runSharedModulesProbe = (): ProbeRow[] =>
