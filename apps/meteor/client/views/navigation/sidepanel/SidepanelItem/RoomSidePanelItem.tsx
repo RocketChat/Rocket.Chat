@@ -47,6 +47,7 @@ const RoomSidePanelItem = ({ room, openedRoom, isRoomFilter, ...props }: RoomSid
 	const menu =
 		!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled)) ? (
 			<RoomMenu
+				key={rid}
 				alert={alert}
 				threadUnread={unreadCount.threads > 0}
 				rid={rid}
