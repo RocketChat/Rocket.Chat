@@ -24,6 +24,7 @@
 		"packages/jest-presets/{client,server}/**",
 		"packages/node-poplib/**",
 		"packages/storybook-config/*.{d.ts,js}",
+		"packages/ui-message-list/scripts/sdlc/**",
 		"scripts/**",
 		".github/**",
 		".houston/**"
