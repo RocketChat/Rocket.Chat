@@ -16,6 +16,7 @@ import {
 import { AppAvatar } from '../AppAvatar';
 import { userAvatarUrl, type RoomItem } from '../api';
 import { mock } from '../chatConfig';
+import { measure } from '../layoutDebug';
 import { EmojiServerContext } from '../markup/Emoji';
 import Markup from '../markup/Markup';
 import { UiKitMessage } from '../uikit/SurfaceRenderer';
@@ -47,14 +48,16 @@ export function FuselageRoom({ session, room, onBack }: Props) {
 				</View>
 				{error && <RNText style={{ color: 'crimson', padding: 12 }}>{error}</RNText>}
 				<FlatList
+					onLayout={measure('room-list')}
 					inverted
 					data={messages}
 					keyExtractor={(m) => m._id}
 					renderItem={({ item }) => (
+						<View onLayout={measure('message-row')}>
 						<Message>
 							<MessageLeftContainer>
 								{/* The web centers the avatar on the header and first body line (min-block-size 40px, scss); native does not run it */}
-								<View style={{ height: 40, justifyContent: 'center' }}>
+								<View onLayout={measure('message-avatar-column')} style={{ height: 40, justifyContent: 'center' }}>
 									<AppAvatar url={userAvatarUrl(session, item.u.username ?? item.u._id)} />
 								</View>
 							</MessageLeftContainer>
@@ -74,6 +77,7 @@ export function FuselageRoom({ session, room, onBack }: Props) {
 								{mock && item.blocks?.length ? <UiKitMessage blocks={item.blocks} onAction={(a) => console.log('uikit action', a)} /> : null}
 							</MessageContainer>
 						</Message>
+						</View>
 					)}
 				/>
 				<View style={{ padding: 12, gap: 8, flexDirection: 'row', alignItems: 'center' }}>

@@ -1,4 +1,5 @@
 import type { RoomItem } from '../api';
+import { LayoutOverlay } from '../layoutDebug';
 import type { Session } from '../session';
 import { FuselageLogin } from './FuselageLogin';
 import { FuselageProvider } from './FuselageProvider';
@@ -24,6 +25,7 @@ export function FuselageChat({ session, room, onSession, onOpen, onBack, onLogou
 			) : (
 				<FuselageRooms session={session} onOpen={onOpen} onLogout={onLogout} />
 			)}
+			<LayoutOverlay />
 		</FuselageProvider>
 	);
 }

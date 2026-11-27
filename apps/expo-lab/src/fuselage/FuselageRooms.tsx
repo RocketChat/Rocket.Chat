@@ -14,6 +14,7 @@ import {
 import { AppAvatar } from '../AppAvatar';
 import { roomAvatarUrl, type RoomItem } from '../api';
 import type { Session } from '../session';
+import { measure } from '../layoutDebug';
 import { useRooms } from '../useRooms';
 
 type Props = { session: Session; onOpen: (room: RoomItem) => void; onLogout: () => void };
@@ -37,9 +38,11 @@ export function FuselageRooms({ session, onOpen, onLogout }: Props) {
 			{error && <RNText style={{ color: 'crimson', padding: 12 }}>{error}</RNText>}
 			{!rooms && !error && <RNText style={{ padding: 12 }}>Loading...</RNText>}
 			<FlatList
+				onLayout={measure('rooms-list')}
 				data={rooms}
 				keyExtractor={(r) => r.rid}
 				renderItem={({ item }) => (
+					<View onLayout={measure('row')}>
 					<SidebarItem highlighted={item.unread > 0} onPress={() => onOpen(item)}>
 						<SidebarItemAvatarWrapper>
 							<AppAvatar url={roomAvatarUrl(session, item)} />
@@ -51,6 +54,7 @@ export function FuselageRooms({ session, onOpen, onLogout }: Props) {
 						{item.t === 'p' && <Tag>private</Tag>}
 						{item.unread > 0 && <SidebarItemBadge variant='primary'>{item.unread}</SidebarItemBadge>}
 					</SidebarItem>
+					</View>
 				)}
 			/>
 		</View>
