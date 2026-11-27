@@ -11,7 +11,7 @@ import { buildAgentRecord110, parseStoredRecord110 } from './recordContract';
 import {
 	areToolsWithinObservedSeatCeiling,
 	deriveAgentReadiness,
-	getObservedSeatToolCeiling,
+	getEffectiveSeatTools,
 	doesObservationDisagreeWithSeat,
 	isClaimedSeatObservationAcceptable,
 	isEngineReportFresh,
@@ -131,14 +131,13 @@ export async function registerSeatForEngine(
 		throw new AiAgentActionError(`error-ai-${code}`, `Invalid seat configuration (${code})`);
 	}
 
-	// A seat's tools are what the engine last published for this seat; there is no built-in list to fall back to.
-	if (allowedToolIds.length > 0) {
-		if (!isEngineReportFresh(engine.lastReportAt, now.getTime()) || !engine.observed) {
-			throw new AiAgentActionError('error-ai-engine-report-stale', 'Engine has not reported within the last 120 seconds');
-		}
-		if (!areToolsWithinObservedSeatCeiling(allowedToolIds, engine.observed, params.seatId)) {
-			throw new AiAgentActionError('error-ai-tool-not-allowed', 'Invalid seat configuration (tool-not-allowed)');
-		}
+	// Registering always needs a current engine report, with or without tools. A seat's tools are what the engine
+	// last published for this seat; there is no built-in list to fall back to.
+	if (!isEngineReportFresh(engine.lastReportAt, now.getTime()) || !engine.observed) {
+		throw new AiAgentActionError('error-ai-engine-report-stale', 'Engine has not reported within the last 120 seconds');
+	}
+	if (!areToolsWithinObservedSeatCeiling(allowedToolIds, engine.observed, params.seatId)) {
+		throw new AiAgentActionError('error-ai-tool-not-allowed', 'Invalid seat configuration (tool-not-allowed)');
 	}
 
 	const bot = await Users.findOneById(params.botUserId, {
@@ -474,19 +473,15 @@ export async function createAiAgent(
 	await verifyActorRooms(validated.rooms, actor.user);
 
 	// Step 3: Pick a registered seat whose registry allowlists cover the request and whose observation does not disagree.
+	// Tools are checked last so a refusal can say when tools were the only reason no seat fits.
 	const allSeats = await AiSeats.findByEngineId(engine._id).toArray();
 	const candidates: IAiSeat[] = [];
+	let seatFitExceptTools = false;
 	for (const seat of allSeats) {
 		if (seat.state !== 'registered') {
 			continue;
 		}
 		if (!validated.rooms.every((roomId) => seat.allowedRoomIds.includes(roomId))) {
-			continue;
-		}
-		if (!validated.tools.every((toolId) => seat.allowedToolIds.includes(toolId))) {
-			continue;
-		}
-		if (!areToolsWithinObservedSeatCeiling(validated.tools, engine.observed, seat.seatId)) {
 			continue;
 		}
 		if (!seat.allowedRouteIds.includes(validated.modelRoute)) {
@@ -499,9 +494,17 @@ export async function createAiAgent(
 		if (existingAgent) {
 			continue;
 		}
+		const seatTools = getEffectiveSeatTools(seat, engine.observed);
+		if (!validated.tools.every((toolId) => seatTools.includes(toolId))) {
+			seatFitExceptTools = true;
+			continue;
+		}
 		candidates.push(seat);
 	}
 
+	if (candidates.length === 0 && seatFitExceptTools) {
+		throw new AiAgentActionError('error-ai-no-seat-offers-all-tools', 'No single available seat offers every chosen tool', 409);
+	}
 	if (candidates.length === 0) {
 		throw new AiAgentActionError('error-ai-no-seat-available', 'No eligible registered seat is available for this request', 409);
 	}
@@ -603,11 +606,9 @@ export async function retryAiAgent(
 	if (!validated.rooms.every((roomId) => seat.allowedRoomIds.includes(roomId))) {
 		throw new AiAgentActionError('error-ai-room-not-allowed', 'Requested room is outside this seat allowlist');
 	}
-	if (!validated.tools.every((toolId) => seat.allowedToolIds.includes(toolId))) {
-		throw new AiAgentActionError('error-ai-tool-not-allowed', 'Requested tool is outside this seat allowlist');
-	}
-	if (!areToolsWithinObservedSeatCeiling(validated.tools, engine.observed, seat.seatId)) {
-		throw new AiAgentActionError('error-ai-tool-not-allowed', 'Requested tool is not published by the engine for this seat');
+	const seatTools = getEffectiveSeatTools(seat, engine.observed);
+	if (!validated.tools.every((toolId) => seatTools.includes(toolId))) {
+		throw new AiAgentActionError('error-ai-tool-not-allowed', 'Requested tool is not offered by this seat');
 	}
 	if (!seat.allowedRouteIds.includes(validated.modelRoute)) {
 		throw new AiAgentActionError('error-ai-route-not-allowed', 'Requested model route is outside this seat allowlist');
@@ -800,6 +801,77 @@ async function resolveEligibleRoomsForActor(roomIds: string[], actorUser: IUser)
 	return options.sort((a, b) => a.name.localeCompare(b.name));
 }
 
+async function buildEngineSeatCounts(
+	engine: Pick<IAiEngine, '_id' | 'name' | 'observed' | 'lastReportAt'>,
+	engineSeats: IAiSeat[],
+	agentBySeatId: ReadonlyMap<string, unknown>,
+	actorUser: IUser,
+	nowMs: number,
+): Promise<AiEngineSeatCounts> {
+	const reportStale = !isEngineReportFresh(engine.lastReportAt, nowMs);
+
+	let registered = 0;
+	let available = 0;
+	let claimed = 0;
+	let retired = 0;
+	let disagreed = 0;
+	const allowedRoomPool: string[] = [];
+	const allowedRoutePool = new Set<string>();
+	const claimableSeats: IAiSeat[] = [];
+
+	for (const seat of engineSeats) {
+		const observed = engine.observed?.seats.find((entry) => entry.seatId === seat.seatId);
+		if (doesObservationDisagreeWithSeat(seat, observed)) {
+			disagreed += 1;
+		}
+		if (seat.state === 'registered') {
+			registered += 1;
+			if (!agentBySeatId.has(seat.seatId) && isSeatClaimableByObservation(seat, engine, nowMs)) {
+				available += 1;
+				claimableSeats.push(seat);
+			}
+			allowedRoomPool.push(...seat.allowedRoomIds);
+			seat.allowedRouteIds.forEach((route) => allowedRoutePool.add(route));
+		} else if (seat.state === 'claimed') {
+			claimed += 1;
+		} else if (seat.state === 'retired') {
+			retired += 1;
+		}
+	}
+
+	// Filter room picker strictly by actor visibility and invite permission so no private room metadata leaks.
+	const eligibleRooms = await resolveEligibleRoomsForActor(allowedRoomPool, actorUser);
+
+	// Offer only tools from seats this person could claim right now: free, confirmed by the engine, and with a channel
+	// they can use. Create refuses a mix that no single one of those seats offers.
+	const eligibleRoomIds = new Set(eligibleRooms.map((room) => room._id));
+	const allowedToolPool = new Set<string>();
+	for (const seat of claimableSeats) {
+		if (seat.allowedRoomIds.some((roomId) => eligibleRoomIds.has(roomId))) {
+			getEffectiveSeatTools(seat, engine.observed).forEach((tool) => allowedToolPool.add(tool));
+		}
+	}
+	const allowedTools = [...allowedToolPool].sort();
+
+	return {
+		engineId: engine._id,
+		engineName: engine.name,
+		registered,
+		available,
+		claimed,
+		retired,
+		disagreed,
+		...(engine.lastReportAt && { lastReportAt: engine.lastReportAt.toISOString() }),
+		reportStale,
+		allowedTools,
+		toolOptions: toObservedToolOptions(allowedTools, engine.observed),
+		allowedRoutes: [...allowedRoutePool].sort(),
+		...(engine.observed?.catalogue.skillsCommit && { skillsCommit: engine.observed.catalogue.skillsCommit }),
+		skills: [...(engine.observed?.catalogue.skills ?? [])].sort(),
+		eligibleRooms,
+	};
+}
+
 export async function listAiAgentsForActor(
 	actorUser: IUser,
 	now: Date = new Date(),
@@ -838,6 +910,8 @@ export async function listAiAgentsForActor(
 
 		const integrity = await evaluateAgentBotAndRoomsIntegrity(agent, seat, rooms);
 		const readinessInfo = deriveAgentReadiness(agent, seat, engine, nowMs, integrity);
+		// The agent's own seat decides what it may keep or add; a tool it has that the seat no longer offers is marked withdrawn.
+		const seatTools = seat ? getEffectiveSeatTools(seat, engine?.observed) : [];
 		agentSummaries.push({
 			_id: agent._id,
 			engineId: agent.engineId,
@@ -848,6 +922,11 @@ export async function listAiAgentsForActor(
 			...(name !== undefined && { name }),
 			rooms,
 			tools,
+			toolOptions: toObservedToolOptions(
+				seatTools,
+				engine?.observed,
+				tools.filter((toolId) => !seatTools.includes(toolId)),
+			),
 			...(modelRoute !== undefined && { modelRoute }),
 			readiness: readinessInfo.readiness,
 			...(readinessInfo.readinessReason && { readinessReason: readinessInfo.readinessReason }),
@@ -861,62 +940,15 @@ export async function listAiAgentsForActor(
 
 	const engineCounts: AiEngineSeatCounts[] = [];
 	for (const engine of engines) {
-		const engineSeats = seats.filter((seat) => seat.engineId === engine._id);
-		const reportStale = !isEngineReportFresh(engine.lastReportAt, nowMs);
-
-		let registered = 0;
-		let available = 0;
-		let claimed = 0;
-		let retired = 0;
-		let disagreed = 0;
-		const allowedRoomPool: string[] = [];
-		const allowedToolPool = new Set<string>();
-		const allowedRoutePool = new Set<string>();
-
-		for (const seat of engineSeats) {
-			const observed = engine.observed?.seats.find((entry) => entry.seatId === seat.seatId);
-			if (doesObservationDisagreeWithSeat(seat, observed)) {
-				disagreed += 1;
-			}
-			if (seat.state === 'registered') {
-				registered += 1;
-				if (!agentBySeatId.has(seat.seatId) && isSeatClaimableByObservation(seat, engine, nowMs)) {
-					available += 1;
-				}
-				allowedRoomPool.push(...seat.allowedRoomIds);
-				getObservedSeatToolCeiling(engine.observed, seat.seatId)
-					.filter((tool) => seat.allowedToolIds.includes(tool))
-					.forEach((tool) => allowedToolPool.add(tool));
-				seat.allowedRouteIds.forEach((route) => allowedRoutePool.add(route));
-			} else if (seat.state === 'claimed') {
-				claimed += 1;
-			} else if (seat.state === 'retired') {
-				retired += 1;
-			}
-		}
-
-		// Filter room picker strictly by actor visibility and invite permission so no private room metadata leaks.
-		const eligibleRooms = await resolveEligibleRoomsForActor(allowedRoomPool, actorUser);
-
-		const allowedTools = [...allowedToolPool].sort();
-
-		engineCounts.push({
-			engineId: engine._id,
-			engineName: engine.name,
-			registered,
-			available,
-			claimed,
-			retired,
-			disagreed,
-			...(engine.lastReportAt && { lastReportAt: engine.lastReportAt.toISOString() }),
-			reportStale,
-			allowedTools,
-			toolOptions: toObservedToolOptions(allowedTools, engine.observed),
-			allowedRoutes: [...allowedRoutePool].sort(),
-			...(engine.observed?.catalogue.skillsCommit && { skillsCommit: engine.observed.catalogue.skillsCommit }),
-			skills: [...(engine.observed?.catalogue.skills ?? [])].sort(),
-			eligibleRooms,
-		});
+		engineCounts.push(
+			await buildEngineSeatCounts(
+				engine,
+				seats.filter((seat) => seat.engineId === engine._id),
+				agentBySeatId,
+				actorUser,
+				nowMs,
+			),
+		);
 	}
 
 	return { agents: agentSummaries, engines: engineCounts };

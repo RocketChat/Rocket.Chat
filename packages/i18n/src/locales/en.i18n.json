@@ -697,6 +697,7 @@
   "AI_Agents_seats_available": "Available seats",
   "AI_Agents_seats_claimed": "Claimed seats",
   "AI_Agents_seats_retired": "Retired seats",
+  "AI_Agents_tool_withdrawn": "No longer offered by the engine. You can remove it, not add it back.",
   "AI_Agents_tools_label": "Tools",
   "AI_Center": "AI center",
   "AI_Center_Agents_card_description": "Create and manage workspace AI agents backed by linked engines and registered seats.",

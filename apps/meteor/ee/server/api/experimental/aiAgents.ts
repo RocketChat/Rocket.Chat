@@ -84,6 +84,17 @@ const seatSummarySchema = {
 	additionalProperties: false,
 } as const;
 
+const toolOptionSchema = {
+	type: 'object',
+	properties: {
+		id: { type: 'string' },
+		name: { type: 'string' },
+		withdrawn: { type: 'boolean' },
+	},
+	required: ['id', 'name'],
+	additionalProperties: false,
+} as const;
+
 const agentSummarySchema = {
 	type: 'object',
 	properties: {
@@ -96,6 +107,7 @@ const agentSummarySchema = {
 		name: { type: 'string' },
 		rooms: { type: 'array', items: { type: 'string' } },
 		tools: { type: 'array', items: { type: 'string' } },
+		toolOptions: { type: 'array', items: toolOptionSchema },
 		modelRoute: { type: 'string' },
 		readiness: {
 			type: 'string',
@@ -171,18 +183,7 @@ const engineSeatCountsSchema = {
 		lastReportAt: { type: 'string' },
 		reportStale: { type: 'boolean' },
 		allowedTools: { type: 'array', items: { type: 'string' } },
-		toolOptions: {
-			type: 'array',
-			items: {
-				type: 'object',
-				properties: {
-					id: { type: 'string' },
-					name: { type: 'string' },
-				},
-				required: ['id', 'name'],
-				additionalProperties: false,
-			},
-		},
+		toolOptions: { type: 'array', items: toolOptionSchema },
 		allowedRoutes: { type: 'array', items: { type: 'string' } },
 		skillsCommit: { type: 'string' },
 		skills: { type: 'array', items: { type: 'string' } },

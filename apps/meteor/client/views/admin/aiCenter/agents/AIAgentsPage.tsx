@@ -22,12 +22,22 @@ import type { FormEvent, ReactElement } from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import AgentToolPicker from './AgentToolPicker';
 import AgentsListSection from './AgentsListSection';
 import EnginesSummarySection from './EnginesSummarySection';
 import { useExperimentalEndpoint } from '../../../../hooks/useExperimentalEndpoint';
 import NotAuthorizedPage from '../../../notAuthorized/NotAuthorizedPage';
 
 const AI_AGENTS_QUERY_KEY = ['ai-center', 'agents', 'list'] as const;
+
+/** Create and Retry refusals carry a fixed code; show it with the sentence so an administrator can quote it. */
+const toActionErrorMessage = (error: unknown): unknown => {
+	const { error: sentence, errorType } = (error ?? {}) as { error?: unknown; errorType?: unknown };
+	if (typeof sentence === 'string' && typeof errorType === 'string') {
+		return `${sentence} (${errorType})`;
+	}
+	return error;
+};
 
 const AIAgentsPage = (): ReactElement => {
 	const { t } = useTranslation();
@@ -125,7 +135,7 @@ const AIAgentsPage = (): ReactElement => {
 			});
 		},
 		onError: (error) => {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: toActionErrorMessage(error) });
 		},
 	});
 
@@ -142,10 +152,6 @@ const AIAgentsPage = (): ReactElement => {
 
 	const toggleRoom = (roomId: string) => {
 		setSelectedRooms((prev) => (prev.includes(roomId) ? prev.filter((id) => id !== roomId) : [...prev, roomId]));
-	};
-
-	const toggleTool = (toolId: string) => {
-		setSelectedTools((prev) => (prev.includes(toolId) ? prev.filter((id) => id !== toolId) : [...prev, toolId]));
 	};
 
 	const handleSubmit = (event: FormEvent) => {
@@ -287,17 +293,7 @@ const AIAgentsPage = (): ReactElement => {
 									/>
 								</FieldRow>
 							</Field>
-							<Field>
-								<FieldLabel>{t('AI_Agents_tools_label')}</FieldLabel>
-								<Box display='flex' flexDirection='column' gap={8}>
-									{(activeEngine?.toolOptions ?? []).map((tool) => (
-										<Box key={tool.id} display='flex' alignItems='center' gap={8}>
-											<CheckBox checked={selectedTools.includes(tool.id)} onChange={() => toggleTool(tool.id)} />
-											<span>{tool.name}</span>
-										</Box>
-									))}
-								</Box>
-							</Field>
+							<AgentToolPicker retryTarget={retryTarget} engine={activeEngine} selected={selectedTools} onChange={setSelectedTools} />
 							<Field>
 								<FieldLabel>{t('AI_Agents_rooms_label')}</FieldLabel>
 								<FieldHint>{t('AI_Agents_room_flags_checked_on_register')}</FieldHint>

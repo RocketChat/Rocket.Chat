@@ -85,6 +85,8 @@ export type AiAgentSummary = {
 	name?: string;
 	rooms: string[];
 	tools: string[];
+	/** List only: what this agent's seat offers now, plus any tool the agent has that the seat has withdrawn */
+	toolOptions?: AiAgentToolOption[];
 	modelRoute?: string;
 	readiness: AiAgentReadinessState;
 	readinessReason?: string;
@@ -110,10 +112,14 @@ export type AiAgentRoomOption = {
 	fname?: string;
 };
 
-/** A tool the page may offer: the engine's id and the name the engine gives it (the id when it gives none) */
+/**
+ * A tool the page may show: the engine's id and the name the engine gives it (the id when it gives none).
+ * `withdrawn` marks a tool an agent already has that its seat no longer offers: it can be removed, never added.
+ */
 export type AiAgentToolOption = {
 	id: string;
 	name: string;
+	withdrawn?: boolean;
 };
 
 export type AiEngineSeatCounts = {

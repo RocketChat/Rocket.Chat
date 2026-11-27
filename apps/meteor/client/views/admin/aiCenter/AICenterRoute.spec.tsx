@@ -1,7 +1,8 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useIsPrivilegedSettingsContext } from '@rocket.chat/ui-contexts';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import AICenterRoute from './AICenterRoute';
 
@@ -173,5 +174,109 @@ describe('AICenterRoute & AIAgentsPage (R07)', () => {
 		expect(screen.getByText('AI_Agents_disable_pending_engine')).toBeInTheDocument();
 		expect(screen.getByText('Broken Bot Helper')).toBeInTheDocument();
 		expect(screen.getByText('bot-invalid')).toBeInTheDocument();
+	});
+	describe('tool picker from the engine report', () => {
+		const renderAgentsPage = (endpoints: { create?: jest.Mock; retry?: jest.Mock; toast?: jest.Mock } = {}) =>
+			render(<AICenterRoute />, {
+				wrapper: mockAppRoot()
+					.withRouteParameter('section', 'agents')
+					.withPermission('manage-ai-agents')
+					.withSetting('AI_Agents_Enabled', true)
+					.withEndpoint('GET', '/experimental/ai-agents.list' as never, listEndpoint)
+					.withEndpoint('POST', '/experimental/ai-agents.create' as never, endpoints.create ?? jest.fn())
+					.withEndpoint('POST', '/experimental/ai-agents.retry' as never, endpoints.retry ?? jest.fn())
+					.withEndpoint('POST', '/experimental/ai-agents.disable' as never, jest.fn())
+					.withToastMessageDispatch(endpoints.toast ?? jest.fn())
+					.build(),
+			});
+
+		const fillCreateForm = async () => {
+			await userEvent.type(screen.getByRole('textbox', { name: 'Name' }), 'Docs Helper');
+			await userEvent.type(screen.getByRole('textbox', { name: 'AI_Agents_instructions_label' }), 'Answer from public docs only.');
+			// The fixture's only channel, #general, is the last checkbox on the form (tools come before channels).
+			const checkboxes = screen.getAllByRole('checkbox');
+			await userEvent.click(checkboxes[checkboxes.length - 1]);
+		};
+
+		it('shows the engine name for each tool and sends the tool id on Create', async () => {
+			const create = jest.fn().mockResolvedValue({ success: true });
+			renderAgentsPage({ create });
+
+			await userEvent.click(await screen.findByRole('checkbox', { name: 'Search the docs' }));
+			expect(screen.queryByText('docs_search')).not.toBeInTheDocument();
+			await fillCreateForm();
+			await userEvent.click(screen.getByRole('button', { name: 'AI_Agents_create_action' }));
+
+			await waitFor(() => expect(create).toHaveBeenCalledWith(expect.objectContaining({ tools: ['docs_search'] })));
+		});
+
+		it('puts the fixed refusal code in the toast with the sentence', async () => {
+			const create = jest.fn().mockRejectedValue({
+				success: false,
+				error: 'No single available seat offers every chosen tool',
+				errorType: 'error-ai-no-seat-offers-all-tools',
+			});
+			const toast = jest.fn();
+			renderAgentsPage({ create, toast });
+
+			// Tools are optional on Create; this case only exercises the refusal toast.
+			expect(await screen.findByText('#general')).toBeInTheDocument();
+			await fillCreateForm();
+			await userEvent.click(screen.getByRole('button', { name: 'AI_Agents_create_action' }));
+
+			await waitFor(() =>
+				expect(toast).toHaveBeenCalledWith({
+					type: 'error',
+					message: 'No single available seat offers every chosen tool (error-ai-no-seat-offers-all-tools)',
+				}),
+			);
+		});
+
+		it('shows every tool the agent has on Retry, marks a withdrawn one, and lets it be removed but not added back', async () => {
+			const listed = await listEndpoint();
+			listEndpoint.mockResolvedValue({
+				...listed,
+				agents: [
+					...listed.agents,
+					{
+						_id: 'agent-4',
+						engineId: 'eng-1',
+						seatId: 'seat-4',
+						seatState: 'claimed',
+						name: 'Pending Helper',
+						rooms: ['room-1'],
+						tools: ['weather_get'],
+						toolOptions: [
+							{ id: 'docs_search', name: 'Search the docs' },
+							{ id: 'weather_get', name: 'Weather', withdrawn: true },
+						],
+						readiness: 'incomplete',
+						reportStale: false,
+						createdAt: '2026-11-25T00:00:00.000Z',
+					},
+				],
+			});
+			const retry = jest.fn().mockResolvedValue({ success: true });
+			renderAgentsPage({ retry });
+
+			const row = await screen.findByRole('row', { name: /Pending Helper/ });
+			await userEvent.click(within(row).getByRole('button', { name: 'AI_Agents_retry_action' }));
+
+			// The withdrawn tool is on the form at all (Create's engine pool never had it).
+			expect(screen.getByText('Weather')).toBeInTheDocument();
+			const withdrawn = screen.getByRole('checkbox', { name: /Weather/ });
+			expect(withdrawn).toBeChecked();
+			expect(screen.getByText('AI_Agents_tool_withdrawn')).toBeInTheDocument();
+			await userEvent.click(withdrawn);
+			expect(withdrawn).not.toBeChecked();
+			expect(withdrawn).toBeDisabled();
+			expect(screen.getByRole('checkbox', { name: 'Search the docs' })).toBeEnabled();
+
+			await userEvent.type(screen.getByRole('textbox', { name: 'AI_Agents_instructions_label' }), 'Answer from public docs only.');
+			// The form's submit button comes before the list's row buttons.
+			await userEvent.click(screen.getAllByRole('button', { name: 'AI_Agents_retry_action' })[0]);
+
+			await waitFor(() => expect(retry).toHaveBeenCalledWith(expect.objectContaining({ agentId: 'agent-4', tools: [] })));
+		});
 	});
 });

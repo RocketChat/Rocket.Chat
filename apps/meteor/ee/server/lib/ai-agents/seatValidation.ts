@@ -125,10 +125,32 @@ export function areToolsWithinObservedSeatCeiling(
 	return toolIds.every((toolId) => ceiling.includes(toolId));
 }
 
-/** Tool picker options: the engine's name for each tool when the report gives one (1.2.0), the id otherwise. */
-export function toObservedToolOptions(toolIds: readonly string[], observed: IAiEngineObservedReport | undefined): AiAgentToolOption[] {
+/** The tools a seat can actually be given now: its registry list, cut down to what the engine last published for it. */
+export function getEffectiveSeatTools(
+	seat: Pick<IAiSeat, 'seatId' | 'allowedToolIds'>,
+	observed: IAiEngineObservedReport | undefined,
+): string[] {
+	const ceiling = getObservedSeatToolCeiling(observed, seat.seatId);
+	return seat.allowedToolIds.filter((toolId) => ceiling.includes(toolId));
+}
+
+/**
+ * Tool picker options, sorted by id: the engine's name for each tool when the report gives one (1.2.0), the id otherwise.
+ * `withdrawnIds` are tools an agent already has that its seat no longer offers; they are listed and marked so a person can
+ * remove them, never offered for adding.
+ */
+export function toObservedToolOptions(
+	offeredIds: readonly string[],
+	observed: IAiEngineObservedReport | undefined,
+	withdrawnIds: readonly string[] = [],
+): AiAgentToolOption[] {
 	const names = new Map((observed?.catalogue.toolEntries ?? []).map((entry) => [entry.id, entry.name]));
-	return toolIds.map((id) => ({ id, name: names.get(id) ?? id }));
+	const offered = new Set(offeredIds);
+	return [...new Set([...offeredIds, ...withdrawnIds])].sort().map((id) => ({
+		id,
+		name: names.get(id) ?? id,
+		...(!offered.has(id) && { withdrawn: true }),
+	}));
 }
 
 const REGISTRY_TO_EXPECTED_OBSERVED_STATE: Record<AiSeatState, AiEngineReportedSeatState> = {
