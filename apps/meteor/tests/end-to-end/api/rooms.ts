@@ -869,6 +869,232 @@ describe('[Rooms]', () => {
 		});
 	});
 
+	describe('/rooms.sendFile', () => {
+		let testChannel: IRoom;
+		let privateGroup: IRoom;
+		let user: TestUser<IUser>;
+		let userCredentials: Credentials;
+		let blockedMediaTypes: SettingValue;
+		let maxFileSize: SettingValue;
+
+		before(async () => {
+			user = await createUser({ joinDefaultChannels: false });
+			userCredentials = await login(user.username, password);
+			testChannel = (await createRoom({ type: 'c', name: `channel.test.sendFile.${Date.now()}-${Math.random()}` })).body.channel;
+			privateGroup = (await createRoom({ type: 'p', name: `group.test.sendFile.${Date.now()}-${Math.random()}` })).body.group;
+			blockedMediaTypes = await getSettingValueById('FileUpload_MediaTypeBlackList');
+			maxFileSize = await getSettingValueById('FileUpload_MaxFileSize');
+		});
+
+		after(() =>
+			Promise.all([
+				deleteRoom({ type: 'c', roomId: testChannel._id }),
+				deleteRoom({ type: 'p', roomId: privateGroup._id }),
+				deleteUser(user),
+				updateSetting('FileUpload_MediaTypeBlackList', blockedMediaTypes),
+				updateSetting('FileUpload_MaxFileSize', maxFileSize),
+			]),
+		);
+
+		it('should send a base64-encoded PNG file as a message', async () => {
+			const res = await request
+				.post(api('rooms.sendFile'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+					fileName: '1024x1024.png',
+					content: fs.readFileSync(imgURL).toString('base64'),
+					description: 'a logo',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.message).to.have.property('rid', testChannel._id);
+			expect(res.body.message.attachments).to.be.an('array').of.length(1);
+			expect(res.body.message.attachments[0]).to.have.property('image_type', 'image/png');
+			expect(res.body.message.attachments[0]).to.have.property('title', '1024x1024.png');
+			expect(res.body.message.attachments[0]).to.have.property('image_alt', 'a logo');
+			expect(res.body.message.files[0]).to.have.property('type', 'image/png');
+		});
+
+		it('should send a utf8 text file with a message in a thread', async () => {
+			const parent = (await sendSimpleMessage({ roomId: testChannel._id })).body.message;
+			const content = '# Notes\n\nShipped ✓\n';
+
+			const res = await request
+				.post(api('rooms.sendFile'))
+				.set(credentials)
+				.send({ rid: testChannel._id, fileName: 'notes.md', content, encoding: 'utf8', msg: 'see the notes', tmid: parent._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.message).to.have.property('msg', 'see the notes');
+			expect(res.body.message).to.have.property('tmid', parent._id);
+			expect(res.body.message.files[0]).to.have.property('name', 'notes.md');
+			expect(res.body.message.files[0]).to.have.property('type', 'text/markdown');
+			expect(res.body.message.files[0]).to.have.property('size', Buffer.byteLength(content, 'utf8'));
+		});
+
+		it('should not send a file of a blocked media type', async () => {
+			await updateSetting('FileUpload_MediaTypeBlackList', 'text/plain');
+
+			const res = await request
+				.post(api('rooms.sendFile'))
+				.set(credentials)
+				.send({ rid: testChannel._id, fileName: 'notes.txt', content: 'plain text', encoding: 'utf8' })
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-invalid-file-type');
+
+			await updateSetting('FileUpload_MediaTypeBlackList', blockedMediaTypes);
+		});
+
+		it('should not send a file larger than the maximum file size', async () => {
+			await updateSetting('FileUpload_MaxFileSize', 10);
+
+			const res = await request
+				.post(api('rooms.sendFile'))
+				.set(credentials)
+				.send({ rid: testChannel._id, fileName: 'notes.md', content: Buffer.from('eleven byte').toString('base64') })
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-file-too-large');
+
+			await updateSetting('FileUpload_MaxFileSize', maxFileSize);
+		});
+
+		it('should not send a file larger than 10 MiB, even when the workspace has no maximum file size', async () => {
+			await updateSetting('FileUpload_MaxFileSize', -1);
+
+			const res = await request
+				.post(api('rooms.sendFile'))
+				.set(credentials)
+				.send({ rid: testChannel._id, fileName: 'big.txt', content: 'a'.repeat(10 * 1024 * 1024 + 1), encoding: 'utf8' })
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-file-too-large');
+			expect(res.body).to.have.property('error').include('10 MiB');
+
+			await updateSetting('FileUpload_MaxFileSize', maxFileSize);
+		});
+
+		it('should not send a file whose mimeType is a blocked media type', async () => {
+			await updateSetting('FileUpload_MediaTypeBlackList', 'image/svg+xml');
+
+			const res = await request
+				.post(api('rooms.sendFile'))
+				.set(credentials)
+				.send({ rid: testChannel._id, fileName: 'drawing.png', content: '<svg/>', encoding: 'utf8', mimeType: 'image/svg+xml' })
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-invalid-file-type');
+
+			await updateSetting('FileUpload_MediaTypeBlackList', blockedMediaTypes);
+		});
+
+		// each of these names a blocked type in a spelling the list of blocked types does not match
+		['IMAGE/SVG+XML', 'image/svg+xml; charset=utf-8', 'image/svg+xml '].forEach((mimeType) => {
+			it(`should reject the mimeType "${mimeType}"`, async () => {
+				const res = await request
+					.post(api('rooms.sendFile'))
+					.set(credentials)
+					.send({ rid: testChannel._id, fileName: 'drawing.png', content: '<svg/>', encoding: 'utf8', mimeType })
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('errorType', 'error-invalid-params');
+			});
+		});
+
+		it('should reject content that is not valid base64', async () => {
+			const res = await request
+				.post(api('rooms.sendFile'))
+				.set(credentials)
+				.send({ rid: testChannel._id, fileName: 'notes.md', content: '# Notes\n\nplain text' })
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
+			expect(res.body).to.have.property('error').include('not valid base64');
+		});
+
+		it('should keep only the last segment of a path given as fileName', async () => {
+			const res = await request
+				.post(api('rooms.sendFile'))
+				.set(credentials)
+				.send({ rid: testChannel._id, fileName: '../../etc\\notes.md', content: 'notes', encoding: 'utf8' })
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body.message.files[0]).to.have.property('name', 'notes.md');
+			expect(res.body.message.attachments[0]).to.have.property('title', 'notes.md');
+			expect(res.body.message.attachments[0]).to.have.property('title_link').that.does.not.include('..');
+		});
+
+		['docs/', '..', 'a'.repeat(256)].forEach((fileName) => {
+			it(`should reject the fileName "${fileName.slice(0, 16)}"`, async () => {
+				const res = await request
+					.post(api('rooms.sendFile'))
+					.set(credentials)
+					.send({ rid: testChannel._id, fileName, content: 'notes', encoding: 'utf8' })
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('errorType', 'error-invalid-params');
+			});
+		});
+
+		it('should not send a file to a room the user cannot access', async () => {
+			const res = await request
+				.post(api('rooms.sendFile'))
+				.set(userCredentials)
+				.send({ rid: privateGroup._id, fileName: 'notes.md', content: 'secret', encoding: 'utf8' })
+				.expect('Content-Type', 'application/json')
+				.expect(403);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
+		});
+
+		it('should reject a request without content', async () => {
+			const res = await request
+				.post(api('rooms.sendFile'))
+				.set(credentials)
+				.send({ rid: testChannel._id, fileName: 'notes.md' })
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
+			expect(res.body).to.have.property('error').include("must have required property 'content'");
+		});
+
+		it('should reject an unknown encoding', async () => {
+			const res = await request
+				.post(api('rooms.sendFile'))
+				.set(credentials)
+				.send({ rid: testChannel._id, fileName: 'notes.md', content: 'text', encoding: 'hex' })
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
+		});
+	});
+
 	describe('/rooms.favorite', () => {
 		let testChannel: IRoom;
 		const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
