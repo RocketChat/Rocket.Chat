@@ -79,8 +79,20 @@ describe('APIClass /v1/logout', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 		jest.mocked(Users.findOne).mockResolvedValue({ _id: userId, username: 'test-user' } as never);
-		jest.mocked(Users.updateOne).mockResolvedValue({ acknowledged: true } as never);
-		jest.mocked(Sessions.logoutBySessionIdAndUserId).mockResolvedValue(undefined);
+		jest.mocked(Users.updateOne).mockResolvedValue({
+			acknowledged: true,
+			matchedCount: 1,
+			modifiedCount: 1,
+			upsertedCount: 0,
+			upsertedId: null,
+		});
+		jest.mocked(Sessions.logoutBySessionIdAndUserId).mockResolvedValue({
+			acknowledged: true,
+			matchedCount: 1,
+			modifiedCount: 1,
+			upsertedCount: 0,
+			upsertedId: null,
+		});
 	});
 
 	it('returns a 200 JSON confirmation body on POST /api/v1/logout and invalidates token & session', async () => {
