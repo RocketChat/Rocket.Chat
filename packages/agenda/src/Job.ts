@@ -82,13 +82,19 @@ export class Job {
 		} catch (error) {
 			// Nope, humanInterval then!
 			try {
-				const numberInterval = (typeof interval === 'number' ? interval : humanInterval(interval)) || 0;
+				const numberInterval = Number(typeof interval === 'number' ? interval : humanInterval(interval));
+				const nextRunAfterLastRun = new Date(lastRun.valueOf() + numberInterval);
 
-				if (!this.attrs.lastRunAt && numberInterval) {
+				// a job that is due again as soon as it runs would run nonstop, so it fails instead
+				if (Number.isNaN(nextRunAfterLastRun.valueOf()) || nextRunAfterLastRun.valueOf() <= lastRun.valueOf()) {
+					return;
+				}
+
+				if (!this.attrs.lastRunAt) {
 					this.attrs.nextRunAt = new Date(lastRun.valueOf());
 					debug('[%s:%s] nextRunAt set to [%s]', this.attrs.name, this.attrs._id, this.attrs.nextRunAt.toISOString());
 				} else {
-					this.attrs.nextRunAt = new Date(lastRun.valueOf() + numberInterval);
+					this.attrs.nextRunAt = nextRunAfterLastRun;
 					debug('[%s:%s] nextRunAt set to [%s]', this.attrs.name, this.attrs._id, this.attrs.nextRunAt.toISOString());
 				}
 				// Either `xo` linter or Node.js 8 stumble on this line if it isn't just ignored

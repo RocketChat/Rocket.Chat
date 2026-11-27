@@ -19,7 +19,15 @@
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"lint": "yarn run -T oxlint",
 		"lint:fix": "yarn run -T oxlint --fix",
+		"test": "yarn workspace @rocket.chat/jest-presets build && jest",
+		"testunit": "jest",
 		"typecheck": "tsc --noEmit"
+	},
+	"config": {
+		"mongodbMemoryServer": {
+			"downloadDir": "../../node_modules/.cache/mongodb-memory-server",
+			"preferGlobalPath": false
+		}
 	},
 	"dependencies": {
 		"cron": "~1.8.2",
@@ -30,7 +38,10 @@
 		"mongodb": "6.16.0"
 	},
 	"devDependencies": {
+		"@rocket.chat/jest-presets": "workspace:~",
 		"@types/debug": "^4.1.13",
+		"jest": "~30.5.2",
+		"mongodb-memory-server": "^10.2.3",
 		"typescript": "~7.0.2"
 	},
 	"volta": {
