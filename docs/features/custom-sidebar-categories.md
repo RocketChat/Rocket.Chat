@@ -163,6 +163,13 @@ category unfavorites it. Assignment is exclusive.
 This means custom categories are always present in the visible group list with EE, so no category entry
 in `sidebarCategories` can be silently dropped during a move.
 
+### The Unread group
+
+With the Unread group on, an unread room is listed there instead of in its own group, and goes back once it is
+read. A room that was unread when the user opened it stays in Unread until another room is opened or no room is
+open, so it does not move away while the user reads it (`useStickyUnreadRoom`). With the Unread group off,
+nothing changes.
+
 ## Sidebar UI
 
 ### Category collapser kebab — `CategoryMenu.tsx`
@@ -219,6 +226,7 @@ Placed before the room title in `RoomHeader`. Icon: `star-filled` (favorited) / 
 | Types | `packages/core-typings/src/IUser.ts` (`ISidebarCategory`, `SIDEBAR_SYSTEM_GROUP_KEYS`) |
 | Category list + ordering | `apps/meteor/client/sidebar/hooks/useCategoryList.ts` |
 | Room list | `apps/meteor/client/sidebar/hooks/useRoomList.ts` |
+| Sticky Unread room | `apps/meteor/client/sidebar/hooks/useStickyUnreadRoom.ts` |
 | Persist mutation | `apps/meteor/client/sidebar/categories/hooks/usePersistCategoriesMutation.ts` |
 | Create category | `apps/meteor/client/sidebar/categories/hooks/useCreateCustomCategory.ts` |
 | Move room | `apps/meteor/client/sidebar/categories/hooks/useMoveRoomCategory.ts` |

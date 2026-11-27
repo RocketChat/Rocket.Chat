@@ -8,6 +8,7 @@ import { useVideoConfIncomingCalls, useVideoConfWindowEnabled } from '@rocket.ch
 import { useMemo } from 'react';
 
 import { filterGroupVisibility, getRoomCategory, useCategoryList } from './useCategoryList';
+import { useStickyUnreadRoom } from './useStickyUnreadRoom';
 import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
@@ -70,6 +71,7 @@ export const useRoomList = ({
 	const incomingCalls = useVideoConfIncomingCalls();
 
 	const openedRoom = useOpenedRoom();
+	const stickyUnreadRid = useStickyUnreadRoom(openedRoom, rooms);
 	// With the call window, a ringing call is listed with the calls already running, behind the navbar button —
 	// so the sidebar keeps no group of its own for it. Reported as no incoming call rather than by dropping the
 	// group: `Incoming_Calls` is a dynamic group, so an empty one is left out, and the room stays in whichever
@@ -99,6 +101,7 @@ export const useRoomList = ({
 					hasIncomingCalls: (rid: SubscriptionWithRoom['rid']) => {
 						return !conferenceWindowEnabled && !!incomingCalls.find((call) => call.rid === rid);
 					},
+					stickyUnreadRid,
 				});
 
 				if (!roomCategory) {
@@ -177,6 +180,7 @@ export const useRoomList = ({
 			isShowUnreads,
 			isKeepUnreadsOnTop,
 			openedRoom,
+			stickyUnreadRid,
 			filterText,
 		]),
 		50,

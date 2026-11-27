@@ -8,13 +8,19 @@ import type { SidebarRoomListGroup } from './useRoomList';
 import { createFakeLicenseInfo, createFakeRoom, createFakeSubscription, createFakeUser } from '../../../tests/mocks/data';
 
 let mockOpenedRoom: string | undefined;
+let mockStickyUnreadRid: string | undefined;
 
 jest.mock('../../lib/RoomManager', () => ({
 	useOpenedRoom: () => mockOpenedRoom,
 }));
 
+jest.mock('./useStickyUnreadRoom', () => ({
+	useStickyUnreadRoom: () => mockStickyUnreadRid,
+}));
+
 afterEach(() => {
 	mockOpenedRoom = undefined;
+	mockStickyUnreadRid = undefined;
 });
 
 // The hook returns a rich `groups` array; these helpers reproduce the legacy flat views used by the assertions.
@@ -210,6 +216,34 @@ it('should group unread rooms into an "Unread" group when sidebarShowUnread is o
 	expect(groupsList).toContain('Unread');
 	// The four seeded unread channels are pulled into the Unread group.
 	expect(result.current.groupsCount[unreadIndex]).toEqual(unreadChannels.length);
+});
+
+it('should keep a room in the "Unread" group after it was read while it stays open', async () => {
+	const [readFavorite] = favoriteRooms;
+	mockOpenedRoom = readFavorite.rid;
+	mockStickyUnreadRid = readFavorite.rid;
+
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+		wrapper: getWrapperSettings({ sidebarShowUnread: true, sidebarGroupByType: true }).build(),
+	});
+
+	const unread = result.current.groups.find((group) => group.key === 'Unread');
+	const favorites = result.current.groups.find((group) => group.key === 'Favorites');
+	expect(unread?.rooms).toContainEqual(expect.objectContaining({ rid: readFavorite.rid }));
+	expect(favorites?.rooms).not.toContainEqual(expect.objectContaining({ rid: readFavorite.rid }));
+});
+
+it('should leave a sticky room in its own group when sidebarShowUnread is off', async () => {
+	const [readFavorite] = favoriteRooms;
+	mockOpenedRoom = readFavorite.rid;
+	mockStickyUnreadRid = readFavorite.rid;
+
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+		wrapper: getWrapperSettings({ sidebarShowUnread: false, sidebarGroupByType: true }).build(),
+	});
+
+	const favorites = result.current.groups.find((group) => group.key === 'Favorites');
+	expect(favorites?.rooms).toContainEqual(expect.objectContaining({ rid: readFavorite.rid }));
 });
 
 it('should not group unread rooms when sidebarShowUnread is off', async () => {
