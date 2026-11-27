@@ -1,5 +1,5 @@
 import type { IOutboundProviderTemplate } from '@rocket.chat/core-typings';
-import { Box, Callout } from '@rocket.chat/fuselage';
+import { Callout, Stack, Text } from '@rocket.chat/fuselage';
 import { useId, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -10,9 +10,10 @@ import { processTemplatePreviewText } from '../utils/template';
 export type TemplatePreviewProps = {
 	template: IOutboundProviderTemplate;
 	parameters?: TemplateParameters;
+	className?: string;
 };
 
-const TemplatePreview = ({ template, parameters = {} }: TemplatePreviewProps) => {
+const TemplatePreview = ({ template, parameters = {}, className }: TemplatePreviewProps) => {
 	const { t } = useTranslation();
 	const previewId = useId();
 
@@ -34,15 +35,15 @@ const TemplatePreview = ({ template, parameters = {} }: TemplatePreviewProps) =>
 	}, [components, parameters, t]);
 
 	return (
-		<Box marginBlockStart={12}>
-			<Box is='p' fontScale='p2m' marginBlockEnd='x4' id={previewId}>
+		<Stack gap='x4' className={className}>
+			<Text is='p' fontScale='p2m' id={previewId}>
 				{t('Message_preview')}
-			</Box>
+			</Text>
 			<Callout type='info' icon='balloon-text' title={content.header || ''} aria-labelledby={previewId}>
 				<MarkdownText parseEmoji content={content.body || ''} />
 				<MarkdownText parseEmoji color='annotation' content={content.footer || ''} />
 			</Callout>
-		</Box>
+		</Stack>
 	);
 };
 

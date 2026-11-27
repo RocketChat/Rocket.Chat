@@ -17,7 +17,7 @@ export const useContactSection = ({ contact, onSelect }: UseContactSectionProps)
 
 		const renderItem = (label: string, value: string, index?: number) => (
 			<p>
-				{index ? `${label} (${index})` : label} <span>{value}</span>
+				{index ? `${label} (${index})` : label} {value}
 			</p>
 		);
 

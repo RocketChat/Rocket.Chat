@@ -5,8 +5,7 @@ import type {
 	IOutboundProviderTemplate,
 	ILivechatContact,
 } from '@rocket.chat/core-typings';
-import { Box, Margins } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
+import { Stack } from '@rocket.chat/fuselage';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -15,7 +14,7 @@ import { formatPhoneNumber } from '../../../../../../lib/formatPhoneNumber';
 import type { TemplateParameters } from '../../types/template';
 import TemplatePreview from '../TemplatePreview';
 
-export type OutboundMessagePreviewProps = ComponentProps<typeof Box> & {
+export type OutboundMessagePreviewProps = {
 	template?: IOutboundProviderTemplate;
 	contactName?: ILivechatContact['name'];
 	providerName?: IOutboundProviderMetadata['providerName'];
@@ -51,7 +50,6 @@ const OutboundMessagePreview = ({
 	sender: rawSender,
 	recipient: rawRecipient,
 	templateParameters,
-	...props
 }: OutboundMessagePreviewProps) => {
 	const { t } = useTranslation();
 
@@ -70,38 +68,24 @@ const OutboundMessagePreview = ({
 	}, [agentName, agentUsername, departmentName]);
 
 	return (
-		<Box {...props} is='section'>
+		<Stack is='section' gap='x32'>
 			<ul>
-				<Margins blockStart={24}>
-					<Box is='li' marginBlockStart={0}>
-						<PreviewItem icon='doc' label={t('Template')}>
-							{template?.name}
-						</PreviewItem>
-					</Box>
-					<Box is='li'>
-						<PreviewItem icon='user' label={t('To')}>
-							{contactName && `${contactName} ${recipient ? `(${recipient})` : ''}`}
-						</PreviewItem>
-					</Box>
-					<Box is='li'>
-						<PreviewItem icon='send' label={t('From')}>
-							{providerName && `${providerName} ${sender ? `(${sender})` : ''}`}
-						</PreviewItem>
-					</Box>
-					<Box is='li'>
-						<PreviewItem icon='reply' label={t('Replies')}>
-							{replies}
-						</PreviewItem>
-					</Box>
-				</Margins>
+				<PreviewItem icon='doc' label={t('Template')}>
+					{template?.name}
+				</PreviewItem>
+				<PreviewItem icon='user' label={t('To')}>
+					{contactName && `${contactName} ${recipient ? `(${recipient})` : ''}`}
+				</PreviewItem>
+				<PreviewItem icon='send' label={t('From')}>
+					{providerName && `${providerName} ${sender ? `(${sender})` : ''}`}
+				</PreviewItem>
+				<PreviewItem icon='reply' label={t('Replies')}>
+					{replies}
+				</PreviewItem>
 			</ul>
 
-			{template ? (
-				<Box marginBlockStart='x32'>
-					<TemplatePreview template={template} parameters={templateParameters} />
-				</Box>
-			) : null}
-		</Box>
+			{template ? <TemplatePreview template={template} parameters={templateParameters} /> : null}
+		</Stack>
 	);
 };
 

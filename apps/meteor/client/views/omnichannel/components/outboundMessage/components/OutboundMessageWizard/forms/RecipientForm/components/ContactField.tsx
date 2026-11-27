@@ -1,4 +1,4 @@
-import { Box, Field, FieldError, FieldLabel, FieldRow, Option, OptionContent, OptionDescription } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, Option } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { ITEM_MEDIA_SIZE, UserAvatar } from '@rocket.chat/ui-avatar';
 import { useId } from 'react';
@@ -8,7 +8,8 @@ import { useTranslation } from 'react-i18next';
 
 import { formatPhoneNumber } from '../../../../../../../../../lib/formatPhoneNumber';
 import AutoCompleteContact from '../../../../../../AutoCompleteContact';
-import RetryButton from '../../../components/RetryButton';
+import ContactOptionContent from '../../../../../layout/ContactOptionContent';
+import FieldErrorWithRetry from '../../../../../layout/FieldErrorWithRetry';
 import type { RecipientFormData } from '../RecipientForm';
 
 export type ContactFieldProps = ComponentProps<typeof Field> & {
@@ -43,14 +44,7 @@ const ContactField = ({ control, isError = false, isFetching = false, onRetry, .
 
 		return (
 			<Option {...props} avatar={<UserAvatar username={label} size={ITEM_MEDIA_SIZE.condensed} />}>
-				<Box is={OptionContent} marginInlineEnd='auto' flexGrow={0} flexShrink={0} flexBasis={0}>
-					{label}
-				</Box>
-				{phones?.length ? (
-					<Box withTruncatedText flexGrow={0} flexShrink={1} title={phoneList}>
-						<OptionDescription>{`(${phoneList})`}</OptionDescription>
-					</Box>
-				) : null}
+				<ContactOptionContent label={label} description={phoneList || undefined} />
 			</Option>
 		);
 	});
@@ -73,12 +67,9 @@ const ContactField = ({ control, isError = false, isFetching = false, onRetry, .
 				/>
 			</FieldRow>
 			{contactFieldError && (
-				<FieldError aria-live='assertive' id={`${contactFieldId}-error`}>
-					<Box display='flex' alignItems='center' gap={4}>
-						{contactFieldError.message}
-						{isError && <RetryButton loading={isFetching} onClick={onRetry} />}
-					</Box>
-				</FieldError>
+				<FieldErrorWithRetry id={`${contactFieldId}-error`} canRetry={isError} retrying={isFetching} onRetry={onRetry}>
+					{contactFieldError.message}
+				</FieldErrorWithRetry>
 			)}
 		</Field>
 	);

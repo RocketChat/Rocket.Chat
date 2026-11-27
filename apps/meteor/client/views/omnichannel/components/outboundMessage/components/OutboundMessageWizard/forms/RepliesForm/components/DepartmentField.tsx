@@ -1,4 +1,4 @@
-import { Box, Field, FieldError, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { Field, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps } from 'react';
 import { useId } from 'react';
@@ -7,7 +7,7 @@ import { useController } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import AutoCompleteDepartment from '../../../../../../AutoCompleteDepartment';
-import RetryButton from '../../../components/RetryButton';
+import FieldErrorWithRetry from '../../../../../layout/FieldErrorWithRetry';
 import { cxp } from '../../../utils/cx';
 import type { RepliesFormData } from '../RepliesForm';
 
@@ -70,12 +70,9 @@ const DepartmentField = ({
 				/>
 			</FieldRow>
 			{departmentFieldError && (
-				<FieldError aria-live='assertive' id={`${departmentFieldId}-error`}>
-					<Box display='flex' alignItems='center' gap={4}>
-						{departmentFieldError.message}
-						{isError && <RetryButton loading={isFetching} onClick={onRefetch} />}
-					</Box>
-				</FieldError>
+				<FieldErrorWithRetry id={`${departmentFieldId}-error`} canRetry={isError} retrying={isFetching} onRetry={onRefetch}>
+					{departmentFieldError.message}
+				</FieldErrorWithRetry>
 			)}
 			<FieldHint id={`${departmentFieldId}-hint`}>{t('Outbound_message_department_hint')}</FieldHint>
 		</Field>

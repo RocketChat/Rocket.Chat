@@ -1,5 +1,5 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
-import { Box, Icon, TextInput } from '@rocket.chat/fuselage';
+import { Icon, Stack, TextInput } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRef, type ChangeEventHandler, type ChangeEvent, type ComponentProps } from 'react';
 
@@ -27,11 +27,11 @@ const TemplatePlaceholderInput = ({ contact, value = '', type, onChange, ...prop
 	});
 
 	return (
-		<Box display='flex' width='100%' gap={12}>
+		<Stack direction='row' gap='x12' grow>
 			<TextInput {...props} ref={inputRef} value={value} endAddon={addon} onChange={handleChange as ChangeEventHandler<HTMLInputElement>} />
 
 			<PlaceholderSelector disabled={type !== 'text'} contact={contact} onSelect={handleChange} onOpenChange={handleOpenToggle} />
-		</Box>
+		</Stack>
 	);
 };
 

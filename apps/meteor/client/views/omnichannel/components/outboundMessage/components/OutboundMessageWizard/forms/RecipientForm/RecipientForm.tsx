@@ -1,7 +1,8 @@
 import type { IOutboundProviderMetadata, Serialized, ILivechatContact } from '@rocket.chat/core-typings';
-import { Box, Button, FieldGroup, Scrollable } from '@rocket.chat/fuselage';
+import { Button, FieldGroup } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
+import { WizardActions } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
@@ -14,7 +15,7 @@ import ContactField from './components/ContactField';
 import RecipientField from './components/RecipientField';
 import SenderField from './components/SenderField';
 import { omnichannelQueryKeys } from '../../../../../../../../lib/queryKeys';
-import Form from '../../components/OutboundMessageForm';
+import OutboundMessageStep from '../../../../layout/OutboundMessageStep';
 import { ContactNotFoundError, ProviderNotFoundError } from '../../utils/errors';
 
 export type RecipientFormData = {
@@ -190,47 +191,49 @@ const RecipientForm = (props: RecipientFormProps) => {
 	});
 
 	return (
-		<Form id={recipientFormId} onSubmit={handleSubmit(submit)} noValidate>
-			<Scrollable vertical>
-				<Box>
-					<FieldGroup>
-						<ContactField
-							control={control}
-							isError={isErrorContact || isContactNotFound}
-							isFetching={isFetchingContact}
-							onRetry={refetchContact}
-						/>
+		<OutboundMessageStep
+			is='form'
+			id={recipientFormId}
+			onSubmit={handleSubmit(submit)}
+			noValidate
+			actions={
+				customActions ?? (
+					<WizardActions>
+						<Button type='submit' variant='primary' loading={isSubmitting}>
+							{t('Submit')}
+						</Button>
+					</WizardActions>
+				)
+			}
+		>
+			<FieldGroup>
+				<ContactField
+					control={control}
+					isError={isErrorContact || isContactNotFound}
+					isFetching={isFetchingContact}
+					onRetry={refetchContact}
+				/>
 
-						<ChannelField
-							control={control}
-							contact={contact}
-							disabled={!contactId}
-							isFetching={isFetchingProvider}
-							isError={isErrorProvider || isProviderNotFound}
-							onRetry={refetchProvider}
-						/>
+				<ChannelField
+					control={control}
+					contact={contact}
+					disabled={!contactId}
+					isFetching={isFetchingProvider}
+					isError={isErrorProvider || isProviderNotFound}
+					onRetry={refetchProvider}
+				/>
 
-						<RecipientField
-							control={control}
-							contact={contact}
-							type={provider?.providerType || 'phone'}
-							disabled={!providerId || !contact}
-							isLoading={isFetchingContact}
-						/>
+				<RecipientField
+					control={control}
+					contact={contact}
+					type={provider?.providerType || 'phone'}
+					disabled={!providerId || !contact}
+					isLoading={isFetchingContact}
+				/>
 
-						<SenderField control={control} provider={provider} disabled={!recipient || !provider} isLoading={isFetchingProvider} />
-					</FieldGroup>
-				</Box>
-			</Scrollable>
-
-			{customActions ?? (
-				<Box marginBlockStart={24} display='flex' justifyContent='end' flexGrow={0} flexShrink={0}>
-					<Button type='submit' variant='primary' loading={isSubmitting}>
-						{t('Submit')}
-					</Button>
-				</Box>
-			)}
-		</Form>
+				<SenderField control={control} provider={provider} disabled={!recipient || !provider} isLoading={isFetchingProvider} />
+			</FieldGroup>
+		</OutboundMessageStep>
 	);
 };
 

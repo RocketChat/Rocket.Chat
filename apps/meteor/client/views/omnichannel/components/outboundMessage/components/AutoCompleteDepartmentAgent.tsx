@@ -1,9 +1,11 @@
 import type { ILivechatDepartmentAgents, Serialized } from '@rocket.chat/core-typings';
-import { AutoComplete, Box, Chip, Option, OptionAvatar, OptionContent } from '@rocket.chat/fuselage';
+import { AutoComplete, Option, OptionAvatar, OptionContent } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { ITEM_MEDIA_SIZE, UserAvatar } from '@rocket.chat/ui-avatar';
 import type { AllHTMLAttributes } from 'react';
 import { useMemo, useState } from 'react';
+
+import UserAvatarChip from '../../../../../components/UserAutoCompleteMultiple/UserAvatarChip';
 
 export type AutoCompleteDepartmentAgentProps = Omit<AllHTMLAttributes<HTMLInputElement>, 'onChange'> & {
 	error?: boolean;
@@ -40,14 +42,7 @@ const AutoCompleteDepartmentAgent = ({ value, onChange, agents, placeholder, ...
 			onChange={onChange as (value: string | string[]) => void}
 			options={options}
 			renderSelected={({ selected: { value, label }, ...props }) => {
-				return (
-					<Chip {...props} value={value} onClick={() => onChange('')}>
-						<UserAvatar size='x20' username={label} />
-						<Box is='span' margin='none' marginInlineStart={4}>
-							{label}
-						</Box>
-					</Chip>
-				);
+				return <UserAvatarChip {...props} value={value} username={label} onClick={() => onChange('')} />;
 			}}
 			renderItem={({ value, label, ...props }) => (
 				<Option key={value} {...props}>

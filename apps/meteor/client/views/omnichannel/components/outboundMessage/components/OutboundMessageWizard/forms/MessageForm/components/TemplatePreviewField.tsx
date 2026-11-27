@@ -8,15 +8,16 @@ import type { MessageFormData } from '../MessageForm';
 export type TemplatePreviewFieldProps = {
 	control: Control<MessageFormData>;
 	template: IOutboundProviderTemplate;
+	className?: string;
 };
 
 /**
  * This component exists to isolate the re-rendering that happens whenever templateParameters changes.
  */
-const TemplatePreviewField = ({ control, template }: TemplatePreviewFieldProps) => {
+const TemplatePreviewField = ({ control, template, className }: TemplatePreviewFieldProps) => {
 	const templateParameters = useWatch({ control, name: 'templateParameters' });
 
-	return <TemplatePreview template={template} parameters={templateParameters} />;
+	return <TemplatePreview template={template} parameters={templateParameters} className={className} />;
 };
 
 export default TemplatePreviewField;
