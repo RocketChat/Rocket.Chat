@@ -6,6 +6,7 @@ import { injectCurrentContext, tracerSpan } from '@rocket.chat/tracing';
 import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
 
 import { EnterpriseCheck } from './EnterpriseCheck';
+import { withDefaultDependencies } from './withDefaultDependencies';
 
 const events: { [k: string]: string } = {
 	onNodeConnected: '$node.connected',
@@ -23,8 +24,6 @@ export class MoleculerBroker implements IBroker {
 	private broker: ServiceBroker;
 
 	private started: Promise<boolean> = Promise.resolve(false);
-
-	private defaultDependencies = ['settings', 'license'];
 
 	metrics: IServiceMetrics;
 
@@ -92,9 +91,7 @@ export class MoleculerBroker implements IBroker {
 			return;
 		}
 
-		const dependencies = [...serviceDependencies, ...(name === 'settings' ? [] : this.defaultDependencies)].filter(
-			(dependency) => dependency !== name,
-		);
+		const dependencies = withDefaultDependencies(name, serviceDependencies);
 
 		const service: ServiceSchema = {
 			name,
