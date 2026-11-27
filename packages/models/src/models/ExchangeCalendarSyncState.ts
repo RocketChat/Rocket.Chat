@@ -45,6 +45,10 @@ export class ExchangeCalendarSyncStateRaw extends BaseRaw<IExchangeCalendarSyncS
 		return this.col.distinct('uid');
 	}
 
+	public deleteByUserId(uid: IUser['_id']): Promise<DeleteResult> {
+		return this.deleteOne({ uid });
+	}
+
 	public async removeAll(): Promise<DeleteResult> {
 		return this.deleteMany({});
 	}

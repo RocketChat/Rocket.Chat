@@ -2,7 +2,7 @@ import { Calendar } from '@rocket.chat/core-services';
 import type { CalendarBatchResult } from '@rocket.chat/core-services';
 import type { ICalendarEvent, IUser } from '@rocket.chat/core-typings';
 import type { InsertionModel } from '@rocket.chat/model-typings';
-import { ExchangeCalendarSyncState } from '@rocket.chat/models';
+import { CalendarEvent, ExchangeCalendarSyncState, Users } from '@rocket.chat/models';
 
 import type { IExchangeProvider } from '../../definition/IExchangeProvider';
 import type { DateRange, ExchangeEventUpsert } from '../../definition/types';
@@ -167,6 +167,19 @@ const applyRemovals = async (
 	}
 };
 
+const dropCalendarIfUserDeleted = async (uid: IUser['_id']): Promise<void> => {
+	try {
+		if (await Users.findOneById(uid, { projection: { _id: 1 } })) {
+			return;
+		}
+
+		await CalendarEvent.deleteByUserId(uid);
+		await ExchangeCalendarSyncState.deleteByUserId(uid);
+	} catch (err) {
+		logger.warn({ msg: 'Could not drop the calendar of a user deleted during their calendar sync', uid, err });
+	}
+};
+
 export const syncCalendarWindow = async (
 	provider: IExchangeProvider,
 	uid: IUser['_id'],
@@ -228,5 +241,7 @@ export const syncCalendarWindow = async (
 			fatal: FATAL_CODES.has(code),
 			error: err,
 		};
+	} finally {
+		await dropCalendarIfUserDeleted(uid);
 	}
 };

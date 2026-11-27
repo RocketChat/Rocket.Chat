@@ -13,6 +13,9 @@ const findOneByUserId = jest.fn();
 const saveCursor = jest.fn();
 const setLastError = jest.fn();
 const clearCursorByUserId = jest.fn();
+const deleteSyncStateByUserId = jest.fn();
+const deleteEventsByUserId = jest.fn();
+const findOneUserById = jest.fn();
 
 jest.mock('@rocket.chat/core-services', () => ({
 	Calendar: {
@@ -29,6 +32,13 @@ jest.mock('@rocket.chat/models', () => ({
 		saveCursor: (...args: unknown[]) => saveCursor(...args),
 		setLastError: (...args: unknown[]) => setLastError(...args),
 		clearCursorByUserId: (...args: unknown[]) => clearCursorByUserId(...args),
+		deleteByUserId: (...args: unknown[]) => deleteSyncStateByUserId(...args),
+	},
+	CalendarEvent: {
+		deleteByUserId: (...args: unknown[]) => deleteEventsByUserId(...args),
+	},
+	Users: {
+		findOneById: (...args: unknown[]) => findOneUserById(...args),
 	},
 }));
 
@@ -97,6 +107,27 @@ describe('syncCalendarWindow', () => {
 		saveCursor.mockResolvedValue(undefined);
 		setLastError.mockResolvedValue(undefined);
 		clearCursorByUserId.mockResolvedValue(undefined);
+		findOneUserById.mockResolvedValue({ _id: UID });
+	});
+
+	describe('a user deleted while their sync ran', () => {
+		it('drops what the sync wrote after the deletion already cleaned up', async () => {
+			findOneUserById.mockResolvedValue(null);
+
+			await syncCalendarWindow(providerReturning('graph', page([upsert('A')])), UID, MAILBOX, timeWindow);
+
+			expect(deleteEventsByUserId).toHaveBeenCalledWith(UID);
+			expect(deleteSyncStateByUserId).toHaveBeenCalledWith(UID);
+			expect(deleteEventsByUserId.mock.invocationCallOrder[0]).toBeGreaterThan(importMany.mock.invocationCallOrder[0]);
+			expect(deleteSyncStateByUserId.mock.invocationCallOrder[0]).toBeGreaterThan(saveCursor.mock.invocationCallOrder[0]);
+		});
+
+		it('leaves the calendar of a user who still exists', async () => {
+			await syncCalendarWindow(providerReturning('graph', page([upsert('A')])), UID, MAILBOX, timeWindow);
+
+			expect(deleteEventsByUserId).not.toHaveBeenCalled();
+			expect(deleteSyncStateByUserId).not.toHaveBeenCalled();
+		});
 	});
 
 	describe('a recurring series, which Graph reports as a whole', () => {

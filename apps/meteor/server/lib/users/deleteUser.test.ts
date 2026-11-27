@@ -54,6 +54,8 @@ describe('deleteUser', () => {
 	let LivechatUnitMonitors: Record<string, sinon.SinonStub>;
 	let LivechatVisitors: Record<string, sinon.SinonStub>;
 	let Integrations: Record<string, sinon.SinonStub>;
+	let CalendarEvent: Record<string, sinon.SinonStub>;
+	let ExchangeCalendarSyncState: Record<string, sinon.SinonStub>;
 	let uploadsStore: Record<string, sinon.SinonStub>;
 	let avatarsStore: Record<string, sinon.SinonStub>;
 
@@ -84,6 +86,8 @@ describe('deleteUser', () => {
 		LivechatUnitMonitors = { removeByMonitorId: sinon.stub() };
 		LivechatVisitors = { removeContactManagerByUsername: sinon.stub() };
 		Integrations = { disableByUserId: sinon.stub() };
+		CalendarEvent = { deleteByUserId: sinon.stub() };
+		ExchangeCalendarSyncState = { deleteByUserId: sinon.stub() };
 		Users.findOneById.withArgs('rocket.cat').resolves(rocketCat);
 		Users.findOneById.withArgs('admin').resolves({ _id: 'admin' });
 		mockModel('Users', Users);
@@ -97,6 +101,8 @@ describe('deleteUser', () => {
 		mockModel('LivechatUnitMonitors', LivechatUnitMonitors);
 		mockModel('LivechatVisitors', LivechatVisitors);
 		mockModel('Integrations', Integrations);
+		mockModel('CalendarEvent', CalendarEvent);
+		mockModel('ExchangeCalendarSyncState', ExchangeCalendarSyncState);
 
 		uploadsStore = { deleteById: sinon.stub() };
 		avatarsStore = { deleteByName: sinon.stub() };
@@ -332,6 +338,16 @@ describe('deleteUser', () => {
 
 		expect(deleteUserContacts.calledOnceWith('uid')).to.be.true;
 		expect(deleteUserContacts.calledAfter(Users.removeById)).to.be.true;
+	});
+
+	it('removes the calendar events and calendar sync state once the user is removed, even without a username', async () => {
+		Users.findOneById.resolves({ _id: 'uid', roles: ['user'] });
+
+		await deleteUser('uid');
+
+		expect(CalendarEvent.deleteByUserId.calledOnceWith('uid')).to.be.true;
+		expect(ExchangeCalendarSyncState.deleteByUserId.calledOnceWith('uid')).to.be.true;
+		expect(CalendarEvent.deleteByUserId.calledAfter(Users.removeById)).to.be.true;
 	});
 
 	it('removes a livechat monitor from its units', async () => {

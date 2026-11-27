@@ -2,6 +2,8 @@ import { Apps, AppEvents } from '@rocket.chat/apps';
 import { api, ClientSafeError } from '@rocket.chat/core-services';
 import { isUserFederated, type IUser } from '@rocket.chat/core-typings';
 import {
+	CalendarEvent,
+	ExchangeCalendarSyncState,
 	Integrations,
 	LivechatVisitors,
 	LivechatDepartmentAgents,
@@ -185,6 +187,8 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 	await callbacks.run('afterDeleteUser', user);
 
 	await deleteUserContacts(userId);
+	await CalendarEvent.deleteByUserId(userId);
+	await ExchangeCalendarSyncState.deleteByUserId(userId);
 
 	return { deletedRooms };
 }
