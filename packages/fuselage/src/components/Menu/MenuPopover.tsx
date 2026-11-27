@@ -1,6 +1,6 @@
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode } from 'react';
-import { useRef } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import type { AriaPopoverProps } from 'react-aria';
 import { useInteractOutside } from 'react-aria';
 import type { OverlayTriggerState } from 'react-stately';
@@ -31,6 +31,16 @@ function MenuPopover({ children, state, offset = 4, maxWidth, ...props }: MenuPo
 
 	const popoverRef = useRef<HTMLDivElement>(null);
 
+	// A menu is never narrower than the button that opens it; a submenu's trigger is a row of its parent, so it keeps its own width
+	const [triggerWidth, setTriggerWidth] = useState<number>();
+	const { triggerRef } = props;
+	useLayoutEffect(() => {
+		if (isSubmenu) {
+			return;
+		}
+		setTriggerWidth(triggerRef?.current?.getBoundingClientRect().width);
+	}, [isSubmenu, triggerRef]);
+
 	// react-aria only lets the *topmost* overlay dismiss on an outside click.
 	// While a submenu is open it is topmost, but submenus are non-modal (hence
 	// non-dismissable), so neither the submenu nor the root closes. Since every
@@ -60,7 +70,7 @@ function MenuPopover({ children, state, offset = 4, maxWidth, ...props }: MenuPo
 			{isMobile ? (
 				<DropdownMobile>{children}</DropdownMobile>
 			) : (
-				<Box maxWidth={maxWidth}>
+				<Box maxWidth={maxWidth} minWidth={triggerWidth}>
 					<DropdownDesktop maxHeight='most-of-screen'>{children}</DropdownDesktop>
 				</Box>
 			)}

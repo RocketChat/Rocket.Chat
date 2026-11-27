@@ -1,13 +1,14 @@
 import type { StoryFn, Meta } from '@storybook/react';
-import type { ReactNode } from 'react';
-import { useState } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
+import { forwardRef, useState } from 'react';
 import { action } from 'storybook/actions';
+import { userEvent, within } from 'storybook/test';
 
 import type { MenuItemIconProps } from '.';
 import { Menu, MenuItem, MenuSection, MenuSubmenuTrigger, MenuItemColumn, MenuItemContent, MenuItemIcon, MenuItemInput } from '.';
 import { Box } from '../Box';
 import type { IconButtonProps } from '../Button';
-import { IconButton } from '../Button';
+import { Button, IconButton } from '../Button';
 import { ButtonGroup } from '../ButtonGroup';
 import { CheckBox } from '../CheckBox';
 import { Icon } from '../Icon';
@@ -397,6 +398,26 @@ export const WithCustomButton = () => (
 		</Menu>
 	</ButtonGroup>
 );
+
+const TextTrigger = forwardRef<HTMLButtonElement, Omit<ComponentProps<typeof Button>, 'icon'> & { icon?: unknown; pressed?: boolean }>(
+	function TextTrigger({ icon: _icon, pressed: _pressed, ...props }, ref) {
+		return (
+			<Button ref={ref} size='small' {...props}>
+				Insert placeholder
+			</Button>
+		);
+	},
+);
+
+export const WithWideTrigger: StoryFn<typeof Menu> = () => (
+	<Menu title='Insert placeholder' button={<TextTrigger />}>
+		<MenuItem key='name'>Name</MenuItem>
+		<MenuItem key='email'>Email</MenuItem>
+	</Menu>
+);
+WithWideTrigger.play = async ({ canvasElement }) => {
+	await userEvent.click(await within(canvasElement).findByRole('button', { name: 'Insert placeholder' }));
+};
 
 export const Scrollable = () => {
 	const items = Array.from({ length: 30 }, (_, i) => <MenuItem key={i}>Item {i + 1}</MenuItem>);
