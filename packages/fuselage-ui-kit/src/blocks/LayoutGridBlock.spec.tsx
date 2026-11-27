@@ -18,6 +18,7 @@ const layout = (extra: object = {}) =>
 		...extra,
 	}) as never;
 
+// oxlint-disable-next-line testing-library/no-node-access -- the cell is a plain Box with no role, label or text of its own
 const cellOf = (value: string) => screen.getByRole('heading', { name: value }).parentElement as HTMLElement;
 
 it('renders every item in source order, never the fallback, and nothing for a label that is not visible', () => {

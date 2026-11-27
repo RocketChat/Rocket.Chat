@@ -125,7 +125,7 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 		} = e;
 
 		// This path never asks, so the value counts as accepted.
-		e?.onConfirmed?.();
+		(e as { onConfirmed?: () => void } | undefined)?.onConfirmed?.();
 		setValue(value);
 
 		await updateState?.(
@@ -166,7 +166,7 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 
 	const confirmedAction = useStableCallback(async (e: any) => {
 		if (await isAccepted()) {
-			e?.onConfirmed?.();
+			(e as { onConfirmed?: () => void } | undefined)?.onConfirmed?.();
 			await actionFunction(e);
 		}
 	});

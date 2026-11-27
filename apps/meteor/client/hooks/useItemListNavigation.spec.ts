@@ -1,4 +1,5 @@
-import { renderHook, act, fireEvent, createEvent } from '@testing-library/react';
+import { renderHook, act, createEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { useItemListNavigation } from './useItemListNavigation';
 
@@ -43,6 +44,13 @@ const createRow = (label: string, { withAction = false } = {}) => {
 	return { row, link, action };
 };
 
+const getAction = ({ action }: { action?: HTMLButtonElement }) => {
+	if (!action) {
+		throw new Error('the row was created without an action');
+	}
+	return action;
+};
+
 const setup = ({ rowCount = 3, withAction = false } = {}) => {
 	const before = document.createElement('button');
 	before.textContent = 'before';
@@ -72,7 +80,9 @@ const setup = ({ rowCount = 3, withAction = false } = {}) => {
 
 const pressKey = (target: HTMLElement, key: string, init: KeyboardEventInit = {}) => {
 	const event = createEvent.keyDown(target, { key, ...init });
-	fireEvent(target, event);
+	act(() => {
+		target.dispatchEvent(event);
+	});
 	return event;
 };
 
@@ -104,7 +114,9 @@ describe('arrow keys between rows', () => {
 
 		const event = createEvent.keyDown(rows[0].link, { key: 'ArrowDown' });
 		jest.spyOn(event, 'stopPropagation');
-		fireEvent(rows[0].link, event);
+		act(() => {
+			rows[0].link.dispatchEvent(event);
+		});
 
 		expect(event.defaultPrevented).toBe(true);
 		expect(event.stopPropagation).toHaveBeenCalled();
@@ -171,9 +183,10 @@ describe('when the adjacent row is outside the render window', () => {
 describe('Escape', () => {
 	it('returns from a control to its row', () => {
 		const { rows } = setup({ withAction: true });
-		rows[1].action!.focus();
+		const action = getAction(rows[1]);
+		action.focus();
 
-		const event = pressKey(rows[1].action!, 'Escape');
+		const event = pressKey(action, 'Escape');
 
 		expect(event.defaultPrevented).toBe(true);
 		expect(rows[1].link).toHaveFocus();
@@ -198,15 +211,16 @@ describe('Tab', () => {
 		expect(event.defaultPrevented).toBe(true);
 		expect(rows[0].action).toHaveFocus();
 
-		pressKey(rows[0].action!, 'Tab');
+		pressKey(getAction(rows[0]), 'Tab');
 		expect(after).toHaveFocus();
 	});
 
 	it('walks back to the row, then leaves the list backwards', () => {
 		const { before, rows } = setup({ withAction: true });
-		rows[2].action!.focus();
+		const action = getAction(rows[2]);
+		action.focus();
 
-		pressKey(rows[2].action!, 'Tab', { shiftKey: true });
+		pressKey(action, 'Tab', { shiftKey: true });
 		expect(rows[2].link).toHaveFocus();
 
 		pressKey(rows[2].link, 'Tab', { shiftKey: true });
@@ -303,7 +317,7 @@ describe('Tab', () => {
 			expect(rows[0].link).toHaveFocus();
 		});
 
-		it('keeps the focus where a click moves it after tabbing into the controls', () => {
+		it('keeps the focus where a click moves it after tabbing into the controls', async () => {
 			const { rows } = setup();
 			const video = addVideo(rows[0].row);
 			const reaction = document.createElement('button');
@@ -313,9 +327,8 @@ describe('Tab', () => {
 			video.focus();
 
 			pressKey(video, 'Tab');
-			fireEvent.pointerDown(composer);
 			mockFocusVisible(composer);
-			composer.focus();
+			await userEvent.pointer({ keys: '[MouseLeft>]', target: composer });
 
 			expect(composer).toHaveFocus();
 		});
@@ -430,8 +443,9 @@ describe('coming back by keyboard', () => {
 		const { after, rows } = setup({ withAction: true });
 		after.focus();
 
-		mockFocusVisible(rows[2].action!);
-		rows[2].action!.focus();
+		const action = getAction(rows[2]);
+		mockFocusVisible(action);
+		action.focus();
 
 		expect(rows[2].link).toHaveFocus();
 	});

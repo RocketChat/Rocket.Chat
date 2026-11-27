@@ -8,10 +8,12 @@ export function getTransporter({ transporter, port, extra }: { transporter?: str
 		return url.join('');
 	}
 
+	const extraOptions: Record<string, unknown> = extra ? JSON.parse(extra) : {};
+
 	return {
 		port: port ? port.trim() : 0,
 		udpDiscovery: false,
 		useHostname: false,
-		...(extra ? JSON.parse(extra) : {}),
+		...extraOptions,
 	};
 }

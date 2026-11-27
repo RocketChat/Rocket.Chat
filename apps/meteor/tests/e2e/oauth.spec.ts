@@ -1,10 +1,14 @@
-import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
+import { randomUUID } from 'crypto';
 
-import { BASE_URL, IS_EE } from './config/constants';
+import type { IUser, LoginServiceConfiguration } from '@rocket.chat/core-typings';
+
+import { BASE_URL, IS_EE, MOCK_SERVER_URL_FROM_SERVER } from './config/constants';
 import { Registration } from './page-objects';
+import { getSettingValueById } from './utils/getSettingValueById';
 import { setSettingValueById } from './utils/setSettingValueById';
 import type { BaseTest } from './utils/test';
 import { test, expect } from './utils/test';
+import { mockServerReset, mockServerSetMany } from '../data/mock-server.helper';
 
 type ServiceConfigurations = {
 	configurations: Array<LoginServiceConfiguration & { loginStyle?: string }>;
@@ -111,6 +115,103 @@ test.describe('OAuth', () => {
 				await expect(popup).toHaveURL(customOAuthAuthorizeUrlPattern);
 				await expect(page).toHaveURL(/\/home/);
 				await popup.close();
+			});
+		});
+	});
+
+	test.describe('First login', () => {
+		const runId = randomUUID();
+		const providerPath = `/custom-oauth-e2e/${runId}`;
+		const identity = { id: `custom-oauth-e2e-${runId}`, name: 'Custom OAuth First Login', email: `${runId}@custom-oauth.example.com` };
+		let userId: string | null = null;
+
+		const providerSettings = {
+			'Accounts_OAuth_Custom-Test-url': MOCK_SERVER_URL_FROM_SERVER,
+			'Accounts_OAuth_Custom-Test-token_path': `${providerPath}/token`,
+			'Accounts_OAuth_Custom-Test-identity_path': `${providerPath}/me`,
+			'Accounts_OAuth_Custom-Test-identity_token_sent_via': 'header',
+			'Accounts_OAuth_Custom-Test-login_style': 'redirect',
+		};
+		const originalSettings: Record<string, unknown> = {};
+
+		const getProviderEndpoints = async (api: BaseTest['api']) => {
+			const service = await getOAuthService(api, customOAuthService);
+			return service && 'tokenPath' in service
+				? { serverURL: service.serverURL, tokenPath: service.tokenPath, identityPath: service.identityPath }
+				: undefined;
+		};
+
+		test.beforeAll(async ({ api }) => {
+			await mockServerSetMany([
+				{ method: 'POST', path: `${providerPath}/token`, body: { access_token: `token-${runId}`, token_type: 'Bearer' } },
+				{ method: 'GET', path: `${providerPath}/me`, body: identity },
+			]);
+
+			for (const [setting, value] of Object.entries(providerSettings)) {
+				originalSettings[setting] = await getSettingValueById(api, setting);
+				await expect((await setSettingValueById(api, setting, value)).status()).toBe(200);
+			}
+			await expect((await setSettingValueById(api, 'Accounts_OAuth_Custom-Test', true)).status()).toBe(200);
+
+			await expect
+				.poll(() => getProviderEndpoints(api))
+				.toEqual({ serverURL: MOCK_SERVER_URL_FROM_SERVER, tokenPath: `${providerPath}/token`, identityPath: `${providerPath}/me` });
+		});
+
+		test.afterAll(async ({ api }) => {
+			for (const [setting, value] of Object.entries(originalSettings)) {
+				await setSettingValueById(api, setting, value);
+			}
+			// The service reloads on a debounce; the tests that follow only wait for it to be enabled, so it must be back on the original provider first
+			await expect
+				.poll(() => getProviderEndpoints(api))
+				.toEqual({
+					serverURL: originalSettings['Accounts_OAuth_Custom-Test-url'],
+					tokenPath: originalSettings['Accounts_OAuth_Custom-Test-token_path'],
+					identityPath: originalSettings['Accounts_OAuth_Custom-Test-identity_path'],
+				});
+			await setSettingValueById(api, 'Accounts_OAuth_Custom-Test', false);
+			await mockServerReset();
+			if (userId) {
+				await api.post('/users.delete', { userId });
+			}
+		});
+
+		test('creates a new user with the defaults of any new user', async ({ page, api }) => {
+			const providerHost = new URL(MOCK_SERVER_URL_FROM_SERVER).host;
+
+			await test.step('expect the login to complete', async () => {
+				await poRegistration.goto();
+				// page.route can't intercept a redirect's target, so the authorize request goes out and the goto below replaces it
+				const [authorizeRequest] = await Promise.all([
+					page.waitForRequest((request) => {
+						const url = new URL(request.url());
+						return url.host === providerHost && url.pathname === '/authorize';
+					}),
+					poRegistration.btnLoginWithCustomOAuth.click({ noWaitAfter: true }),
+				]);
+
+				// Stands in for the provider's consent page, which would send the browser back with a code and the same state
+				const authorizeURL = new URL(authorizeRequest.url());
+				const callbackURL = new URL(authorizeURL.searchParams.get('redirect_uri') ?? `${BASE_URL}/_oauth/${customOAuthService}`);
+				callbackURL.searchParams.set('code', `code-${runId}`);
+				callbackURL.searchParams.set('state', authorizeURL.searchParams.get('state') ?? '');
+				await page.goto(callbackURL.toString());
+
+				await expect(page).toHaveURL(/\/home/);
+				await expect(page).not.toHaveURL(/oauthError/);
+				await expect.poll(() => page.evaluate(() => localStorage.getItem('Meteor.userId'))).not.toBeNull();
+				userId = await page.evaluate(() => localStorage.getItem('Meteor.userId'));
+			});
+
+			await test.step('expect the new user to be an active user with the user role', async () => {
+				const response = await api.get(`/users.info?userId=${userId}`);
+				await expect(response).toBeOK();
+				const { user } = (await response.json()) as { user: IUser };
+
+				expect(user).toMatchObject({ type: 'user', active: true, name: identity.name });
+				expect(user.roles).toContain('user');
+				expect(user.emails?.[0]?.address).toBe(identity.email);
 			});
 		});
 	});

@@ -1,5 +1,6 @@
 // This is a JS File that was renamed to TS so it won't lose its git history when converted to TS
 // TODO: Remove the following lint/ts instructions when the file gets properly converted
+/* oxlint-disable typescript/no-unsafe-call, typescript/no-unsafe-return -- the file is untyped until it gets properly converted */
 /* oxlint-disable-next-line @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 import util from 'node:util';

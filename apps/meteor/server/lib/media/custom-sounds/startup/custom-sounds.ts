@@ -1,3 +1,5 @@
+import type { IncomingMessage, ServerResponse } from 'node:http';
+
 import { CustomSounds } from '@rocket.chat/models';
 import { WebApp } from 'meteor/webapp';
 
@@ -5,13 +7,15 @@ import { settings } from '../../../../settings';
 import { SystemLogger } from '../../../logger/system';
 import { RocketChatFile } from '../../file';
 
-export let RocketChatFileCustomSoundsInstance;
+type RocketChatFileStore = InstanceType<(typeof RocketChatFile)['GridFS' | 'FileSystem']>;
+
+export let RocketChatFileCustomSoundsInstance: RocketChatFileStore;
 
 const initializeCustomSoundsStorage = () => {
-	let storeType = 'GridFS';
+	let storeType: 'GridFS' | 'FileSystem' = 'GridFS';
 
 	if (settings.get('CustomSounds_Storage_Type')) {
-		storeType = settings.get('CustomSounds_Storage_Type');
+		storeType = settings.get<'GridFS' | 'FileSystem'>('CustomSounds_Storage_Type');
 	}
 
 	const RocketChatStore = RocketChatFile[storeType];
@@ -26,10 +30,9 @@ const initializeCustomSoundsStorage = () => {
 	});
 
 	let path = '~/uploads';
-	if (settings.get('CustomSounds_FileSystemPath') != null) {
-		if (settings.get('CustomSounds_FileSystemPath').trim() !== '') {
-			path = settings.get('CustomSounds_FileSystemPath');
-		}
+	const customPath = settings.get<string | undefined>('CustomSounds_FileSystemPath');
+	if (customPath != null && customPath.trim() !== '') {
+		path = customPath;
 	}
 
 	RocketChatFileCustomSoundsInstance = new RocketChatStore({
@@ -38,8 +41,8 @@ const initializeCustomSoundsStorage = () => {
 	});
 };
 
-WebApp.connectHandlers.use('/custom-sounds/', async (req, res /* , next*/) => {
-	const fileId = decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''));
+WebApp.connectHandlers.use('/custom-sounds/', async (req: IncomingMessage, res: ServerResponse /* , next*/) => {
+	const fileId = decodeURIComponent((req.url ?? '').replace(/^\//, '').replace(/\?.*$/, ''));
 
 	if (!fileId) {
 		res.writeHead(403);
@@ -69,7 +72,7 @@ WebApp.connectHandlers.use('/custom-sounds/', async (req, res /* , next*/) => {
 	res.setHeader('Content-Disposition', 'inline');
 
 	let fileUploadDate = undefined;
-	if (file.uploadDate != null) {
+	if ('uploadDate' in file && file.uploadDate != null) {
 		fileUploadDate = file.uploadDate.toUTCString();
 	}
 
@@ -91,7 +94,7 @@ WebApp.connectHandlers.use('/custom-sounds/', async (req, res /* , next*/) => {
 		res.setHeader('Last-Modified', new Date().toUTCString());
 	}
 
-	res.setHeader('Content-Type', file.contentType);
+	res.setHeader('Content-Type', file.contentType ?? 'application/octet-stream');
 	res.setHeader('Content-Length', file.length);
 
 	file.readStream.pipe(res);

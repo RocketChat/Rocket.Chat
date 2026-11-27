@@ -72,8 +72,17 @@
 		"displayContents": 0
 	},
 	"Button/Button.styles.scss": {
-		"rules": 41,
-		"nested": 37,
+		"rules": 26,
+		"nested": 22,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Button/IconButton.styles.scss": {
+		"rules": 20,
+		"nested": 12,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -126,9 +135,9 @@
 		"displayContents": 0
 	},
 	"CheckBox/CheckBox.styles.scss": {
-		"rules": 9,
-		"nested": 8,
-		"combinators": 2,
+		"rules": 10,
+		"nested": 9,
+		"combinators": 3,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,
@@ -351,9 +360,9 @@
 		"displayContents": 0
 	},
 	"Message/Messages.styles.scss": {
-		"rules": 41,
-		"nested": 39,
-		"combinators": 12,
+		"rules": 39,
+		"nested": 37,
+		"combinators": 10,
 		"important": 0,
 		"specificityBumps": 1,
 		"negativeMargins": 0,

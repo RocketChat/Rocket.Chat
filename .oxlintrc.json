@@ -126,7 +126,7 @@
 					}
 				],
 				"import/named": "error",
-				"react/exhaustive-deps": "warn",
+				"react/exhaustive-deps": "error",
 				"no-restricted-imports": [
 					"error",
 					{
@@ -175,7 +175,7 @@
 		{
 			"files": ["apps/meteor/**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}"],
 			"rules": {
-				"jest/expect-expect": ["warn", { "assertFunctionNames": ["expect", "expectListKeyboard"] }]
+				"jest/expect-expect": ["error", { "assertFunctionNames": ["expect", "expectListKeyboard"] }]
 			},
 			"plugins": ["jest"]
 		},
@@ -183,7 +183,7 @@
 			"files": ["packages/fuselage/**/*.spec.{ts,tsx}"],
 			"rules": {
 				"jest/expect-expect": [
-					"warn",
+					"error",
 					{
 						"assertFunctionNames": [
 							"expect",
@@ -221,7 +221,7 @@
 			"files": ["ee/packages/federation-matrix/tests/end-to-end/**/*.spec.ts"],
 			"rules": {
 				"jest-js/no-standalone-expect": "off",
-				"jest/expect-expect": ["warn", { "assertFunctionNames": ["expect", "expectRemotePresence", "expectRemoteTyping", "expectLocalTypingIndicator", "assert"] }]
+				"jest/expect-expect": ["error", { "assertFunctionNames": ["expect", "expectRemotePresence", "expectRemoteTyping", "expectLocalTypingIndicator", "assert"] }]
 			},
 			"plugins": ["jest"]
 		},
@@ -289,7 +289,7 @@
 		{
 			"files": ["packages/apps/**/*.ts"],
 			"rules": {
-				"typescript/only-throw-error": ["warn", { "allow": ["JsonRpcError", "ErrorObject"] }]
+				"typescript/only-throw-error": ["error", { "allow": ["JsonRpcError", "ErrorObject"] }]
 			}
 		},
 		{
@@ -350,7 +350,7 @@
 					}
 				],
 				"typescript/no-misused-promises": [
-					"warn",
+					"error",
 					{
 						"checksVoidReturn": {
 							"arguments": false,
@@ -568,7 +568,31 @@
 		{
 			"files": ["packages/livechat/**/*"],
 			"rules": {
-				"react/display-name": "off"
+				"react/display-name": "off",
+				"testing-library/await-async-events": "off",
+				"testing-library/await-async-queries": "off",
+				"testing-library/await-async-utils": "off",
+				"testing-library/no-await-sync-events": "off",
+				"testing-library/no-await-sync-queries": "off",
+				"testing-library/no-container": "off",
+				"testing-library/no-debugging-utils": "off",
+				"testing-library/no-dom-import": "off",
+				"testing-library/no-global-regexp-flag-in-query": "off",
+				"testing-library/no-manual-cleanup": "off",
+				"testing-library/no-node-access": "off",
+				"testing-library/no-promise-in-fire-event": "off",
+				"testing-library/no-render-in-lifecycle": "off",
+				"testing-library/no-unnecessary-act": "off",
+				"testing-library/no-wait-for-multiple-assertions": "off",
+				"testing-library/no-wait-for-side-effects": "off",
+				"testing-library/no-wait-for-snapshot": "off",
+				"testing-library/prefer-find-by": "off",
+				"testing-library/prefer-presence-queries": "off",
+				"testing-library/prefer-query-by-disappearance": "off",
+				"testing-library/prefer-screen-queries": "off",
+				"testing-library/render-result-naming-convention": "off",
+				"testing-library/prefer-explicit-assert": "off",
+				"testing-library/prefer-user-event": "off"
 			}
 		}
 	]

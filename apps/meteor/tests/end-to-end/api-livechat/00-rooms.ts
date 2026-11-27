@@ -750,9 +750,9 @@ describe('LIVECHAT - rooms', () => {
 			});
 		});
 		(IS_EE ? describe : describe.skip)('monitors', () => {
-			let user: IUser;
+			let user: TestUser<IUser>;
 			let userCreds: Credentials;
-			let user2: IUser;
+			let user2: TestUser<IUser>;
 			let user2Creds: Credentials;
 			let department: ILivechatDepartment;
 			let department2: ILivechatDepartment;
@@ -767,12 +767,12 @@ describe('LIVECHAT - rooms', () => {
 
 			before(async () => {
 				user = await createUser();
-				userCreds = await login(user.username!, password);
+				userCreds = await login(user.username, password);
 				user2 = await createUser();
-				user2Creds = await login(user2.username!, password);
+				user2Creds = await login(user2.username, password);
 
-				await createMonitor(user.username!);
-				await createMonitor(user2.username!);
+				await createMonitor(user.username);
+				await createMonitor(user2.username);
 				const { department: dep1, agent: agent1 } = await createDepartmentWithAnOnlineAgent();
 				const { department: dep2, agent: agen2 } = await createDepartmentWithAnOnlineAgent();
 
@@ -781,8 +781,8 @@ describe('LIVECHAT - rooms', () => {
 				department2 = dep2;
 				agent2 = agen2;
 
-				unit = await createUnit(user._id, user.username!, [department._id], '', [{ monitorId: user2._id, username: user2.username! }]);
-				unit2 = await createUnit(user2._id, user2.username!, [department2._id]);
+				unit = await createUnit(user._id, user.username, [department._id], '', [{ monitorId: user2._id, username: user2.username }]);
+				unit2 = await createUnit(user2._id, user2.username, [department2._id]);
 			});
 			before(async () => {
 				const { room: localOpenRoom, visitor: localVisitor1 } = await startANewLivechatRoomAndTakeIt({
@@ -854,7 +854,7 @@ describe('LIVECHAT - rooms', () => {
 			});
 		});
 		(IS_EE ? describe : describe.skip)('units & room restrictions for agents & monitors', () => {
-			let user: IUser;
+			let user: TestUser<IUser>;
 			let agent: OnlineAgent;
 			let agent2: OnlineAgent;
 			let userCreds: Credentials;
@@ -869,9 +869,9 @@ describe('LIVECHAT - rooms', () => {
 
 			before(async () => {
 				user = await createUser();
-				userCreds = await login(user.username!, password);
+				userCreds = await login(user.username, password);
 
-				await createMonitor(user.username!);
+				await createMonitor(user.username);
 				const { department: dep1, agent: agent1 } = await createDepartmentWithAnOnlineAgent();
 				const { department: dep2, agent: agen2 } = await createDepartmentWithAnOnlineAgent();
 
@@ -879,8 +879,8 @@ describe('LIVECHAT - rooms', () => {
 				agent = agent1;
 				department2 = dep2;
 				agent2 = agen2;
-				unit = await createUnit(user._id, user.username!, [department._id]);
-				unit2 = await createUnit(user._id, user.username!, [department2._id]);
+				unit = await createUnit(user._id, user.username, [department._id]);
+				unit2 = await createUnit(user._id, user.username, [department2._id]);
 			});
 			before(async () => {
 				const { room: localOpenRoom, visitor: localVisitor1 } = await startANewLivechatRoomAndTakeIt({
@@ -1484,8 +1484,8 @@ describe('LIVECHAT - rooms', () => {
 			expect(latestRoom.departmentId).to.be.equal(forwardToDepartment._id);
 
 			expect(latestRoom).to.have.property('servedBy').that.is.an('object');
-			expect(latestRoom.servedBy!._id).to.not.equal(agent1.user._id);
-			expect(latestRoom.servedBy!._id).to.equal(agent2.user._id);
+			expect(latestRoom.servedBy?._id).to.not.equal(agent1.user._id);
+			expect(latestRoom.servedBy?._id).to.equal(agent2.user._id);
 
 			await Promise.all([
 				closeOmnichannelRoom(latestRoom._id),

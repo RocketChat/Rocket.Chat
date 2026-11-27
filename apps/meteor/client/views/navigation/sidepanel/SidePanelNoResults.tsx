@@ -30,6 +30,8 @@ const SidePanelNoResults = ({ currentTab }: SidePanelNoResultsProps) => {
 					description={t('No_discussions_description')}
 				/>
 			);
+		case 'drafts':
+			return <GenericNoResults icon={sidePanelFiltersConfig.drafts.icon} title={t('No_drafts')} description={t('No_drafts_description')} />;
 		case 'inProgress':
 			return (
 				<GenericNoResults

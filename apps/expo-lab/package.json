@@ -1,0 +1,39 @@
+{
+	"name": "@rocket.chat/expo-lab",
+	"version": "0.0.0",
+	"private": true,
+	"description": "Expo app that mounts every @rocket.chat/fuselage component in React Native",
+	"main": "index.ts",
+	"scripts": {
+		"start": "expo start --dev-client",
+		"ios": "expo run:ios",
+		"android": "expo run:android",
+		"sweep": "node scripts/sweep.mjs",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@rocket.chat/fuselage": "workspace:^",
+		"@rocket.chat/icons": "workspace:~",
+		"@tamagui/web": "3.0.18",
+		"expo": "~58.0.23",
+		"expo-dev-client": "~58.0.18",
+		"expo-font": "~58.0.12",
+		"react": "19.3.0",
+		"react-native": "0.88.1"
+	},
+	"expo": {
+		"install": {
+			"exclude": [
+				"typescript"
+			]
+		}
+	},
+	"devDependencies": {
+		"@babel/core": "^7.26.0",
+		"@types/react": "~19.2.18",
+		"typescript": "~5.9.3"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}

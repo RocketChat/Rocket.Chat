@@ -19,7 +19,7 @@ export abstract class AppLogStorage {
 		options?: IAppLogStorageFindOptions,
 	): Promise<{ logs: ILoggerStorageEntry[]; total: number }>;
 
-	public abstract storeEntries(logEntry: ILoggerStorageEntry): Promise<ILoggerStorageEntry>;
+	public abstract storeEntries(logEntry: ILoggerStorageEntry): Promise<ILoggerStorageEntry | null>;
 
 	public abstract getEntriesFor(appId: string): Promise<Array<ILoggerStorageEntry>>;
 

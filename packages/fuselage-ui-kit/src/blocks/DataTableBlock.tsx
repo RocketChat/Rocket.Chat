@@ -108,7 +108,7 @@ const DataTableBlock = ({ className, block, context, surfaceRenderer }: DataTabl
 
 	return (
 		<Box className={className} display='flex' flexDirection='column' gap='x8'>
-			<Box maxWidth='x320'>
+			<Box>
 				<SearchInput
 					aria-label={t('Filter')}
 					placeholder={t('Filter')}

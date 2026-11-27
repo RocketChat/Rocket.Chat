@@ -24,7 +24,7 @@ import * as z from 'zod';
  * Mirrors `AppUsersConverter._convertUserTypeToEnum`.
  */
 export const UserTypeCodec = z.codec(z.any(), z.any(), {
-	decode: (type): string => {
+	decode: (type: string | undefined): string => {
 		switch (type) {
 			case 'user':
 				return UserType.USER;
@@ -41,7 +41,7 @@ export const UserTypeCodec = z.codec(z.any(), z.any(), {
 		}
 	},
 	// The reverse converter assigns `user.type` straight back onto the document.
-	encode: (type): string => type,
+	encode: (type: string): string => type,
 });
 
 /**
@@ -51,7 +51,7 @@ export const UserTypeCodec = z.codec(z.any(), z.any(), {
  * that context is not available to a standalone codec.
  */
 export const UserStatusConnectionCodec = z.codec(z.any(), z.any(), {
-	decode: (status): string => {
+	decode: (status: string | undefined): string => {
 		switch (status) {
 			case 'offline':
 				return UserStatusConnection.OFFLINE;
@@ -68,7 +68,7 @@ export const UserStatusConnectionCodec = z.codec(z.any(), z.any(), {
 				return !status ? UserStatusConnection.OFFLINE : status.toUpperCase();
 		}
 	},
-	encode: (status): string => status,
+	encode: (status: string): string => status,
 });
 
 /**
@@ -76,7 +76,7 @@ export const UserStatusConnectionCodec = z.codec(z.any(), z.any(), {
  * Mirrors `AppRoomsConverter._convertTypeToApp`. Unknown type characters pass through unchanged.
  */
 export const RoomTypeCodec = z.codec(z.any(), z.any(), {
-	decode: (typeChar): string => {
+	decode: (typeChar: string): string => {
 		switch (typeChar) {
 			case 'c':
 				return RoomType.CHANNEL;
@@ -91,7 +91,7 @@ export const RoomTypeCodec = z.codec(z.any(), z.any(), {
 		}
 	},
 	// `RoomType` values are identical to the stored `t` characters, so the reverse is an identity.
-	encode: (type): string => type,
+	encode: (type: string): string => type,
 });
 
 /**
@@ -99,7 +99,7 @@ export const RoomTypeCodec = z.codec(z.any(), z.any(), {
  * Mirrors `AppSettingsConverter._convertTypeToApp`. Unknown types pass through unchanged.
  */
 export const SettingTypeCodec = z.codec(z.any(), z.any(), {
-	decode: (type): string => {
+	decode: (type: string): string => {
 		switch (type) {
 			case 'boolean':
 				return SettingType.BOOLEAN;
@@ -119,5 +119,5 @@ export const SettingTypeCodec = z.codec(z.any(), z.any(), {
 				return type;
 		}
 	},
-	encode: (type): string => type,
+	encode: (type: string): string => type,
 });

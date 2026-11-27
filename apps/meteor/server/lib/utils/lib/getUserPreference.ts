@@ -10,8 +10,8 @@ import { settings } from '../../../settings';
  * @param {unknown?} defaultValue The default value
  * @returns {unknown} The preference value
  */
-export const getUserPreference = async (user: IUser | string, key: string, defaultValue: any = undefined) => {
-	let preference;
+export const getUserPreference = async (user: IUser | string, key: string, defaultValue: unknown = undefined) => {
+	let preference: unknown;
 	if (typeof user === 'string') {
 		const dbUser = await Users.findOneById(user, { projection: { [`settings.preferences.${key}`]: 1 } });
 		if (dbUser) {

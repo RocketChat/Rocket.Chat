@@ -110,6 +110,7 @@ const ServerContextMock = ({ children, baseURL, callEndpoint = {}, callMethod = 
 
 			if (!handler) {
 				logAction('callEndpoint (undefined)', method, pathPattern, params);
+				// oxlint-disable-next-line typescript/no-unsafe-return -- unmocked endpoints resolve undefined, which no endpoint result type allows
 				return undefined as any;
 			}
 
@@ -134,12 +135,13 @@ const ServerContextMock = ({ children, baseURL, callEndpoint = {}, callMethod = 
 			const handler = callMethod[methodName];
 			if (!handler) {
 				logAction('callMethod (undefined)', methodName, ...args);
+				// oxlint-disable-next-line typescript/no-unsafe-return -- unmocked methods resolve undefined, which no method return type allows
 				return undefined as any;
 			}
 
 			if (handler === 'infinite') {
 				logAction('callMethod (infinite)', methodName, ...args);
-				return new Promise<any>(() => undefined);
+				return new Promise<ServerMethodReturn<MethodName>>(() => undefined);
 			}
 
 			if (handler === 'errored') {

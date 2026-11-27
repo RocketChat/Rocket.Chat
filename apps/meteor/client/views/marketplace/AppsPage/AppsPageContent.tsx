@@ -137,23 +137,12 @@ const AppsPageContent = () => {
 	};
 
 	const toggleInitialSortOption = useCallback((isRequested: boolean) => {
-		setSortFilterStructure((prevState) => {
-			prevState.items.forEach((currentItem) => {
-				if (isRequested && currentItem.id === 'urf') {
-					currentItem.checked = true;
-					return;
-				}
+		const initialSortId = isRequested ? 'urf' : 'mru';
 
-				if (!isRequested && currentItem.id === 'mru') {
-					currentItem.checked = true;
-					return;
-				}
-
-				currentItem.checked = false;
-			});
-
-			return { ...prevState };
-		});
+		setSortFilterStructure((prevState) => ({
+			...prevState,
+			items: prevState.items.map((currentItem) => ({ ...currentItem, checked: currentItem.id === initialSortId })),
+		}));
 	}, []);
 
 	useEffect(() => {

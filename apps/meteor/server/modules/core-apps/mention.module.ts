@@ -11,7 +11,7 @@ import { addUsersToRoomMethod } from '../../meteor-methods/rooms/addUsersToRoom'
 
 const retrieveMentionsFromPayload = (stringifiedMentions: string): Exclude<IMessage['mentions'], undefined> => {
 	try {
-		const mentions = JSON.parse(stringifiedMentions);
+		const mentions: IMessage['mentions'] = JSON.parse(stringifiedMentions);
 		if (!Array.isArray(mentions) || !mentions.length || !('username' in mentions[0])) {
 			throw new Error('Invalid payload');
 		}

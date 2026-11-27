@@ -280,7 +280,7 @@ export const useItemListDrag = ({
 				// The groups a dragged row can go into are outlined from the start, so the places to aim at are visible before hovering.
 				const markAvailableGroups = () => {
 					const groups = new Set(
-						Array.from(list.querySelectorAll<HTMLElement>('[data-drag-group]'), (element) => element.dataset.dragGroup!),
+						Array.from(list.querySelectorAll<HTMLElement>('[data-drag-group]')).flatMap((element) => element.dataset.dragGroup ?? []),
 					);
 					available = Array.from(groups)
 						.filter((group) => stableResolveTarget(dragSource, { group, key: group, kind: 'group', half: 'top' })?.position === 'inside')

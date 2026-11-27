@@ -11,7 +11,7 @@ export async function startRegisterWorkspaceSetupWizard(resend = false, email: s
 
 	const regInfo = await buildWorkspaceRegistrationData(email);
 
-	let payload;
+	let payload: CloudRegistrationIntentData | undefined;
 	try {
 		const cloudUrl = settings.get<string>('Cloud_Url');
 		const response = await fetch(`${cloudUrl}/api/v2/register/workspace/intent`, {

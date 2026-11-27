@@ -6,7 +6,7 @@ import { TIMEUNIT, isValidTimespan, timeUnitToMs } from '../../../lib/convertTim
 const hasRetentionPolicy = (room: IRoom & { retention?: any }): room is IRoomWithRetentionPolicy =>
 	'retention' in room && room.retention !== undefined;
 
-const isRetentionOverridden = (room: IRoom & { retention?: any }) => 'overrideGlobal' in room.retention && room.retention.overrideGlobal;
+const isRetentionOverridden = (room: IRoomWithRetentionPolicy) => 'overrideGlobal' in room.retention && room.retention.overrideGlobal;
 
 type RetentionPolicySettings = {
 	enabled: boolean;

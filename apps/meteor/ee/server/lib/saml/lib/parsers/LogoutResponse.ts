@@ -40,7 +40,10 @@ export class LogoutResponseParser {
 			SAMLUtils.log({ msg: `Found InResponseTo`, inResponseTo });
 		} catch (err) {
 			SAMLUtils.log({ err });
-			const msg = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage');
+			const serializer = new xmldom.XMLSerializer();
+			const msg = Array.from(doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage'), (node) =>
+				serializer.serializeToString(node),
+			).join('');
 			SAMLUtils.log(`Unexpected msg from IDP. Does your session still exist at IDP? Idp returned: \n ${msg}`);
 		}
 

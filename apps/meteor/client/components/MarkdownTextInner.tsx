@@ -170,7 +170,7 @@ const MarkdownTextInner = ({
 	}
 
 	const __html = useMemo(() => {
-		const html = ((): any => {
+		const html = ((): string | undefined => {
 			if (content && typeof content === 'string') {
 				const markedHtml = /inline/.test(variant)
 					? marked.parseInline(new Option(content).innerHTML, markedOptions)

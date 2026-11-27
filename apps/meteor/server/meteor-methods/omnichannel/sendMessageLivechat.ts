@@ -31,6 +31,7 @@ export const sendMessageLivechat = async ({
 		throw new ClientSafeError('message-length-exceeds-character-limit');
 	}
 
+	// oxlint-disable-next-line typescript/no-unsafe-return -- omnichannel sendMessage is untyped (spreads an any result)
 	return sendMessage({
 		guest,
 		message: {

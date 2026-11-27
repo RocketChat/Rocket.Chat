@@ -42,8 +42,9 @@ const BaseRemoveUsersModal = ({
 	const onChangeRoomSelection = useCallback((room: Serialized<IRoom>) => {
 		setSelectedRooms((selectedRooms) => {
 			if (selectedRooms[room._id]) {
-				delete selectedRooms[room._id];
-				return { ...selectedRooms };
+				const next = { ...selectedRooms };
+				delete next[room._id];
+				return next;
 			}
 			return { ...selectedRooms, [room._id]: room };
 		});

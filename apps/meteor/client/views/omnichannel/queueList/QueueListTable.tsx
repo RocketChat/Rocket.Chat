@@ -94,7 +94,7 @@ const QueueListTable = () => {
 		...paginationProps
 	} = usePagination({ resetKey: queryKey });
 
-	const getUserStatus = (status?: string) => {
+	const getUserStatus = (status?: UserStatus) => {
 		if (!status) {
 			return t('Offline');
 		}

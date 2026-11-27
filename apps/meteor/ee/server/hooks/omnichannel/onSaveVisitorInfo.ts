@@ -46,7 +46,7 @@ callbacks.add(
 			await Promise.all([updateSLA(room, user, newSlaId), updatePriority(room, user, newPriorityId)]);
 		}
 
-		return room as any;
+		return room;
 	},
 	callbacks.priority.HIGH,
 	'livechat-on-save-room-info',

@@ -26,6 +26,7 @@ API.v1.addRoute(
 		async post() {
 			const { customFields, id, token, name, email, department, phone, username, connectionData } = this.bodyParams.visitor;
 
+			// oxlint-disable-next-line typescript/no-unsafe-call -- TODO: legacy addRoute types the body as any once the return value depends on it; fix when moving this endpoint to API.v1.post()
 			if (!token?.trim()) {
 				throw new ClientSafeError('error-invalid-token', 'Token cannot be empty', { method: 'livechat/visitor' });
 			}

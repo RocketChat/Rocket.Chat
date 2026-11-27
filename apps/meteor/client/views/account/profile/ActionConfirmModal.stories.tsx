@@ -20,7 +20,9 @@ export default {
 		},
 	],
 	args: {
-		onConfirm: async () => action('onConfirm')(),
+		onConfirm: async () => {
+			action('onConfirm')();
+		},
 		onCancel: action('onCancel'),
 	},
 } satisfies Meta<typeof ActionConfirmModal>;

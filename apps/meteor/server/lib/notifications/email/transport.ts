@@ -49,8 +49,11 @@ export const configureMailTransport = (options: SMTPTransportOptions | SMTPPoolO
 
 const printMail = async (mail: SendMailOptions): Promise<void> => {
 	const { message } = await nodemailer.createTransport({ streamTransport: true, buffer: true }).sendMail(mail);
+	if (!Buffer.isBuffer(message)) {
+		throw new Error('Expected the buffered stream transport to return the message as a Buffer');
+	}
 	process.stdout.write(
-		`====== BEGIN MAIL ======\n(Mail not sent; to enable sending, configure SMTP.)\n${message}\n====== END MAIL ======\n`,
+		`====== BEGIN MAIL ======\n(Mail not sent; to enable sending, configure SMTP.)\n${message.toString()}\n====== END MAIL ======\n`,
 	);
 };
 

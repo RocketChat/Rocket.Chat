@@ -45,7 +45,7 @@ export class EditStatusModal extends Modal {
 
 	async selectStatusType(status: string): Promise<void> {
 		await this.statusTypeButton.click();
-		await this.page!.getByRole('option', { name: status }).click();
+		await this.root.page().getByRole('option', { name: status }).click();
 	}
 
 	async setStatusMessage(message: string): Promise<void> {
@@ -54,7 +54,10 @@ export class EditStatusModal extends Modal {
 
 	async selectDuration(duration: string): Promise<void> {
 		await this.durationSelect.click();
-		await this.page!.getByRole('option', { name: new RegExp(duration) }).click();
+		await this.root
+			.page()
+			.getByRole('option', { name: new RegExp(duration) })
+			.click();
 	}
 
 	async changeStatusMessage(statusMessage?: string): Promise<void> {

@@ -30,7 +30,7 @@ async function getCustomOAuthServices(): Promise<
 						mapChannels: settings.get<boolean>(`Accounts_OAuth_Custom-${name}-map_channels`),
 						rolesToSync: !!settings.get<string>(`Accounts_OAuth_Custom-${name}-roles_to_sync`),
 					},
-				];
+				] as const;
 			}),
 		),
 	);

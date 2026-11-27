@@ -1,4 +1,5 @@
-import { Box, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
+import { Box, Field, FieldLabel, FieldRow, FieldError, Stack } from '@rocket.chat/fuselage';
+import type { ReactNode } from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 import { useController } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -8,9 +9,10 @@ import type { AuditFields } from '../../hooks/useAuditForm';
 
 export type UsersTabProps = {
 	form: UseFormReturn<AuditFields>;
+	actions?: ReactNode;
 };
 
-const UsersTab = ({ form: { control } }: UsersTabProps) => {
+const UsersTab = ({ form: { control }, actions }: UsersTabProps) => {
 	const { t } = useTranslation();
 
 	const { field: usersField, fieldState: usersFieldState } = useController({
@@ -31,12 +33,15 @@ const UsersTab = ({ form: { control } }: UsersTabProps) => {
 			<Field>
 				<FieldLabel>{t('Users')}</FieldLabel>
 				<FieldRow>
-					<UserAutoCompleteMultiple
-						error={usersFieldState.error?.message}
-						value={usersField.value}
-						onChange={usersField.onChange}
-						placeholder={t('Username_Placeholder')}
-					/>
+					<Stack direction='row' align='center' grow gap='x8'>
+						<UserAutoCompleteMultiple
+							error={usersFieldState.error?.message}
+							value={usersField.value}
+							onChange={usersField.onChange}
+							placeholder={t('Username_Placeholder')}
+						/>
+						{actions}
+					</Stack>
 				</FieldRow>
 				{usersFieldState.error?.type === 'required' && <FieldError>{t('Required_field', { field: t('Users') })}</FieldError>}
 				{usersFieldState.error?.type === 'validate' && <FieldError>{usersFieldState.error.message}</FieldError>}

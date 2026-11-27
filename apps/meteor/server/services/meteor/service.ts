@@ -1,7 +1,8 @@
 /* oxlint-disable react-hooks/rules-of-hooks */
 import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 import type { AutoUpdateRecord, IMeteor } from '@rocket.chat/core-services';
-import type { ILivechatAgent, LoginServiceConfiguration, UserStatus } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, LoginServiceConfiguration } from '@rocket.chat/core-typings';
+import { ILivechatAgentStatus, UserStatus } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration as LoginServiceConfigurationModel, Users } from '@rocket.chat/models';
 import { ListenersModule, invalidatePublicationUserCache } from '@rocket.chat/streamer';
 import { DDP } from 'meteor/ddp';
@@ -87,7 +88,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 							statusLivechat: 1,
 						},
 					});
-					const serviceOnline = agent && agent.status !== 'offline' && agent.statusLivechat === 'available';
+					const serviceOnline = agent && agent.status !== UserStatus.OFFLINE && agent.statusLivechat === ILivechatAgentStatus.AVAILABLE;
 
 					if (serviceOnline) {
 						return onlineAgents.add(data.id);
