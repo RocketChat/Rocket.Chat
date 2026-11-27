@@ -47,6 +47,7 @@ describe('NotificationPreferencesWithData - handlePlaySound', () => {
 			wrapper: appRoot({ newMessageNotification: 'chime' }),
 		});
 
+		await userEvent.click(screen.getByRole('button', { name: 'Desktop' }));
 		await userEvent.click(screen.getByRole('button', { name: 'Play' }));
 
 		expect(mockPlay).toHaveBeenCalledWith('chime');
@@ -58,6 +59,7 @@ describe('NotificationPreferencesWithData - handlePlaySound', () => {
 			wrapper: appRoot({ newMessageNotification: 'ringtone' }),
 		});
 
+		await userEvent.click(screen.getByRole('button', { name: 'Desktop' }));
 		await userEvent.click(screen.getByRole('button', { name: 'Play' }));
 
 		expect(mockPlay).toHaveBeenCalledWith('ringtone');
@@ -76,6 +78,7 @@ describe('NotificationPreferencesWithData - handlePlaySound', () => {
 			wrapper: appRoot({ newMessageNotification: 'chime' }),
 		});
 
+		await userEvent.click(screen.getByRole('button', { name: 'Desktop' }));
 		await userEvent.click(screen.getByRole('button', { name: 'Play' }));
 
 		expect(mockPlay).toHaveBeenCalledWith('door');
