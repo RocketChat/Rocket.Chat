@@ -1,9 +1,8 @@
 @use '../../../styles/colors.scss';
 
-.rcx-message-status-indicator {
-	user-select: none;
+// Web only. The frames in this directory state the layout and the colors.
 
-	&__item {
-		color: colors.font(secondary-info);
-	}
+// The item is an Icon, which states its own color through this class
+.rcx-message-status-indicator__item {
+	color: colors.font(secondary-info);
 }

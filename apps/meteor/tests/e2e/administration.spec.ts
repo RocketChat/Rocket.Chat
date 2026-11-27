@@ -208,7 +208,7 @@ test.describe.parallel('administration', () => {
 
 		test('should find "general" channel', async ({ page }) => {
 			await poAdminRooms.inputSearchRooms.type('general');
-			await page.waitForSelector('[qa-room-id="GENERAL"]');
+			await page.waitForSelector('[data-qa-room-id="GENERAL"]');
 		});
 
 		test('should edit target channel name', async () => {

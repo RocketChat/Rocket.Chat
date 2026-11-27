@@ -1,4 +1,4 @@
-export { default as Item, type ItemProps } from './Item';
+export { default as Item, type ItemAttributes, type ItemProps } from './Item';
 export { default as ItemActions, type ItemActionsProps } from './ItemActions';
 export { default as ItemContent, type ItemContentProps } from './ItemContent';
 export { default as ItemDescription, type ItemDescriptionProps } from './ItemDescription';

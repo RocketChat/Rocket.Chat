@@ -1,13 +1,4 @@
 {
-	"Accordion/Accordion.styles.scss": {
-		"rules": 10,
-		"nested": 5,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
 	"AudioPlayer/AudioPlayer.styles.scss": {
 		"rules": 7,
 		"nested": 6,
@@ -26,31 +17,13 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Avatar/Avatar.styles.scss": {
-		"rules": 10,
-		"nested": 6,
-		"combinators": 2,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 1,
-		"displayContents": 0
-	},
-	"Badge/Badge.styles.scss": {
-		"rules": 6,
-		"nested": 5,
+	"Banner/Banner.styles.scss": {
+		"rules": 1,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,
-		"displayContents": 0
-	},
-	"Banner/Banner.styles.scss": {
-		"rules": 21,
-		"nested": 20,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 2,
 		"displayContents": 0
 	},
 	"Box/Box.styles.scss": {
@@ -72,35 +45,17 @@
 		"displayContents": 0
 	},
 	"Button/Button.styles.scss": {
-		"rules": 26,
-		"nested": 22,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
-	"Button/IconButton.styles.scss": {
-		"rules": 20,
-		"nested": 12,
-		"combinators": 0,
+		"rules": 19,
+		"nested": 11,
+		"combinators": 1,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"ButtonGroup/ButtonGroup.styles.scss": {
-		"rules": 12,
-		"nested": 11,
-		"combinators": 3,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
-	"Callout/Callout.styles.scss": {
-		"rules": 17,
-		"nested": 16,
+		"rules": 5,
+		"nested": 4,
 		"combinators": 3,
 		"important": 0,
 		"specificityBumps": 0,
@@ -135,8 +90,8 @@
 		"displayContents": 0
 	},
 	"CheckBox/CheckBox.styles.scss": {
-		"rules": 10,
-		"nested": 9,
+		"rules": 9,
+		"nested": 8,
 		"combinators": 3,
 		"important": 0,
 		"specificityBumps": 0,
@@ -153,8 +108,8 @@
 		"displayContents": 0
 	},
 	"Chip/Chip.styles.scss": {
-		"rules": 5,
-		"nested": 4,
+		"rules": 1,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -162,8 +117,8 @@
 		"displayContents": 0
 	},
 	"CodeSnippet/CodeSnippet.styles.scss": {
-		"rules": 2,
-		"nested": 1,
+		"rules": 1,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -171,21 +126,21 @@
 		"displayContents": 0
 	},
 	"Contextualbar/Contextualbar.styles.scss": {
-		"rules": 16,
-		"nested": 15,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 1,
-		"displayContents": 0
-	},
-	"Divider/Divider.styles.scss": {
-		"rules": 11,
-		"nested": 9,
+		"rules": 1,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,
+		"displayContents": 0
+	},
+	"Divider/Divider.styles.scss": {
+		"rules": 2,
+		"nested": 0,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 1,
 		"displayContents": 0
 	},
 	"Dropdown/Dropdown.styles.css": {
@@ -198,8 +153,8 @@
 		"displayContents": 0
 	},
 	"Field/Field.styles.scss": {
-		"rules": 8,
-		"nested": 7,
+		"rules": 2,
+		"nested": 1,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -207,9 +162,9 @@
 		"displayContents": 0
 	},
 	"FieldGroup/FieldGroup.styles.scss": {
-		"rules": 4,
-		"nested": 2,
-		"combinators": 2,
+		"rules": 1,
+		"nested": 0,
+		"combinators": 1,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,
@@ -233,17 +188,8 @@
 		"negativeMargins": 2,
 		"displayContents": 0
 	},
-	"Icon/Icon.styles.css": {
-		"rules": 1,
-		"nested": 0,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
 	"InputBox/InputBox.styles.scss": {
-		"rules": 35,
+		"rules": 36,
 		"nested": 26,
 		"combinators": 7,
 		"important": 0,
@@ -261,17 +207,17 @@
 		"displayContents": 0
 	},
 	"Item/Item.styles.scss": {
-		"rules": 92,
-		"nested": 61,
-		"combinators": 10,
+		"rules": 24,
+		"nested": 7,
+		"combinators": 0,
 		"important": 0,
-		"specificityBumps": 6,
-		"negativeMargins": 2,
+		"specificityBumps": 0,
+		"negativeMargins": 1,
 		"displayContents": 0
 	},
-	"Label/Label.styles.scss": {
-		"rules": 4,
-		"nested": 3,
+	"Listbox/Listbox.styles.scss": {
+		"rules": 1,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -279,8 +225,8 @@
 		"displayContents": 0
 	},
 	"Menu/Menu.styles.scss": {
-		"rules": 3,
-		"nested": 2,
+		"rules": 5,
+		"nested": 3,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -288,26 +234,17 @@
 		"displayContents": 0
 	},
 	"Message/MessageDivider/MessageDivider.styles.scss": {
-		"rules": 7,
-		"nested": 6,
+		"rules": 2,
+		"nested": 0,
 		"combinators": 1,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 1,
-		"displayContents": 0
-	},
-	"Message/MessageGenericPreview/MessageGenericPreview.styles.scss": {
-		"rules": 15,
-		"nested": 14,
-		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Message/MessageMetrics/MessageMetrics.styles.scss": {
-		"rules": 4,
-		"nested": 3,
+	"Message/MessageGenericPreview/MessageGenericPreview.styles.scss": {
+		"rules": 15,
+		"nested": 14,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -324,8 +261,8 @@
 		"displayContents": 0
 	},
 	"Message/MessageStatusIndicator/MessageStatusIndicator.styles.scss": {
-		"rules": 3,
-		"nested": 2,
+		"rules": 1,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -351,20 +288,20 @@
 		"displayContents": 0
 	},
 	"Message/Messages.styles.scss": {
-		"rules": 39,
-		"nested": 37,
-		"combinators": 10,
+		"rules": 21,
+		"nested": 19,
+		"combinators": 9,
 		"important": 0,
-		"specificityBumps": 1,
+		"specificityBumps": 4,
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Message/ThreadMessage/ThreadMessage.styles.scss": {
-		"rules": 9,
+		"rules": 10,
 		"nested": 8,
 		"combinators": 0,
 		"important": 0,
-		"specificityBumps": 0,
+		"specificityBumps": 2,
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
@@ -383,16 +320,7 @@
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
-		"negativeMargins": 2,
-		"displayContents": 0
-	},
-	"NavBar/NavBar.styles.scss": {
-		"rules": 3,
-		"nested": 2,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
+		"negativeMargins": 1,
 		"displayContents": 0
 	},
 	"Option/Option.styles.scss": {
@@ -400,21 +328,12 @@
 		"nested": 23,
 		"combinators": 1,
 		"important": 0,
-		"specificityBumps": 0,
+		"specificityBumps": 1,
 		"negativeMargins": 1,
 		"displayContents": 0
 	},
 	"Options/Options.styles.scss": {
-		"rules": 5,
-		"nested": 3,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
-		"displayContents": 0
-	},
-	"Pagination/Pagination.styles.scss": {
-		"rules": 14,
+		"rules": 7,
 		"nested": 5,
 		"combinators": 0,
 		"important": 0,
@@ -422,9 +341,18 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
+	"Pagination/Pagination.styles.scss": {
+		"rules": 1,
+		"nested": 0,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
 	"ProgressBar/ProgressBar.styles.scss": {
-		"rules": 6,
-		"nested": 1,
+		"rules": 4,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -432,8 +360,8 @@
 		"displayContents": 0
 	},
 	"RadioButton/RadioButton.styles.scss": {
-		"rules": 4,
-		"nested": 3,
+		"rules": 2,
+		"nested": 1,
 		"combinators": 1,
 		"important": 0,
 		"specificityBumps": 0,
@@ -450,21 +378,12 @@
 		"displayContents": 0
 	},
 	"Sidebar/Sidebar.styles.scss": {
-		"rules": 46,
-		"nested": 45,
-		"combinators": 2,
+		"rules": 26,
+		"nested": 25,
+		"combinators": 1,
 		"important": 0,
-		"specificityBumps": 0,
+		"specificityBumps": 7,
 		"negativeMargins": 1,
-		"displayContents": 0
-	},
-	"Sidebar/SidebarFooter/SidebarFooter.styles.scss": {
-		"rules": 2,
-		"nested": 1,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Sidebar/SidebarItem/SidebarItem.styles.scss": {
@@ -472,17 +391,8 @@
 		"nested": 21,
 		"combinators": 2,
 		"important": 0,
-		"specificityBumps": 1,
+		"specificityBumps": 2,
 		"negativeMargins": 1,
-		"displayContents": 0
-	},
-	"Sidebar/SidebarMedia/SidebarMedia.styles.scss": {
-		"rules": 4,
-		"nested": 3,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Sidebar/variables.scss": {
@@ -495,17 +405,17 @@
 		"displayContents": 0
 	},
 	"Sidepanel/Sidepanel.styles.scss": {
-		"rules": 9,
-		"nested": 7,
+		"rules": 4,
+		"nested": 3,
 		"combinators": 0,
 		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 1,
+		"specificityBumps": 2,
+		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Skeleton/Skeleton.styles.scss": {
-		"rules": 7,
-		"nested": 4,
+		"rules": 5,
+		"nested": 2,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -522,9 +432,9 @@
 		"displayContents": 0
 	},
 	"SplitButton/SplitButton.styles.scss": {
-		"rules": 9,
-		"nested": 7,
-		"combinators": 2,
+		"rules": 5,
+		"nested": 4,
+		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
 		"negativeMargins": 0,
@@ -548,36 +458,18 @@
 		"negativeMargins": 1,
 		"displayContents": 0
 	},
-	"StatusBullet/StatusBullet.styles.scss": {
-		"rules": 8,
-		"nested": 7,
+	"Table/Table.styles.scss": {
+		"rules": 4,
+		"nested": 1,
 		"combinators": 0,
 		"important": 0,
-		"specificityBumps": 0,
+		"specificityBumps": 1,
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
-	"Table/Table.styles.scss": {
-		"rules": 30,
-		"nested": 28,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 1,
-		"displayContents": 0
-	},
 	"Tabs/Tabs.styles.scss": {
-		"rules": 18,
-		"nested": 14,
-		"combinators": 0,
-		"important": 0,
-		"specificityBumps": 0,
-		"negativeMargins": 2,
-		"displayContents": 0
-	},
-	"Tag/Tag.styles.scss": {
-		"rules": 17,
-		"nested": 15,
+		"rules": 2,
+		"nested": 1,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
@@ -594,12 +486,12 @@
 		"displayContents": 0
 	},
 	"Throbber/Throbber.styles.scss": {
-		"rules": 6,
-		"nested": 3,
+		"rules": 3,
+		"nested": 0,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
-		"negativeMargins": 1,
+		"negativeMargins": 0,
 		"displayContents": 0
 	},
 	"Tile/Tile.styles.scss": {
@@ -621,8 +513,8 @@
 		"displayContents": 0
 	},
 	"ToggleSwitch/ToggleSwitch.styles.scss": {
-		"rules": 6,
-		"nested": 5,
+		"rules": 4,
+		"nested": 3,
 		"combinators": 3,
 		"important": 0,
 		"specificityBumps": 0,

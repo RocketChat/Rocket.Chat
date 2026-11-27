@@ -28,7 +28,7 @@ const OutlookEventItem = ({ subject, description, startTime, meetingUrl }: Outlo
 	};
 
 	return (
-		<Item inset='lg'>
+		<Item inset='lg' interactive>
 			<ItemContent>
 				<ItemTitle>
 					<ItemLink is='button' onClick={handleOpenEvent}>

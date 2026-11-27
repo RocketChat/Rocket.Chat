@@ -48,11 +48,22 @@ test('the fixture section is what its module generates', async () => {
 
 test('a theme key or token the config lacks is a problem, and the section is not written', async () => {
 	const before = readFileSync(frame, 'utf8');
-	const generate = () => `const probeFrame = { color: '${themed('typo')}', padding: '$space.x5', margin: '$space.x8' } as const;`;
+	const generate = () =>
+		`const probeFrame = { color: '${themed('typo')}', padding: '$space.x5', margin: '$space.x8', zIndex: '$zIndex.drag' } as const;`;
 
 	const [problem] = await generateFrameValues([{ file: frame, generate }], false);
 
-	assert.match(problem, /no token or theme key for \$rcx-typo, \$space\.x5$/);
+	assert.match(problem, /no token, theme key or condition for \$rcx-typo, \$space\.x5, \$zIndex\.drag$/);
+	assert.equal(readFileSync(frame, 'utf8'), before);
+});
+
+test('a condition the config lacks is a problem, and the section is not written', async () => {
+	const before = readFileSync(frame, 'utf8');
+	const generate = () => `const probeFrame = { padding: { default: 2, pointerCoars: 4, '@wide/probe-group': 8 } } as const;`;
+
+	const [problem] = await generateFrameValues([{ file: frame, generate }], false);
+
+	assert.match(problem, /no token, theme key or condition for pointerCoars, @wide\/probe-group$/);
 	assert.equal(readFileSync(frame, 'utf8'), before);
 });
 
@@ -79,6 +90,11 @@ test('the zero build resolves every reference of the fixture', async () => {
 		'{border-radius:var(--t-radius-medium)}',
 		'{padding-inline:var(--t-space-x8)}',
 		'{padding-block:2px}',
+		/@media \(pointer: coarse\) ?\{[^{}]+\{padding-block:var\(--t-space-x4\)\}/,
+		/@container probe-group \(max-width: 319.98px\) ?\{[^{}]+\{padding-inline:var\(--t-space-x4\)\}/,
+		/@media \(hover: none\) ?\{[^{}]+\{opacity:1\}/,
+		/@media \(prefers-reduced-motion: reduce\) ?\{[^{}]+\{opacity:0\.75\}/,
+		/:where\(\.t_group_probe:hover \*\)\{opacity:1\}/,
 		'{border-width:1px}',
 		'{min-height:28px}',
 		'{width:20px}',
@@ -93,8 +109,10 @@ test('the zero build resolves every reference of the fixture', async () => {
 		'{line-height:1.25rem}',
 		'{font-weight:400}',
 		':where(:focus-visible){z-index:var(--t-zIndex-raised)}',
+		'--t-zIndex-dropIndicator:10000',
 		'{transform:rotate(90deg)}',
 	]) {
-		assert.ok(css.includes(declaration), `the stylesheet has no ${declaration}`);
+		const found = typeof declaration === 'string' ? css.includes(declaration) : declaration.test(css);
+		assert.ok(found, `the stylesheet has no ${declaration}`);
 	}
 });

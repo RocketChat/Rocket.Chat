@@ -1,4 +1,4 @@
-import { useStableCallback, useResizeObserver, useMergedRefs } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import type {
 	AllHTMLAttributes,
 	ChangeEvent,
@@ -97,7 +97,7 @@ function AutoComplete<TLabel = ReactNode>({
 }: AutoCompleteProps<TLabel>) {
 	const innerRef = useRef<HTMLInputElement>(null);
 	const mergedRefs = useMergedRefs(ref, innerRef);
-	const { ref: containerRef, borderBoxSize } = useResizeObserver();
+	const containerRef = useRef<HTMLElement>(null);
 
 	const [selected, setSelected] = useState(() => getSelected(value, options) || []);
 	const [syncedValue, setSyncedValue] = useState(value);
@@ -186,15 +186,8 @@ function AutoComplete<TLabel = ReactNode>({
 			<Box rcx-autocomplete__addon color='titles-labels'>
 				<Icon name={optionsAreVisible === AnimatedVisibility.VISIBLE ? 'cross' : 'magnifier'} size='x20' />
 			</Box>
-			<PositionAnimated visible={optionsAreVisible} anchor={containerRef}>
-				<Options
-					style={{ width: borderBoxSize.inlineSize }}
-					onSelect={handleSelect}
-					renderItem={renderItem}
-					renderEmpty={renderEmpty}
-					cursor={cursor}
-					options={memoizedOptions}
-				/>
+			<PositionAnimated visible={optionsAreVisible} anchor={containerRef} width='anchor'>
+				<Options onSelect={handleSelect} renderItem={renderItem} renderEmpty={renderEmpty} cursor={cursor} options={memoizedOptions} />
 			</PositionAnimated>
 		</Box>
 	);

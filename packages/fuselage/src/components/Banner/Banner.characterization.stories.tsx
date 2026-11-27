@@ -58,9 +58,7 @@ export const RoleAndFocus: Story = {
 		<>
 			<Banner>Passive</Banner>
 			<Banner onAction={onAction}>Actionable</Banner>
-			<Banner role='alert' tabIndex={-2}>
-				Custom
-			</Banner>
+			<Banner role='alert'>Custom</Banner>
 		</>
 	),
 	play: async ({ canvasElement }) => {
@@ -70,7 +68,7 @@ export const RoleAndFocus: Story = {
 		await expect(actionable).toHaveAttribute('role', 'button');
 		await expect(actionable).toHaveAttribute('tabindex', '0');
 		await expect(custom).toHaveAttribute('role', 'alert');
-		await expect(custom).toHaveAttribute('tabindex', '-2');
+		await expect(custom).toHaveAttribute('tabindex', '-1');
 	},
 };
 

@@ -3,7 +3,7 @@ import { useId, useLayoutEffect, useMemo, useRef } from 'react';
 
 import { prevent } from '../../helpers/prevent';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box, type BoxProps } from '../Box';
+import { Box } from '../Box';
 import { ItemDivider } from '../Item';
 import { Option, OptionHeader } from '../Option';
 import { PopoverSurface } from '../PopoverSurface';
@@ -15,7 +15,8 @@ export type OptionsProps<TValue extends string | number = string | number, TLabe
 	ElementProps<HTMLElement>,
 	'onSelect'
 > & {
-	maxHeight?: BoxProps['maxHeight'];
+	/** How tall the list grows before it scrolls: 144px unless stated, 200px, or as tall as its options. */
+	maxHeight?: 'x144' | 'x200' | 'max-content';
 	multiple?: boolean;
 	options: OptionType<TValue, TLabel>[];
 	cursor: number;
@@ -111,7 +112,8 @@ function Options<TValue extends string | number = string | number, TLabel = Reac
 					<Box
 						ref={liRef}
 						rcx-options__list
-						maxHeight={maxHeight}
+						rcx-options__list--x200={maxHeight === 'x200'}
+						rcx-options__list--max-content={maxHeight === 'max-content'}
 						onMouseDown={prevent}
 						onClick={prevent}
 						is='ol'

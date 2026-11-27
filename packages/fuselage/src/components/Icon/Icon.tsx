@@ -1,28 +1,16 @@
-import type { Keys as IconName } from '@rocket.chat/icons';
-import nameToCharacterMapping from '@rocket.chat/icons';
+import type { KeyboardEvent, MouseEvent } from 'react';
 
-import type { statusColors, textIconColors } from '../../Theme';
-import type { ElementProps } from '../../types/ElementProps';
-import { Box, type BoxProps } from '../Box';
+import type { IconContract } from './Icon.contract';
+import type { WebProps } from '../../types/WebAttributes';
 
-type FontColor<T> = T extends `font-${infer Color}` ? Color : never;
+export type { IconColor, IconContract, IconSize } from './Icon.contract';
 
-/** A semantic text or status font token. */
-export type IconColor = FontColor<keyof typeof textIconColors> | keyof typeof statusColors;
-
-export type IconProps = ElementProps<HTMLElement> & {
-	name: IconName;
-	size?: BoxProps['width'];
-	/** The colour of the glyph; without it, the icon takes the colour of the text around it. */
-	color?: IconColor;
+/** The contract as the web renderer takes it, with what only an element of a page has. */
+export type IconProps = WebProps<IconContract, HTMLElement> & {
+	title?: string;
+	onClick?: (event: MouseEvent<HTMLElement>) => void;
+	onKeyDown?: (event: KeyboardEvent<HTMLElement>) => void;
+	onMouseEnter?: (event: MouseEvent<HTMLElement>) => void;
 };
 
-function Icon({ name, size, ...props }: IconProps) {
-	return (
-		<Box is='i' rcx-icon rcx-icon--name={name} aria-hidden='true' fontSize={size} {...props}>
-			{nameToCharacterMapping[name]}
-		</Box>
-	);
-}
-
-export default Icon;
+export { default } from './Icon.web';

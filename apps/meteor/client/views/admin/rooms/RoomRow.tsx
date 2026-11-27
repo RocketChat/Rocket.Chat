@@ -58,7 +58,7 @@ const RoomRow = ({ room }: RoomRowProps) => {
 	);
 
 	return (
-		<GenericTableRow action key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link' qa-room-id={_id}>
+		<GenericTableRow action key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link' data-qa-room-id={_id}>
 			<GenericTableCell truncate>
 				<Box display='flex' alignContent='center'>
 					<RoomAvatar size={mediaQuery ? 'x28' : 'x40'} room={{ type, name: roomName, _id, ...args }} />

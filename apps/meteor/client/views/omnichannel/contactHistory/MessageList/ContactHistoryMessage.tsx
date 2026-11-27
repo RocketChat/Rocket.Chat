@@ -58,7 +58,6 @@ const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }
 							username={message.u.username}
 							size='x18'
 							onClick={(e) => openUserCard(e, message.u.username)}
-							style={{ cursor: 'pointer' }}
 							role='button'
 							{...triggerProps}
 						/>
@@ -94,7 +93,6 @@ const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }
 							username={message.u.username}
 							size='x36'
 							onClick={(e) => openUserCard(e, message.u.username)}
-							style={{ cursor: 'pointer' }}
 							role='button'
 							{...triggerProps}
 						/>

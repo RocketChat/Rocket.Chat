@@ -1,20 +1,15 @@
-import type { AllHTMLAttributes, RefAttributes } from 'react';
+import type { AllHTMLAttributes } from 'react';
 
+import type { MessageContract } from './Message.contract';
+import { MessagePendingContext } from './MessageContext';
 import { cx, cxx } from '../../helpers/composeClassNames';
+import { pickWebPressHandlers } from '../../helpers/pickWebPressHandlers';
+import type { WebProps } from '../../types/WebAttributes';
 import Item from '../Item/Item';
 import type { ItemInset } from '../Item/types';
 
-export type MessageProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'> &
-	RefAttributes<HTMLDivElement> & {
-		clickable?: boolean;
-		/**
-		 * Shows the hover surface, for rows whose content reacts to the pointer. Turn it off for rows with nothing to act on.
-		 */
-		hoverable?: boolean;
-		sequential?: boolean;
-		isSelected?: boolean;
-		isEditing?: boolean;
-		isPending?: boolean;
+export type MessageProps = WebProps<MessageContract, HTMLDivElement> &
+	Omit<AllHTMLAttributes<HTMLDivElement>, 'is' | 'value'> & {
 		/**
 		 * Adds space above and below the message, for a list of separate messages such as a panel's threads or discussions.
 		 */
@@ -25,25 +20,41 @@ export type MessageProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'> &
 		divided?: boolean;
 	};
 
-function Message({ className, clickable, hoverable = true, sequential, isSelected, isEditing, isPending, ...props }: MessageProps) {
+function Message({
+	className,
+	clickable,
+	hoverable = true,
+	sequential,
+	isSelected,
+	isEditing,
+	isPending,
+	onPress,
+	// The web detects no long press: the application reveals what a long press reaches, on hover and on focus
+	onLongPress: _onLongPress,
+	onClick,
+	...props
+}: MessageProps) {
 	return (
-		<Item
-			{...props}
-			align='start'
-			inset='lg'
-			multiline
-			hoverable={hoverable}
-			interactive={clickable}
-			selected={isSelected}
-			className={cx(
-				cxx('rcx-message')({
-					sequential: !!sequential,
-					editing: !!isEditing,
-					pending: !!isPending,
-				}),
-				className,
-			)}
-		/>
+		<MessagePendingContext.Provider value={!!isPending}>
+			<Item
+				{...props}
+				{...pickWebPressHandlers({ onPress, onClick })}
+				align='start'
+				inset='lg'
+				multiline
+				hoverable={hoverable}
+				interactive={clickable}
+				selected={isSelected}
+				className={cx(
+					cxx('rcx-message')({
+						sequential: !!sequential,
+						editing: !!isEditing,
+						pending: !!isPending,
+					}),
+					className,
+				)}
+			/>
+		</MessagePendingContext.Provider>
 	);
 }
 

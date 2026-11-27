@@ -271,12 +271,12 @@ export function usePosition<TTarget extends Element, TAnchor extends Element>(
 		// The first placement waits for the frame in which the target's content has rendered, so it is measured once, at its size.
 		scheduleUpdate();
 
-		const observer = new ResizeObserver(scheduleUpdate);
-		observer.observe(anchor);
-		observer.observe(target);
+		const observer = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(scheduleUpdate);
+		observer?.observe(anchor);
+		observer?.observe(target);
 
 		if (container) {
-			observer.observe(container);
+			observer?.observe(container);
 		}
 
 		view.addEventListener('scroll', scheduleUpdate, { capture: true, passive: true });
@@ -284,7 +284,7 @@ export function usePosition<TTarget extends Element, TAnchor extends Element>(
 
 		return () => {
 			view.cancelAnimationFrame(frame);
-			observer.disconnect();
+			observer?.disconnect();
 			view.removeEventListener('scroll', scheduleUpdate, { capture: true });
 			view.removeEventListener('resize', scheduleUpdate);
 		};

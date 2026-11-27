@@ -29,7 +29,6 @@ const ActionButton = forwardRef<HTMLButtonElement, ActionButtonProps>(function A
 
 	return (
 		<Button
-			label={label}
 			size={size}
 			variant={getButtonVariant({ secondary, danger })}
 			icon={typeof icon === 'string' ? <Icon size={size === 'large' ? 20 : 16} name={icon} /> : icon}
