@@ -59,6 +59,13 @@ const composeCases: ComposeCase[] = [
 		options: { quotedMessages: quoted('q1'), originalMessage: original({ _id: undefined }) },
 	},
 	{ name: 'edit with quotes', tmid: undefined, text: 'edit', options: { quotedMessages: quoted('q1', 'q2'), originalMessage: original() } },
+	{ name: 'null original message is a plain send', tmid: 'thread-1', text: 'hi', options: { quotedMessages: [], originalMessage: null } },
+	{
+		name: 'null original message with tshow',
+		tmid: 'thread-1',
+		text: 'hi',
+		options: { quotedMessages: [], originalMessage: null, sendToChannel: true },
+	},
 ];
 
 const runAdapter = async ({ tmid, text, options }: ComposeCase) => {
