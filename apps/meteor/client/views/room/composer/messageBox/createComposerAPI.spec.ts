@@ -123,3 +123,43 @@ describe('ChatMessages Composer API - line prefixes', () => {
 		expect(input.value).toBe('1. one\n2. two');
 	});
 });
+
+describe('ChatMessages Composer API - shape', () => {
+	it('should return exactly the keys it returned before the core was split out', () => {
+		const { composer } = setupComposer('', { start: 0, end: 0 });
+
+		expect(Object.keys(composer).sort()).toEqual([
+			'blur',
+			'clear',
+			'composerRef',
+			'dismissAllQuotedMessages',
+			'dismissQuotedMessage',
+			'editing',
+			'focus',
+			'formatters',
+			'getCursorPosition',
+			'insertNewLine',
+			'insertText',
+			'isMicrophoneDenied',
+			'quoteMessage',
+			'quotedMessages',
+			'recording',
+			'recordingVideo',
+			'release',
+			'replaceText',
+			'replyWith',
+			'selection',
+			'setCursorToEnd',
+			'setCursorToStart',
+			'setEditingMode',
+			'setIsMicrophoneDenied',
+			'setRecordingMode',
+			'setRecordingVideo',
+			'setText',
+			'substring',
+			'text',
+			'uploads',
+			'wrapSelection',
+		]);
+	});
+});
