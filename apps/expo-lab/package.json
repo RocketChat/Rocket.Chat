@@ -8,7 +8,8 @@
 		"start": "expo start --dev-client",
 		"ios": "expo run:ios",
 		"android": "expo run:android",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit",
+		"test": "node --import ./test/register.mjs --test \"src/**/*.test.ts\""
 	},
 	"dependencies": {
 		"@rocket.chat/api-client": "workspace:^",
