@@ -278,6 +278,15 @@
 		"negativeMargins": 0,
 		"displayContents": 0
 	},
+	"LinkButton/LinkButton.styles.scss": {
+		"rules": 2,
+		"nested": 1,
+		"combinators": 0,
+		"important": 0,
+		"specificityBumps": 0,
+		"negativeMargins": 0,
+		"displayContents": 0
+	},
 	"Menu/Menu.styles.scss": {
 		"rules": 3,
 		"nested": 2,

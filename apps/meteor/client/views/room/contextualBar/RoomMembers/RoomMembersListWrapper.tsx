@@ -1,21 +1,14 @@
-import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import type { ForwardedRef, HTMLAttributes } from 'react';
-import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useItemListNavigation } from '../../../../hooks/useItemListNavigation';
+import type { NavigableListProps } from '../../../../components/NavigableList';
+import NavigableList from '../../../../components/NavigableList';
 
-export type RoomMembersListWrapperProps = HTMLAttributes<HTMLDivElement>;
+export type RoomMembersListWrapperProps = Omit<NavigableListProps, 'aria-label'>;
 
-const RoomMembersListWrapper = forwardRef(function RoomMembersListWrapper(
-	props: RoomMembersListWrapperProps,
-	ref: ForwardedRef<HTMLDivElement>,
-) {
+const RoomMembersListWrapper = (props: RoomMembersListWrapperProps) => {
 	const { t } = useTranslation();
-	const membersListRef = useItemListNavigation();
-	const mergedRefs = useMergedRefs(ref, membersListRef);
 
-	return <div role='list' aria-label={t('Members')} ref={mergedRefs} {...props} />;
-});
+	return <NavigableList aria-label={t('Members')} {...props} />;
+};
 
 export default RoomMembersListWrapper;

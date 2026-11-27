@@ -8,26 +8,27 @@ Screens compose named layout containers. They don't lay themselves out with `Box
 
 ## The containers
 
-| You want…                                                   | Use                                                                                                                         |
-| ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| a page, its header and its body                             | `Page`, `PageHeader`, `PageContent` / `PageScrollableContent`                                                               |
-| a side panel                                                | `Contextualbar` and its parts                                                                                               |
-| a dialog                                                    | `GenericModal`, or `Modal` and its parts                                                                                    |
-| a list of records                                           | `GenericTable`                                                                                                              |
-| a list that fills the rest of a panel and scrolls inside it | `ListViewport`                                                                                                              |
-| a form                                                      | `FieldGroup` › `Field` › `FieldLabel` / `FieldRow` / `FieldHint` / `FieldError`                                             |
-| a modal that submits its fields                             | `GenericModal`'s `onSubmit` (or `Modal`'s `onSubmit` and `formId`); the handler takes no event                              |
-| a callout that is a modal's whole content                   | `ModalCalloutContent`                                                                                                       |
-| a row of a `role='list'` container that isn't a Fuselage item| `ListRow`                                                                                                                   |
-| a page's or a tab's content in a centred column             | `ContentColumn` (`size='form'`, 600px; `size='wide'`, 640px)                                                                |
-| things in a row or a column, inside a container             | `Stack` (`direction`, `gap`, `align`, `justify`, `wrap`, and `is` for the element: `section`, `ul`, `li`, `form`…)          |
-| buttons side by side                                        | `ButtonGroup` (`stretch='equal'` for equal widths)                                                                          |
-| a grid of cards                                             | `CardGrid` › `Card`                                                                                                         |
-| a dropdown or popover surface                               | `PopoverSurface` (`elevation`, `maxHeight`, `flush`)                                                                        |
-| nothing to show yet                                         | `GenericNoResults`, `Skeleton`                                                                                              |
-| text in a font scale or a text colour                       | `Text` (`fontScale`, `color`, `truncate`, and `is` for the element: `p`, `h2`, `label`…)                                    |
-| formatted text: paragraphs, lists, links, code              | `RichContent`                                                                                                               |
-| a look a component offers                                   | its declared variation: `Button size='small'`, `Icon color='danger'`, `Divider variation='light'`, `FieldRow justify='end'` |
+| You want…                                                           | Use                                                                                                                         |
+| ------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| a page, its header and its body                                     | `Page`, `PageHeader`, `PageContent` / `PageScrollableContent`                                                               |
+| a side panel                                                        | `Contextualbar` and its parts                                                                                               |
+| a dialog                                                            | `GenericModal`, or `Modal` and its parts                                                                                    |
+| a list of records                                                   | `GenericTable`                                                                                                              |
+| a list that fills the rest of a panel and scrolls inside it         | `ListViewport`                                                                                                              |
+| a form                                                              | `FieldGroup` › `Field` › `FieldLabel` / `FieldRow` / `FieldHint` / `FieldError`                                             |
+| a modal that submits its fields                                     | `GenericModal`'s `onSubmit` (or `Modal`'s `onSubmit` and `formId`); the handler takes no event                              |
+| a callout that is a modal's whole content                           | `ModalCalloutContent`                                                                                                       |
+| a row of a `role='list'` container that isn't a Fuselage item       | `ListRow`                                                                                                                   |
+| a list whose rows the arrow keys move between, as a Virtuoso `List` | `NavigableList`                                                                                                             |
+| a page's or a tab's content in a centred column                     | `ContentColumn` (`size='form'`, 600px; `size='wide'`, 640px)                                                                |
+| things in a row or a column, inside a container                     | `Stack` (`direction`, `gap`, `align`, `justify`, `wrap`, and `is` for the element: `section`, `ul`, `li`, `form`…)          |
+| buttons side by side                                                | `ButtonGroup` (`stretch='equal'` for equal widths)                                                                          |
+| a grid of cards                                                     | `CardGrid` › `Card`                                                                                                         |
+| a dropdown or popover surface                                       | `PopoverSurface` (`elevation`, `maxHeight`, `flush`)                                                                        |
+| nothing to show yet                                                 | `GenericNoResults`, `Skeleton`                                                                                              |
+| text in a font scale or a text colour                               | `Text` (`fontScale`, `color`, `truncate`, and `is` for the element: `p`, `h2`, `label`…)                                    |
+| formatted text: paragraphs, lists, links, code                      | `RichContent`                                                                                                               |
+| a look a component offers                                           | its declared variation: `Button size='small'`, `Icon color='danger'`, `Divider variation='light'`, `FieldRow justify='end'` |
 
 When the table has no row for what you need, the answer is a new container, not a `Box` in the screen (see below).
 

@@ -1395,6 +1395,10 @@
   "CAS_version_Description": "Only use a supported CAS version supported by your CAS SSO service.",
   "Categories": "Categories",
   "Categories_are_private_custom_groupings_of_rooms": "Categories are private custom groupings of rooms.",
+  "Categories_selected": {
+    "one": "Categories, {{count}} selected",
+    "other": "Categories, {{count}} selected"
+  },
   "Categories*": "Categories*",
   "Category": "Category",
   "Category__name__deleted": "Category {{name}} deleted.",
