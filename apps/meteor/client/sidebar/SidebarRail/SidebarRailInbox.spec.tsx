@@ -32,7 +32,7 @@ it('shows the sum of the room list group badges in the color of the most importa
 	expect(screen.getByText('5')).toHaveClass('rcx-badge--danger');
 });
 
-it('is not pressed while a page shows its own sidebar over the room list', () => {
+it('is not pressed or current while a page shows its own sidebar over the room list', () => {
 	sidebarRegion = document.createElement('div');
 	sidebarRegion.id = 'sidebar-region';
 	document.body.appendChild(sidebarRegion);
@@ -46,6 +46,7 @@ it('is not pressed while a page shows its own sidebar over the room list', () =>
 	);
 
 	expect(screen.getByRole('button', { name: 'Inbox_and_home' })).not.toHaveClass('rcx-button--icon-pressed');
+	expect(screen.getByRole('button', { name: 'Inbox_and_home' })).not.toHaveAttribute('aria-current');
 
 	rerender(
 		<LayoutProvider>
@@ -54,4 +55,5 @@ it('is not pressed while a page shows its own sidebar over the room list', () =>
 	);
 
 	expect(screen.getByRole('button', { name: 'Inbox_and_home' })).toHaveClass('rcx-button--icon-pressed');
+	expect(screen.getByRole('button', { name: 'Inbox_and_home' })).toHaveAttribute('aria-current', 'page');
 });

@@ -2,7 +2,7 @@ import { Badge, NavBarItem } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { useCurrentRoutePath, useLayout, useRouter, useUserSubscriptions } from '@rocket.chat/ui-contexts';
+import { useLayout, useRouter, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useVideoConfIncomingCalls, useVideoConfWindowEnabled } from '@rocket.chat/ui-video-conf';
 import type { HTMLAttributes } from 'react';
 import { useMemo } from 'react';
@@ -21,9 +21,9 @@ type SidebarRailInboxProps = Omit<HTMLAttributes<HTMLElement>, 'is' | 'color'>;
 const SidebarRailInbox = (props: SidebarRailInboxProps) => {
 	const { t } = useTranslation();
 	const router = useRouter();
-	const currentRoute = useCurrentRoutePath();
 	const { sidebar } = useLayout();
 	const secondarySidebarEnabled = useFeaturePreview('secondarySidebar');
+	const pressed = !secondarySidebarEnabled && !sidebar.overlayed;
 	const subscriptions = useUserSubscriptions(query);
 	const categoryList = useCategoryList(useOmnichannelEnabled(), useQueuedInquiries().enabled);
 	const incomingCalls = useVideoConfIncomingCalls();
@@ -56,8 +56,8 @@ const SidebarRailInbox = (props: SidebarRailInboxProps) => {
 			title={title}
 			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
 			badge={showUnread ? <Badge variant={unreadVariant}>{unreadCount.total > 99 ? '99+' : unreadCount.total}</Badge> : undefined}
-			pressed={!secondarySidebarEnabled && !sidebar.overlayed}
-			aria-current={currentRoute?.includes('/home') ? 'page' : undefined}
+			pressed={pressed}
+			aria-current={pressed ? 'page' : undefined}
 			onClick={handleClick}
 		/>
 	);
