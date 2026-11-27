@@ -18,6 +18,7 @@ import { userAvatarUrl, type RoomItem } from '../api';
 import { mock } from '../chatConfig';
 import { EmojiServerContext } from '../markup/Emoji';
 import Markup from '../markup/Markup';
+import { UiKitMessage } from '../uikit/SurfaceRenderer';
 import type { Session } from '../session';
 import { useRoom } from '../useRoom';
 
@@ -70,6 +71,7 @@ export function FuselageRoom({ session, room, onBack }: Props) {
 								) : (
 									<MessageBody>{item.msg}</MessageBody>
 								)}
+								{mock && item.blocks?.length ? <UiKitMessage blocks={item.blocks} onAction={(a) => console.log('uikit action', a)} /> : null}
 							</MessageContainer>
 						</Message>
 					)}

@@ -32,6 +32,18 @@ const text = (value: string) => ({ type: 'PLAIN_TEXT', value }) as const;
 // Newest first, as loadHistory returns it
 export const mockMessages: ChatMessage[] = [
 	{
+		_id: 'm-blocks',
+		rid: 'r1',
+		ts: at(1),
+		_updatedAt: at(1),
+		msg: '',
+		blocks: [
+			{ type: 'section', appId: 'sample-app', blockId: 'mb1', text: { type: 'mrkdwn', text: '*Deploy finished* for `web-client`. Approve the rollout?' }, accessory: { type: 'button', appId: 'sample-app', blockId: 'mb1', actionId: 'approve', text: { type: 'plain_text', text: 'Approve' }, style: 'primary' } },
+			{ type: 'context', appId: 'sample-app', blockId: 'mb2', elements: [{ type: 'mrkdwn', text: 'Posted by *Build bot*' }] },
+		],
+		u: { _id: 'u3', username: 'build.bot', name: 'Build Bot' },
+	},
+	{
 		_id: 'm5',
 		rid: 'r1',
 		ts: at(2),

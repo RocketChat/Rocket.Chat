@@ -10439,6 +10439,7 @@ __metadata:
     "@rocket.chat/fuselage-hooks": "workspace:^"
     "@rocket.chat/icons": "workspace:~"
     "@rocket.chat/message-parser": "workspace:^"
+    "@rocket.chat/ui-kit": "workspace:^"
     "@tamagui/config": "npm:3.0.18"
     "@types/react": "npm:^19.1.1"
     expo: "npm:~58.0.23"

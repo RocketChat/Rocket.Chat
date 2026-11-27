@@ -17,7 +17,7 @@ export type ChatMessage = Serialized<
 		Partial<
 			Pick<
 				IMessage,
-				'md' | 'attachments' | 'reactions' | 'mentions' | 'channels' | 'urls' | 'tmid' | 'tcount' | 'tlm' | 't' | 'groupable' | 'emoji' | 'alias' | 'avatar'
+				'md' | 'blocks' | 'attachments' | 'reactions' | 'mentions' | 'channels' | 'urls' | 'tmid' | 'tcount' | 'tlm' | 't' | 'groupable' | 'emoji' | 'alias' | 'avatar'
 			> &
 				Pick<IEditedMessage, 'editedAt' | 'editedBy'>
 		>

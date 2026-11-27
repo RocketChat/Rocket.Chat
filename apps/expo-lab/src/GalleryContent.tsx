@@ -40,6 +40,8 @@ import { parse, type Root } from '@rocket.chat/message-parser';
 import { AppAvatar } from './AppAvatar';
 import Markup from './markup/Markup';
 import { mockAvatar, mockMessages } from './mockData';
+import { UiKitMessage } from './uikit/SurfaceRenderer';
+import { samplePayloads } from './uikit/payloads';
 import { gradientJpeg, gradientPng, letterAvatars } from './mockAvatars';
 
 // A frame that throws must not blank the screen: the error is the finding for that component
@@ -275,6 +277,16 @@ export function Content() {
 			</Cell>
 			<Cell name='Native markup'>
 				<NativeMarkup />
+			</Cell>
+			<Cell name='UiKit (message blocks)'>
+				<View style={{ gap: 14, width: '100%' }}>
+					{samplePayloads.map(({ name, blocks }) => (
+						<View key={name} style={{ gap: 4 }}>
+							<RNText style={{ fontSize: 10, color: '#888' }}>{name}</RNText>
+							<UiKitMessage blocks={blocks} onAction={(a) => console.log('uikit action', a)} />
+						</View>
+					))}
+				</View>
 			</Cell>
 			<Cell name='Icon'>
 				<Icon name='bell' size='x24' />
