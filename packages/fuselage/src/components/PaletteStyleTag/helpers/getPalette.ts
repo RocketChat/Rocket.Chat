@@ -139,11 +139,11 @@ export const getThemePalette = (theme: Themes) => {
 					color: status['font-on-service-1'],
 				},
 				{
-					name: 'status-font-on-service-2 ',
+					name: 'status-font-on-service-2',
 					color: status['font-on-service-2'],
 				},
 				{
-					name: 'status-font-on-service-3 ',
+					name: 'status-font-on-service-3',
 					color: status['font-on-service-3'],
 				},
 			],

@@ -1,6 +1,6 @@
 // The key carries the `rcx-` prefix itself: Tamagui cannot prefix theme keys when it compiles to zero runtime.
 /** The theme key a Tamagui frame reads a palette color by. */
-export const themeKey = (name: string) => `rcx-${name.trim()}`;
+export const themeKey = (name: string) => `rcx-${name}`;
 
 const themeKeyDeclarations = (values: Record<string, string>) =>
 	Object.entries(values)
@@ -19,7 +19,7 @@ export const convertToCss = (values: Record<string, string>, prefix: string, sel
  * any other palette on the page still wins. CSS that sets no palette color is returned as it is.
  */
 export const withThemeKeys = (css: string, prefix: string, fallback: Record<string, string>) => {
-	const names = new Set(Object.keys(fallback).map((name) => name.trim()));
+	const names = new Set(Object.keys(fallback));
 	const declaration = new RegExp(`${prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}-([\\w-]+)(\\s*:[^;}]+)`, 'g');
 	const mirrored = css.replace(declaration, (written, name: string, value: string) =>
 		names.has(name) ? `${written};--${themeKey(name)}${value}` : written,
