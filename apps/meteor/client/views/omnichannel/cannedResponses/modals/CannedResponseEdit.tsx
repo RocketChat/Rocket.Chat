@@ -1,5 +1,5 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse, Serialized } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -7,6 +7,7 @@ import { useId, memo, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import ContentColumn from '../../../../components/ContentColumn';
 import CannedResponseForm from '../components/CannedResponseForm';
 
 export type CannedResponseEditFormData = {
@@ -89,9 +90,11 @@ const CannedResponseEdit = ({ cannedResponseData, onDelete }: CannedResponseEdit
 			</PageHeader>
 			<PageScrollableContentWithShadow>
 				<FormProvider {...methods}>
-					<Box id={formId} onSubmit={handleSubmit(handleSave)} width='full' alignSelf='center' maxWidth='x600' is='form' autoComplete='off'>
-						<CannedResponseForm />
-					</Box>
+					<ContentColumn>
+						<form id={formId} onSubmit={handleSubmit(handleSave)} autoComplete='off'>
+							<CannedResponseForm />
+						</form>
+					</ContentColumn>
 				</FormProvider>
 			</PageScrollableContentWithShadow>
 			<PageFooter isDirty={isDirty}>

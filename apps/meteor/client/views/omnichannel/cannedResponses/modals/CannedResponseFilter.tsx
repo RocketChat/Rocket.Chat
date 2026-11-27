@@ -1,10 +1,11 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Field, FieldLabel, FieldRow, Icon, TextInput, Select } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, Icon, TextInput, Select } from '@rocket.chat/fuselage';
 import type { ChangeEvent } from 'react';
 import { memo, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AutoCompleteAgent from '../../components/AutoCompleteAgent';
+import CannedResponsesFilterBar from '../layout/CannedResponsesFilterBar';
 
 type SharingValues = '' | 'user' | 'global' | 'department';
 
@@ -32,37 +33,31 @@ const CannedResponsesFilter = ({ createdBy, setCreatedBy, sharing, setSharing, t
 	];
 
 	return (
-		<Box marginBlock={16} display='flex' flexDirection='row' columnGap={8} paddingInlineEnd={8}>
-			<Box flexGrow={1}>
-				<Field>
-					<FieldLabel htmlFor={searchId}>{t('Search')}</FieldLabel>
-					<FieldRow>
-						<TextInput
-							id={searchId}
-							value={text}
-							onChange={(e: ChangeEvent<HTMLInputElement>) => setText(e.target.value)}
-							endAddon={<Icon name='magnifier' size='x20' />}
-						/>
-					</FieldRow>
-				</Field>
-			</Box>
-			<Box flexGrow={1}>
-				<Field>
-					<FieldLabel htmlFor={sharingField}>{t('Sharing')}</FieldLabel>
-					<FieldRow>
-						<Select id={sharingField} value={sharing} onChange={(value) => setSharing(value)} options={sharingList} />
-					</FieldRow>
-				</Field>
-			</Box>
-			<Box flexGrow={1}>
-				<Field>
-					<FieldLabel id={createdByLabelId}>{t('Created_by')}</FieldLabel>
-					<FieldRow>
-						<AutoCompleteAgent aria-labelledby={createdByLabelId} value={createdBy} onChange={setCreatedBy} haveAll />
-					</FieldRow>
-				</Field>
-			</Box>
-		</Box>
+		<CannedResponsesFilterBar>
+			<Field>
+				<FieldLabel htmlFor={searchId}>{t('Search')}</FieldLabel>
+				<FieldRow>
+					<TextInput
+						id={searchId}
+						value={text}
+						onChange={(e: ChangeEvent<HTMLInputElement>) => setText(e.target.value)}
+						endAddon={<Icon name='magnifier' size='x20' />}
+					/>
+				</FieldRow>
+			</Field>
+			<Field>
+				<FieldLabel htmlFor={sharingField}>{t('Sharing')}</FieldLabel>
+				<FieldRow>
+					<Select id={sharingField} value={sharing} onChange={(value) => setSharing(value)} options={sharingList} />
+				</FieldRow>
+			</Field>
+			<Field>
+				<FieldLabel id={createdByLabelId}>{t('Created_by')}</FieldLabel>
+				<FieldRow>
+					<AutoCompleteAgent aria-labelledby={createdByLabelId} value={createdBy} onChange={setCreatedBy} haveAll />
+				</FieldRow>
+			</Field>
+		</CannedResponsesFilterBar>
 	);
 };
 
