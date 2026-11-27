@@ -26,6 +26,8 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 	const preventPropagation = usePreventPropagation();
 
 	const title = group.translateTitle ? t(group.title) : group.title;
+	// The Unread group can neither be reordered nor hold unread options, so it has nothing to open a menu for.
+	const hasMenu = isEnterprise && group.key !== 'Unread';
 
 	const toggleOnEnterOrSpace = (event: KeyboardEvent<HTMLDivElement>) => {
 		if (event.repeat || !['Enter', 'Space'].includes(event.code)) {
@@ -50,7 +52,7 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 				) : undefined
 			}
 			menu={
-				isEnterprise ? (
+				hasMenu ? (
 					<SidebarCollapseGroupMenu onClick={preventPropagation} onKeyDown={preventPropagation}>
 						{menuVisibility ? (
 							<CategoryMenu
