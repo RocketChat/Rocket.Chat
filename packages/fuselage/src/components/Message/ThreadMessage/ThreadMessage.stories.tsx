@@ -4,6 +4,7 @@ import ThreadMessage from './ThreadMessage';
 import ThreadMessageBody from './ThreadMessageBody';
 import ThreadMessageContainer from './ThreadMessageContainer';
 import ThreadMessageEmoji from './ThreadMessageEmoji';
+import ThreadMessageFollow from './ThreadMessageFollow';
 import ThreadMessageIconThread from './ThreadMessageIconThread';
 import ThreadMessageOrigin from './ThreadMessageOrigin';
 import ThreadMessageRow from './ThreadMessageRow';
@@ -154,6 +155,32 @@ export const WithSystemMessage: Story = {
 							dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Consectetur adipiscing elit, sed do
 							eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...
 						</ThreadMessageBody>
+					</ThreadMessageContainer>
+				</ThreadMessageRow>
+			</ThreadMessage>
+		</Box>
+	),
+};
+
+export const Following: Story = {
+	render: () => (
+		<Box>
+			<ThreadMessage>
+				<ThreadMessageRow>
+					<MessageLeftContainer>
+						<ThreadMessageIconThread />
+					</MessageLeftContainer>
+					<ThreadMessageContainer>
+						<ThreadMessageOrigin>Thread main message</ThreadMessageOrigin>
+						<ThreadMessageFollow />
+					</ThreadMessageContainer>
+				</ThreadMessageRow>
+				<ThreadMessageRow>
+					<MessageLeftContainer>
+						<Avatar url={avatarUrl} size='x16' />
+					</MessageLeftContainer>
+					<ThreadMessageContainer>
+						<ThreadMessageBody>Reply in a thread you follow</ThreadMessageBody>
 					</ThreadMessageContainer>
 				</ThreadMessageRow>
 			</ThreadMessage>
