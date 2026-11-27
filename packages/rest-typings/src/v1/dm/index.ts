@@ -6,3 +6,7 @@ export * from './DmFileProps';
 export * from './DmLeaveProps';
 export * from './DmMembersProps';
 export * from './DmMessagesProps';
+export * from './DmHistoryProps';
+export * from './DmMessagesOthersProps';
+export * from './DmListProps';
+export * from './DmListEveryoneProps';
