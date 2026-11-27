@@ -14,8 +14,8 @@ import border from '@rocket.chat/fuselage-tokens/dist/border.json';
 import spacing from '@rocket.chat/fuselage-tokens/dist/spacing.json';
 import typography from '@rocket.chat/fuselage-tokens/dist/typography.json';
 import zIndex from '@rocket.chat/fuselage-tokens/dist/zIndex.json';
-import prettier from 'prettier';
 
+import { formatSource } from './frame-values/lib/format.mts';
 import { toRem } from './frame-values/lib/literal.mts';
 import { themeKey } from '../src/components/PaletteStyleTag/helpers/convertToCss.ts';
 import { getThemePalette } from '../src/components/PaletteStyleTag/helpers/getPalette.ts';
@@ -102,7 +102,6 @@ export const fontScale = ${JSON.stringify(fontScale)} as const;
 
 export const themes = ${JSON.stringify(themes)} as const;
 `,
-		parser: 'typescript',
 	},
 	{
 		file: join(import.meta.dirname, '../src/styles/tamagui-tokens.css'),
@@ -111,7 +110,6 @@ export const themes = ${JSON.stringify(themes)} as const;
 ${variables.join('\n')}
 }
 `,
-		parser: 'css',
 	},
 ];
 
@@ -126,7 +124,7 @@ const read = (path: string) => {
 let stale = false;
 for (const output of outputs) {
 	const name = output.file.slice(output.file.indexOf('src/'));
-	const next = await prettier.format(output.source, { ...((await prettier.resolveConfig(output.file)) ?? {}), parser: output.parser });
+	const next = await formatSource(output.file, output.source);
 
 	if (next === read(output.file)) {
 		console.log(`${name} is up to date`);

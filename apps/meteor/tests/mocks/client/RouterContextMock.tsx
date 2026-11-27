@@ -29,7 +29,8 @@ const buildRoutePath = (to: To): LocationPathname | `${LocationPathname}?${Locat
 	if ('pattern' in to) {
 		const { pattern, params = {}, search = {} } = to;
 		return (compile(pattern, { encode: encodeURIComponent })(params) + encodeSearchParameters(search)) as
-			LocationPathname | `${LocationPathname}?${LocationSearch}`;
+			| LocationPathname
+			| `${LocationPathname}?${LocationSearch}`;
 	}
 
 	if ('name' in to) {
@@ -47,7 +48,8 @@ const buildRoutePath = (to: To): LocationPathname | `${LocationPathname}?${Locat
 		}
 
 		return (compile(name, { encode: encodeURIComponent })(params) + encodeSearchParameters(search)) as
-			LocationPathname | `${LocationPathname}?${LocationSearch}`;
+			| LocationPathname
+			| `${LocationPathname}?${LocationSearch}`;
 	}
 
 	throw new Error('Invalid route');

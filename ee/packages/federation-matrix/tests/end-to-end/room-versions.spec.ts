@@ -39,7 +39,8 @@ const roomVersions = [
 			const response = await rcUserConfig.request.get(api('rooms.get')).set(rcUserConfig.credentials).expect(200);
 
 			const rcRoom = response.body.update.find((room: IRoomNativeFederated) => room.federation?.mrid === matrixRoomId) as
-				IRoomNativeFederated | undefined;
+				| IRoomNativeFederated
+				| undefined;
 
 			assert(rcRoom);
 			return rcRoom;

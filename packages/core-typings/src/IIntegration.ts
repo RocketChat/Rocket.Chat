@@ -37,7 +37,13 @@ export interface IIncomingIntegration extends IRocketChatRecord {
 }
 
 export type OutgoingIntegrationEvent =
-	'sendMessage' | 'fileUploaded' | 'roomArchived' | 'roomCreated' | 'roomJoined' | 'roomLeft' | 'userCreated';
+	| 'sendMessage'
+	| 'fileUploaded'
+	| 'roomArchived'
+	| 'roomCreated'
+	| 'roomJoined'
+	| 'roomLeft'
+	| 'userCreated';
 
 export interface IOutgoingIntegration extends IRocketChatRecord {
 	type: 'webhook-outgoing';

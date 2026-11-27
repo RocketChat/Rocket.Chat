@@ -59,7 +59,14 @@ export type LayoutItemBlock =
 
 /** The blocks an app supplies for clients that cannot draw a layout. */
 export type LayoutFallbackBlock =
-	ContextBlock | DividerBlock | HeaderBlock | ImageBlock | RichTextBlock | SectionBlock | TableBlock | VideoBlock;
+	| ContextBlock
+	| DividerBlock
+	| HeaderBlock
+	| ImageBlock
+	| RichTextBlock
+	| SectionBlock
+	| TableBlock
+	| VideoBlock;
 
 /** One block in a row; `width` weighs its share of the row as narrow 1, standard 2 and wide 3. */
 export type LayoutItem = {

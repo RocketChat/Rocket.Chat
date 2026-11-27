@@ -7,7 +7,11 @@ import { executeSplit, type LDAPVariableSplit } from './split';
 import { executeSubstring, type LDAPVariableSubString } from './substring';
 
 export type LDAPVariableOperation =
-	LDAPVariableReplace | LDAPVariableMatch | LDAPVariableSubString | LDAPVariableFallback | LDAPVariableSplit;
+	| LDAPVariableReplace
+	| LDAPVariableMatch
+	| LDAPVariableSubString
+	| LDAPVariableFallback
+	| LDAPVariableSplit;
 
 export function executeOperation(ldapUser: ILDAPEntry, input: string, operation?: LDAPVariableOperation): string | undefined {
 	switch (operation?.operation) {

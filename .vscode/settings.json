@@ -16,5 +16,8 @@
 		"tmid",
 		"tshow"
 	],
-	"js/ts.tsdk.path": "./node_modules/typescript/lib"
+	"js/ts.tsdk.path": "./node_modules/typescript/lib",
+	"[javascript][javascriptreact][typescript][typescriptreact]": {
+		"editor.defaultFormatter": "oxc.oxc-vscode"
+	}
 }

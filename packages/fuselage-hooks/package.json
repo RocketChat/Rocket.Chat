@@ -37,6 +37,8 @@
 	],
 	"scripts": {
 		"build": "rm -rf dist && rollup -c",
+		"format": "yarn run -T oxfmt --write",
+		"format:check": "yarn run -T oxfmt --check",
 		"lint": "yarn run -T oxlint",
 		"lint:fix": "yarn run -T oxlint --fix",
 		"test": "jest",

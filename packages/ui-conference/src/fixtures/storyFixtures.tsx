@@ -285,10 +285,11 @@ export const withLiveRings =
 	// array to a union `composeStories` cannot read the stories out of.
 	<TArgs,>(restamp: (args: TArgs, ringingAt: Date) => Partial<TArgs>): Decorator =>
 		// oxlint-disable-next-line react/display-name
-		(Story, { args }) => (
-			// Spread: `args` on a story replaces rather than merges.
-			<LiveRing>{(ringingAt) => <Story args={{ ...args, ...restamp(args as unknown as TArgs, ringingAt) }} />}</LiveRing>
-		);
+		(Story, { args }) =>
+			(
+				// Spread: `args` on a story replaces rather than merges.
+				<LiveRing>{(ringingAt) => <Story args={{ ...args, ...restamp(args as unknown as TArgs, ringingAt) }} />}</LiveRing>
+			);
 
 /** Somewhere dark and call-shaped to put the chrome, which is only ever seen against a conference. */
 export const CallSurface = ({ children, height = 'auto' }: { children: ReactNode; height?: string }) => (

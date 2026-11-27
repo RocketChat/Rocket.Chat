@@ -29,6 +29,8 @@
 		"build": "rm -rf dist && tsc && yarn run copy-svg",
 		"copy-svg": "cp -r ./src/logo.svg ./dist/logo.svg",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+		"format": "yarn run -T oxfmt --write",
+		"format:check": "yarn run -T oxfmt --check",
 		"lint": "yarn run -T oxlint",
 		"lint:fix": "yarn run -T oxlint --fix",
 		"typecheck": "tsc --noEmit"

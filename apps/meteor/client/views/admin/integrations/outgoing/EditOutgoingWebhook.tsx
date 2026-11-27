@@ -37,7 +37,15 @@ type EditOutgoingWebhookFormData = {
 };
 
 type TriggerFormFields =
-	'enabled' | 'impersonateUser' | 'event' | 'urls' | 'token' | 'triggerWords' | 'targetRoom' | 'channel' | 'username';
+	| 'enabled'
+	| 'impersonateUser'
+	| 'event'
+	| 'urls'
+	| 'token'
+	| 'triggerWords'
+	| 'targetRoom'
+	| 'channel'
+	| 'username';
 
 const getInitialTriggerValue = (
 	webhookData: Serialized<IOutgoingIntegration> | undefined,

@@ -7,6 +7,8 @@
 		".:build-preview-move": "mkdir -p ../../.preview/ && cp -r ./dist ../../.preview/uikit-playground",
 		"build-preview": "tsc && vite build",
 		"dev": "vite",
+		"format": "yarn run -T oxfmt --write",
+		"format:check": "yarn run -T oxfmt --check",
 		"lint": "yarn run -T oxlint",
 		"preview": "vite preview",
 		"typecheck": "tsc --noEmit"

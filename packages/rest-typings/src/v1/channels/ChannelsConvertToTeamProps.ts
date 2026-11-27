@@ -3,7 +3,8 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { ajv } from '../Ajv';
 
 export type ChannelsConvertToTeamProps =
-	{ channelId: IRoom['_id']; channelName?: never } | { channelName: Exclude<IRoom['name'], undefined>; channelId?: never };
+	| { channelId: IRoom['_id']; channelName?: never }
+	| { channelName: Exclude<IRoom['name'], undefined>; channelId?: never };
 
 const channelsConvertToTeamPropsSchema = {
 	oneOf: [

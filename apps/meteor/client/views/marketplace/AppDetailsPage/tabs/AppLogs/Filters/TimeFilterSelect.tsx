@@ -21,7 +21,15 @@ type DateRange = {
 };
 
 type DateRangeAction =
-	'all' | 'today' | 'last5Minutes' | 'last15Minutes' | 'last30Minutes' | 'last1Hour' | 'thisWeek' | 'custom' | 'pickCustomRange';
+	| 'all'
+	| 'today'
+	| 'last5Minutes'
+	| 'last15Minutes'
+	| 'last30Minutes'
+	| 'last1Hour'
+	| 'thisWeek'
+	| 'custom'
+	| 'pickCustomRange';
 
 export type TimeFilterSelectProps = { compactView?: boolean } & Omit<ComponentProps<typeof Select>, 'onChange' | 'options'>;
 

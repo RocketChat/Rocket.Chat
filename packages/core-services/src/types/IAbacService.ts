@@ -24,7 +24,8 @@ export type AbacCreationAttributesResult =
 	| { allowed: false; reason: AbacCreationAttributesDenialReason; code: string; key?: string; attributes?: IAbacAttributeDefinition[] };
 
 export type AbacMembershipPreviewResult =
-	{ allowed: true; preview: IAbacMembershipPreview } | Extract<AbacCreationAttributesResult, { allowed: false }>;
+	| { allowed: true; preview: IAbacMembershipPreview }
+	| Extract<AbacCreationAttributesResult, { allowed: false }>;
 
 export type AbacUsersAllowedInRoomResult = { allowed: true; userIds: string[] } | { allowed: false; reason: 'unavailable'; code: string };
 

@@ -14,7 +14,17 @@ const parsePlacement = (placement: string | null | undefined) => {
 export type TooltipProps = ElementProps<HTMLElement> & {
 	variation?: 'dark' | 'light';
 	placement?:
-		'top-start' | 'top-middle' | 'top-end' | 'bottom-start' | 'bottom-middle' | 'bottom-end' | 'top' | 'left' | 'bottom' | 'right' | null;
+		| 'top-start'
+		| 'top-middle'
+		| 'top-end'
+		| 'bottom-start'
+		| 'bottom-middle'
+		| 'bottom-end'
+		| 'top'
+		| 'left'
+		| 'bottom'
+		| 'right'
+		| null;
 };
 
 function Tooltip({ variation = 'dark', placement, ...props }: TooltipProps) {

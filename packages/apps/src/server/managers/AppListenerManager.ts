@@ -1098,7 +1098,9 @@ export class AppListenerManager {
 			interactionType: UIKitIncomingInteractionType,
 			interaction: IUIKitLivechatIncomingInteraction,
 		):
-			IUIKitLivechatBlockIncomingInteraction | IUIKitLivechatViewSubmitIncomingInteraction | IUIKitLivechatViewCloseIncomingInteraction => {
+			| IUIKitLivechatBlockIncomingInteraction
+			| IUIKitLivechatViewSubmitIncomingInteraction
+			| IUIKitLivechatViewCloseIncomingInteraction => {
 			const { actionId, message, visitor, room, triggerId, container } = interaction;
 
 			switch (interactionType) {

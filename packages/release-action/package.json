@@ -6,6 +6,8 @@
 	"main": "dist/index.js",
 	"scripts": {
 		"build": "tsc --noEmit && esbuild src/index.ts --bundle --platform=node --target=node24 --format=esm --banner:js=\"import { createRequire } from 'node:module'; const require = createRequire(import.meta.url);\" --outfile=dist/index.js",
+		"format": "yarn run -T oxfmt --write",
+		"format:check": "yarn run -T oxfmt --check",
 		"lint": "yarn run -T oxlint",
 		"lint:fix": "yarn run -T oxlint --fix",
 		"typecheck": "tsc --noEmit"

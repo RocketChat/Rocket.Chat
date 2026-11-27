@@ -4,7 +4,10 @@ import { useContext, useEffect, useMemo } from 'react';
 import { UiKitContext } from '../../../contexts/UiKitContext';
 
 type RoomSelectElement =
-	UiKit.ChannelsSelectElement | UiKit.MultiChannelsSelectElement | UiKit.ConversationsSelectElement | UiKit.MultiConversationsSelectElement;
+	| UiKit.ChannelsSelectElement
+	| UiKit.MultiChannelsSelectElement
+	| UiKit.ConversationsSelectElement
+	| UiKit.MultiConversationsSelectElement;
 
 /** Applies `default_to_current_conversation`: preselects the room the view was opened from, in the element and in the view state. */
 export const useCurrentConversationDefault = <TElement extends RoomSelectElement>(block: TElement): TElement => {

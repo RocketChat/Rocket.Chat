@@ -64,7 +64,9 @@ export type ServerContextMockProps = Omit<Partial<ContextType<typeof ServerConte
 	};
 	callMethod?: {
 		[TMethodName in ServerMethodName]?:
-			((...args: ServerMethodParameters<TMethodName>) => Promise<ServerMethodReturn<TMethodName>>) | 'infinite' | 'errored';
+			| ((...args: ServerMethodParameters<TMethodName>) => Promise<ServerMethodReturn<TMethodName>>)
+			| 'infinite'
+			| 'errored';
 	};
 };
 

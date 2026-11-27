@@ -59,6 +59,8 @@
 		"build:esm": "node scripts/emit-esm-entries.mjs",
 		"dev": "yarn build && run-p \"build:default --watch\" \"build:esm --watch\"",
 		"gen-doc": "typedoc",
+		"format": "yarn run -T oxfmt --write",
+		"format:check": "yarn run -T oxfmt --check",
 		"lint": "yarn run -T oxlint",
 		"testunit": "node --test tests/*.test.mjs",
 		"typecheck": "run-s typecheck:default typecheck:types",

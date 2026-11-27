@@ -21,7 +21,15 @@ export type AbacAttributeStoreType = 'local' | 'virtru';
 export type AbacActionPerformed = 'revoked-object-access' | 'granted-object-access';
 
 export type AbacAttributeDefinitionChangeType =
-	'created' | 'updated' | 'deleted' | 'all-deleted' | 'key-removed' | 'key-renamed' | 'value-removed' | 'key-added' | 'key-updated';
+	| 'created'
+	| 'updated'
+	| 'deleted'
+	| 'all-deleted'
+	| 'key-removed'
+	| 'key-renamed'
+	| 'value-removed'
+	| 'key-added'
+	| 'key-updated';
 
 // Since user attributes can grow without limits, we're only logging the diffs
 export interface IServerEventAbacSubjectAttributeChanged extends IAuditServerEventType<

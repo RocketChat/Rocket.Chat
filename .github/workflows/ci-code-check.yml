@@ -95,6 +95,10 @@ jobs:
           path: ./apps/meteor/tsconfig.typecheck.tsbuildinfo
           key: typecheck-cache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
 
+      - name: Format
+        if: matrix.check == 'lint'
+        run: yarn format:check
+
       - name: Lint
         if: matrix.check == 'lint'
         run: yarn oxlint

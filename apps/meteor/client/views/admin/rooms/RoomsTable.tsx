@@ -42,7 +42,12 @@ const RoomsTable = () => {
 				filter: searchText || '',
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				types: (roomFilters.types.length ? [...roomFilters.types.map((roomType) => roomType.id)] : DEFAULT_TYPES) as unknown as (
-					'c' | 'd' | 'p' | 'l' | 'discussions' | 'teams'
+					| 'c'
+					| 'd'
+					| 'p'
+					| 'l'
+					| 'discussions'
+					| 'teams'
 				)[],
 			}),
 			[searchText, sortBy, sortDirection, roomFilters.types],
