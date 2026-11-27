@@ -146,9 +146,6 @@ export const createComposerState = (
 			emitter.emit('formatting');
 		};
 		recompute();
-		// Coarse-grained: fires on every setting change, but the only condition()
-		// today is Katex_Enabled and the recompute is a cheap zustand read, so the
-		// extra work per unrelated setting change is negligible.
 		const stop = deps.observeSettings(recompute);
 
 		return [
