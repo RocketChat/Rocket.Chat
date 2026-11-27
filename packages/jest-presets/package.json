@@ -24,6 +24,8 @@
 	"scripts": {
 		"build": "tsc",
 		"clean": "rm -rf ./dist",
+		"format": "yarn run -T oxfmt --write",
+		"format:check": "yarn run -T oxfmt --check",
 		"lint": "yarn run -T oxlint",
 		"typecheck": "tsc --noEmit"
 	},

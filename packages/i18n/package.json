@@ -26,6 +26,8 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.build.json && node --experimental-transform-types ./src/scripts/build.mts",
 		"check": "node --experimental-transform-types ./src/scripts/check.mts",
+		"format": "yarn run -T oxfmt --write",
+		"format:check": "yarn run -T oxfmt --check",
 		"lint": "yarn run -T oxlint && node --experimental-transform-types ./src/scripts/check.mts",
 		"lint:fix": "yarn run -T oxlint --fix && node --experimental-transform-types ./src/scripts/check.mts --fix",
 		"replace-sprintf": "node --experimental-transform-types ./src/scripts/replace-sprintf.mts",

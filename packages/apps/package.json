@@ -16,6 +16,8 @@
 		"build:base-runtime": "tsc -p base-runtime/tsconfig.json",
 		"build:node-runtime": "tsc -p node-runtime/tsconfig.json",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+		"format": "yarn run -T oxfmt --write",
+		"format:check": "yarn run -T oxfmt --check",
 		"lint": "yarn run -T oxlint",
 		"test:node": "NODE_ENV=test node --require ts-node/register/transpile-only --test-reporter spec --test-concurrency=1 --test-timeout=60000 --test \"tests/**/*.test.ts\"",
 		"test:base-runtime": "NODE_ENV=test node --require ts-node/register/transpile-only --test-reporter spec --test-concurrency=1 --test \"base-runtime/**/*.test.ts\"",

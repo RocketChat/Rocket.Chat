@@ -34,6 +34,8 @@
 		"build-storybook": "NODE_ENV=production storybook build",
 		"generate:frame-values": "yarn run -T tsx scripts/generate-frame-values.mts",
 		"generate:tamagui-tokens": "yarn run -T tsx scripts/generate-tamagui-tokens.mts",
+		"format": "yarn run -T oxfmt --write",
+		"format:check": "yarn run -T oxfmt --check",
 		"lint": "yarn run -T oxlint && yarn run stylelint && yarn generate:frame-values --check && yarn verify:css-hacks:check && yarn verify:selectors:check",
 		"lint:fix": "yarn run -T oxlint --fix && stylelint --fix '**/*.{scss,css}'",
 		"stylelint": "stylelint --allow-empty-input '**/*.{scss,css}'",

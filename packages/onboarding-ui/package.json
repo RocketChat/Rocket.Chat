@@ -34,6 +34,8 @@
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.build.json",
     "build-storybook": "storybook build",
+    "format": "yarn run -T oxfmt --write",
+    "format:check": "yarn run -T oxfmt --check",
     "lint": "yarn run -T oxlint",
     "lint:fix": "yarn run -T oxlint --fix",
     "storybook": "storybook dev -p 6006",

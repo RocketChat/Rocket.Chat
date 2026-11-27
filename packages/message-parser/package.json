@@ -35,6 +35,8 @@
 		"build": "rm -rf dist && webpack-cli",
 		"bench": "node --import tsx --import ./loaders/pegjs-register.mjs benchmarks/parser.bench.ts",
 		"bench:size": "node -e \"const fs=require('fs'),zlib=require('zlib'),p='dist/messageParser.js';try{const s=fs.statSync(p),c=fs.readFileSync(p),g=zlib.gzipSync(c);console.log('Bundle:',p);console.log('Raw:',s.size,'bytes ('+(s.size/1024).toFixed(1),'KB)');console.log('Gzip:',g.length,'bytes ('+(g.length/1024).toFixed(1),'KB)')}catch(e){console.error('Build first: yarn build');process.exit(1)}\"",
+		"format": "yarn run -T oxfmt --write",
+		"format:check": "yarn run -T oxfmt --check",
 		"lint": "yarn run -T oxlint",
 		"test": "jest",
 		"testunit": "jest",
