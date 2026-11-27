@@ -1,9 +1,7 @@
 @use '../../styles/colors.scss';
 @use '../../styles/lengths.scss';
-@use '../../styles/typography.scss' as *;
 @use '../../styles/functions.scss' as *;
-
-$toastbar-color: theme('toastbar-color', colors.font(default));
+@use '../../styles/mixins/elevation.scss' as *;
 
 $toastbar-border-radius: theme('toastbar-border-radius', lengths.border-radius(medium));
 
@@ -16,28 +14,24 @@ $toastbar-background-color: theme('toastbar-background-color', colors.surface(ti
 $toastbar-progressbar-background-color: theme('toastbar-progressbar-background-color', colors.surface(neutral));
 
 .rcx-toastbar {
-	position: relative;
-
 	min-width: lengths.size(232);
 	max-width: lengths.size(416);
 
 	animation: rcx-toastbar-side-open 0.5s;
 
-	color: $toastbar-color;
-
 	border-radius: $toastbar-border-radius;
 
 	background-color: $toastbar-background-color;
 
-	@include use-font-scale(p2);
+	@include elevation-level(2, $border: false);
 
 	&::before {
 		position: absolute;
 		top: 0;
+		inset-inline: 0;
 
 		display: block;
 
-		width: 100%;
 		height: lengths.size(4);
 
 		content: '';
@@ -46,46 +40,29 @@ $toastbar-progressbar-background-color: theme('toastbar-progressbar-background-c
 		background-color: transparent;
 	}
 
-	&--success {
-		&::before {
-			background-color: $toastbar-success-color;
-		}
+	&--success::before {
+		background-color: $toastbar-success-color;
 	}
 
-	&--error {
-		&::before {
-			background-color: $toastbar-error-color;
-		}
+	&--error::before {
+		background-color: $toastbar-error-color;
 	}
 
-	&_inner {
-		display: flex;
-
-		padding: lengths.padding(16);
+	&__icon--success {
+		color: $toastbar-success-color;
 	}
 
-	&_content {
-		width: lengths.size(full);
-		margin: lengths.margin(0) lengths.margin(16);
-	}
-
-	&_icon {
-		&--success {
-			color: $toastbar-success-color;
-		}
-
-		&--error {
-			color: $toastbar-error-color;
-		}
+	&__icon--error {
+		color: $toastbar-error-color;
 	}
 
 	&_progressbar {
 		position: absolute;
 		bottom: 0;
+		inset-inline: 0;
 
 		overflow: hidden;
 
-		width: 100%;
 		height: lengths.size(4);
 
 		border-radius: 0 0 $toastbar-border-radius $toastbar-border-radius;

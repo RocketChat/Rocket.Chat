@@ -612,8 +612,8 @@
 		"displayContents": 0
 	},
 	"ToastBar/ToastBar.styles.scss": {
-		"rules": 18,
-		"nested": 13,
+		"rules": 13,
+		"nested": 8,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,
