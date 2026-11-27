@@ -10106,6 +10106,8 @@ __metadata:
     "@xmldom/xmldom": "npm:~0.8.15"
     jest: "npm:~30.5.2"
     mongodb: "npm:6.16.0"
+    tinybench: "npm:^3.0.7"
+    tsx: "npm:~4.22.5"
     typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
