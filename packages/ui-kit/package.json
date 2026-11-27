@@ -53,7 +53,7 @@
 		"@typescript/native-preview": "7.0.0-dev.20260707.2",
 		"jest": "~30.5.2",
 		"npm-run-all": "~4.1.5",
-		"rimraf": "~6.0.1",
+		"rimraf": "~6.1.4",
 		"ttsc": "0.18.4",
 		"typescript": "~5.9.3"
 	},

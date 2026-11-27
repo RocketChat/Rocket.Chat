@@ -1,0 +1,29 @@
+diff --git a/dist/node-utils.js b/dist/node-utils.js
+--- a/dist/node-utils.js
++++ b/dist/node-utils.js
+@@ -317,21 +317,17 @@ function glob(pattern, root, options = {}) {
+ function glob(pattern, root, options = {}) {
+-  const mini = new Minimatch2(pattern);
++  const mini = new Minimatch2(pattern, { flipNegate: true });
+   const shouldIncludeNodeModules = pattern.includes("node_modules");
+   const controller = {
+     matches(path) {
+-      return mini.match(path);
++      const matches = mini.match(path);
++      return mini.negate ? !matches : matches;
+     },
+     shouldRecurse(childPath) {
+       if (childPath[childPath.length - 1] === "node_modules" && !shouldIncludeNodeModules) {
+         return false;
+       }
+-      return mini.set.some((row) => mini.matchOne(
+-        childPath,
+-        row,
+-        /* partial */
+-        true
+-      ));
++      return mini.match(childPath.join("/"), true);
+     },
+     matchDirectories: options.includeDirectories,
+     followSymlinks: options.followSymlinks
+   };

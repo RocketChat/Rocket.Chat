@@ -1,0 +1,42 @@
+diff --git a/dist/check.js b/dist/check.js
+--- a/dist/check.js
++++ b/dist/check.js
+@@ -9,7 +9,7 @@ var _debug = _interopRequireDefault(require("debug"));
+ var _isCoreModule = _interopRequireDefault(require("is-core-module"));
+ var _lodash = _interopRequireDefault(require("lodash"));
+ var _readdirp = _interopRequireDefault(require("readdirp"));
+-var _minimatch = _interopRequireDefault(require("minimatch"));
++var _minimatch = require("minimatch");
+ var _requirePackageName = _interopRequireDefault(require("require-package-name"));
+ var _utils = require("./utils");
+ var _parser = _interopRequireDefault(require("./utils/parser"));
+@@ -143,7 +143,7 @@ function checkFile({
+   parsers
+ }) {
+   (0, _debug.default)('depcheck:checkFile')(filename);
+-  const targets = (0, _lodash.default)(parsers).keys().filter(glob => (0, _minimatch.default)(filename, glob, {
++  const targets = (0, _lodash.default)(parsers).keys().filter(glob => (0, _minimatch.minimatch)(filename, glob, {
+     dot: true
+   })).map(key => parsers[key]).flatten().value();
+   return targets.map(parser => getDependencies({
+diff --git a/dist/special/gulp-load-plugins.js b/dist/special/gulp-load-plugins.js
+--- a/dist/special/gulp-load-plugins.js
++++ b/dist/special/gulp-load-plugins.js
+@@ -6,7 +6,7 @@ exports.default = parseGulpPlugins;
+ exports.default = parseGulpPlugins;
+ var _path = require("path");
+ var _lodash = _interopRequireDefault(require("lodash"));
+-var _minimatch = _interopRequireDefault(require("minimatch"));
++var _minimatch = require("minimatch");
+ var _traverse = _interopRequireDefault(require("@babel/traverse"));
+ var _es = require("../parser/es7");
+ var _importDeclaration = _interopRequireDefault(require("../detector/importDeclaration"));
+@@ -15,7 +15,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+ function getPluginLookup(deps) {
+   const patterns = ['gulp-*', 'gulp.*', '@*/gulp{-,.}*'];
+-  const lookup = (0, _lodash.default)(deps).filter(dep => patterns.some(pattern => (0, _minimatch.default)(dep, pattern))).map(dep => {
++  const lookup = (0, _lodash.default)(deps).filter(dep => patterns.some(pattern => (0, _minimatch.minimatch)(dep, pattern))).map(dep => {
+     const isScoped = dep[0] === '@';
+     const scopedParts = dep.substring(1).split('/');
+     const scope = isScoped ? scopedParts[0] : '';

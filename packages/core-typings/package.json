@@ -29,7 +29,7 @@
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/ui-kit": "workspace:~",
 		"typia": "13.0.2",
-		"zod": "~4.3.6"
+		"zod": "~4.6.6"
 	},
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",
@@ -37,7 +37,7 @@
 		"@typescript/native-preview": "7.0.0-dev.20260707.2",
 		"mongodb": "6.16.0",
 		"npm-run-all": "~4.1.5",
-		"rimraf": "^6.0.1",
+		"rimraf": "^6.1.4",
 		"tsx": "~4.22.5",
 		"ttsc": "0.18.4",
 		"typescript": "~5.9.3"

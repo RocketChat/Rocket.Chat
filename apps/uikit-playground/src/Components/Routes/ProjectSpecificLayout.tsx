@@ -14,7 +14,7 @@ export const ProjectSpecificLayout = () => {
 	const outlet = useOutlet();
 
 	useEffect(() => {
-		if (!projectId || !projects[projectId]) navigate(routes.home);
+		if (!projectId || !projects[projectId]) void navigate(routes.home);
 		else dispatch(activeProjectAction(projectId));
 		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
