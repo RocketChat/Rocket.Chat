@@ -24,6 +24,7 @@ type ChatSendMessageFields = Partial<
 		| 'e2e'
 		| 'e2eMentions'
 		| 'content'
+		| 'sentWithAI'
 	>
 > & { parseUrls?: boolean; text?: string };
 
@@ -132,6 +133,10 @@ const chatSendMessageSchema = {
 				content: {
 					type: 'object',
 					nullable: true,
+				},
+				sentWithAI: {
+					type: 'boolean',
+					enum: [true],
 				},
 			},
 		},
@@ -796,6 +801,7 @@ type ChatPostMessage =
 			avatar?: string;
 			attachments?: MessageAttachment[];
 			customFields?: IMessage['customFields'];
+			sentWithAI?: IMessage['sentWithAI'];
 	  }
 	| {
 			channel: string | string[];
@@ -805,6 +811,7 @@ type ChatPostMessage =
 			avatar?: string;
 			attachments?: MessageAttachment[];
 			customFields?: IMessage['customFields'];
+			sentWithAI?: IMessage['sentWithAI'];
 	  };
 
 const ChatPostMessageSchema = {
@@ -867,6 +874,11 @@ const ChatPostMessageSchema = {
 					type: 'boolean',
 					description: 'Whether URLs in the message should be parsed for previews.',
 				},
+				sentWithAI: {
+					type: 'boolean',
+					enum: [true],
+					description: 'Marks the message as sent with AI. Only `true` is accepted; leave it out otherwise.',
+				},
 			},
 			required: ['roomId'],
 			additionalProperties: false,
@@ -924,6 +936,11 @@ const ChatPostMessageSchema = {
 				parseUrls: {
 					type: 'boolean',
 					description: 'Whether URLs in the message should be parsed for previews.',
+				},
+				sentWithAI: {
+					type: 'boolean',
+					enum: [true],
+					description: 'Marks the message as sent with AI. Only `true` is accepted; leave it out otherwise.',
 				},
 			},
 			required: ['channel'],
