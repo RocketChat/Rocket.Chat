@@ -113,6 +113,38 @@ Tool **descriptions** are sourced from the route schema's own `description` (add
 
 The REST response is wrapped as MCP `content` (`type: "text"`); a non-2xx REST response is returned with `isError: true`. Internal calls time out after 20 seconds. REST bodies and final encoded MCP responses are capped at 5 MiB; batched calls use bounded concurrency and share a single streaming body budget to limit retained response data.
 
+## Sending files
+
+`post_rooms_sendFile` (`POST /api/v1/rooms.sendFile`, extended set) uploads a file and posts it as a message in one call. A tool call carries JSON, so the file content travels inside the request, in `content`: base64 by default, or plain text with `encoding: "utf8"`.
+
+### Size limit
+
+Two limits apply to the decoded file, and the lower one wins:
+
+| Limit                    | Value                                 | Applies to                            |
+| ------------------------ | ------------------------------------- | ------------------------------------- |
+| `rooms.sendFile` limit   | 10 MiB, fixed in code                 | only files sent with `rooms.sendFile` |
+| `FileUpload_MaxFileSize` | workspace setting, 100 MiB by default | every upload, this one included       |
+
+A workspace that accepts 100 MiB uploads therefore still rejects an 11 MiB file sent with this tool. Raising `FileUpload_MaxFileSize` does not raise the 10 MiB limit. Lowering it below 10 MiB lowers the limit of this tool too. With `FileUpload_MaxFileSize` set to `-1` (no limit), the 10 MiB limit still applies.
+
+The fixed limit exists because of how the server receives the file. A multipart upload (`rooms.media`) is streamed to disk, so its size costs little memory. A JSON body is held in memory whole, and more than once while it is parsed and decoded, so its size costs several times as much memory.
+
+A file over the limit is rejected with `error-file-too-large`, and the error message states this rule. A larger file needs the multipart upload (`rooms.media`, then `rooms.mediaConfirm`), which MCP does not expose.
+
+The limit is checked after the server has read the request, as for any JSON endpoint. It bounds the files that are accepted, not the size of a request: the server still reads a request over the limit whole before it rejects it.
+
+### What else is checked
+
+- The workspace upload settings apply as to any upload: `FileUpload_Enabled`, `FileUpload_Enabled_Direct`, and the accepted and blocked media types.
+- `mimeType` must be a lower-case `type/subtype` without parameters, such as `text/markdown`, so it is compared with those lists as written. Without it, the type comes from the extension of `fileName`.
+- Base64 `content` must be valid: standard alphabet, padded, no line breaks. Invalid content is rejected, not decoded leniently, so plain text sent without `encoding: "utf8"` fails instead of posting a corrupt file.
+- A path in `fileName` is reduced to its last segment, as in a multipart upload.
+
+### Logging
+
+When a request fails schema validation, the server logs the rejected body. For this endpoint, the log entry carries the length of `content`, not the content. With `LOG_REST_PAYLOAD` on, the server logs every JSON request body in full, and that includes the file.
+
 ## Rate limiting
 
 The MCP endpoint uses Rocket.Chat's **built-in per-route rate limiter** with a limit of 60 requests per minute (enabled by `API_Enable_Rate_Limiter`, honoring `api-bypass-rate-limit`). Every tool call is also subject to its target REST endpoint's rate limit. The resolved client address is propagated to that endpoint rather than being counted as loopback traffic. MCP protocol requests are additionally bounded to 20 batch entries, four concurrent dispatches, 20-second calls, and a shared 5 MiB response budget. As with every Rocket.Chat API route, deployments behind a proxy must configure `HTTP_FORWARDED_COUNT` and trusted forwarding headers correctly.
@@ -168,6 +200,7 @@ curl -s "${H[@]}" http://localhost:3000/api/v1/mcp \
 | JSON-RPC handlers (`initialize`/`tools/list`/`tools/call`/…)                 | `apps/meteor/ee/server/api/mcp/server.ts`                                                          |
 | Tool catalog (curated + extended allow-list, variants, schema normalization) | `apps/meteor/ee/server/api/mcp/catalog.ts`                                                         |
 | Tool dispatch (loopback to REST as the user)                                 | `apps/meteor/ee/server/api/mcp/dispatch.ts`                                                        |
+| File sending endpoint (`rooms.sendFile`) and its size limit                  | `apps/meteor/server/api/v1/rooms.ts`                                                               |
 | License-gated permission seed (`access-mcp`)                                | `apps/meteor/ee/server/startup/mcp.ts`                                                             |
 | EE module load                                                               | `apps/meteor/ee/server/api/index.ts`                                                               |
 | Settings (license-gated)                                                     | `apps/meteor/server/settings/ai.ts`                                                                |

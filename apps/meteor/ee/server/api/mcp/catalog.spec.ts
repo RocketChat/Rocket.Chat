@@ -149,6 +149,29 @@ jest.mock('../../../../server/api', () => ({
 						},
 					},
 				},
+				'/api/v1/rooms.sendFile': {
+					post: {
+						tags: [],
+						requestBody: {
+							content: {
+								'application/json': {
+									schema: {
+										type: 'object',
+										description: 'Send a file',
+										properties: {
+											rid: { type: 'string' },
+											fileName: { type: 'string' },
+											content: { type: 'string' },
+											encoding: { type: 'string', enum: ['base64', 'utf8'] },
+										},
+										required: ['rid', 'fileName', 'content'],
+										additionalProperties: false,
+									},
+								},
+							},
+						},
+					},
+				},
 				'/api/v1/users.delete': {
 					post: {
 						tags: ['Users'],
@@ -216,6 +239,14 @@ describe('MCP tool catalog', () => {
 		expect(tool).toMatchObject({ path: '/api/v1/rooms.saveDraft', method: 'post', description: 'Save a draft' });
 		expect(tool?.inputSchema.required).toEqual(['rid', 'draft']);
 		expect(getCuratedTools().some(({ name }) => name === 'post_rooms_saveDraft')).toBe(false);
+	});
+
+	it('exposes rooms.sendFile only in the extended catalog', () => {
+		const tool = getExtendedTools().find(({ name }) => name === 'post_rooms_sendFile');
+
+		expect(tool).toMatchObject({ path: '/api/v1/rooms.sendFile', method: 'post', description: 'Send a file' });
+		expect(tool?.inputSchema.required).toEqual(['rid', 'fileName', 'content']);
+		expect(getCuratedTools().some(({ name }) => name === 'post_rooms_sendFile')).toBe(false);
 	});
 
 	it('keeps curated tool names stable when the extended catalog is enabled', () => {
