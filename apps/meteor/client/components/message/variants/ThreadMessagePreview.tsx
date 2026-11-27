@@ -45,7 +45,7 @@ export type ThreadMessagePreviewProps = {
 const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }: ThreadMessagePreviewProps) => {
 	const parentMessage = useParentMessage(message.tmid);
 	const uid = useUserId();
-	const threadMainMessage = Messages.use((state) => state.get(message.tmid)) ?? parentMessage.data;
+	const threadMainMessage = Messages.useStore((state) => state.get(message.tmid)) ?? parentMessage.data;
 	const following = Boolean(uid && threadMainMessage?.replies?.includes(uid));
 	const followStateId = useId();
 
