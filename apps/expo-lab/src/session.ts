@@ -26,7 +26,8 @@ if (!__DEV__) Object.freeze(loginDeps);
 const toRestUrl = (url: string) => url.replace(/\/websocket\/?$/, '').replace(/\/$/, '');
 
 // Best effort and bounded: signing in must never wait on the server we are leaving.
-// Redirects are not followed, so the token header never leaves the stored server; any non-2xx (or opaque redirect) means not revoked.
+// 'redirect: manual' is passed but React Native's fetch does not enforce it, so a redirect may be followed with the auth headers.
+// Only a 2xx answered from the stored server's origin counts as revoked; an empty or foreign response URL means not revoked.
 export async function revokeSession(stored: StoredSession, request: typeof fetch = fetch, timeoutMs = 3000): Promise<boolean> {
 	const controller = new AbortController();
 	const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -37,7 +38,7 @@ export async function revokeSession(stored: StoredSession, request: typeof fetch
 			redirect: 'manual',
 			signal: controller.signal,
 		});
-		return response.ok;
+		return response.ok && new URL(response.url).origin === new URL(toRestUrl(stored.serverUrl)).origin;
 	} catch {
 		return false;
 	} finally {
@@ -92,9 +93,13 @@ export async function signOut(session: Session | undefined, clear: () => Promise
 	} catch (e) {
 		failure = e;
 	}
-	// The SDK's REST client forwards the init, so redirects are not followed here either.
+	// The init is forwarded by the SDK's REST client; React Native does not enforce it.
 	if (revoke) session?.sdk.rest.post('/v1/logout', undefined, { redirect: 'manual' }).catch(() => undefined);
-	session?.sdk.connection.close();
+	try {
+		session?.sdk.connection.close();
+	} catch {
+		// best effort: a failing close is not a clear failure
+	}
 	if (failure) throw failure;
 }
 
@@ -108,13 +113,16 @@ const MAX_CLEAR_RETRIES = 3;
 
 // A password session is always revoked, a PAT never; an old v1 item of unknown origin is the user's call, asked once and not stored.
 export async function signOutWithPrompts(session: Session | undefined, ui: SignOutUi, clear: () => Promise<void> = clearSession): Promise<void> {
+	// For 'unknown' the delete starts before the prompt, so killing the app at the prompt cannot restore the session.
+	const early = session?.kind === 'unknown' ? clear().then(() => undefined, (e: unknown) => e) : undefined;
 	const revoke = session?.kind === 'unknown' ? await ui.askRevoke() : session?.kind === 'password';
 	let failure: unknown;
 	try {
-		await signOut(session, clear, revoke);
+		await signOut(session, early ? () => Promise.resolve() : clear, revoke);
 	} catch (e) {
 		failure = e;
 	}
+	if (early) failure = await early;
 	for (let retries = 0; failure; retries++) {
 		const canRetry = retries < MAX_CLEAR_RETRIES;
 		if (!(await ui.clearFailed(canRetry)) || !canRetry) return;

@@ -257,23 +257,93 @@ async function hardenedChecks(): Promise<Row[]> {
 		add(`Low2 ${kind} is never asked, posts ${kind === 'password' ? 1 : 0}`, asks === 0 && f.calls.post.length === (kind === 'password' ? 1 : 0));
 	}
 
-	// Low 3: manual redirect, non-2xx is not revoked
+	// Low 2b: unknown clears before it asks; a delete failure still reaches the alert chain
+	{
+		const { session } = sessionOf('unknown');
+		const order: string[] = [];
+		await signOutWithPrompts(
+			session,
+			{ askRevoke: () => (order.push('ask'), Promise.resolve(false)), clearFailed: () => Promise.resolve(false) },
+			() => (order.push('delete'), Promise.resolve()),
+		);
+		add('Low2b unknown: delete is issued before the prompt', order.join() === 'delete,ask', order.join());
+	}
+	{
+		const { f, session } = sessionOf('unknown');
+		let release: (v: boolean) => void = () => undefined;
+		let deleted = false;
+		const done = signOutWithPrompts(
+			session,
+			{ askRevoke: () => new Promise<boolean>((r) => (release = r)), clearFailed: () => Promise.resolve(false) },
+			() => ((deleted = true), Promise.resolve()),
+		);
+		await sleep(20);
+		const beforeAnswer = deleted && f.calls.close === 0;
+		release(true);
+		await done;
+		add('Low2b unknown: deleted while the prompt is open, close and revoke after the answer', beforeAnswer && f.calls.close === 1 && f.calls.post.length === 1);
+	}
+	{
+		const { f, session } = sessionOf('unknown');
+		let clears = 0;
+		const asked: boolean[] = [];
+		await signOutWithPrompts(
+			session,
+			{ askRevoke: () => Promise.resolve(false), clearFailed: (canRetry) => (asked.push(canRetry), Promise.resolve(false)) },
+			() => (clears++, failDelete()),
+		);
+		add('Low2b unknown: a failed early delete reaches the alert chain, SDK still closed', clears === 1 && asked.length === 1 && f.calls.close === 1, `deletes ${clears}, alerts ${asked.length}`);
+	}
+	{
+		const { session } = sessionOf('unknown');
+		let clears = 0;
+		await signOutWithPrompts(
+			session,
+			{ askRevoke: () => Promise.resolve(false), clearFailed: () => Promise.resolve(true) },
+			() => (clears++, clears < 3 ? failDelete() : Promise.resolve()),
+		);
+		add('Low2b unknown: retry after a failed early delete succeeds', clears === 3, `deletes ${clears}`);
+	}
+
+	// Info: close() throwing is not a clear failure
+	{
+		const { f, session } = sessionOf('token');
+		(f.sdk.connection as unknown as { close: () => void }).close = () => {
+			throw new Error('close boom');
+		};
+		const ok = await signOut(session, () => Promise.resolve()).then(
+			() => true,
+			() => false,
+		);
+		add('Info signOut: a throwing close() is not surfaced', ok);
+		const err = await signOut(session, failDelete).then(
+			() => '',
+			(e: unknown) => (e instanceof Error ? e.message : '?'),
+		);
+		add('Info signOut: a throwing close() still surfaces the real delete failure', err === 'Could not clear the saved session', err);
+	}
+
+	// Low 3: the init is passed; only a 2xx answered from the stored origin is revoked
 	const respond = (r: unknown) => ({ seen: [] as (RequestInit | undefined)[], fetch: undefined as unknown as typeof fetch, r });
+	const own = 'https://example.invalid/api/v1/logout';
 	for (const [name, response, expected] of [
-		['2xx', { ok: true, status: 200, type: 'basic' }, true],
-		['302', { ok: false, status: 302, type: 'basic' }, false],
-		['opaque redirect', { ok: false, status: 0, type: 'opaqueredirect' }, false],
+		['2xx from the stored origin', { ok: true, status: 200, type: 'basic', url: own }, true],
+		['302', { ok: false, status: 302, type: 'basic', url: own }, false],
+		['opaque redirect', { ok: false, status: 0, type: 'opaqueredirect', url: '' }, false],
+		['2xx after a cross-origin redirect', { ok: true, status: 200, type: 'basic', url: 'https://other.invalid/api/v1/logout' }, false],
+		['2xx with an empty response url', { ok: true, status: 200, type: 'basic', url: '' }, false],
+		['2xx with an unparsable response url', { ok: true, status: 200, type: 'basic', url: 'not a url' }, false],
 	] as const) {
 		const c = respond(response);
 		c.fetch = ((_u: string, init?: RequestInit) => (c.seen.push(init), Promise.resolve(c.r))) as typeof fetch;
 		const revoked = await revokeSession(fake, c.fetch);
-		add(`Low3 revoke ${name}: redirect manual, revoked ${expected}`, c.seen[0]?.redirect === 'manual' && revoked === expected, `revoked ${revoked}`);
+		add(`Low3 revoke ${name}: init passed, revoked ${expected}`, c.seen[0]?.redirect === 'manual' && revoked === expected, `revoked ${revoked}`);
 	}
 	add('Low3 revoke on a network error is not revoked', !(await revokeSession(fake, (() => Promise.reject(new TypeError('x'))) as typeof fetch)));
 	{
 		const { f, session } = sessionOf('password');
 		await signOut(session);
-		add('Low3 sign-out logout passes redirect manual through the SDK', f.calls.init[0]?.redirect === 'manual');
+		add('Low3 sign-out logout passes the init through the SDK (not enforced by RN)', f.calls.init[0]?.redirect === 'manual');
 	}
 
 	// Low 4: revoke URL normalization

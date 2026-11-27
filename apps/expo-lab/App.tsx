@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, Text, View } from 'react-native';
 
 import type { RoomItem } from './src/api';
@@ -44,12 +44,19 @@ export default function App() {
 		if (restoration.state.status === 'restored') setSession(restoration.state.session);
 	}, [restoration.state]);
 
+	const signingOut = useRef(false);
 	const logout = async () => {
-		const leaving = session;
-		restoration.skip();
-		setRoom(undefined);
-		setSession(undefined);
-		await signOutWithPrompts(leaving, signOutUi);
+		if (signingOut.current) return;
+		signingOut.current = true;
+		try {
+			const leaving = session;
+			restoration.skip();
+			setRoom(undefined);
+			setSession(undefined);
+			await signOutWithPrompts(leaving, signOutUi);
+		} finally {
+			signingOut.current = false;
+		}
 	};
 
 	// Dev only: EXPO_PUBLIC_COMPOSER_LAB=1 opens the TextInput probe, Fuselage included, instead of the chat
