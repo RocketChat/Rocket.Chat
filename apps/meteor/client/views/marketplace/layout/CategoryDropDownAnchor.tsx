@@ -1,6 +1,5 @@
 import type { Button } from '@rocket.chat/fuselage';
-import { Box, Icon } from '@rocket.chat/fuselage';
-import colorTokens from '@rocket.chat/fuselage-tokens/dist/colors.json';
+import { Badge, Box, Icon } from '@rocket.chat/fuselage';
 import type { ComponentProps, MouseEventHandler } from 'react';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,55 +16,37 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 	ref,
 ) {
 	const { t } = useTranslation();
+	const hasSelection = selectedCategoriesCount > 0;
 
 	return (
 		<Box
 			is='button'
 			ref={ref}
 			onClick={onClick}
+			aria-label={hasSelection ? t('Categories_selected', { count: selectedCategoriesCount }) : undefined}
 			alignItems='center'
-			backgroundColor={selectedCategoriesCount ? colorTokens.b500 : 'light'}
-			borderColor={selectedCategoriesCount ? 'none' : 'light'}
+			backgroundColor='light'
+			borderColor='light'
 			borderRadius='medium'
-			borderWidth={selectedCategoriesCount ? 'none' : 'default'}
+			borderWidth='default'
+			color='secondary-info'
 			display='flex'
 			flexGrow={1}
 			flexShrink={1}
-			justifyContent='space-between'
-			minWidth='x144'
+			fontScale='p2'
+			gap='x8'
 			height='x40'
+			minWidth='x144'
 			paddingInlineEnd='x8'
 			paddingInlineStart='x12'
-			lineHeight='unset'
 			rcx-input-box
 			{...props}
 		>
-			{selectedCategoriesCount > 0 && (
-				<Box
-					is='span'
-					alignItems='center'
-					backgroundColor='light'
-					borderRadius='full'
-					color='info'
-					display='flex'
-					fontSize='micro'
-					fontWeight={700}
-					height='fit-content'
-					justifyContent='center'
-					marginInlineEnd='x4'
-					minWidth={22}
-					paddingBlock='x4'
-					paddingInline={0}
-				>
-					{selectedCategoriesCount}
-				</Box>
-			)}
-			<Box is='span' display='flex' flexGrow={1} fontScale='p2' color={selectedCategoriesCount ? 'white' : 'hint'}>
-				{selectedCategoriesCount > 0 ? t('Categories') : t('All_categories')}
+			<Box is='span' flexGrow={1} textAlign='start'>
+				{hasSelection ? t('Categories') : t('All_categories')}
 			</Box>
-			<Box marginInline='x4' display='flex' alignItems='center' justifyContent='center' color={selectedCategoriesCount ? 'white' : 'hint'}>
-				<Icon name='chevron-down' size='x20' />
-			</Box>
+			{hasSelection && <Badge variant='primary'>{selectedCategoriesCount}</Badge>}
+			<Icon name='chevron-down' size='x20' />
 		</Box>
 	);
 });

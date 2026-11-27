@@ -57,6 +57,7 @@ const testCategories: CategoryDropDownListProps['categories'] = [
 export const Anchor: StoryFn = () => (
 	<CategoryDropDownAnchor selectedCategoriesCount={testCategories.flatMap((group) => group.items).length} />
 );
+export const AnchorNothingSelected: StoryFn = () => <CategoryDropDownAnchor selectedCategoriesCount={0} />;
 export const List: StoryFn = () => {
 	const [data, setData] = useState(() => testCategories);
 
