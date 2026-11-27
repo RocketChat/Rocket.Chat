@@ -38,6 +38,8 @@ export class PresenceReaper {
 
 	private intervalId?: NodeJS.Timeout;
 
+	private currentRun?: Promise<void>;
+
 	constructor(options: ReaperOptions) {
 		this.onUpdate = options.onUpdate;
 		this.staleThresholdMs = options.staleThresholdMs;
@@ -49,9 +51,17 @@ export class PresenceReaper {
 		if (this.running) return;
 		this.running = true;
 
-		// Run every 1 minute
+		// Run every 1 minute, skipping ticks while the previous run is still going
 		this.intervalId = setInterval(() => {
-			this.run().catch((err) => logger.error({ msg: 'Error running presence reaper', err }));
+			if (this.currentRun) {
+				return;
+			}
+
+			this.currentRun = this.run()
+				.catch((err) => logger.error({ msg: 'Error running presence reaper', err }))
+				.finally(() => {
+					this.currentRun = undefined;
+				});
 		}, 60 * 1000);
 	}
 
