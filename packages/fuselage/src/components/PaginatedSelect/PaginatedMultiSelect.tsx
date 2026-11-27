@@ -1,4 +1,4 @@
-import { useStableCallback, useResizeObserver, useMergedRefs } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useState, useRef, type ComponentType, type ReactNode, type MouseEvent, type CSSProperties } from 'react';
 
 import { prevent } from '../../helpers/prevent';
@@ -93,7 +93,7 @@ const PaginatedMultiSelect = ({
 	const [visible, hide, show] = useVisible();
 
 	const ref = useRef<HTMLInputElement>(null);
-	const { ref: containerRef, borderBoxSize } = useResizeObserver();
+	const containerRef = useRef<HTMLElement>(null);
 	const containerMergedRef = useMergedRefs(outerRef, containerRef);
 
 	const handleClick = useStableCallback(() => {
@@ -182,9 +182,8 @@ const PaginatedMultiSelect = ({
 			<SelectAddon>
 				<Icon name={visible === AnimatedVisibility.VISIBLE ? 'cross' : 'chevron-down'} size='x20' />
 			</SelectAddon>
-			<PositionAnimated visible={visible} anchor={containerRef}>
+			<PositionAnimated visible={visible} anchor={containerRef} width='anchor'>
 				<OptionsComponent
-					width={borderBoxSize.inlineSize}
 					onMouseDown={prevent}
 					multiple
 					filter={filter}

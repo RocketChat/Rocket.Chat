@@ -119,7 +119,7 @@ const RoomRow = ({ name, avatar, viewMode, selected, unread, ringing }: RoomRowP
 
 	return (
 		<SidebarListItem>
-			<SidebarItem is='div' selected={selected} highlighted={!!unread}>
+			<SidebarItem is='div' interactive selected={selected} highlighted={!!unread}>
 				<SidebarItemAvatarWrapper>
 					<Avatar size={avatarSizes[viewMode]} url={avatar} alt='' />
 				</SidebarItemAvatarWrapper>

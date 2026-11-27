@@ -23,7 +23,7 @@ export const loadModules = async (directory: string) => {
 
 /**
  * Writes the generated section of each target and returns what is wrong with them. With `check` nothing is written, and
- * a stale section is one of the problems. A section that names a token or theme key the Tamagui config lacks, or a
+ * a stale section is one of the problems. A section that names a token, theme key or condition the Tamagui config lacks, or a
  * token in a font property, is never written.
  */
 export const generateFrameValues = async (targets: Target[], check: boolean) => {
@@ -47,7 +47,7 @@ export const generateFrameValues = async (targets: Target[], check: boolean) => 
 		}
 		const unresolved = unresolvedReferences(body);
 		if (unresolved.length) {
-			problems.push(`${file}: the Tamagui config has no token or theme key for ${unresolved.join(', ')}`);
+			problems.push(`${file}: the Tamagui config has no token, theme key or condition for ${unresolved.join(', ')}`);
 			continue;
 		}
 		problems.push(...transformProblems(file, body));

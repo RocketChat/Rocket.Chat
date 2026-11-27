@@ -1,3 +1,4 @@
+@use '../../styles/colors.scss';
 @use '../../styles/lengths.scss';
 @use '../../styles/typography.scss' as *;
 @use '../../styles/variables/input-colors.scss' as *;
@@ -311,4 +312,15 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 
 	@include use-font-scale(p2m);
 	@include use-text-ellipsis;
+}
+
+// The look of the label the wrapper is, which the Label stylesheet gave it while the wrapper rendered a Label
+.rcx-input-box__wrapper {
+	display: flex;
+
+	cursor: default;
+
+	color: colors.font(default);
+
+	@include use-font-scale(p2m);
 }

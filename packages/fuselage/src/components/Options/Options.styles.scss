@@ -20,4 +20,12 @@
 	&--container {
 		max-height: to-rem(240);
 	}
+
+	&--x200 {
+		max-height: to-rem(200);
+	}
+
+	&--max-content {
+		max-height: max-content;
+	}
 }
