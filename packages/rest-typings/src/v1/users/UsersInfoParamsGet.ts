@@ -1,7 +1,11 @@
 import { ajvQuery } from '../Ajv';
 
 export type UsersInfoParamsGet = (
-	{ userId: string } | { username: string } | { importId: string } | { email: string } | { sipExtension: string }
+	| { userId: string }
+	| { username: string }
+	| { importId: string }
+	| { email: string }
+	| { sipExtension: string }
 ) & {
 	includeUserRooms?: string;
 };

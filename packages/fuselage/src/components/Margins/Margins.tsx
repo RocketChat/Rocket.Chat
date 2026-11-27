@@ -77,31 +77,31 @@ const Margins = (props: MarginsProps) => {
 						margin-inline: ${spacing(props.inline)};
 					`
 				}
-      ${
+				${
 					props.inlineStart &&
 					css`
 						margin-inline-start: ${spacing(props.inlineStart)};
 					`
 				}
-      ${
+				${
 					props.inlineEnd &&
 					css`
 						margin-inline-end: ${spacing(props.inlineEnd)};
 					`
 				}
-      ${
+				${
 					props.block &&
 					css`
 						margin-block: ${spacing(props.block)};
 					`
 				}
-      ${
+				${
 					props.blockStart &&
 					css`
 						margin-block-start: ${spacing(props.blockStart)};
 					`
 				}
-      ${
+				${
 					props.blockEnd &&
 					css`
 						margin-block-end: ${spacing(props.blockEnd)};

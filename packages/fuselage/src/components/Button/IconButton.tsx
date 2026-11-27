@@ -19,7 +19,15 @@ export type IconButtonProps = {
 	/** The corner the badge is pinned to. */
 	badgePosition?: 'top-end' | 'bottom-end';
 	variant?:
-		'primary' | 'secondary' | 'info' | 'danger' | 'warning' | 'success' | 'secondary-danger' | 'secondary-warning' | 'secondary-success';
+		| 'primary'
+		| 'secondary'
+		| 'info'
+		| 'danger'
+		| 'warning'
+		| 'success'
+		| 'secondary-danger'
+		| 'secondary-warning'
+		| 'secondary-success';
 	size?: 'mini' | 'tiny' | 'small' | 'medium' | 'large';
 	pressed?: boolean;
 	/** Renders a link instead of a button, for actions that navigate or download. */

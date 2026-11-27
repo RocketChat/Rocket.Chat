@@ -1,7 +1,8 @@
 import { ajv } from '../Ajv';
 
 export type IntegrationsRemoveProps =
-	{ type: 'webhook-incoming'; integrationId: string } | { type: 'webhook-outgoing'; integrationId?: string; target_url?: string };
+	| { type: 'webhook-incoming'; integrationId: string }
+	| { type: 'webhook-outgoing'; integrationId?: string; target_url?: string };
 
 const integrationsRemoveSchema = {
 	oneOf: [

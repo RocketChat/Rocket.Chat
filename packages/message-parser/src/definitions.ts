@@ -293,6 +293,17 @@ export type Inlines =
 	| InlineKaTeX;
 
 export type Blocks =
-	Code | Heading | Quote | SpoilerBlock | ListItem | Tasks | OrderedList | UnorderedList | LineBreak | KaTeX | HorizontalRule | Table;
+	| Code
+	| Heading
+	| Quote
+	| SpoilerBlock
+	| ListItem
+	| Tasks
+	| OrderedList
+	| UnorderedList
+	| LineBreak
+	| KaTeX
+	| HorizontalRule
+	| Table;
 
 export type Root = Array<Paragraph | Blocks> | [BigEmoji];

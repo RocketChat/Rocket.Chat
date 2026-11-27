@@ -5,7 +5,8 @@ import type { MentionNames } from './richTextToAst';
 import { containerToAst, inlineToAst, isCustomInline } from './richTextToAst';
 
 export type RichTextPart =
-	{ kind: 'markup'; tokens: MessageParser.Root } | { kind: 'custom'; element: UiKit.RichTextTagElement | UiKit.RichTextCitationElement };
+	| { kind: 'markup'; tokens: MessageParser.Root }
+	| { kind: 'custom'; element: UiKit.RichTextTagElement | UiKit.RichTextCitationElement };
 
 export type RichTextRun =
 	| { kind: 'markup'; tokens: Array<MessageParser.Paragraph | MessageParser.Blocks> }

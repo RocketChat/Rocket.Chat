@@ -267,7 +267,7 @@ $-button-backgrounds: (
 	secondary-success-press: primitive(n600),
 	secondary-success-focus: primitive(n400),
 	secondary-success-keyfocus: primitive(n400),
-	secondary-success-disabled: primitive(n300)
+	secondary-success-disabled: primitive(n300),
 );
 
 $-button-fonts: (
@@ -294,7 +294,7 @@ $-button-fonts: (
 	on-success-disabled: token($button, font-on-success-disabled),
 	// secondary-success (fuselage-tokens gap — see block comment above)
 	on-secondary-success: primitive(g800),
-	on-secondary-success-disabled: primitive(g400)
+	on-secondary-success-disabled: primitive(g400),
 );
 
 @function button($type) {
@@ -306,5 +306,5 @@ $-button-fonts: (
 		$foreground: map.get($-button-fonts, $type);
 		@return var(--rcx-color-button-font-#{$type}, $foreground);
 	}
-	@error "Unknown button type #{$type}.";
+	@error 'Unknown button type #{$type}.';
 }

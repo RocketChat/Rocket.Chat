@@ -35,7 +35,9 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 	state: UiKitState<TElement>,
 	action: (
 		pseudoEvent?:
-			Event | { target: EventTarget; onConfirmed?: () => void } | { target: { value: UiKit.ActionOf<TElement> }; onConfirmed?: () => void },
+			| Event
+			| { target: EventTarget; onConfirmed?: () => void }
+			| { target: { value: UiKit.ActionOf<TElement> }; onConfirmed?: () => void },
 	) => Promise<void>,
 ] => {
 	const { blockId, actionId, appId, dispatchActionConfig, confirm } = element;

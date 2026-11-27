@@ -44,4 +44,6 @@ export interface IUIKitIncomingInteractionBlockSuggestion {
 }
 
 export type UIKitIncomingInteraction =
-	IUIKitIncomingInteraction | IUIKitIncomingInteractionActionButton | IUIKitIncomingInteractionBlockSuggestion;
+	| IUIKitIncomingInteraction
+	| IUIKitIncomingInteractionActionButton
+	| IUIKitIncomingInteractionBlockSuggestion;
