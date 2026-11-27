@@ -20,7 +20,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		randomId: () => Random.id(),
 	};
 
-	const composeMessage = async (
+	const composeMessage = (
 		text: string,
 		options: { sendToChannel?: boolean; quotedMessages: IMessage[]; originalMessage?: IMessage },
 	): Promise<IMessage> => composeMessageCore(payloadDeps, { rid, tmid }, text, options);

@@ -254,6 +254,30 @@ describe('composeMessage: the extracted code matches a frozen copy of the old lo
 		expect(adapter).toStrictEqual(legacy);
 		expect(Random.id()).toBe('random-1');
 	});
+
+	it('settles on the same microtask tick as the old async function', async () => {
+		const ticksToSettle = async (promise: Promise<unknown>) => {
+			let done = false;
+			void promise.then(() => {
+				done = true;
+			});
+			let ticks = 0;
+			while (!done && ticks < 50) {
+				await Promise.resolve();
+				ticks++;
+			}
+			return ticks;
+		};
+		const options = { quotedMessages: quoted('q1') };
+
+		fresh();
+		const legacy = await ticksToSettle(legacyComposeMessage({ rid: 'GENERAL', tmid: undefined }, 'x', options));
+		fresh();
+		const adapter = await ticksToSettle(createDataAPI({ rid: 'GENERAL', tmid: undefined }).composeMessage('x', options));
+
+		expect(legacy).toBeLessThan(50);
+		expect(adapter).toBe(legacy);
+	});
 });
 
 const v1 = { algorithm: 'rc.v1.aes-sha2', ciphertext: 'abc' };
