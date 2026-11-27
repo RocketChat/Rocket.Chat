@@ -84,9 +84,6 @@ export const Left: Story = {
 export const Size: Story = {
 	render: () => (
 		<Box display='flex' alignItems='center'>
-			<Chevron size='x2' />
-			<Chevron size='x4' />
-			<Chevron size='x8' />
 			<Chevron size='x16' />
 			<Chevron size='x20' />
 			<Chevron size='x24' />

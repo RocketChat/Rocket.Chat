@@ -3,7 +3,7 @@ import { Icon, Box, useStyle } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 
 const CreateNewScreenButton = ({
-	size = '60px',
+	size = 'x60',
 	name = 'plus',
 	...props
 }: {
