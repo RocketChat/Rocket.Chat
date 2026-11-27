@@ -2,7 +2,12 @@ import type { IMessage, SlashCommand } from '@rocket.chat/core-typings';
 
 import type { ChatAPI } from '../ChatAPI';
 
-export type SlashCommandChat = Pick<ChatAPI, 'composer' | 'data' | 'uid' | 'ActionManager'>;
+export type SlashCommandChat = {
+	readonly composer?: Pick<NonNullable<ChatAPI['composer']>, 'clear'>;
+	readonly data: Pick<ChatAPI['data'], 'pushEphemeralMessage'>;
+	readonly uid: ChatAPI['uid'];
+	readonly ActionManager: Pick<ChatAPI['ActionManager'], 'generateTriggerId' | 'notifyBusy' | 'notifyIdle'>;
+};
 
 type TelemetryEvent = { eventName: 'slashCommandsStats'; timestamp: number; command: string };
 

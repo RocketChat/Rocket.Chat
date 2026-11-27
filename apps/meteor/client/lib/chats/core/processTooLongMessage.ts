@@ -2,7 +2,11 @@ import type { IMessage } from '@rocket.chat/core-typings';
 
 import type { ChatAPI } from '../ChatAPI';
 
-export type TooLongChat = Pick<ChatAPI, 'composer' | 'currentEditingMessage' | 'flows'>;
+export type TooLongChat = {
+	readonly composer?: Pick<NonNullable<ChatAPI['composer']>, 'clear' | 'setText'>;
+	readonly currentEditingMessage: Pick<ChatAPI['currentEditingMessage'], 'getMID'>;
+	readonly flows: Pick<ChatAPI['flows'], 'uploadFiles'>;
+};
 
 export type TooLongDeps = {
 	getMaxAllowedSize(): number | undefined;
