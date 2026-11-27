@@ -3,6 +3,7 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
+import { Sidebar } from './Sidebar';
 import * as stories from './Sidebar.stories';
 import { SidebarCollapseGroup } from './SidebarCollapseGroup';
 import { SidebarCollapseGroupMenu } from './SidebarCollapseGroupMenu';
@@ -88,5 +89,37 @@ describe('[Sidebar insets]', () => {
 		expect(screen.getByRole('button', { name: 'Favorites' }).parentElement).toHaveClass('rcx-item-group-header--inset-md');
 		expect(screen.getByRole('link', { name: 'general' })).toHaveClass('rcx-item--inset-md');
 		expect(screen.getByRole('link', { name: 'Directory' })).toHaveClass('rcx-item--inset-md');
+	});
+});
+describe('[Sidebar root]', () => {
+	it('preserves navigation semantics, classes and attributes', () => {
+		render(
+			<Sidebar aria-label='Navigation' collapsed>
+				Navigation content
+			</Sidebar>,
+		);
+
+		const sidebar = screen.getByRole('navigation', {
+			name: 'Navigation',
+		});
+
+		expect(sidebar.tagName).toBe('NAV');
+		expect(sidebar).toHaveClass('rcx-sidebar', 'rcx-sidebar--collapsed');
+		expect(sidebar).toHaveAttribute('aria-label', 'Navigation');
+		expect(sidebar).toHaveTextContent('Navigation content');
+	});
+	it('renders the sidepanel variant as a div', () => {
+		render(
+			<Sidebar variant='sidepanel' aria-label='Calls'>
+				Panel content
+			</Sidebar>,
+		);
+
+		const panel = screen.getByLabelText('Calls');
+
+		expect(panel.tagName).toBe('DIV');
+		expect(panel).toHaveClass('rcx-sidepanel');
+		expect(panel).not.toHaveClass('rcx-sidebar');
+		expect(panel).toHaveTextContent('Panel content');
 	});
 });

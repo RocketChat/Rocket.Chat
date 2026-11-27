@@ -2,6 +2,7 @@ import { composeStories } from '@storybook/react';
 import { screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
+import Sidepanel from './Sidepanel';
 import * as stories from './Sidepanel.stories';
 import SidepanelDivider from './SidepanelDivider';
 import SidepanelHeader from './SidepanelHeader';
@@ -39,5 +40,36 @@ describe('[Sidepanel bridges]', () => {
 
 		expect(screen.getByRole('separator')).toHaveClass('rcx-sidepanel--divider');
 		expect(screen.getByRole('separator')).not.toHaveClass('rcx-item-divider');
+	});
+});
+describe('[Sidepanel]', () => {
+	it('preserves the root element and HTML attributes', () => {
+		render(
+			<Sidepanel role='complementary' aria-label='Calls' className='custom-panel'>
+				Panel content
+			</Sidepanel>,
+		);
+
+		const panel = screen.getByRole('complementary', { name: 'Calls' });
+
+		expect(panel.tagName).toBe('DIV');
+		expect(panel).toHaveClass('rcx-sidepanel', 'custom-panel');
+		expect(panel).toHaveAttribute('aria-label', 'Calls');
+		expect(panel).toHaveTextContent('Panel content');
+	});
+	
+	it('preserves the sidepanel variant when props contain an extra variant', () => {
+		const props = {
+			variant: 'default' as const,
+			'aria-label': 'Calls',
+		};
+
+		render(<Sidepanel {...props} />);
+
+		const panel = screen.getByLabelText('Calls');
+
+		expect(panel.tagName).toBe('DIV');
+		expect(panel).toHaveClass('rcx-sidepanel');
+		expect(panel).not.toHaveClass('rcx-sidebar');
 	});
 });
