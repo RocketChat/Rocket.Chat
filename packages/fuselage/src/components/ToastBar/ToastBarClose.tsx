@@ -17,7 +17,7 @@ export type ToastBarCloseProps = {
  */
 const ToastBarClose = ({ label = 'Dismiss alert', onClose, ...props }: ToastBarCloseProps) => (
 	<ItemActions {...props}>
-		<IconButton size='tiny' icon='cross' aria-label={label} onClick={onClose} />
+		<IconButton size='mini' icon='cross' aria-label={label} onClick={onClose} />
 	</ItemActions>
 );
 

@@ -33,6 +33,7 @@ const ToastBarSurface = ({
 	<ToastBarContext.Provider value={variant}>
 		<Item
 			{...props}
+			multiline
 			is={is}
 			inset={inset}
 			insetBlock={insetBlock}
