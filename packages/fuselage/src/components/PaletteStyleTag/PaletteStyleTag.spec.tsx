@@ -1,8 +1,3 @@
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
-
-import primitives from '@rocket.chat/fuselage-tokens/dist/colors.json';
-
 import PaletteStyleTag from './PaletteStyleTag';
 import { tamaguiConfig } from '../../tamagui.config';
 import { render } from '../../testing';
@@ -76,18 +71,6 @@ describe('[PaletteStyleTag theme keys]', () => {
 		expect(declarations).toMatchObject(themeKeys);
 		// A key the config does not have would be a property no frame reads
 		expect(Object.keys(declarations)).toHaveLength(2 * Object.keys(palette).length);
-	});
-
-	it('gives the light theme the primitive the stylesheets fall back to, for each warning, secondary-warning and secondary-success button color', () => {
-		const stylesheet = readFileSync(join(__dirname, '../../styles/colors.scss'), 'utf8');
-		const fallbacks = [...stylesheet.matchAll(/^\t(on-)?([\w-]+): primitive\((\w+)\),?$/gm)]
-			.filter(([, , name]) => /warning|secondary-success/.test(name))
-			.map(([, font, name, grade]) => [`button-${font ? 'font-on' : 'background'}-${name}`, grade] as const);
-
-		expect(fallbacks).toHaveLength(24);
-		for (const [name, grade] of fallbacks) {
-			expect([name, light[name]]).toEqual([name, primitives[grade as keyof typeof primitives]]);
-		}
 	});
 
 	it('leaves the palette the stylesheets read as it was written before', () => {

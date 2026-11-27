@@ -30,10 +30,10 @@
 	}
 
 	&::-webkit-scrollbar-thumb {
-		background-color: colors.primitive(n100, 0.05);
+		background-color: colors.surface(scrollbar-thumb);
 	}
 
 	&:hover::-webkit-scrollbar-thumb {
-		background-color: colors.primitive(n100, 0.15);
+		background-color: colors.surface(scrollbar-thumb-hover);
 	}
 }
