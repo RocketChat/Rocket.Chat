@@ -322,3 +322,19 @@ Structure and values, by file (comments in the code name each): `surfaces/Fusela
 Presses (no touch tool; handler wiring only by reading), a comparison with the web Storybook, dark theme, Android, `isSafeUrl` (not called yet). A `{type:'button'}` without `text` draws an empty button; a small image block keeps blank space around it (contain inside the capped box).
 
 u2 needs: the trigger id and `ui.interaction` POST behind `onAction`, `Alert` for `confirm`, `Linking` after `isSafeUrl` for a button `url`, the `notify-user` stream, and `rid`/`mid` passed to a `UiKitMessage` with the stack's prop shape.
+
+## Avatar sizing with real server markup
+
+Report: on a real session the room list showed a few huge blocks with clipped letters and a room showed a column of squares with no text. It did not reproduce in mock mode, nor with the real markup below.
+
+What the public server sends (saved from `/avatar/<username>`, `/avatar/room/<rid>`, `/avatar/%23general`): `image/svg+xml`, `<svg xmlns viewBox="0 0 200 200">` with a `rect` and a centered `<text>`, no `width`, `height` or `style`. Users and rooms use the same markup; only the color and the letter differ. An upload comes as `image/jpeg` or `image/png` of any size.
+
+Measured on the iPhone 17 Pro simulator with 39 rooms and 54 messages, avatars cycling through those SVGs and an 1800x1200 JPEG: every avatar 36x36, row 402x44, message row 402x53. The previous code (percent sizes inside the Fuselage container) also stayed 36x36 with SVG variants that add `width="1000"`, drop the viewBox, or size in percent, but drew them cropped. So the avatar markup alone does not explain the report; the cause on the real session is not found yet.
+
+Changes that make the avatar independent of whatever the server sends: `AppAvatar` draws in a fixed token-size slot (`overflow: hidden`, `flexShrink: 0`), `SvgXml` gets pixel sizes, `preserveAspectRatio` and a viewBox rebuilt from the markup when missing, and the non-SVG path sits in the same slot. A dev build warns when an avatar measures more than its slot plus 2pt.
+
+Reproduce in mock: `EXPO_PUBLIC_CHAT_MOCK=rooms EXPO_PUBLIC_CHAT_MOCK_AVATARS=real` (or `=room`) points mock avatars at the public endpoints plus a large JPEG and grows the lists. The gallery cell "Avatar real formats" (`EXPO_PUBLIC_GALLERY=1 EXPO_PUBLIC_GALLERY_ONLY='Avatar real'`) shows the saved markup and variants at x24 and x36 beside a title.
+
+Diagnose a real session: start with `EXPO_PUBLIC_LAYOUT_DEBUG=1`. A text overlay lists the measured size of the room list, a message row, the avatar column and the avatars, the opening `<svg>` tag of the first avatar the server sent, and the status and content type of the first non-SVG one. No names or ids are shown.
+
+![rooms](docs/chat/avatar-real-format-rooms.png) ![room](docs/chat/avatar-real-format-room.png)
