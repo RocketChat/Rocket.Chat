@@ -1,6 +1,6 @@
 # Spec: Native message composer
 
-Status: Draft: open questions answered 2026-11-26, awaiting the user's sign-off. Not accepted; nothing is implemented from it until the user signs it.
+Status: Accepted: signed by the user on 2026-11-26. Ready to be planned ([COMPOSER-PLAN.md](COMPOSER-PLAN.md)); the open gates listed under Sign-off and Readiness stay gates.
 Author: drafted by an agent; Guilherme Gazzo decides and owns the spec and the plan.
 Intent: [COMPOSER-INTENT.md](COMPOSER-INTENT.md) (outcomes `O1` to `O19`, decisions `D1` to `D10`, gaps `Q1` to `Q15`). Lab evidence: [TEXTINPUT-FINDINGS.md](TEXTINPUT-FINDINGS.md). Gap report: [NATIVE-MESSAGE-COMPOSER-GAP.md](NATIVE-MESSAGE-COMPOSER-GAP.md), sections 6 to 9.
 
@@ -29,6 +29,18 @@ Deferred, with the reason:
 - **Web composer**: the composer on the tree this branch builds from (re-checked before acceptance against `origin/message-list/09-thread-list-and-cleanup`, per the intent).
 - **Same as web**: for the same text, selection, quotes, room and user preference, the same function runs or the same body reaches the same server call.
 - **Return key**: the soft or hardware Return, detected through `onKeyPress` reporting `Enter`.
+
+## Sign-off
+
+On 2026-11-26 the user signed this spec in the session ("ok assinado") after reading the artifact checklist and the draft. What was signed: the 55 active requirements R1 to R59 (R39 to R42 stay deferred and are not part of acceptance), the settled decisions D1 to D10 of the intent, and the answers of 2026-11-26 listed under "Settled on 2026-11-26".
+
+What the sign-off does not cover. These stay gates, not assumptions, and no requirement is weakened or removed by them:
+
+- Probe P1: the live `commands.list` payload (R26, R27).
+- Probe P2: that the server accepts a client publish on `notify-room` (R48, R49).
+- Probe P3: `onKeyPress` order under a real Return, which needs idb or XCUITest (R7, R8; Q17).
+- The real-device IME check (Q15; R54, R55).
+- The Android decision: nothing here is accepted for Android.
 
 ## Requirements
 
@@ -289,11 +301,16 @@ The user took the recommended option for each.
 
 ## Readiness
 
-Not ready to be planned. Met: every requirement is one observable statement with an outcome, an interface and a proof class; the user's decisions and the answers of 2026-11-26 are encoded. What still blocks "ready to be planned":
+Ready to be planned: the plan is the next document ([COMPOSER-PLAN.md](COMPOSER-PLAN.md)). Every requirement is one observable statement with an outcome, an interface and a proof class; the user signed the spec on 2026-11-26 (see Sign-off). Nothing is implemented yet.
 
-1. The user's sign-off on this revision.
-2. Three probes:
-   - **P1 `commands.list` coverage** on a live server: names, `permission` per entry, the five `clientOnly` entries, `xmpp-join`, `slackbridge-import`, `sendEmailAttachment`, the 202 retry. Settled from code: the endpoint, its payload shape and the web-only `open`; not settled: what a live server returns.
-   - **P2 `sdk.publish` from the native SDK** on a device or server. Settled from code: `DDPSDK.publish` exists (`DDPSDK.ts:113-118`), the stream is `notify-room`, the key `<rid>/user-activity`, and the web wrapper's call shape differs from the native one. Not settled: that the server accepts the publish and another client receives it.
-   - **P3 `onKeyPress` and text-change order under a real Return**, which needs keystroke injection (idb or XCUITest; the user is updating the Command Line Tools to install idb).
-3. A real-device IME check (Q15, R54, R55) and the Android decision.
+Requirements blocked by an open gate. They are planned, but cannot be accepted until the gate is closed:
+
+| Gate | Needs | Requirements |
+| --- | --- | --- |
+| P1 `commands.list` payload | a live server and the user's session | R26, R27 |
+| P2 client publish on `notify-room` | a live server, two clients | R48, R49 |
+| P3 `onKeyPress` order under a real Return | idb or XCUITest (the user is updating the Command Line Tools to install idb) | R7, R8 (the implementation choice; R7's wording holds either way) |
+| Q15 real-device IME check | a real device | R54, R55 |
+| Android decision | the user | every requirement, for Android only |
+| Message toolbar step c1 | the toolbar step landing | R18, R20 |
+| Q2 caret after insertion | injected typing (class I proofs) | R23, R31, R32 |
