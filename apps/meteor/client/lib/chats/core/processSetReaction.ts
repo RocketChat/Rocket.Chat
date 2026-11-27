@@ -2,7 +2,10 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 
 import type { ChatAPI } from '../ChatAPI';
 
-export type SetReactionChat = Pick<ChatAPI, 'composer' | 'data'>;
+export type SetReactionChat = {
+	readonly composer?: Pick<NonNullable<ChatAPI['composer']>, 'clear'>;
+	readonly data: Pick<ChatAPI['data'], 'findLastMessage'>;
+};
 
 type ReactionUser = { username?: string };
 
