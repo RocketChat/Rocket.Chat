@@ -3,27 +3,43 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { createComposerState, type ComposerStateCore, type ComposerStateCoreParams } from './createComposerState';
 import { createComposerStateCore } from '../../composerStateCore';
 import { clearCalls, getCalls, record } from '../goldenFakes';
+import { legacyCreateComposerStateCore } from '../legacyComposerStateReference';
 
-const mockHooks: { observers: (() => void)[]; katex: boolean } = { observers: [], katex: false };
+type Failure = 'none' | 'uploads' | 'observe' | 'condition' | 'conditionLater';
+
+const mockHooks: { observers: (() => void)[]; katex: boolean; failure: Failure; observeThis: boolean[] } = {
+	observers: [],
+	katex: false,
+	failure: 'none',
+	observeThis: [],
+};
 
 jest.mock('../uploads', () => ({
 	createUploadsAPI: (room: unknown) => {
 		jest.requireActual('../goldenFakes').record('createUploadsAPI', room);
+		if (mockHooks.failure === 'uploads') {
+			throw new Error('uploads failed');
+		}
 		return { id: 'uploads' };
 	},
 }));
 
-jest.mock('../../settings', () => ({
-	settings: {
-		observe: (key: string, callback: () => void) => {
+jest.mock('../../settings', () => {
+	const self = {
+		observe(this: unknown, key: string, callback: () => void) {
 			jest.requireActual('../goldenFakes').record('settings.observe', key);
+			mockHooks.observeThis.push(this === self);
+			if (mockHooks.failure === 'observe') {
+				throw new Error('observe failed');
+			}
 			mockHooks.observers.push(callback);
 			return () => {
 				jest.requireActual('../goldenFakes').record('settings.stop');
 			};
 		},
-	},
-}));
+	};
+	return { settings: self };
+});
 
 jest.mock('../../messageBoxFormatting', () => ({
 	formattingButtons: [
@@ -33,6 +49,9 @@ jest.mock('../../messageBoxFormatting', () => ({
 			label: 'katex',
 			condition: () => {
 				jest.requireActual('../goldenFakes').record('condition.katex', mockHooks.katex);
+				if (mockHooks.failure === 'condition' || (mockHooks.failure === 'conditionLater' && mockHooks.katex)) {
+					throw new Error('condition failed');
+				}
 				return mockHooks.katex;
 			},
 		},
@@ -148,7 +167,9 @@ const runCore = async ({ params, run }: Script) => {
 beforeEach(() => {
 	clearCalls();
 	mockHooks.observers = [];
+	mockHooks.observeThis = [];
 	mockHooks.katex = false;
+	mockHooks.failure = 'none';
 });
 
 describe('composer state: adapter and core agree', () => {
@@ -198,5 +219,109 @@ describe('composer state: adapter and core agree', () => {
 		observed();
 
 		expect(state.formatters.get().map(({ label }) => label)).toEqual(['one', 'two']);
+	});
+});
+
+const coreFactory = (params: ComposerStateCoreParams): ComposerStateCore => {
+	const { createUploadsAPI } = jest.requireMock('../uploads') as { createUploadsAPI: (room: unknown) => unknown };
+	const { settings } = jest.requireMock('../../settings') as { settings: { observe: (key: string, cb: () => void) => () => void } };
+	return createComposerState(params, {
+		createUploads: (target) => createUploadsAPI(target) as ComposerStateCore['uploads'],
+		getFormattingButtons: () => formattingButtons as never,
+		observeSettings: (callback) => settings.observe('*', callback),
+	});
+};
+
+const factories: [string, (params: ComposerStateCoreParams) => ComposerStateCore][] = [
+	['adapter', createComposerStateCore],
+	['core', coreFactory],
+];
+
+const execute = async (create: (params: ComposerStateCoreParams) => ComposerStateCore, { params, run }: Script, failure: Failure) => {
+	clearCalls();
+	mockHooks.observers = [];
+	mockHooks.observeThis = [];
+	mockHooks.katex = false;
+	mockHooks.failure = failure;
+
+	try {
+		const state = logged(create(params));
+		const keys = Object.keys(state);
+		await run(state);
+		return { log: getCalls(), observeThis: mockHooks.observeThis, keys, view: view(state) };
+	} catch (error) {
+		return { log: getCalls(), observeThis: mockHooks.observeThis, error: (error as Error).message };
+	}
+};
+
+const failures: Failure[] = ['none', 'uploads', 'observe', 'condition', 'conditionLater'];
+
+describe('composer state: the extracted code matches a frozen copy of the old logic', () => {
+	describe.each(failures)('failure mode: %s', (failure) => {
+		it.each(scripts.map((script) => [script.name, script] as const))('%s', async (_name, script) => {
+			const legacy = await execute(legacyCreateComposerStateCore, script, failure);
+
+			for (const [, create] of factories) {
+				expect(await execute(create, script, failure)).toStrictEqual(legacy);
+			}
+		});
+	});
+
+	it('fails where the old code failed, and reads where it read', async () => {
+		const outcomes = await Promise.all(failures.map((failure) => execute(legacyCreateComposerStateCore, scripts[0], failure)));
+
+		expect(outcomes.map((outcome) => ('error' in outcome ? outcome.error : 'ok'))).toEqual([
+			'ok',
+			'uploads failed',
+			'observe failed',
+			'condition failed',
+			'ok',
+		]);
+		expect(outcomes[1].log.map(([name]) => name)).toEqual(['condition.katex', 'settings.observe', 'createUploadsAPI']);
+		expect(outcomes[2].log.map(([name]) => name)).toEqual(['condition.katex', 'settings.observe']);
+		expect(outcomes[3].log.map(([name]) => name)).toEqual(['condition.katex']);
+	});
+
+	it.each(factories)('%s calls settings.observe as a method of settings', async (_name, create) => {
+		const outcome = await execute(create, scripts[0], 'none');
+
+		expect(outcome.observeThis).toEqual([true]);
+	});
+
+	it.each([['legacy', legacyCreateComposerStateCore] as const, ...factories])('%s builds independent instances', (_name, create) => {
+		clearCalls();
+		mockHooks.observers = [];
+		const first = create({ room });
+		const second = create({ room });
+
+		first.setEditingMode(true);
+		first.addQuotedMessage(message('a'));
+
+		expect(second.editing.get()).toBe(false);
+		expect(second.quotedMessages.get()).toEqual([]);
+		expect(first).not.toBe(second);
+		expect(first.uploads).toEqual(second.uploads);
+	});
+
+	it('keeps the key order of the old state object', async () => {
+		const legacy = await execute(legacyCreateComposerStateCore, scripts[0], 'none');
+
+		expect(legacy.keys).toEqual([
+			'addQuotedMessage',
+			'dismissQuotedMessage',
+			'dismissAllQuotedMessages',
+			'quotedMessages',
+			'setEditingMode',
+			'editing',
+			'setRecordingMode',
+			'recording',
+			'setRecordingVideo',
+			'recordingVideo',
+			'setIsMicrophoneDenied',
+			'isMicrophoneDenied',
+			'formatters',
+			'stopFormatterSubscription',
+			'uploads',
+		]);
 	});
 });

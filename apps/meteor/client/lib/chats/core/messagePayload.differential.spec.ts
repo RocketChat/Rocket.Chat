@@ -5,6 +5,7 @@ import { composeMessageCore, getUpdateMessageParams, type ComposeMessageOptions 
 import { prependReplies } from '../../utils/prependReplies';
 import { createDataAPI } from '../data';
 import { NOW, behavior, getCalls, record, resetFakes, resetRandom } from '../goldenFakes';
+import { legacyComposeMessage, legacyUpdateMessage } from '../legacyPayloadReference';
 
 jest.mock('../../SDKClient', () => jest.requireActual('../goldenFakes').sdkModule);
 jest.mock('../../user', () => jest.requireActual('../goldenFakes').userModule);
@@ -168,5 +169,127 @@ describe('updateMessage params: adapter and core agree', () => {
 		getUpdateMessageParams(edited());
 
 		expect(getCalls()).toEqual([]);
+	});
+});
+
+const contexts: { name: string; rid: string; tmid: string | undefined }[] = [
+	{ name: 'main room', rid: 'GENERAL', tmid: undefined },
+	{ name: 'thread', rid: 'GENERAL', tmid: 'ctx-thread' },
+	{ name: 'other room thread', rid: 'ROOM-2', tmid: 'thread-2' },
+];
+
+const texts = ['', 'hello', 'multi\nline', '  spaced  '];
+
+const optionSets: [string, ComposeMessageOptions][] = [
+	...[quoted(), quoted('q1'), quoted('q1', 'q2', 'q3')].flatMap((list) =>
+		([undefined, true, false] as const).map((sendToChannel): [string, ComposeMessageOptions] => [
+			`${list.length} quotes, sendToChannel ${String(sendToChannel)}`,
+			{ quotedMessages: list, sendToChannel },
+		]),
+	),
+	['edit', { quotedMessages: [], originalMessage: original() }],
+	['edit of a thread message', { quotedMessages: [], originalMessage: original({ tmid: 'orig-thread' }) }],
+	['edit of a thread message with tshow', { quotedMessages: [], originalMessage: original({ tmid: 'orig-thread' }), sendToChannel: true }],
+	['edit without an id, with quotes', { quotedMessages: quoted('q1'), originalMessage: original({ _id: undefined }) }],
+	['edit with an empty id', { quotedMessages: [], originalMessage: original({ _id: '' }) }],
+	['edit with quotes', { quotedMessages: quoted('q1', 'q2'), originalMessage: original() }],
+	['edit with tshow but no thread', { quotedMessages: [], originalMessage: original(), sendToChannel: true }],
+	['null original message', { quotedMessages: [], originalMessage: null }],
+];
+
+const outcome = async (run: () => Promise<unknown>) => {
+	const settled = await run().then(
+		(value) => ({ value, keys: JSON.stringify(value) }),
+		(error: Error) => ({ error: error.message }),
+	);
+	return { settled, log: getCalls() };
+};
+
+const fresh = () => {
+	resetFakes();
+	resetRandom();
+};
+
+describe('composeMessage: the extracted code matches a frozen copy of the old logic', () => {
+	it('covers 3 contexts x 4 texts x 17 option sets', () => {
+		expect(contexts.length * texts.length * optionSets.length).toBe(204);
+	});
+
+	describe.each(contexts)('$name', ({ rid, tmid }) => {
+		it.each(texts.map((text) => [JSON.stringify(text), text]))('text %s', async (_label, text) => {
+			for (const [name, options] of optionSets) {
+				fresh();
+				const legacy = await outcome(() => legacyComposeMessage({ rid, tmid }, text, options));
+				fresh();
+				const adapter = await outcome(() => createDataAPI({ rid, tmid }).composeMessage(text, options));
+				fresh();
+				const core = await outcome(() =>
+					composeMessageCore(
+						{ prependReplies: (replies, list) => prependReplies(replies, list), randomId: () => Random.id() },
+						{ rid, tmid },
+						text,
+						options,
+					),
+				);
+
+				expect({ name, ...adapter }).toStrictEqual({ name, ...legacy });
+				expect({ name, ...core }).toStrictEqual({ name, ...legacy });
+			}
+		});
+	});
+
+	it('rejects like the old code when a permalink fails, before it draws an id', async () => {
+		const options = { quotedMessages: quoted('q1', 'q2') };
+		const failing = () => {
+			fresh();
+			behavior.permaLinkError = new Error('no link');
+		};
+
+		failing();
+		const legacy = await outcome(() => legacyComposeMessage({ rid: 'GENERAL', tmid: undefined }, 'x', options));
+		failing();
+		const adapter = await outcome(() => createDataAPI({ rid: 'GENERAL', tmid: undefined }).composeMessage('x', options));
+
+		expect(legacy.settled).toEqual({ error: 'no link' });
+		expect(adapter).toStrictEqual(legacy);
+		expect(Random.id()).toBe('random-1');
+	});
+});
+
+const v1 = { algorithm: 'rc.v1.aes-sha2', ciphertext: 'abc' };
+const v2 = { algorithm: 'rc.v2.aes-sha2', ciphertext: 'abc', iv: 'iv', kid: 'kid' };
+
+const legacyUpdateCases: [string, IEditedMessage, string[] | undefined][] = [
+	['plain text', edited(), undefined],
+	['preview urls', edited(), ['https://a.example']],
+	['empty preview urls', edited(), []],
+	['custom fields', edited({ customFields: { k: 1 } }), undefined],
+	['e2e v1 with mentions and preview urls', edited({ t: 'e2e', content: v1, e2eMentions: { e2eUserMentions: ['u'] } }), ['https://x']],
+	['e2e v1 without mentions', edited({ t: 'e2e', content: v1 }), undefined],
+	['e2e v2', edited({ t: 'e2e', content: v2 }), undefined],
+	[
+		'e2e v2 with mentions',
+		edited({ t: 'e2e', content: v2, e2eMentions: { e2eUserMentions: ['u'], e2eChannelMentions: ['c'] } }),
+		['https://x'],
+	],
+	[
+		'e2e v2 missing its iv is sent as text',
+		edited({ t: 'e2e', content: { algorithm: 'rc.v2.aes-sha2', ciphertext: 'abc' }, msg: 'm' }),
+		undefined,
+	],
+	['unknown algorithm is sent as text', edited({ content: { algorithm: 'other', ciphertext: 'abc' }, msg: 'm' }), undefined],
+	['content together with text', edited({ content: v1, msg: 'ignored' }), ['https://y']],
+];
+
+describe('updateMessage: the extracted code matches a frozen copy of the old logic', () => {
+	it.each(legacyUpdateCases)('%s', async (_name, message, previewUrls) => {
+		fresh();
+		const legacy = await outcome(() => legacyUpdateMessage(message, previewUrls));
+		fresh();
+		const adapter = await outcome(() => createDataAPI({ rid: 'GENERAL', tmid: undefined }).updateMessage(message, previewUrls));
+
+		expect(adapter).toStrictEqual(legacy);
+		expect(legacy.log).toHaveLength(1);
+		expect(JSON.stringify(legacy.log)).toBe(JSON.stringify(adapter.log));
 	});
 });
