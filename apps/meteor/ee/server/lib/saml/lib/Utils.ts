@@ -412,7 +412,7 @@ export class SAMLUtils {
 			}
 		}
 
-		if (mapping.regex && mainValue?.match) {
+		if (mapping.regex && typeof mainValue === 'string') {
 			let regexValue;
 			const match = mainValue.match(new RegExp(mapping.regex));
 			if (match?.length) {
@@ -505,7 +505,7 @@ export class SAMLUtils {
 		if (profile.channels) {
 			if (Array.isArray(profile.channels)) {
 				userObject.channels = profile.channels;
-			} else {
+			} else if (typeof profile.channels === 'string') {
 				userObject.channels = profile.channels.split(',');
 			}
 		}

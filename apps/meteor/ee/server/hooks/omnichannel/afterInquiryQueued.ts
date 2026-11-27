@@ -16,7 +16,7 @@ export const afterInquiryQueuedFunc = async (inquiry: ILivechatInquiryRecord) =>
 	await OmnichannelQueueInactivityMonitor.scheduleInquiry(inquiry._id, new Date(newQueueTime.format()));
 };
 
-afterInquiryQueued.patch(async (originalFn: any, inquiry: ILivechatInquiryRecord) => {
-	await originalFn();
+afterInquiryQueued.patch(async (originalFn, inquiry) => {
+	await originalFn(inquiry);
 	return afterInquiryQueuedFunc(inquiry);
 });

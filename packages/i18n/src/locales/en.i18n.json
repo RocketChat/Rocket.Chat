@@ -1395,6 +1395,10 @@
   "CAS_version_Description": "Only use a supported CAS version supported by your CAS SSO service.",
   "Categories": "Categories",
   "Categories_are_private_custom_groupings_of_rooms": "Categories are private custom groupings of rooms.",
+  "Categories_selected": {
+    "one": "Categories, {{count}} selected",
+    "other": "Categories, {{count}} selected"
+  },
   "Categories*": "Categories*",
   "Category": "Category",
   "Category__name__deleted": "Category {{name}} deleted.",
@@ -2349,6 +2353,7 @@
   "Download_Snippet": "Download",
   "Downloading_file_from_external_URL": "Downloading file from external URL",
   "Draft": "Draft",
+  "Drafts": "Drafts",
   "Drag_and_drop_license_placeholder": "Drag and drop a file here, or paste your license string",
   "Drop_to_upload_file": "Drop to upload file",
   "Dry_run": "Dry run",
@@ -4898,6 +4903,8 @@
   "No_discussions_dms_filter_description": "Discussions belonging to this user will appear here.",
   "No_Discussions_found": "No discussions found",
   "No_discussions_yet": "No discussions yet",
+  "No_drafts": "No drafts",
+  "No_drafts_description": "Rooms with draft messages will appear here.",
   "No_emojis_found": "No emojis found",
   "No_Encryption": "No encryption",
   "No_events": "No events",

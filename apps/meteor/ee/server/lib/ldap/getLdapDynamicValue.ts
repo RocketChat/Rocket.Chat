@@ -10,7 +10,7 @@ export function getLdapDynamicValue(ldapUser: ILDAPEntry, attributeSetting: stri
 
 	// If the attribute setting is a template, then convert the variables in it
 	if (attributeSetting.includes('#{')) {
-		return attributeSetting.replace(/#{(.+?)}/g, (_match, field) => {
+		return attributeSetting.replace(/#{(.+?)}/g, (_match, field: string) => {
 			const key = field.trim();
 
 			if (ldapKeyExists(ldapUser, key)) {

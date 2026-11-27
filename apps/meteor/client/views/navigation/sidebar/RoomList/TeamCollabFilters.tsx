@@ -15,6 +15,7 @@ const TeamCollabFilters = () => {
 				<RoomListFiltersItem group='all' icon={sidePanelFiltersConfig.all.icon} />
 				<RoomListFiltersItem group='favorites' icon={sidePanelFiltersConfig.favorites.icon} />
 				{isDiscussionEnabled && <RoomListFiltersItem group='discussions' icon={sidePanelFiltersConfig.discussions.icon} />}
+				<RoomListFiltersItem group='drafts' icon={sidePanelFiltersConfig.drafts.icon} />
 			</Box>
 			<Box paddingBlock={4} paddingInline={12}>
 				<Divider variation='light' flush />

@@ -49,7 +49,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 			datesArray[i] = addDays(start, i).toISOString();
 		}
 
-		const valuesArray = new Array(24);
+		const valuesArray = new Array<{ id: string; data: { x: string; y: number }[] }>(24);
 		for (let hour = 0; hour < 24; hour++) {
 			valuesArray[hour] = {
 				id: hour.toString(),

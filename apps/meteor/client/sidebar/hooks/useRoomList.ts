@@ -125,10 +125,11 @@ export const useRoomList = ({
 				const title = category ? category.name : key;
 				const translateTitle = SIDEBAR_SYSTEM_GROUP_KEYS.includes(key as any);
 				const collapsed = isCollapsed(key);
-				const showUnreadsForGroup = isEnterprise ? isShowUnreads(key) : false;
-				const showUnreads = category ? Boolean(category.showUnreads) : showUnreadsForGroup;
-				const keepUnreadsOnTopForGroup = isEnterprise ? isKeepUnreadsOnTop(key) : false;
-				const keepUnreadsOnTop = category ? Boolean(category.keepUnreadsOnTop) : keepUnreadsOnTopForGroup;
+				// Whatever is stored for the Unread group stays off: it offers no unread options, so an enabled
+				// flag would keep it from ever collapsing with nothing left to turn it off.
+				const hasUnreadOptions = isEnterprise && key !== 'Unread';
+				const showUnreads = hasUnreadOptions && Boolean(category ? category.showUnreads : isShowUnreads(key));
+				const keepUnreadsOnTop = hasUnreadOptions && Boolean(category ? category.keepUnreadsOnTop : isKeepUnreadsOnTop(key));
 				const allRooms = [...set];
 				// A collapsed group still shows the room currently open, so the user can locate themselves in the
 				// sidebar, plus its unread rooms when "Show unreads" is enabled.

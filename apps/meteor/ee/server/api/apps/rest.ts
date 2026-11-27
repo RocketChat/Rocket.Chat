@@ -539,6 +539,7 @@ export class AppsRestApi {
 
 					try {
 						const { event, externalComponent } = this.bodyParams;
+						// oxlint-disable-next-line typescript/no-unsafe-call -- externalComponentEvent is not declared on IListenerBridge
 						const result = (Apps.getBridges()?.getListenerBridge() as Record<string, any>).externalComponentEvent(event, externalComponent);
 
 						return API.v1.success({ result });
@@ -1215,14 +1216,15 @@ export class AppsRestApi {
 						const setting = manager.getSettingsManager().getAppSetting(this.urlParams.id, this.urlParams.settingId);
 
 						return API.v1.success({ setting });
-					} catch (e: any) {
-						if (e.message.includes('No setting found')) {
+					} catch (e) {
+						const message = e instanceof Error ? e.message : String(e);
+						if (message.includes('No setting found')) {
 							return API.v1.notFound(`No Setting found on the App by the id of: "${this.urlParams.settingId}"`);
 						}
-						if (e.message.includes('No App found')) {
+						if (message.includes('No App found')) {
 							return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 						}
-						return API.v1.failure(e.message);
+						return API.v1.failure(message);
 					}
 				},
 				async post() {
@@ -1234,14 +1236,15 @@ export class AppsRestApi {
 						await manager.getSettingsManager().updateAppSetting(this.urlParams.id, this.bodyParams.setting);
 
 						return API.v1.success();
-					} catch (e: any) {
-						if (e.message.includes('No setting found')) {
+					} catch (e) {
+						const message = e instanceof Error ? e.message : String(e);
+						if (message.includes('No setting found')) {
 							return API.v1.notFound(`No Setting found on the App by the id of: "${this.urlParams.settingId}"`);
 						}
-						if (e.message.includes('No App found')) {
+						if (message.includes('No App found')) {
 							return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 						}
-						return API.v1.failure(e.message);
+						return API.v1.failure(message);
 					}
 				},
 			},
@@ -1256,7 +1259,7 @@ export class AppsRestApi {
 
 					if (prl) {
 						return API.v1.success({
-							apis: (manager as Record<string, any>).apiManager.listApis(this.urlParams.id), // TODO: this is accessing a private property from the manager, we should expose a method to get the list of APIs
+							apis: manager.getApiManager().listApis(this.urlParams.id),
 						});
 					}
 					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);

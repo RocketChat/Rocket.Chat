@@ -1,16 +1,12 @@
-import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import type { HTMLAttributes, Ref } from 'react';
-import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useItemListNavigation } from '../../../../hooks/useItemListNavigation';
+import type { NavigableListProps } from '../../../../components/NavigableList';
+import NavigableList from '../../../../components/NavigableList';
 
-const RoomFilesListWrapper = forwardRef(function RoomFilesListWrapper(props: HTMLAttributes<HTMLDivElement>, ref: Ref<HTMLDivElement>) {
+const RoomFilesListWrapper = (props: Omit<NavigableListProps, 'aria-label'>) => {
 	const { t } = useTranslation();
-	const filesListRef = useItemListNavigation();
-	const mergedRefs = useMergedRefs(ref, filesListRef);
 
-	return <div role='list' aria-label={t('Files_list')} ref={mergedRefs} {...props} />;
-});
+	return <NavigableList aria-label={t('Files_list')} {...props} />;
+};
 
 export default RoomFilesListWrapper;

@@ -53,7 +53,7 @@ const PruneMessagesWithData = () => {
 	const newerTime = watched.newer?.time ?? '';
 	const olderDate = watched.older?.date ?? '';
 	const olderTime = watched.older?.time ?? '';
-	const users = watched.users ?? [];
+	const users = useMemo(() => watched.users ?? [], [watched.users]);
 	const inclusive = watched.inclusive ?? false;
 	const pinned = watched.pinned ?? false;
 	const discussion = watched.discussion ?? false;

@@ -37,6 +37,17 @@ const AuditForm = ({ type, onSubmit, setSelectedRoom }: AuditFormProps) => {
 		onSubmit?.({ type, ...form.getValues() });
 	};
 
+	const actions = (
+		<ButtonGroup>
+			<Button variant='secondary' onClick={() => window.print()}>
+				{t('Export')} {t('PDF')}
+			</Button>
+			<Button variant='primary' type='submit'>
+				{t('Apply')}
+			</Button>
+		</ButtonGroup>
+	);
+
 	return (
 		<Box is='form' onSubmit={handleSubmit(submit)} display='flex' flexDirection='column' gap={4}>
 			<Stack direction='row' gap={8}>
@@ -59,21 +70,11 @@ const AuditForm = ({ type, onSubmit, setSelectedRoom }: AuditFormProps) => {
 					</Field>
 				</Box>
 			</Stack>
-			<Stack direction='row' align='start' gap={8}>
-				{type === '' && <RoomsTab form={form} setSelectedRoom={setSelectedRoom} />}
-				{type === 'u' && <UsersTab form={form} />}
-				{type === 'd' && <DirectTab form={form} />}
-				{type === 'l' && <OmnichannelTab form={form} />}
-				<Box flexShrink={0} marginBlockStart='x24'>
-					<ButtonGroup align='end'>
-						<Button variant='secondary' onClick={() => window.print()}>
-							{t('Export')} {t('PDF')}
-						</Button>
-						<Button variant='primary' type='submit'>
-							{t('Apply')}
-						</Button>
-					</ButtonGroup>
-				</Box>
+			<Stack direction='row' gap={8}>
+				{type === '' && <RoomsTab form={form} setSelectedRoom={setSelectedRoom} actions={actions} />}
+				{type === 'u' && <UsersTab form={form} actions={actions} />}
+				{type === 'd' && <DirectTab form={form} actions={actions} />}
+				{type === 'l' && <OmnichannelTab form={form} actions={actions} />}
 			</Stack>
 		</Box>
 	);

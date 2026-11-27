@@ -148,13 +148,10 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 
 	const showVoipExtension = useShowVoipExtension();
 
-	const watched = useWatch({ control });
-	const avatar = useWatch({ control, name: 'avatar' });
-	const username = watched.username ?? '';
-	const setRandomPassword = watched.setRandomPassword ?? false;
-	const password = watched.password ?? '';
-	const userFullName = watched.name ?? '';
-	const presenceDisabledByAdmin = watched.presenceDisabledByAdmin ?? false;
+	const [avatar, username, setRandomPassword, password, userFullName, presenceDisabledByAdmin] = useWatch({
+		control,
+		name: ['avatar', 'username', 'setRandomPassword', 'password', 'name', 'presenceDisabledByAdmin'],
+	});
 	const showUserStatusSection = userStatusEnabled && canManageUserStatus;
 	const statusFieldsDisabled = !userStatusEnabled || (showUserStatusSection && presenceDisabledByAdmin === true);
 

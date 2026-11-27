@@ -40,7 +40,7 @@ export async function updateContactsCustomFields(
 			prev.conflictingFields.push({ field: `customFields.${curr.key}`, value: curr.value });
 			return prev;
 		},
-		{} as Record<string, any>,
+		{} as Pick<ILivechatContact, 'conflictingFields'> & { [field: `customFields.${string}`]: string },
 	);
 
 	if (!Object.keys(contactCustomFieldsToUpdate).length) {

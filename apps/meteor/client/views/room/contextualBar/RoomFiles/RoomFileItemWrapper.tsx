@@ -1,14 +1,10 @@
 import type { IUploadWithUser } from '@rocket.chat/core-typings';
-import type { HTMLAttributes, Ref } from 'react';
-import { forwardRef } from 'react';
 
-export type RoomFileItemWrapperProps = HTMLAttributes<HTMLDivElement> & { item: IUploadWithUser };
+import type { ListRowProps } from '../../../../components/ListRow';
+import ListRow from '../../../../components/ListRow';
 
-const RoomFileItemWrapper = forwardRef(function RoomFileItemWrapper(
-	{ item, ...props }: RoomFileItemWrapperProps,
-	ref: Ref<HTMLDivElement>,
-) {
-	return <div ref={ref} role='listitem' aria-label={item.name} {...props} />;
-});
+export type RoomFileItemWrapperProps = Omit<ListRowProps, 'aria-label'> & { item: IUploadWithUser };
+
+const RoomFileItemWrapper = ({ item, ...props }: RoomFileItemWrapperProps) => <ListRow aria-label={item.name} {...props} />;
 
 export default RoomFileItemWrapper;

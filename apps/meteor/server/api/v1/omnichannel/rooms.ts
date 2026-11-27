@@ -37,7 +37,11 @@ API.v1.addRoute(
 			const closedAtParam = validateDateParams('closedAt', closedAt);
 
 			const hasAdminAccess = await hasPermissionAsync(this.user, 'view-livechat-rooms');
-			const hasAgentAccess = (await hasPermissionAsync(this.user, 'view-l-room')) && agents?.includes(this.userId) && agents?.length === 1;
+			const hasAgentAccess =
+				(await hasPermissionAsync(this.user, 'view-l-room')) &&
+				Array.isArray(agents) &&
+				agents.includes(this.userId) &&
+				agents.length === 1;
 			if (!hasAdminAccess && !hasAgentAccess) {
 				return API.v1.forbidden();
 			}

@@ -8,11 +8,11 @@ import { useTopFivePopularChannels } from './useTopFivePopularChannels';
 import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
 import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
 import { usePeriodSelectorState } from '../../../../components/dashboards/usePeriodSelectorState';
-import LegendSymbol from '../dataView/LegendSymbol';
 import ChartFrame from '../layout/ChartFrame';
 import ChartWithLegend from '../layout/ChartWithLegend';
 import DashboardColumns from '../layout/DashboardColumns';
 import EngagementDashboardCardFilter from '../layout/EngagementDashboardCardFilter';
+import LegendSymbol from '../layout/LegendSymbol';
 import NoDataTile from '../layout/NoDataTile';
 
 const colors = {

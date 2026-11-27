@@ -17,6 +17,7 @@ const proxyObject = (obj: Record<string, any>, forbiddenKeys: string[] = []): Re
 
 			if (typeof value === 'function') {
 				return new ivm.Reference(async (...args: any[]) => {
+					// oxlint-disable-next-line typescript/no-unsafe-call -- proxies calls to arbitrary host functions
 					const result = obj[key](...args);
 
 					if (result && result instanceof Promise) {
@@ -62,7 +63,7 @@ const copyObject = (obj: Record<string, any> | any[]): Record<string, any> | any
 				const data = obj[key];
 
 				if (typeof data === 'function') {
-					// oxlint-disable-next-line typescript/no-unsafe-return -- proxies calls to arbitrary host functions whose results are untyped
+					// oxlint-disable-next-line typescript/no-unsafe-return, typescript/no-unsafe-call -- proxies calls to arbitrary host functions whose results are untyped
 					return [key, new ivm.Callback((...args: any[]) => obj[key](...args))];
 				}
 

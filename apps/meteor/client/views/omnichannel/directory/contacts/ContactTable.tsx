@@ -113,7 +113,7 @@ function ContactTable() {
 				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
-						<GenericTableLoadingTable headerCells={headers.props.children.filter(Boolean).length} />
+						<GenericTableLoadingTable headerCells={columns.length} />
 					</GenericTableBody>
 				</GenericTable>
 			)}

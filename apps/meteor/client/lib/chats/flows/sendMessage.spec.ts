@@ -129,6 +129,27 @@ describe('sendMessage', () => {
 		expect(mockedDispatchToastMessage).toHaveBeenCalledWith({ type: 'error', message: expect.any(Error) });
 	});
 
+	it('should treat an edit emptied of its text as emptied, whatever uploads wait in the composer', async () => {
+		const original = createFakeMessage({ msg: 'hello' });
+		const processEditing = jest.fn().mockResolvedValue(true);
+		const chat = {
+			composer: { uploads: { get: () => [{ id: 'file-1' }] } },
+			currentEditingMessage: { getMID: () => original._id, stop: jest.fn() },
+			readStateManager: { clearUnreadMark: jest.fn() },
+			data: {
+				isSubscribedToRoom: jest.fn().mockResolvedValue(true),
+				composeMessage: jest.fn(),
+				findMessageByID: jest.fn().mockResolvedValue(original),
+			},
+			flows: { processMessageEditing: processEditing },
+		} as unknown as ChatAPI;
+
+		await sendMessage(chat, { text: '' });
+
+		expect(chat.data.composeMessage).not.toHaveBeenCalled();
+		expect(processEditing).toHaveBeenCalledWith({ ...original, msg: '' }, undefined);
+	});
+
 	it('should leave the composer to the sub-flow that owns it', async () => {
 		const { chat, clear } = createChat();
 		mockedProcessSlashCommand.mockResolvedValue(true);

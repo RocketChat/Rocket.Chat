@@ -36,7 +36,7 @@ interface ILDAPSearchAllCallbacks<T> {
 type ILDAPExtractedValue = string | Array<ILDAPExtractedValue>;
 
 export class LDAPConnection {
-	public ldapjs: any;
+	public ldapjs: typeof ldapjs;
 
 	public connected: boolean;
 
@@ -168,7 +168,7 @@ export class LDAPConnection {
 		};
 
 		if (attribute) {
-			searchOptions.filter = new this.ldapjs.filters.EqualityFilter({
+			searchOptions.filter = new this.ldapjs.EqualityFilter({
 				attribute,
 				value: Buffer.from(id, 'hex'),
 			});
@@ -182,13 +182,13 @@ export class LDAPConnection {
 				}
 
 				filters.push(
-					new this.ldapjs.filters.EqualityFilter({
+					new this.ldapjs.EqualityFilter({
 						attribute: field,
 						value: Buffer.from(id, 'hex'),
 					}),
 				);
 			}
-			searchOptions.filter = new this.ldapjs.filters.OrFilter({ filters });
+			searchOptions.filter = new this.ldapjs.OrFilter({ filters });
 		} else {
 			throw new Error('Unique Identifier Field is not configured.');
 		}
@@ -308,22 +308,23 @@ export class LDAPConnection {
 		};
 
 		Object.keys(values._raw).forEach((key) => {
-			values[key] = this.extractLdapAttribute(values._raw[key]);
+			const value = this.extractLdapAttribute(values._raw[key]);
+			values[key] = value;
 
-			const dataType = typeof values[key];
+			const dataType = typeof value;
 			// oxlint-disable-next-line no-control-regex
-			if (dataType === 'string' && values[key].length > 100 && /[\x00-\x1F]/.test(values[key])) {
+			if (typeof value === 'string' && value.length > 100 && /[\x00-\x1F]/.test(value)) {
 				mapLogger.debug({
 					msg: 'Extracted Attribute',
 					key,
 					type: dataType,
-					length: values[key].length,
-					value: `${values[key].substr(0, 100)}...`,
+					length: value.length,
+					value: `${value.substr(0, 100)}...`,
 				});
 				return;
 			}
 
-			mapLogger.debug({ msg: 'Extracted Attribute', key, type: dataType, value: values[key] });
+			mapLogger.debug({ msg: 'Extracted Attribute', key, type: dataType, value });
 		});
 
 		return processLdapVariables(values, this._variableMap);
@@ -673,6 +674,7 @@ export class LDAPConnection {
 
 	private _updateIdle(override?: boolean): void {
 		// @ts-expect-error use a private function to signal to the lib that we're still working
+		// oxlint-disable-next-line typescript/no-unsafe-call -- _updateIdle is private to ldapjs and absent from its types
 		this.client._updateIdle(override);
 	}
 
