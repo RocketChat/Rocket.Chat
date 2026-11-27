@@ -66,6 +66,12 @@ export default function App() {
 		return <ComposerLab fuselage={{ Provider: FuselageProvider, Area: FuselageArea }} />;
 	}
 
+	// Dev only: EXPO_PUBLIC_SHARED_PROBE=1 lists which shared web composer modules load under Metro and Hermes
+	if (process.env.EXPO_PUBLIC_SHARED_PROBE === '1') {
+		const { SharedProbeScreen } = require('./src/SharedProbeScreen') as typeof import('./src/SharedProbeScreen');
+		return <SharedProbeScreen />;
+	}
+
 	if (process.env.EXPO_PUBLIC_SESSION_LAB === '1') {
 		const { SessionLab } = require('./src/SessionLab') as typeof import('./src/SessionLab');
 		return <SessionLab />;
