@@ -3,6 +3,7 @@ import type { UseQueryResult } from '@tanstack/react-query';
 import type { MutableRefObject, RefCallback } from 'react';
 import { useEffect, useCallback, useId, useState, useRef } from 'react';
 
+import { findPopupOptionIndex, getPopupFilter, getPopupReplaceRange } from './composerPopupTrigger';
 import { useComposerBoxPopupQueries } from './useComposerBoxPopupQueries';
 import { useChat } from '../../contexts/ChatContext';
 import type { ComposerPopupOption } from '../../contexts/ComposerPopupContext';
@@ -101,19 +102,12 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 			commandsRef.current.select(item);
 		} else {
 			const value = chat?.composer?.substring(0, chat?.composer?.selection.start);
-			const selector =
-				option.matchSelectorRegex ??
-				(option.triggerAnywhere ? new RegExp(`(?:^|\\s)(${option.trigger})([^\\s]*$)`) : new RegExp(`(?:^)(${option.trigger})([^\\s]*$)`));
-
-			const result = value?.match(selector);
-			if (!result || !value) {
+			const range = value ? getPopupReplaceRange(option, value) : undefined;
+			if (!range) {
 				return;
 			}
 
-			chat?.composer?.replaceText((option.prefix ?? option.trigger ?? '') + option.getValue(item) + (option.suffix ?? ''), {
-				start: value.lastIndexOf(result[1] + result[2]),
-				end: chat?.composer?.selection.start,
-			});
+			chat?.composer?.replaceText((option.prefix ?? option.trigger ?? '') + option.getValue(item) + (option.suffix ?? ''), range);
 		}
 		setOptionIndex(-1);
 		setFocused(undefined);
@@ -128,16 +122,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 			return;
 		}
 
-		const optionIndex = options.findIndex(({ trigger, matchSelectorRegex, triggerAnywhere, triggerLength }) => {
-			const selector =
-				matchSelectorRegex ?? (triggerAnywhere ? new RegExp(`(?:^|\\s)(${trigger})[^\\s]*$`) : new RegExp(`(?:^)(${trigger})[^\\s]*$`));
-			const result = selector.test(value);
-			if (!triggerLength || !result) {
-				return result;
-			}
-			const filter = value.match(selector);
-			return filter && triggerLength < filter[0].length;
-		});
+		const optionIndex = findPopupOptionIndex(options, value);
 		setOptionIndex(optionIndex);
 		const option = options[optionIndex];
 		if (!option) {
@@ -146,11 +131,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 		}
 
 		if (option) {
-			const selector =
-				option.matchSelectorRegex ??
-				(option.triggerAnywhere ? new RegExp(`(?:^|\\s)(${option.trigger})([^\\s]*$)`) : new RegExp(`(?:^)(${option.trigger})([^\\s]*$)`));
-			const result = value.match(selector);
-			setFilter(commandsRef.current?.getFilter?.() ?? (result ? result[2] : ''));
+			setFilter(commandsRef.current?.getFilter?.() ?? getPopupFilter(option, value));
 		}
 		return option;
 	});
