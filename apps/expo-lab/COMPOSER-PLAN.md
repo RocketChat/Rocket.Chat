@@ -664,3 +664,59 @@ Not characterized, and why:
 - `afterSendMessageCallback`, `onClientBeforeSendMessage`, `onClientMessageReceived` and the e2ee room are recording fakes, so their real transforms are not part of the contract.
 
 What the later cores still need that the goldens do not pin: the real e2ee content encryption; the Playwright runs; the `ChatMessages.ts` binding of `chat.flows.*` and `chat.action.*` (the goldens build their own `ChatAPI`, so a wiring mistake in an adapter is caught only by the adapters' own specs and Playwright); and anything that depends on `settings.peek` keeping its `this` (the fake is a plain object).
+
+## Phase 1b steps 1b.3 and 1b.4 results (2026-11-27)
+
+Commits on `feat/expo-lab-all` (nothing pushed): 1b.3 `1b3703f772e`, 1b.4 `2ed74dca7b5`. `git diff --name-status 04c7ae4cfae HEAD` shows `A` for every new file and `M` only for `chats/data.ts` and `composerStateCore.ts` (plus the unrelated `A` of `WEB-FINDINGS.md` from another job); no existing spec and no golden helper changed.
+
+### 1b.3 Message payload
+
+Files (new): `chats/core/messagePayload.ts`, `chats/core/messagePayload.differential.spec.ts`, `chats/core/importGuard.spec.ts`, `chats/importGraph.ts` (the walker, test-only, outside `core/` so it is not guarded). Edited: `chats/data.ts`.
+
+```ts
+type PayloadDeps = { prependReplies(text: string, quoted: IMessage[]): Promise<string>; randomId(): string };
+composeMessageCore(deps: PayloadDeps, ctx: { rid; tmid | undefined }, text: string, opts: { sendToChannel?; quotedMessages; originalMessage? }): Promise<IMessage>
+getUpdateMessageParams(message: IEditedMessage, previewUrls?: string[])   // pure; the POST stays in the adapter
+```
+
+Adapter reads, all at call time: `prependReplies` (module function, through `(t, q) => prependReplies(t, q)`), `Random.id()` (through `() => Random.id()`, and only when `originalMessage?._id` is nullish: the core keeps the `??`), `rid` and `tmid` of the `createDataAPI` closure. `sdk.rest.post('/v1/chat.update', ...)` stays in `updateMessage`, after the params are built, as before. Order kept: permalinks (in parallel, joined in input order) before the id draw.
+
+Import guard (`importGuard.spec.ts` plus `importGraph.ts`). A regex scan, not a TypeScript parse: the repo compiler is TypeScript 7, which has no JS API, and `@babel/parser` is not a declared dependency. It strips comments, skips `import type` and imports whose every specifier is `type`, follows relative imports resolved on disk (`.ts`, `.tsx`, `.js`, `.jsx`, `index.*`), and fails on a forbidden client path (list `FORBIDDEN_PATHS`: `SDKClient`, `sdk`, `stores`, `settings`, `user`, `toast`, `authorization`, `e2ee`, `roomCoordinator`, `threadMessageUtils`, `queryClient`, `i18n`, `getPermaLink`, `UserAction`, the web adapters, `meteor`, `views`, `providers`, `components`, `hooks`), a forbidden package prefix (`meteor/`, `react`, `react-dom`, `@rocket.chat/ui-client`, `ui-contexts`, `fuselage`), any `import(` or `require(` (even computed), and any relative import it cannot resolve. The guard itself is tested with fixture files in an `os.tmpdir()` directory (forbidden relative import, forbidden through a chain, forbidden package, dynamic import, require, re-export, type-only ignored, unresolved, cycle plus package listing). Later cores are covered with no edit: every non-spec `.ts` file in `chats/core/` is an entry.
+
+### 1b.4 Composer state
+
+Files (new): `chats/core/createComposerState.ts`, `chats/core/createComposerState.differential.spec.ts`. Edited: `composerStateCore.ts` (adapter, same path, exports `createComposerStateCore` and the type `ComposerStateCore`, same signature).
+
+```ts
+type ComposerStateDeps = {
+  createUploads(room: { rid: string; tmid?: string }): ComposerAPI['uploads'];
+  getFormattingButtons(): readonly FormattingButton[];
+  observeSettings(callback: () => void): () => void;
+};
+createComposerState(params: ComposerStateCoreParams, deps: ComposerStateDeps): ComposerStateCore
+```
+
+Deviation from the plan: the plan kept `settings.observe('*')` and `formattingButtons` shared inside the core. The guard forbids `settings` and `messageBoxFormatting` (which pulls the `ui-client` barrel, `react-dom` and a modal), so both are injected too; the core imports only types from them. The comment on the coarse-grained subscription moved verbatim.
+
+Adapter reads, all at call time: `createUploadsAPI` (arrow, so the spec's `jest.mock('./chats/uploads')` still hits), `formattingButtons` (read on every recompute, not captured), `settings.observe('*', cb)` (called as a method, so `this` holds). Order kept: first `recompute()` (so button conditions run), then `observe`, then `createUploads` last, in the returned object literal.
+
+### Test numbers
+
+| | before | after 1b.3 | after 1b.4 |
+| --- | --- | --- | --- |
+| existing composer set (`views/room/composer`, `lib/chats`, `createComposerAPICore`, `createRichTextComposerAPI`, `composerHistory`, `composerStateCore`) | 25 suites, 306 tests | 25, 306 | 25, 306 |
+| goldens | 9, 240 | 9, 240 | 9, 240 |
+| new: `messagePayload.differential` + `importGuard` | | 2, 34 | 2, 34 |
+| new: `createComposerState.differential` | | | 1, 11 |
+| `packages/ui-client` | 45, 231 | 45, 231 | 45, 231 |
+
+Whole command incl. `client/lib/UserAction`: 36 suites 580 tests after 1b.3; 37 suites 591 tests after 1b.4. `tsc --noEmit --skipLibCheck` in `apps/meteor`: the 2 baseline `TS2307` after the last edit, specs included. `oxlint` and `prettier --check` clean on the touched files.
+
+### Third-party imports per core (static, from the guard walk)
+
+| Core | Runtime packages | Known on Hermes? |
+| --- | --- | --- |
+| `messagePayload.ts` | `@rocket.chat/core-typings` (`isEncryptedMessageContent`, a runtime import: the package index also loads its Ajv schemas) | Not proven by 2.1. Load it in the 1b.9 probe; if it fails or is heavy, move the one predicate into the core |
+| `createComposerState.ts` | `@rocket.chat/emitter` | Not listed in 2.1; small and dependency free, to be proven in 1b.9 |
+
+The walk found no relative import beyond the files themselves (1 file each), no dynamic import and no forbidden module. Neither core touches `dompurify`, `escapeHTML` or `trim`; those arrive with later cores.
