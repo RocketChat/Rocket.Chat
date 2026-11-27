@@ -58,6 +58,11 @@ describe('getPopupFilter', () => {
 		expect(getPopupFilter(custom, 'x !bang')).toBe('bang');
 	});
 
+	it('should be undefined when the regex has a single capture group, as the real slash command selector does', () => {
+		const oneGroup = { trigger: '/', matchSelectorRegex: /(?:^)(\/[\w\d\S]+ )[^]*$/ };
+		expect(getPopupFilter(oneGroup, '/join ')).toBeUndefined();
+	});
+
 	it('should return an empty filter when nothing matches', () => {
 		expect(getPopupFilter(user, 'plain text')).toBe('');
 	});

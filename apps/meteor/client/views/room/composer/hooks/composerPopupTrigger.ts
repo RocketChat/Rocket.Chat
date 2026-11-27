@@ -22,7 +22,7 @@ export const findPopupOptionIndex = (options: readonly PopupTrigger[], textBefor
 /**
  * What the user typed after the option's trigger, the text the popup filters by.
  */
-export const getPopupFilter = (option: PopupTrigger, textBeforeCaret: string): string => {
+export const getPopupFilter = (option: PopupTrigger, textBeforeCaret: string): string | undefined => {
 	const result = textBeforeCaret.match(getPopupTriggerSelector(option));
 	return result ? result[2] : '';
 };

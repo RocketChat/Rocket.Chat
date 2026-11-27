@@ -62,7 +62,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 	const [optionIndex, setOptionIndex] = useState<number>(-1);
 	const { active: focused, setActive: setFocused, focusVisible, setFocusVisible, moveByKeyboard, moveByPointer } = useActiveDescendant<T>();
 	const listboxId = useId();
-	const [filter, setFilter] = useState('');
+	const [filter, setFilter] = useState<string | undefined>('');
 
 	const option = options[optionIndex];
 

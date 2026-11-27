@@ -16,6 +16,7 @@ export type ComposerPopupOption<T extends { _id: string; sort?: number } = { _id
 	suffix?: string;
 	prefix?: string;
 
+	/** Must not be global or sticky: it is tested and matched repeatedly against the same text. */
 	matchSelectorRegex?: RegExp;
 	preview?: boolean;
 
