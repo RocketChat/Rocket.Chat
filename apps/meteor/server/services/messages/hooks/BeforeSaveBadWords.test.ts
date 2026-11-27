@@ -126,4 +126,48 @@ describe('Filter bad words before saving message', () => {
 
 		expect(result.msg).to.be.equal('TESTバカTEST');
 	});
+
+	it('should keep filtering non ascii bad words when another custom word contains regex syntax', async () => {
+		const badWords = new BeforeSaveBadWords();
+		await badWords.configure('バカ,c++,f(ck');
+
+		const message = createMessage('バカ');
+
+		const result = await badWords.filterBadWords({ message });
+
+		expect(result.msg).to.be.equal('**');
+	});
+
+	it('should filter custom bad words containing regex syntax literally', async () => {
+		const badWords = new BeforeSaveBadWords();
+		await badWords.configure('f(ck');
+
+		const message = createMessage('you f(ck');
+
+		const result = await badWords.filterBadWords({ message });
+
+		expect(result.msg).to.be.equal('you ****');
+	});
+
+	it('should not treat a dot in a custom bad word as a wildcard', async () => {
+		const badWords = new BeforeSaveBadWords();
+		await badWords.configure('a.b');
+
+		const message = createMessage('aXb a.b');
+
+		const result = await badWords.filterBadWords({ message });
+
+		expect(result.msg).to.be.equal('aXb ***');
+	});
+
+	it('should filter custom bad words containing a hyphen', async () => {
+		const badWords = new BeforeSaveBadWords();
+		await badWords.configure('ex-boss');
+
+		const message = createMessage('my ex-boss');
+
+		const result = await badWords.filterBadWords({ message });
+
+		expect(result.msg).to.be.equal('my *******');
+	});
 });

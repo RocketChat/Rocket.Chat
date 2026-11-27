@@ -1,6 +1,10 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
+import { escapeRegExp } from '@rocket.chat/tools';
 import type BadWordsFilter from 'bad-words';
+
+// Bad words are matched as literal text, never as patterns
+const escapeBadWord = (word: string) => escapeRegExp(word).replace(/\\([-=!:])/g, '$1');
 
 export class BeforeSaveBadWords {
 	badWords: BadWordsFilter | null = null;
@@ -35,7 +39,7 @@ export class BeforeSaveBadWords {
 		this.badWords = new Filter(options);
 
 		try {
-			this.badWordsRegex = new RegExp(`(?<=^|[\\p{P}\\p{Z}])(${badWords.join('|')})(?=$|[\\p{P}\\p{Z}])`, 'gmiu');
+			this.badWordsRegex = new RegExp(`(?<=^|[\\p{P}\\p{Z}])(${badWords.map(escapeBadWord).join('|')})(?=$|[\\p{P}\\p{Z}])`, 'gmiu');
 		} catch (err) {
 			this.badWordsRegex = null;
 			this.logger.error({ msg: 'Error when initializing bad words filter', err });
