@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { FlatList, KeyboardAvoidingView, Platform, Text as RNText, View } from 'react-native';
+import { FlatList, KeyboardAvoidingView, Platform, Pressable, Text as RNText, View } from 'react-native';
 import {
 	Button,
 	Message,
@@ -34,8 +34,10 @@ const Fit = ({ children }: { children: ReactNode }) => <View style={{ width: 96 
 
 export function FuselageRoom({ session, room, onBack }: Props) {
 	const { messages, error, live, sendText } = useRoom(session, room);
-	const composer = useNativeComposer();
 	const demo = mock && composerDemo;
+	// The user preference is not wired yet; web's default is on, and the demo can flip it
+	const [sendOnEnter, setSendOnEnter] = useState(true);
+	const composer = useNativeComposer({ onSubmit: sendText, sendOnEnter });
 	const [demoStep, setDemoStep] = useState('starting');
 	useComposerDemo(composer.api, demo, setDemoStep);
 
@@ -88,7 +90,12 @@ export function FuselageRoom({ session, room, onBack }: Props) {
 				/>
 					<View style={{ padding: 12, gap: 4 }}>
 						{demo && <RNText style={{ fontSize: 11, color: '#9b2c2c' }}>DEMO (dev only): {demoStep}</RNText>}
-						<ComposerField composer={composer} onSubmit={sendText} showHeight={demo} />
+						{demo && (
+							<Pressable accessibilityLabel='Toggle send on enter' onPress={() => setSendOnEnter((v) => !v)}>
+								<RNText style={{ fontSize: 11, color: '#9b2c2c' }}>sendOnEnter: {sendOnEnter ? 'on' : 'off'} (tap to toggle)</RNText>
+							</Pressable>
+						)}
+						<ComposerField composer={composer} showHeight={demo} />
 					</View>
 			</View>
 		</KeyboardAvoidingView>

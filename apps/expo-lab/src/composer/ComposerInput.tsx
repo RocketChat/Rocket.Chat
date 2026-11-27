@@ -1,5 +1,5 @@
-import type { RefObject } from 'react';
-import type { LayoutChangeEvent, TextInputSelectionChangeEvent } from 'react-native';
+import type { KeyboardEventHandler, RefObject } from 'react';
+import type { LayoutChangeEvent, TextInputKeyPressEvent, TextInputSelectionChangeEvent } from 'react-native';
 
 import MessageComposerInput from '../../../../packages/ui-composer/dist/MessageComposer/MessageComposerInput.js';
 import type { FieldHandle } from './createNativeComposerAPI.ts';
@@ -15,6 +15,7 @@ type Props = {
 	value: string;
 	selection: { start: number; end: number };
 	onChangeText: (text: string) => void;
+	onKeyPress: (event: TextInputKeyPressEvent) => void;
 	onSelectionChange: (event: TextInputSelectionChangeEvent) => void;
 	onLayout?: (event: LayoutChangeEvent) => void;
 	placeholder?: string;
@@ -22,12 +23,14 @@ type Props = {
 	nudge?: number;
 };
 
-export function ComposerInput({ ref, value, selection, onChangeText, onSelectionChange, onLayout, placeholder, nudge = 0 }: Props) {
+export function ComposerInput({ ref, value, selection, onChangeText, onKeyPress, onSelectionChange, onLayout, placeholder, nudge = 0 }: Props) {
 	// Not in Box's web-facing types
 	const nativeProps = {
 		multiline: true,
 		selection,
 		onChangeText,
+		// Box types onKeyPress for the DOM; on native the TextInput passes it a TextInputKeyPressEvent
+		onKeyPress: onKeyPress as unknown as KeyboardEventHandler<HTMLElement>,
 		onSelectionChange,
 		onLayout,
 		accessibilityLabel: 'Message',
