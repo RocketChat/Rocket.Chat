@@ -425,3 +425,179 @@ By the plan's rule, 2.1 fails for the send flow: native twins. Not decided here,
 - Use as they are: `composerState`, `messageBoxFormatting`, `messageBoxHelpers`, `toggleLinePrefix`, `wrapSelectionText`, `composerPopupTrigger`, `processMessageEditing`.
 
 Not verified: Android; calling the loaded functions on Hermes (only the import was run); anything behind the first error of each failing module (for example `crypto` after `document`).
+
+## Phase 1b: injectable send flow and composer core (2026-11-27)
+
+Decision x13 of the user, 2026-11-27: OPTION B. The web send flow becomes injectable so the native composer reuses it, instead of native twins (the 2.1 recommendation). Web behavior does not change. This section replaces, for the send path, the "native twin" fallback of 2.1 and the twin notes in 2.2, 2.4, 2.5, 2.9, 2.11 and 2.14; those native steps keep their numbers and are re-scoped below. A plan only: no source was edited. Marks: **(V)** verified by reading this tree (`6582c0de8e3`), **(I)** inferred, to be settled by the step's own check.
+
+### Shape of the change
+
+Each module keeps its path, export name, signature and behavior and becomes a thin adapter; its body moves to a core under `apps/meteor/client/lib/chats/core/` that takes `deps`. `ChatMessages.ts` (V: `ChatMessages.ts:173-181` binds `sendMessage.bind(this, this)`, `uploadFiles.bind(null, this)` and the rest) is not edited, so `chat.flows.*` and `ChatProvider`/`useChatMessagesInstance.ts:28` are untouched. New files:
+
+- `chats/core/deps.ts`: types only (the interfaces below), no runtime code.
+- `chats/core/messagePayload.ts`, `createComposerState.ts`, `processSlashCommandCore.ts`, `processTooLongMessageCore.ts`, `processSetReactionCore.ts`, `sendMessageCore.ts`, `createUserAction.ts`, `createUploadsStore.ts`, `uploadFilesCore.ts`, `processMessageUploadsCore.ts`, each with a spec beside it.
+- `chats/core/importGuard.spec.ts`: walks the static and dynamic imports of every file in `chats/core/` (relative paths followed transitively, packages checked against an allowlist: `@rocket.chat/core-typings` (types), `random`, `tools`, `message-types`, `emitter`, `filesize`) and fails on any path in a denylist (`SDKClient`, `stores`, `settings`, `user`, `toast`, `authorization`, `e2ee`, `rooms/roomCoordinator`, `emoji`, `slashCommand`, `UserAction`, `utils/threadMessageUtils`, `queryClient`, `@rocket.chat/ui-client`, `meteor/*`, `lib/i18n`, `onClient*`) and on any module-level regex with the `g` or `y` flag. It also fails on `import(`, because `getPermaLink.ts` reaches `./SDKClient` and `../stores` by dynamic import (V), which Metro bundles all the same.
+
+Rules for every adapter (V: why they matter): (a) `deps` entries are arrows that read the singleton at call time, never captured values, because `Messages.state` is a getter over `useStore.getState()` (`createGlobalStore.ts:9`) and `settings.peek` needs its `this`; (b) the adapter imports each singleton from the same relative path the module imports today, so every existing `jest.mock('<path>')` keeps hitting the same module; the adapter touches only the singletons the old body touched (`sendMessage.spec.ts` mocks `stores` with `Messages` and `Rooms` only); (c) regex literals stay inside function bodies, as today (`processSlashCommand.ts:13`, `processSetReaction.ts:85`), none global.
+
+### Injected dependency interfaces (`chats/core/deps.ts`)
+
+All shapes are (I) until `tsc` runs; they are read off the call sites.
+
+```ts
+type Translate = (key: string, options?: Record<string, unknown>) => string;                       // lib/i18n t
+type Toast = (payload: { type: 'error' | 'warning' | 'success' | 'info'; message: unknown }) => void;
+type Rest = Pick<(typeof sdk)['rest'], 'post'>;                                                   // import type only
+type StoredMessage = IMessage & { temp?: boolean };
+type MessageStore = {
+  get(id: string): StoredMessage | undefined; find(p: (m: StoredMessage) => boolean): StoredMessage | undefined;
+  store(m: StoredMessage): void;
+  update(p: (m: StoredMessage) => boolean, f: (m: StoredMessage) => StoredMessage): void;
+};
+type Session = { getUserId(): string | undefined; getUser(): Pick<IUser, '_id' | 'username' | 'name'> | undefined };
+type Settings = { peek<T = unknown>(id: string): T | undefined };
+type ChatForSend = Pick<ChatAPI, 'composer' | 'data' | 'readStateManager' | 'currentEditingMessage' | 'flows' | 'uid' | 'ActionManager' | 'action'>;
+
+type SendMessageDeps = Session & {
+  messages: MessageStore; getRoom(rid: string): Pick<IRoom, 'federated'> | undefined; settings: Settings;
+  rest: Rest; toast: Toast; t: Translate;
+  onClientMessageReceived(m: IMessage): Promise<IMessage>;
+  onClientBeforeSendMessage(m: AtLeast<IMessage, '_id' | 'rid' | 'msg'> & { isEditing?: boolean }): Promise<AtLeast<IMessage, '_id' | 'rid' | 'msg'>>;
+  upsertThreadMessage(m: IMessage, rid: string, tmid: string): void;
+  afterSendMessage(m: IMessage, rid: string): Promise<void>;
+  flows: Record<'setReaction' | 'tooLong' | 'slashCommand' | 'uploads' | 'editing', (chat: ChatForSend, m: IMessage, previewUrls?: string[]) => Promise<boolean>>;
+};
+type SlashCommandDeps = { rest: Rest; settings: Settings; t: Translate; getCommand(name: string): SlashCommand | undefined;
+  hasAtLeastOnePermission(permission: string | string[], rid: string): boolean };
+type SetReactionDeps = Session & { messages: MessageStore; getRoom(rid: string): IRoom | undefined; hasSubscription(rid: string): boolean;
+  emojiExists(shortcode: string): boolean; isReadOnly(room: IRoom, user: Pick<IUser, 'username'>): boolean; rest: Rest; toast: Toast };
+type TooLongDeps = { settings: Settings; toast: Toast; t: Translate; offerAttachment?: (msg: string, chat: ChatForSend) => Promise<void> };
+type PayloadDeps = { prependReplies(text: string, quoted: IMessage[]): Promise<string>; randomId(): string };
+type ComposerStateDeps = { createUploads(room: { rid: string; tmid?: string }): UploadsAPI };
+type UserActionDeps = Session & { publish(rid: string, username: string | undefined, activities: string[], extras: IExtras): void;
+  stream(rid: string, handler: (username: string, activities: string[], extras?: IExtras) => void): () => void; useRealName(): boolean };
+type UploadsStoreDeps<TFile extends PickedFile> = { settings: Settings; t: Translate; describeError(e: unknown): string; randomId(): string;
+  isValidContentType(type: string | undefined): boolean; upload: Rest-like XHR starter (endpoint, params, events) => XHRLike;
+  renameFile(file: TFile, name: string): TFile; stopUploadingActivity(rid: string, tmid?: string): void };
+type PickedFile = { name: string; type: string; size?: number };   // web: TFile = File, so every web type is unchanged
+```
+
+`TooLongDeps.offerAttachment` is optional: absent means the branch "toast `Message_too_long`, restore the text" (the same branch web takes today when `FileUpload_Enabled` or `Message_AllowConvertLongMessagesToAttachment` is off). The web adapter always supplies it.
+
+### Steps
+
+Every step is its own commit, revertable alone. Rule for each: `git diff --stat` shows no existing `*.spec.*` file edited and no `.snap` edited after 1b.1/1b.2; the existing web specs of the touched folders pass unedited with the pass counts of Baseline 0.4 (18 suites, 166 tests for `views/room/composer`, `lib/chats`, `createComposerAPICore`, `createRichTextComposerAPI`, `composerHistory`, `composerStateCore`; `packages/ui-client` 44/226 plus 5 of 1.4); `tsc --noEmit --skipLibCheck` in `apps/meteor` stays at the 2 baseline errors, re-run after the last edit, specs included; `oxlint` and `prettier --check` on touched files. Order: cheapest first; `1b.1` and `1b.2` carry no web change at all.
+
+#### 1b.1 Characterization of the send path (test only, M)
+- Commit: `test(meteor): pin the send flow behavior before making it injectable`. Files (new): `lib/chats/flows/sendMessage.characterization.spec.ts`, `processSlashCommand.characterization.spec.ts`, `processSetReaction.characterization.spec.ts`, `processTooLongMessage.characterization.spec.ts`, `lib/chats/data.characterization.spec.ts` (composeMessage, updateMessage), `__snapshots__/*.snap`.
+- Does: drives the REAL adapters and the REAL sub-flows against the real `Messages`, `Rooms`, `Subscriptions` stores (pure zustand, V: `stores/Messages.ts`) with `jest.mock` on `SDKClient`, `toast`, `user`, `settings`, `authorization`, `slashCommand`, `emoji`, `roomCoordinator`, `threadMessageUtils`, `afterSendMessageCallback`, and one ordered call log (`{ fn, args }`, shared by every fake incl. `composer.clear`, `dismissAllQuotedMessages`). A table of about 60 inputs: subscribed or not, join failing, text empty/spaces/unclosed fence, editing with and without text, quotes, files present, `+:emoji:` known and unknown, over-limit with and without attachment conversion, slash command unknown/permission denied/clientOnly/ok/rest failing, federated room, duplicate `_id`, `onClientBeforeSendMessage` rejecting, REST rejecting. Each case snapshots the log, the final store contents and the returned boolean.
+- Reqs: R10, R11, R13, R14, R16, R27 (the oracle for 2.5, 2.11). Neutral: nothing outside the new files changes. Risk: none for web; a golden that encodes a bug. Rollback: delete the files.
+- Mechanical differential: the goldens ARE the old path. After each later step the same specs run unedited; any difference in a call, argument, order or store state is a failing snapshot (the technique that caught F1). For a wider net, each step may also run an uncommitted fuzz (a frozen copy of the old module beside the adapter, 10,000 generated cases, as the Phase 1 reviewer did); its count goes in the results section.
+
+#### 1b.2 Characterization of uploads, typing and composer state (test only, M)
+- Commit: `test(meteor): pin uploads, typing and composer state behavior`. Files (new): `lib/chats/uploads.characterization.spec.ts`, `flows/uploadFiles.characterization.spec.ts`, `flows/processMessageUploads.characterization.spec.ts`, `lib/UserAction.characterization.spec.ts` (fake timers, a recording `sdk.publish`/`stream`), snapshots.
+- Pins, among others (V): `processMessageUploads` returns a promise that never settles when the user dismisses the failed-uploads modal (`onCancel`, `onClose` and the all-failed `onConfirm` only close it, `processMessageUploads.ts:196,209,213`), so `sendMessage` hangs there today; `uploadFiles` redefines `file.name` as writable before the e2ee lookup (`uploadFiles.ts:35`); the 500 ms debounce, 5 s renew and 15 s timeout of `UserAction`.
+- Reqs: R35 to R38, R48, R49 (oracle for 2.9, 2.14). Neutral and rollback: as 1b.1.
+
+#### 1b.3 Payload builders (S)
+- Commit: `refactor(meteor): extract message payload building from the data API`. Files: `chats/core/messagePayload.ts` (`composeMessageCore(deps: PayloadDeps, ctx, text, opts)`, `getUpdateMessageParams(message, previewUrls)`), `chats/data.ts` (the two closures call them; `prependReplies` and `Random.id` passed as deps), `chats/core/importGuard.spec.ts` (new, with this first core), `messagePayload.spec.ts`.
+- Reqs: R13, R14, R16 directly; removes `chats/data.ts:7-9` from the native path. Neutral: `data.characterization` unchanged; the two encrypted/plain `chat.update` shapes are table-tested. Order that matters (V): `prependReplies` resolves permalinks in parallel but joins in input order, then the text is last; `_id` is `originalMessage._id ?? randomId()`; `tshow` only with a `tmid`.
+- Risk: low. Rollback: restore the two closures.
+
+#### 1b.4 Composer state without the uploads import (S)
+- Commit: `refactor(meteor): let the composer state take its uploads factory`. Files: `chats/core/createComposerState.ts` (body of `createComposerStateCore` with `deps.createUploads`), `lib/composerStateCore.ts` (adapter: `createComposerState({ ... }, { createUploads: createUploadsAPI })`), `createComposerState.spec.ts`.
+- Why a new file: the existing specs mock `./chats/uploads` by path and call `createComposerStateCore({ room })` (V: `composerStateCore.spec.ts:5-12`), so the adapter must keep the import and the signature, and a required parameter on the old name would force a spec edit.
+- Stays shared, not injected: `settings.observe('*')` and `formattingButtons` (V: `messageBoxFormatting` loads on Hermes per 2.1). The native app must fill the same `settings` store before the composer mounts (a decision for 2.2, (I)).
+- Order that matters (V): `uploads` is created last, after the formatter subscription starts; the emitter events keep their order. Neutral: `composerStateCore.spec` 6, `createComposerAPI.spec` 9, `createRichTextComposerAPI.spec`, `MessageBox.spec` unedited. Risk: low. Rollback: inline back.
+
+#### 1b.5 Slash command core (S)
+- Commit: `refactor(meteor): make processSlashCommand injectable`. Files: `chats/core/processSlashCommandCore.ts`, `flows/processSlashCommand.ts` (adapter: `getCommand: (n) => slashCommands.commands[n]`, `hasAtLeastOnePermission`, `sdk.rest`, `settings`, `t`), `processSlashCommandCore.spec.ts`.
+- Reqs: R27, R28; removes `processSlashCommand.ts:6-9`. Imports that exist only for singletons and leave the core: `SDKClient`, `authorization`, `settings`, `slashCommand`, `t`. Legitimately shared and kept: `@rocket.chat/random` (aliased in `metro.config.js`), `escapeHTML` from `@rocket.chat/tools` ((I): not yet probed on Hermes), the `SlashCommand` type.
+- Order that matters (V): `composer.clear()` precedes the warning or `commands.run`; the telemetry POST is fire-and-forget (`void`) before `generateTriggerId`; `notifyBusy` before the run, `notifyIdle` after the catch; an unknown name returns `false` only when `Message_AllowUnrecognizedSlashCommand`. `getCommand` must stay a plain property read (`/constructor` resolves to `Object.prototype.constructor` today; kept, pinned by a case). Risk: low.
+
+#### 1b.6 Too-long message core (S)
+- Commit: `refactor(meteor): split the too-long decision from its modal`. Files: `chats/core/processTooLongMessageCore.ts`, `flows/processTooLongMessage.ts` (adapter owns the `Blob`/`File`, `imperativeModal` and `uploadFiles`, passed as `offerAttachment`), spec.
+- Reqs: R11. Removes the `@rocket.chat/ui-client` barrel (922 modules, V: 2.1) and `File`/`Blob` from the core. Web-only and staying so: the modal. Order (V): inside `onConfirm` it is build file, `composer.clear()`, `imperativeModal.close()`, `uploadFiles`, then resolve; the adapter keeps that sequence verbatim because `offerAttachment` is the old `new Promise` block moved whole. Native v1 omits `offerAttachment` (error toast, text restored); a native modal is a later choice for a person. Risk: low.
+
+#### 1b.7 Set-reaction core (M)
+- Commit: `refactor(meteor): make processSetReaction injectable`. Files: `chats/core/processSetReactionCore.ts`, `flows/processSetReaction.ts` (adapter: `isReadOnly: (room, user) => roomCoordinator.readOnly(room, user)`, `emojiExists: (s) => !!emoji.list[s]`, `hasSubscription`), spec.
+- Removes the largest blocker (V: `processSetReaction.ts:6` `roomCoordinator` imports `RoomRoute`, `MainLayout`, `RouterProvider`; chain to `Room.tsx` and the unbuilt `@rocket.chat/ui-voip`; this alone explains most of the 6011 modules). Unblocks 2.5. Native owns `isReadOnly` (the room-type directives and `post-readonly` permission, (I): a native rule set, specified in 2.5) and `emojiExists` (2.13 data).
+- Order (V): the emoji is checked twice (in `process` and in the optimistic part); `composer.clear()` then optimistic update then POST; on POST failure the toast fires and the error is rethrown. The optimistic updater is a pure function of the record: moved as is; identity (`{ ...record, reactions }`, `rest` without `reactions`) pinned by the characterization. Risk: medium: the store `update` callback shape.
+
+#### 1b.8 Send message core (M)
+- Commit: `refactor(meteor): make the send flow injectable`. Files: `chats/core/sendMessageCore.ts`, `flows/sendMessage.ts` (adapter), `sendMessageCore.spec.ts` (the four existing cases re-expressed on the core plus a case per branch), `importGuard.spec.ts` (entry added).
+- Reqs: R10, R11, R13, R14 (and the shared path of R15, R16, R17 and R7 to R9 via `chat.composer`). Singleton-only imports that leave the core: `stores`, `SDKClient`, `settings`, `user`, `toast`, `lib/i18n`, `onClientMessageReceived`, `onClientBeforeSendMessage`, `threadMessageUtils` (queryClient), `afterSendMessageCallback` (`clientCallbacks` via the ui-client barrel), the five `process*` modules. Legitimately shared and kept: `closeUnclosedCodeBlock` (no imports) and `trim` from `stringUtils` (pulls `dompurify`, (I): its top-level `window` check must evaluate on Hermes; if not, replace by `String.prototype.trim` after a case proves equal for `''`, `undefined`, ` `).
+- Order and identity that matter (V): `dismissAllQuotedMessages()` is called without `await`, before `process`; `afterSendMessage` receives the OUTER composed message, not the one `onClientBeforeSendMessage` returned; `delete message.e2e` and `isEditing` mutate the returned object, which is also the POST body; `composer.clear()` precedes the optimistic insert, which precedes the POST (asserted by the existing spec); the duplicate-id toast fires inside the optimistic step and the POST still follows; the final `update` clears `temp` only if the stream has not replaced the record; the flows are called by imported function in `process` but through `chat.flows.processMessageEditing` in the empty-text branch (kept). `flows` in the adapter are the imported modules, so `sendMessage.spec.ts` (which mocks each of them by path) is unedited.
+- e2ee, stays web-only: the encryption lives in the transform registered on `onClientBeforeSendMessage` by `useE2EEncryption.ts:7` (V); the core only calls the injected function. Native passes the shared chain (V: `onClientBeforeSendMessage.ts` imports only types and `transforms.ts`, loads) or an identity; with no transform registered nothing is encrypted, which is why R52 (encrypted rooms are not writable natively) is a hard precondition, not a nicety. The `t === 'e2e'` attachment-preserving branch for edits moves with the core and is inert without `findMessageByID` returning such a message.
+- Risk: medium. Rollback: restore the body. After this step run the web e2e set below.
+
+#### 1b.9 Hermes probe for the send group (S, expo-lab)
+- Commit: `chore(expo-lab): probe the injectable send flow on Hermes`. Files: `src/sharedModulesProbe.ts` (rows: `chats/core/messagePayload`, `createComposerState`, `processSlashCommandCore`, `processTooLongMessageCore`, `processSetReactionCore`, `sendMessageCore`), `src/sharedFlowsSmoke.ts` (new: runs `sendMessageCore` and `processSlashCommandCore` with fake deps and returns pass or fail; the 2.1 probe only imported), `SharedProbeScreen.tsx` (shows it).
+- Proof: `EXPO_PUBLIC_SHARED_PROBE=1`, `expo export --platform ios`, then the dev client on the simulator with a Metro of its own (not 8081), as in 2.1; record the module count per entry (target: each core under 100 modules and none under `apps/meteor/client` except itself and `closeUnclosedCodeBlock`; the 6011 figure is the number to beat). The default bundle must stay at 2573 modules (probe mode is the only way in, unchanged). Risk: none for web. Rollback: revert the commit.
+
+#### 1b.10 Typing core (M)
+- Commit: `refactor(meteor): make the typing indicator injectable`. Files: `chats/core/createUserAction.ts`, `lib/UserAction.ts` (adapter: `export const UserAction = createUserAction({ ...session, publish: (...) => sdk.publish('notify-room', ...), stream: ..., useRealName: () => settings.peek('UI_Use_Real_Name') })`), spec.
+- Reqs: R48, R49 (2.9 stops being a twin). State is per factory call: the adapter makes exactly ONE instance at module load, so the maps (timeouts, renews, intervals, performing users) stay process-wide as today. Order (V): `start` arms the renew timer before registering the activity, then emits through the 500 ms `debounce` (lodash, stays a shared import, V: `UserAction.ts:3`); `stop` clears the three timers then emits. `Users.state.get(uid)` in the stream handler equals `getUser()` (V: `user.ts`), so one `getUser` dep serves both. P2 (client publish on `notify-room`) still gates acceptance on a server. Risk: medium (timers). `uploads.ts` and `ChatMessages.ts` keep importing the same `UserAction`.
+
+#### 1b.11 Uploads store, generic over the file type (L)
+- Commit: `refactor(meteor): make the uploads store injectable and generic over the file`. Files: `chats/core/createUploadsStore.ts` (the `UploadsStore` class over `UploadsStoreDeps<TFile>`), `chats/uploads.ts` (adapter, `TFile = File`, `createUploadsAPI` unchanged), `chats/Upload.ts` (`Upload` becomes `UploadOf<File>`; same exported names and shapes), spec.
+- This is where 1.5 stopped: widening `File` broke 11 sites because web code reads `File` members. Generic instead of widened: web instantiates `TFile = File`, so web types and call sites are byte-identical and no web narrowing is needed; `tsc` must still report 2 errors. `sdk.rest.upload` becomes `deps.upload` returning an XHR-like object (`readyState`, `DONE`, `status`, `responseText`, `onload`, `abort`); native starts an `XMLHttpRequest` with a `FormData` file descriptor, which React Native supports ((I): proven only in 2.14's S step). `new File([file], name, file)` (V: `uploads.ts:94`) becomes `deps.renameFile`.
+- Order (V): every state change goes through `set` (emits `update`); `send` appends the upload before validation; zero size, max size and content type reject inside the promise, then `updateUpload` records the error; `once('cancelling-id')` registered after the XHR starts. Risk: high within this phase (largest file, 219 lines, used by the real upload UI). Fallback below.
+
+#### 1b.12 `uploadFiles` core (M)
+- Commit: `refactor(meteor): make uploadFiles injectable`. Files: `chats/core/uploadFilesCore.ts` (generic `TFile`), `flows/uploadFiles.ts` (adapter), spec.
+- Deps beyond those above: `encrypt?(room, file) => Promise<EncryptedPayload | undefined>` and `prepareFile?(file)`. Web-only and staying (state it): the `e2e.getInstanceByRoomId` + `encryptFile` + `encryptMessageContent` branch (needs global `crypto`, V: `uploadFiles.ts:3` is the 2.1 blocker) and `Object.defineProperty(file, 'name', ...)`, both in the adapter, called at the same points. The shared part is the count limit (R36, `MAX_MULTIPLE_UPLOADED_FILES`, from `lib/constants.ts`, no imports), the encrypted-room toast (R38, same predicate as web) and `performContinuously('uploading')`/`composer.focus()` in the `finally`. `ChatAPI.flows.uploadFiles` keeps `readonly File[]`; native calls the core directly with its own file type. Risk: medium.
+
+#### 1b.13 `processMessageUploads` core (M)
+- Commit: `refactor(meteor): make processMessageUploads injectable`. Files: `chats/core/processMessageUploadsCore.ts`, `flows/processMessageUploads.ts` (adapter), spec.
+- Deps: `rest`, `toast`, `t`, `getE2ERoom(rid)` (web: `e2e.getInstanceByRoomId`; native: returns `undefined`), `getImageSize(file)` (web: `Image` + `URL.createObjectURL`, V: `:33-46,64`; native: `Image.getSize` on the `uri`), `confirmFailedUploads(info) => Promise<'sendAnyway' | 'dismiss'>`. The web `confirmFailedUploads` reproduces the never-settling promise on dismiss and on the all-failed notice (V, above) so behavior is identical; a fix is a separate `fix:` commit a person orders below the feature. Legitimately shared: `getFileExtension` (pure), `isEncryptedUpload`. The `e2e` import at `:7` (loads `getUserAvatarURL` -> `getURL` -> `rocketchat.info`, V: 2.1) leaves the core. Risk: medium; the e2ee content path is not exercised natively and is covered on web by Playwright.
+
+#### 1b.14 Hermes probe for typing and uploads (S, expo-lab)
+- Commit: `chore(expo-lab): probe the injectable typing and uploads cores`. Files: `src/sharedModulesProbe.ts` rows for `createUserAction`, `createUploadsStore`, `uploadFilesCore`, `processMessageUploadsCore`; smoke run of `createUploadsStore` with a fake XHR.
+
+#### 1b.15 Results
+- Commit: `docs(expo-lab): composer plan phase 1b results`. Files: this document: per step the commit SHA, the pass counts, the module reach per entry, the fuzz counts, the guard output.
+
+Steps: 15 commits (2 test, 10 refactor, 2 probe, 1 docs; 1b.9 and 1b.14 touch `apps/expo-lab`). Files: about 14 new core and 14 new spec files, 3 snapshot files, 11 edited web files (`data.ts`, `composerStateCore.ts`, `processSlashCommand.ts`, `processTooLongMessage.ts`, `processSetReaction.ts`, `sendMessage.ts`, `UserAction.ts`, `uploads.ts`, `Upload.ts`, `uploadFiles.ts`, `processMessageUploads.ts`), 3 in `apps/expo-lab`: about 45 files. Size: S 7 (1b.3 to 1b.6, 1b.9, 1b.14, 1b.15), M 7 (1b.1, 1b.2, 1b.7, 1b.8, 1b.10, 1b.12, 1b.13), L 1 (1b.11). Honest estimate: 1b.1 to 1b.8 is about two days of agent work and one local Playwright run; 1b.10 to 1b.13 is about as much again, and 1b.11 is where schedule risk sits.
+
+### Blockers of 2.1 and the step that removes each
+
+| Blocker (2.1) | Where | Removed by | Remains on web as |
+| --- | --- | --- | --- |
+| `SDKClient.ts:6` -> `ddpSdk.ts:19,183`, `meteor/accounts.ts:188`, `meteor/connection.ts:112` | `sendMessage.ts:16`, `processSlashCommand.ts:6`, `chats/data.ts:8`, `uploads.ts:10`, `UserAction.ts:5`, `processSetReaction.ts:4`, `processMessageUploads.ts:6` | `Rest`/`publish`/`stream` deps in 1b.3, 1b.5, 1b.7, 1b.8, 1b.10, 1b.11, 1b.13 | adapters import `sdk` |
+| `stores/index.ts` (loads on Hermes (V), but it is the web store) | `sendMessage.ts:5`, `chats/data.ts:7`, `UserAction.ts:8` | `MessageStore`, `getRoom`, `hasSubscription` deps (1b.7, 1b.8, 1b.10) | adapters read `Messages`, `Rooms`, `Subscriptions` |
+| `processSetReaction.ts:6` `roomCoordinator` (6011-module cause) | `processSetReaction.ts` | 1b.7 (`isReadOnly`) | adapter |
+| `processMessageUploads.ts:7` `e2ee` (global `crypto`, `rocketchat.info`) | `processMessageUploads.ts`, `uploadFiles.ts:3` | 1b.12, 1b.13 (`encrypt`, `getE2ERoom`) | adapters |
+| `chats/data.ts:7-9` | `composeMessage` | 1b.3 (`messagePayload.ts`); the rest of `createDataAPI` is not needed natively (native writes its own `data`, below) | `createDataAPI` |
+| `composerStateCore.ts:5` -> `uploads.ts:10` | `composerStateCore.ts` | 1b.4 | adapter |
+| `ui-client` barrel (922 modules) via `processTooLongMessage` and `afterSendMessageCallback` | both | 1b.6, 1b.8 | adapters |
+| `@rocket.chat/ui-voip` (unbuilt) and `../../rocketchat.info` | only through `roomCoordinator` and `e2ee` | 1b.7, 1b.13 (they leave the graph, not shimmed) | web only |
+
+### Effect on the native steps
+
+- 2.2: `createComposerState` (1b.4) with `createUploads` = the native uploads store (1b.11) or a memory stub until 2.14. No twin of the state half.
+- 2.4/2.5: no native send function. `sendMessageCore` with deps from the app session (`getUserId`, `getUser`, a native `MessageStore`, `rest.post` over the app's `api.ts`, a native toast, the shared `onClient*` chains), `processSlashCommandCore`, `processSetReactionCore`, `processTooLongMessageCore` without `offerAttachment`, `processMessageEditing` as it is (V: loads). Native must still write a small `ChatForSend` (`data.isSubscribedToRoom/joinRoom/findMessageByID/findLastMessage/pushEphemeralMessage/updateMessage` over its stores; `readStateManager.clearUnreadMark`; `currentEditingMessage`; `uid`; `action`; an `ActionManager` with `generateTriggerId`, `notifyBusy`, `notifyIdle`). R13/R14 are proved by running `composeMessageCore` and the native path against the 1b.1 fixtures.
+- 2.9: `createUserAction` over `DDPSDK.publish`/`stream`; the P2 probe stays the acceptance gate.
+- 2.11: `processSlashCommandCore` with `getCommand` over the `commands.list` result and `hasAtLeastOnePermission` over the native permission data.
+- 2.14: `createUploadsStore<PickedFile>`, `uploadFilesCore`, `processMessageUploadsCore`. The "1.5 inside 2.14" decision is met by the generic parameter, with no web-visible narrowing (the 11 tsc errors do not arise because web stays `TFile = File`, (I) until 1b.11 runs `tsc`).
+
+### Risks
+
+- **Web regression (main).** Per step: goldens from 1b.1/1b.2 unchanged, existing specs unedited, importGuard, `tsc`. jsdom does not cover: `imperativeModal` and the real modals, a real `File`/`Blob` in the too-long path, `XMLHttpRequest` upload, `execCommand` (untouched by this phase; Phase 1 note F7 stands), e2ee with real `crypto`, real timers in typing.
+- **Playwright has not run for any phase 1 commit.** It needs a local Meteor server (`yarn dev` in `apps/meteor`) on the person's machine. Run it after 1b.8 (send group), after 1b.13 (uploads), and once on the whole phase before leaving draft. Minimum set: `message-composer.spec.ts`, `message-composer-history.spec.ts`, `quote-messages.spec.ts`, `quote-attachment.spec.ts`, `message-mentions.spec.ts` (send path), `message-actions.spec.ts` (edit and delete), `threads.spec.ts` (`tmid`), `file-upload.spec.ts`, `image-upload.spec.ts`, and the `e2e-encryption/` folder (encrypted send and upload). Manual, not covered by any spec I found: `+:emoji:` reaction ((I): no e2e spec name or grep hit points at it), a long message to attachment, a failed upload then send, two sessions seeing the typing indicator.
+- **Object identity and order.** Listed per step above; the golden logs are the guard. The two things the Phase 1 review found do not repeat by construction: the guard rejects module-level `g`/`y` regexes and any new module-level mutable state in a core (the only module-level state, `UserAction`'s maps, moves into the factory and the adapter makes one instance); no hook is added or reordered (the cores are plain functions, `chat.composer` calls keep their order).
+- **A pre-existing hang** (dismissed failed-uploads modal never settles) is preserved on purpose; surfacing it as a `fix:` is a person's call.
+- **Native-side inference.** `settings` filled on native (1b.4), `dompurify` on Hermes (1b.8), `escapeHTML` on Hermes (1b.5), `Image.getSize` and `FormData` uploads (1b.13, 2.14): (I), each caught by the probe or the S step.
+- **Verified blockers I could not remove by injection: none.** Everything on the 2.1 list moves behind a dep. What injection cannot remove is the native work behind each dep (native store with the `update(predicate, updater)` semantics, `isReadOnly` rules, the `ChatForSend` object, an `XHR` upload).
+
+### Fallback
+
+If a step is not web-neutral (a golden differs and the difference is not a bug in the golden) or is larger than its size: revert that commit alone (they are independent after 1b.1/1b.2 and `deps.ts`), and the matching native step reverts to a native twin as the 2.1 recommendation said. By piece: 1b.11 to 1b.13 (uploads) are the first to give up, so 2.14 writes a native upload path against `{ uri, name, type }`; 1b.10 gives up to the twin the spec already allows for 2.9; 1b.7 gives up to a native reaction function (small: about 40 lines over the same rules); 1b.8 gives up last, because without it 2.4/2.5 write a native `send` taking `{ sdk, store, user, settings }` and reuse `composeMessageCore` (1b.3, the lowest risk piece) so R13/R14 parity still holds. The user can choose per module; no step depends on a later one except 1b.8 on 1b.5 to 1b.7 (it takes their results as `flows`, which a native twin of any of them can also fill).
+
+### Needs a person
+
+1. Confirm option B scope: whether uploads (1b.11 to 1b.13, the L piece) are in this phase or stay a twin inside 2.14.
+2. Confirm the native toast/too-long behavior (no attachment conversion in v1) and that `settings` is filled natively.
+3. Run the Playwright set above on a local Meteor after 1b.8 and 1b.13; nothing here starts a server.
+4. Whether the pre-existing dismissed-modal hang gets its own `fix:`.
+5. Which of these commits become pull requests, and when (`docs/change-organization.md`); this plan opens none.
