@@ -7,7 +7,7 @@ export type PayloadDeps = {
 
 export type ComposeMessageContext = { rid: IRoom['_id']; tmid: IMessage['_id'] | undefined };
 
-export type ComposeMessageOptions = { sendToChannel?: boolean; quotedMessages: IMessage[]; originalMessage?: IMessage };
+export type ComposeMessageOptions = { sendToChannel?: boolean; quotedMessages: IMessage[]; originalMessage?: IMessage | null };
 
 export const composeMessageCore = async (
 	deps: PayloadDeps,
