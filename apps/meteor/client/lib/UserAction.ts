@@ -1,7 +1,7 @@
 import { debounce } from 'lodash';
 
-import { createUserAction, USER_ACTIVITIES } from './chats/core/createUserAction';
 import { sdk } from './SDKClient';
+import { createUserAction, USER_ACTIVITIES } from './chats/core/createUserAction';
 import { settings } from './settings';
 import { getUser, getUserId } from './user';
 import { Users } from '../stores';
@@ -13,7 +13,7 @@ export const UserAction = createUserAction({
 		sdk.publish(topic, args);
 	},
 	stream(topic, args, handler) {
-		return sdk.stream(topic, args, handler);
+		return sdk.stream(topic, args, handler as (...data: unknown[]) => void);
 	},
 	useRealName: () => !!settings.peek('UI_Use_Real_Name'),
 	getUser,

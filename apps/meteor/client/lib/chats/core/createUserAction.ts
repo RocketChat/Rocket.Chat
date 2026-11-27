@@ -15,7 +15,11 @@ export const USER_ACTIVITIES = {
 
 export type UserActionDeps = {
 	publish(topic: 'notify-room', args: [string, string | undefined, string[], IExtras]): void;
-	stream(topic: 'notify-room', args: [string], handler: (username: string, activityType: string[], extras?: object) => void): { stop(): void };
+	stream(
+		topic: 'notify-room',
+		args: [string],
+		handler: (username: string, activityType: string[], extras?: object) => void,
+	): { stop(): void };
 	useRealName(): boolean;
 	getUser(): IUser | null | undefined;
 	getUserId(): string | undefined;
