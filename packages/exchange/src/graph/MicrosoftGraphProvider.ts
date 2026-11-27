@@ -441,7 +441,11 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 		}
 
 		if (unresolvedSeries.length) {
-			logger.warn({ msg: 'Occurrences left out of this round, so the stored events keep what they have', mailbox, unresolved: unresolvedSeries.length });
+			logger.warn({
+				msg: 'Occurrences left out of this round, so the stored events keep what they have',
+				mailbox,
+				unresolved: unresolvedSeries.length,
+			});
 		}
 
 		return { events: resolved, unresolvedSeries };
