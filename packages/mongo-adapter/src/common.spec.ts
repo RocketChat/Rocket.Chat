@@ -281,6 +281,22 @@ describe('equals', () => {
 
 		expect(equals(obj, obj2)).toBe(true);
 	});
+
+	it.each([
+		['a date and an empty object', new Date(0), {}],
+		['an empty array and an empty object', [], {}],
+		['a binary value and an empty object', new Uint8Array(), {}],
+		['a regular expression and an empty object', /a/, {}],
+	])('should return false for %s, in either order', (_label, a: unknown, b: unknown) => {
+		expect(equals(a, b)).toBe(false);
+		expect(equals(b, a)).toBe(false);
+	});
+
+	it('should compare regular expressions by source and flags', () => {
+		expect(equals(/a/i, /a/i)).toBe(true);
+		expect(equals(/a/, /b/)).toBe(false);
+		expect(equals(/a/, /a/i)).toBe(false);
+	});
 });
 
 describe('isEmptyArray', () => {
