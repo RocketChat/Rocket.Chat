@@ -1,7 +1,6 @@
 import type { AtLeast, IRole, IRoom, ISubscription, IUser, RocketChatRecordDeleted, SpotlightUser } from '@rocket.chat/core-typings';
 import type { ISubscriptionsModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
-import { compact } from 'lodash';
 import type {
 	Collection,
 	FindCursor,
@@ -245,7 +244,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		// this projection is internal to the lookup below, so it must not be typed against the caller's `O`
 		const subscriptions = await this.find(query, { projection: { 'u._id': 1 } }).toArray();
 
-		const users = compact(subscriptions.map((subscription) => subscription.u?._id).filter(Boolean));
+		const users = subscriptions.map((subscription) => subscription.u?._id).filter((id) => !!id);
 
 		// TODO remove dependency to other models - this logic should be inside a function/service
 		return Users.find<P, O>({ _id: { $in: users } }, options);
