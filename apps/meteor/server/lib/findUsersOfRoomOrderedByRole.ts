@@ -20,7 +20,7 @@ type FindUsersParam = {
 };
 
 type UserWithRoleAndSubscriptionData = IUser & {
-	subscription: Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles'>;
+	subscription: Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles' | 'historyVisibleFrom'>;
 };
 
 export async function findUsersOfRoomOrderedByRole({
@@ -108,7 +108,7 @@ export async function findUsersOfRoomOrderedByRole({
 								},
 							},
 						},
-						{ $project: { roles: 1, status: 1, ts: 1 } },
+						{ $project: { roles: 1, status: 1, ts: 1, historyVisibleFrom: 1 } },
 					],
 				},
 			},

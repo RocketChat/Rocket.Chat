@@ -15,6 +15,7 @@ export type EditRoomInfoFormData = {
 	roomAvatar?: string;
 	readOnly: boolean;
 	reactWhenReadOnly: boolean;
+	hideHistoryForNewMembers: boolean;
 	archived: boolean;
 	joinCodeRequired: boolean;
 	hideSysMes: boolean;
@@ -35,7 +36,20 @@ export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy): Partia
 	const retentionPolicy = useRetentionPolicy(room);
 	const canEditRoomRetentionPolicy = usePermission('edit-room-retention-policy', room._id);
 
-	const { t, ro, archived, topic, description, announcement, joinCodeRequired, sysMes, encrypted, retention, reactWhenReadOnly } = room;
+	const {
+		t,
+		ro,
+		archived,
+		topic,
+		description,
+		announcement,
+		joinCodeRequired,
+		sysMes,
+		encrypted,
+		retention,
+		reactWhenReadOnly,
+		hideHistoryForNewMembers,
+	} = room;
 
 	return useMemo(
 		(): Partial<EditRoomInfoFormData> => ({
@@ -43,6 +57,7 @@ export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy): Partia
 			roomType: t,
 			readOnly: !!ro,
 			reactWhenReadOnly,
+			hideHistoryForNewMembers: !!hideHistoryForNewMembers,
 			archived: !!archived,
 			roomTopic: topic ?? '',
 			roomDescription: description ?? '',
@@ -77,6 +92,7 @@ export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy): Partia
 			topic,
 			encrypted,
 			reactWhenReadOnly,
+			hideHistoryForNewMembers,
 			canEditRoomRetentionPolicy,
 		],
 	);

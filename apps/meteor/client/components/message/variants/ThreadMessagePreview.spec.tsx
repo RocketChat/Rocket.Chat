@@ -21,8 +21,15 @@ const parentMessage: IMessage = {
 	_updatedAt: new Date('2021-10-27T00:00:00.000Z'),
 };
 
+let mockParentMessage: { isSuccess: boolean; isLoading: boolean; isError: boolean; data?: IMessage } = {
+	isSuccess: true,
+	isLoading: false,
+	isError: false,
+	data: parentMessage,
+};
+
 jest.mock('../../../views/room/MessageList/hooks/useParentMessage', () => ({
-	useParentMessage: () => ({ isSuccess: true, isLoading: false, data: parentMessage }),
+	useParentMessage: () => mockParentMessage,
 }));
 
 const message: IThreadMessage = {
@@ -38,6 +45,7 @@ const message: IThreadMessage = {
 
 beforeEach(() => {
 	goToThread.mockClear();
+	mockParentMessage = { isSuccess: true, isLoading: false, isError: false, data: parentMessage };
 });
 
 it('should open the thread at the reply when the reply is clicked under the parent header', async () => {
@@ -74,4 +82,37 @@ it.each(['{Enter}', ' '])('should open the thread at the reply when %s is presse
 
 	expect(goToThread).toHaveBeenCalledTimes(1);
 	expect(goToThread).toHaveBeenCalledWith({ rid: 'roomId', tmid: 'threadId', msg: 'replyId' });
+});
+
+describe('a thread the member cannot open', () => {
+	beforeEach(() => {
+		mockParentMessage = { isSuccess: false, isLoading: false, isError: true };
+	});
+
+	it('offers no follow bell, unlike a thread the member can read', () => {
+		const { container, unmount } = render(<ThreadMessagePreview message={message} sequential={false} showUserAvatar />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		expect(screen.getByText('Thread_not_available')).toBeInTheDocument();
+		// oxlint-disable-next-line testing-library/no-container, testing-library/no-node-access -- the follow bell is an icon with no role, label or text of its own
+		expect(container.querySelector('.rcx-icon--name-bell-off')).toBeNull();
+		unmount();
+
+		mockParentMessage = { isSuccess: true, isLoading: false, isError: false, data: parentMessage };
+		const { container: readableContainer } = render(<ThreadMessagePreview message={message} sequential={false} showUserAvatar />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		// oxlint-disable-next-line testing-library/no-container, testing-library/no-node-access -- the follow bell is an icon with no role, label or text of its own
+		expect(readableContainer.querySelector('.rcx-icon--name-bell-off')).not.toBeNull();
+	});
+
+	it('does not open the thread when its header is clicked', async () => {
+		render(<ThreadMessagePreview message={message} sequential={false} showUserAvatar />, { wrapper: mockAppRoot().build() });
+
+		await userEvent.click(screen.getByText('Thread_not_available'));
+
+		expect(goToThread).not.toHaveBeenCalled();
+	});
 });

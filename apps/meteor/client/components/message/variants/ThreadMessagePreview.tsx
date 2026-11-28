@@ -63,6 +63,10 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 			return toggleSelected();
 		}
 
+		if (parentMessage.isError) {
+			return;
+		}
+
 		return goToThread({ rid: message.rid, tmid: message.tmid, msg: message._id });
 	};
 
@@ -111,8 +115,9 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 							)}
 							{messageType?.text(t, message)}
 							{parentMessage.isLoading && <Skeleton />}
+							{parentMessage.isError && t('Thread_not_available')}
 						</ThreadMessageOrigin>
-						<ThreadMessageUnfollow />
+						{!parentMessage.isError && <ThreadMessageUnfollow />}
 					</ThreadMessageContainer>
 				</ThreadMessageRow>
 			)}

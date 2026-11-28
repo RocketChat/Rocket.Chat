@@ -19,6 +19,7 @@ import { isMessageSequential } from './lib/isMessageSequential';
 import MessageListProvider from './providers/MessageListProvider';
 import { RoomManager } from '../../../lib/RoomManager';
 import LoadingMessagesIndicator from '../body/LoadingMessagesIndicator';
+import RestrictedHistoryNotice from '../body/RestrictedHistoryNotice';
 import RetentionPolicyWarning from '../body/RetentionPolicyWarning';
 import RoomForeword from '../body/RoomForeword/RoomForeword';
 import { useStoreScrollPosition } from '../body/hooks/useStoreScrollPosition';
@@ -236,6 +237,7 @@ export const MessageList = function MessageList({
 
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 	const messageGroupingPeriod = useSetting('Message_GroupingPeriod', 300);
+	const isRestrictedHistoryEnabled = useSetting('Restricted_Message_History_Enabled', false);
 	const { t } = useTranslation();
 
 	const unreadMarkIndex = useRef<number | null>(null);
@@ -325,7 +327,11 @@ export const MessageList = function MessageList({
 								</div>
 							) : (
 								<div role='listitem'>
-									<RoomForeword user={user} room={room} />
+									{isRestrictedHistoryEnabled && subscription?.historyVisibleFrom ? (
+										<RestrictedHistoryNotice historyVisibleFrom={subscription.historyVisibleFrom} />
+									) : (
+										<RoomForeword user={user} room={room} />
+									)}
 									{retentionPolicy?.isActive ? <RetentionPolicyWarning room={room} /> : null}
 								</div>
 							)}

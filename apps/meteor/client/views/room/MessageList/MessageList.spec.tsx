@@ -410,3 +410,35 @@ describe('MessageList accessibility', () => {
 		expect(await axe(container)).toHaveNoViolations();
 	});
 });
+
+describe('MessageList start of the timeline', () => {
+	let root: ReturnType<typeof mockAppRoot>;
+
+	beforeEach(() => {
+		jest.clearAllMocks();
+		(useMessages as jest.Mock).mockReturnValue([createMessage('message-1')]);
+		(useRoomSubscription as jest.Mock).mockReturnValue(undefined);
+		(useFirstUnreadMessageId as jest.Mock).mockReturnValue(undefined);
+		(RoomManager.getStore as jest.Mock).mockReturnValue({ scroll: undefined, atBottom: false, update: jest.fn() });
+		root = mockAppRoot()
+			.withSetting('Message_GroupingPeriod', 300)
+			.withSetting('Restricted_Message_History_Enabled', true)
+			.withUserPreference('displayAvatars', true);
+	});
+
+	it('opens with the room foreword for a member who sees the full history', () => {
+		render(<MessageList {...defaultProps} />, { wrapper: root.build() });
+
+		expect(screen.getByText('Room foreword')).toBeInTheDocument();
+		expect(screen.queryByRole('status')).not.toBeInTheDocument();
+	});
+
+	it('opens with the restricted history notice instead of the foreword for a restricted member', () => {
+		(useRoomSubscription as jest.Mock).mockReturnValue({ historyVisibleFrom: new Date(2026, 10, 16, 14, 30) });
+
+		render(<MessageList {...defaultProps} />, { wrapper: root.build() });
+
+		expect(screen.getByRole('status')).toBeInTheDocument();
+		expect(screen.queryByText('Room foreword')).not.toBeInTheDocument();
+	});
+});
