@@ -69,7 +69,7 @@ const getValueBitmask = (value: unknown, length: number): Uint8Array | false => 
 	}
 
 	if (isBinary(value)) {
-		return new Uint8Array(value.buffer);
+		return value;
 	}
 
 	return false;
@@ -81,7 +81,7 @@ const getOperandBitmask = (operand: unknown, selector: string) => {
 	}
 
 	if (isBinary(operand)) {
-		return new Uint8Array(operand.buffer);
+		return operand;
 	}
 
 	if (Array.isArray(operand) && operand.every((x) => Number.isInteger(x) && x >= 0)) {
