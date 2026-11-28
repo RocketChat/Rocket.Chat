@@ -1,6 +1,6 @@
 import type { IContact, IUser } from '@rocket.chat/core-typings';
 import { AVATAR_DELETE_CONCURRENCY, forEachWithConcurrency } from '@rocket.chat/exchange';
-import type { ExchangeContactPhoto } from '@rocket.chat/exchange';
+import type { ExchangeContactPhotoUpsert } from '@rocket.chat/exchange';
 import { Avatars, Contacts } from '@rocket.chat/models';
 
 import { FileUpload } from '../../../../../../server/lib/media/file-upload';
@@ -10,7 +10,7 @@ const store = () => FileUpload.getStore('Avatars');
 export const saveContactAvatar = async (
 	ownerId: IUser['_id'],
 	contactId: IContact['_id'],
-	{ data, contentType }: ExchangeContactPhoto,
+	{ data, contentType }: ExchangeContactPhotoUpsert,
 ): Promise<void> => {
 	const current = await Avatars.findOneContactAvatar(contactId, { projection: { _id: 1 } });
 

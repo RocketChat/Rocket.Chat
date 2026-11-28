@@ -140,14 +140,32 @@ const syncAvatars = async (
 	}
 
 	const withPhoto = new Set<string>();
+	const removed: string[] = [];
 
-	for await (const photo of provider.getContactPhotos(mailbox, folderId, [...contactIds.keys()])) {
-		const contactId = contactIds.get(photo.externalId);
+	try {
+		for await (const photo of provider.getContactPhotos(mailbox, folderId, [...contactIds.keys()])) {
+			const contactId = contactIds.get(photo.externalId);
 
-		if (contactId) {
+			if (!contactId) {
+				continue;
+			}
+
+			if (photo.kind === 'deleted') {
+				removed.push(contactId);
+				continue;
+			}
+
 			await saveContactAvatar(uid, contactId, photo);
 			withPhoto.add(photo.externalId);
 		}
+	} catch (err) {
+		try {
+			await deleteContactAvatars(removed);
+		} catch (cleanupErr) {
+			logger.warn({ msg: 'Could not drop the removed Exchange contact photos', uid, folderId, err: scrubForLog(cleanupErr) });
+		}
+
+		throw err;
 	}
 
 	const withoutPhoto = [...contactIds].filter(([externalId]) => !withPhoto.has(externalId)).map(([, contactId]) => contactId);

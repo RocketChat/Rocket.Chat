@@ -87,11 +87,19 @@ export type ExchangeContactDeletion = {
 
 export type ExchangeContact = ExchangeContactUpsert | ExchangeContactDeletion;
 
-export type ExchangeContactPhoto = {
+export type ExchangeContactPhotoUpsert = {
+	kind: 'upsert';
 	data: Uint8Array;
 	contentType: string;
 	externalId: string;
 };
+
+export type ExchangeContactPhotoDeletion = {
+	kind: 'deleted';
+	externalId: string;
+};
+
+export type ExchangeContactPhoto = ExchangeContactPhotoUpsert | ExchangeContactPhotoDeletion;
 
 export type ContactFolder = {
 	id: string;
