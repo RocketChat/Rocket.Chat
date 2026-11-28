@@ -6,6 +6,7 @@ import { trim } from '../../../lib/utils/stringUtils';
 import { sendVerificationEmail } from '../../lib/auth/accountEmails';
 import { createUser } from '../../lib/auth/createUser';
 import { passwordPolicy } from '../../lib/auth/passwordPolicy';
+import { triggerPostUserCreated } from '../../lib/auth/triggerPostUserCreated';
 import { SystemLogger } from '../../lib/logger/system';
 import { validateInviteToken } from '../../lib/rooms/invites/validateInviteToken';
 import { validateEmailDomain } from '../../lib/validateEmailDomain';
@@ -60,6 +61,8 @@ export const registerUser = async (formData: {
 		password: formData.pass,
 		...(formData.name?.trim() && { name: formData.name?.trim() }),
 		reason: formData.reason,
+		// users.register triggers the apps event once the username is set
+		skipAppsEngineEvent: true,
 	};
 
 	let userId;
@@ -79,7 +82,13 @@ export const registerUser = async (formData: {
 
 	const reason = trim(formData.reason);
 	if (manuallyApproveNewUsers && reason) {
-		await Users.setReason(userId, reason);
+		try {
+			await Users.setReason(userId, reason);
+		} catch (error) {
+			// the user exists even though the request fails, so apps still hear about it
+			void triggerPostUserCreated(userId);
+			throw error;
+		}
 	}
 
 	try {

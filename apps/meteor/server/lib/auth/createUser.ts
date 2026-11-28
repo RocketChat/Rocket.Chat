@@ -5,6 +5,7 @@ import { Users } from '@rocket.chat/models';
 
 import { insertUser } from './insertUser';
 import type { InsertUserOptions, NewUser } from './insertUser';
+import { triggerPostUserCreated } from './triggerPostUserCreated';
 
 export type CreateUserOptions = InsertUserOptions & {
 	username?: string;
@@ -51,13 +52,18 @@ export async function createUser(options: CreateUserOptions): Promise<IUser['_id
 
 	await assertNoOtherUserHas({ username, email });
 
-	const userId = await insertUser(options, user);
+	const userId = await insertUser({ ...options, skipAppsEngineEvent: true }, user);
 
 	try {
 		await assertNoOtherUserHas({ username, email }, userId);
 	} catch (error) {
 		await Users.removeById(userId);
 		throw error;
+	}
+
+	// callers that write more after the creation pass `skipAppsEngineEvent` and trigger the event themselves
+	if (!options.skipAppsEngineEvent) {
+		void triggerPostUserCreated(userId, options.performedBy);
 	}
 
 	return userId;

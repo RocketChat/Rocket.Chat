@@ -12,6 +12,7 @@ const Users = {
 	removeById: sinon.stub(),
 };
 const insertUser = sinon.stub();
+const triggerPostUserCreated = sinon.stub();
 const hashPassword = sinon.stub();
 
 let createUser: any;
@@ -19,6 +20,7 @@ let createUser: any;
 before(async () => {
 	mock.module('@rocket.chat/account-utils', { exports: { hashPassword } });
 	mock.module('./insertUser', { exports: { insertUser } });
+	mock.module('./triggerPostUserCreated', { exports: { triggerPostUserCreated } });
 	({ createUser } = await import('./createUser'));
 });
 
@@ -28,7 +30,7 @@ describe('createUser', () => {
 	});
 
 	beforeEach(() => {
-		for (const stub of [...Object.values(Users), insertUser, hashPassword]) {
+		for (const stub of [...Object.values(Users), insertUser, triggerPostUserCreated, hashPassword]) {
 			stub.reset();
 		}
 		Object.values(Users).forEach((stub) => stub.resolves(null));
@@ -46,11 +48,15 @@ describe('createUser', () => {
 
 		expect(await createUser(options)).to.equal('new-user-id');
 
-		sinon.assert.calledOnceWithExactly(insertUser, options, {
-			services: { password: { bcrypt: 'hashed:secret' } },
-			username: 'alice',
-			emails: [{ address: 'alice@example.com', verified: false }],
-		});
+		sinon.assert.calledOnceWithExactly(
+			insertUser,
+			{ ...options, skipAppsEngineEvent: true },
+			{
+				services: { password: { bcrypt: 'hashed:secret' } },
+				username: 'alice',
+				emails: [{ address: 'alice@example.com', verified: false }],
+			},
+		);
 	});
 
 	it('should insert a user without a password with empty services', async () => {
@@ -79,6 +85,19 @@ describe('createUser', () => {
 
 		sinon.assert.calledOnceWithExactly(Users.findOneByUsernameIgnoringCaseExceptId, 'alice', 'new-user-id', { projection: { _id: 1 } });
 		sinon.assert.calledOnceWithExactly(Users.removeById, 'new-user-id');
+		sinon.assert.notCalled(triggerPostUserCreated);
+	});
+
+	it('should trigger the apps event after the duplicate check, unless the caller triggers it', async () => {
+		const performedBy = { _id: 'admin' };
+
+		await createUser({ username: 'alice', performedBy });
+		sinon.assert.calledOnceWithExactly(triggerPostUserCreated, 'new-user-id', performedBy);
+		sinon.assert.callOrder(Users.findOneByUsernameIgnoringCaseExceptId, triggerPostUserCreated);
+
+		triggerPostUserCreated.resetHistory();
+		await createUser({ username: 'alice', skipAppsEngineEvent: true });
+		sinon.assert.notCalled(triggerPostUserCreated);
 	});
 
 	it('should remove the new user when another one took the username meanwhile', async () => {

@@ -44,6 +44,7 @@ import { getUserForCheck, emailCheck } from '../../lib/2fa/code';
 import { resetTOTP } from '../../lib/2fa/functions/resetTOTP';
 import { codesRemainingTotp, disableTotp, enableTotp, regenerateTotpCodes, validateTotpTempToken } from '../../lib/2fa/functions/totp';
 import { UserChangedAuditStore } from '../../lib/auditServerEvents/userChanged';
+import { triggerPostUserCreated } from '../../lib/auth/triggerPostUserCreated';
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { i18n } from '../../lib/i18n';
 import { SystemLogger } from '../../lib/logger/system';
@@ -404,12 +405,18 @@ API.v1
 			const newUserId = await saveUser(this.userId, this.bodyParams);
 			const userId = typeof newUserId !== 'string' ? this.userId : newUserId;
 
-			if (this.bodyParams.customFields) {
-				await saveCustomFieldsWithoutValidation(userId, this.bodyParams.customFields);
-			}
+			try {
+				if (this.bodyParams.customFields) {
+					await saveCustomFieldsWithoutValidation(userId, this.bodyParams.customFields);
+				}
 
-			if (typeof this.bodyParams.active !== 'undefined') {
-				await executeSetUserActiveStatus(this.userId, userId, this.bodyParams.active);
+				if (typeof this.bodyParams.active !== 'undefined') {
+					await executeSetUserActiveStatus(this.userId, userId, this.bodyParams.active);
+				}
+			} finally {
+				if (typeof newUserId === 'string') {
+					void triggerPostUserCreated(newUserId, this.user);
+				}
 			}
 
 			const { fields } = await this.parseJsonQuery();
@@ -1018,20 +1025,24 @@ API.v1.post(
 			return API.v1.failure('Error creating user');
 		}
 
-		// Now set their username
-		const { fields } = await this.parseJsonQuery();
-		await setUsernameWithValidation(userId, this.bodyParams.username);
+		try {
+			// Now set their username
+			const { fields } = await this.parseJsonQuery();
+			await setUsernameWithValidation(userId, this.bodyParams.username);
 
-		const user = await Users.findOneById(userId, { projection: fields });
-		if (!user) {
-			return API.v1.failure('User not found');
+			const user = await Users.findOneById(userId, { projection: fields });
+			if (!user) {
+				return API.v1.failure('User not found');
+			}
+
+			if (this.bodyParams.customFields) {
+				await saveCustomFields(userId, this.bodyParams.customFields);
+			}
+
+			return API.v1.success({ user });
+		} finally {
+			void triggerPostUserCreated(userId);
 		}
-
-		if (this.bodyParams.customFields) {
-			await saveCustomFields(userId, this.bodyParams.customFields);
-		}
-
-		return API.v1.success({ user });
 	},
 );
 
