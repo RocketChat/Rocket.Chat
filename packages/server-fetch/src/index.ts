@@ -177,7 +177,18 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 			controller.abort();
 			controller = new AbortController();
 
-			currentUrl = new URL(followRedirect(response, redirectCount), currentUrl).toString();
+			const location = followRedirect(response, redirectCount);
+			const locationUrl = new URL(location, currentUrl);
+
+			if (locationUrl.hostname === url.hostname) {
+				const current = new URL(currentUrl);
+				locationUrl.hostname = current.hostname;
+				if (locationUrl.port === '' || locationUrl.port === url.port) {
+					locationUrl.port = current.port;
+				}
+			}
+
+			currentUrl = locationUrl.toString();
 		}
 	} finally {
 		clearTimeout(timeoutId);
