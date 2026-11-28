@@ -377,7 +377,8 @@ InlineItemPattern
   / & "*"    @(EmphasisWithWhitespace / Emphasis / InlineEmoticon)
   / & "~"    @(EmphasisWithWhitespace / Emphasis)
   / & "-"    @(PlainRunBeforeEmoticon / InlineEmoticon)
-  / & "_"    @(PlainUnderscoreThenDomain / EmphasisWithWhitespace / Emphasis)
+  / & ("_" [ \t ]) @(PlainUnderscoreThenDomain / EmphasisWithWhitespace / Emphasis)
+  / & "_"    @(PlainUnderscoreThenDomain / Emphasis)
   / & "#"    @(ChannelMention / InlineEmoticon)
   / & ";"    @(InlineEmoticon / PlainRun)
   / & "="    @(InlineEmoticon / PlainRun)
@@ -571,8 +572,8 @@ AutolinkedEmail = &("mailto:"? [^ \t\r\n@]+ "@") e:Email { return autoEmail(e); 
 // _example.com (underscore + domain without closing _) → plain
 PlainUnderscoreThenDomain = "_" d:DomainName &(EndOfLine / !. / [^\x5F]) { return plain('_' + d); }
 
-// Guard: only attempt URL parse if :// or . exists ahead on this line
-AutolinkedURL = &([^ \t\r\n:./@]* ("://" / ".")) u:AutoLinkURL { return autoLink(u, options.customDomains); }
+// Guard: only attempt URL parse if :// or . exists ahead within valid scheme/domain chars
+AutolinkedURL = &([a-zA-Z0-9+\-]* ("://" / ".")) u:AutoLinkURL { return autoLink(u, options.customDomains); }
 
 AutoLinkURL
   = head:($(URLScheme URLAuthority) / $(URLAuthorityHost)) tail:$(AutoLinkURLBody*) { return head + tail; }
