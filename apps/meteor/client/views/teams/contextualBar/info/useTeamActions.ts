@@ -1,10 +1,12 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useConvertToChannel } from './useConvertToChannel';
 import { useLeaveTeam } from './useLeaveTeam';
 import { useHideRoomAction } from '../../../../hooks/useHideRoomAction';
+import { useUnhideRoomAction } from '../../../../hooks/useUnhideRoomAction';
 import { useDeleteRoom } from '../../../hooks/roomActions/useDeleteRoom';
 
 type GenProps = {
@@ -13,7 +15,10 @@ type GenProps = {
 
 export const useTeamActions = (room: IRoom, { onClickEdit }: GenProps) => {
 	const { t } = useTranslation();
+	const subscription = useUserSubscription(room._id);
+	const isRoomHidden = subscription?.open === false;
 	const hideTeam = useHideRoomAction({ rid: room._id, type: room.t, name: room.name ?? '' });
+	const unhideTeam = useUnhideRoomAction({ rid: room._id, type: room.t });
 	const convertToChannel = useConvertToChannel(room);
 	const { handleDelete, canDeleteRoom } = useDeleteRoom(room);
 	const leaveTeam = useLeaveTeam(room);
@@ -22,10 +27,10 @@ export const useTeamActions = (room: IRoom, { onClickEdit }: GenProps) => {
 		() => ({
 			items: [
 				{
-					id: 'hide',
-					content: t('Hide'),
-					icon: 'eye-off' as const,
-					onClick: hideTeam,
+					id: isRoomHidden ? 'unhide' : 'hide',
+					content: isRoomHidden ? t('Unhide') : t('Hide'),
+					icon: isRoomHidden ? ('eye' as const) : ('eye-off' as const),
+					onClick: isRoomHidden ? unhideTeam : hideTeam,
 				},
 				...(onClickEdit
 					? [
@@ -70,6 +75,6 @@ export const useTeamActions = (room: IRoom, { onClickEdit }: GenProps) => {
 					: []),
 			],
 		}),
-		[t, hideTeam, leaveTeam, onClickEdit, handleDelete, canDeleteRoom, convertToChannel],
+		[t, hideTeam, unhideTeam, isRoomHidden, leaveTeam, onClickEdit, handleDelete, canDeleteRoom, convertToChannel],
 	);
 };
