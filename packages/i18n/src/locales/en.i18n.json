@@ -2104,6 +2104,7 @@
   "Data_processing_consent_text_description": "Use this setting to explain that you can collect, store and process customer's personal informations along the conversation.",
   "Date": "Date",
   "Date_From": "From",
+  "Date_from__startDate__to__endDate__": "{{startDate}} to {{endDate}}",
   "Date_range_presets": "Date range presets",
   "Date_to": "to",
   "DAU_value": "DAU {{value}}",
