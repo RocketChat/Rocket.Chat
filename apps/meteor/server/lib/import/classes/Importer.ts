@@ -11,7 +11,7 @@ import type {
 import { Logger } from '@rocket.chat/logger';
 import { Settings, ImportData, Imports } from '@rocket.chat/models';
 import AdmZip from 'adm-zip';
-import type { MatchKeysAndValues, MongoServerError } from 'mongodb';
+import type { MatchKeysAndValues } from 'mongodb';
 
 import { ImportDataConverter } from './ImportDataConverter';
 import type { ConverterOptions } from './ImportDataConverter';
@@ -409,12 +409,5 @@ export class Importer {
 		const results = new Selection(this.info.name, selectionUsers, selectionChannels, selectionMessages, selectionContacts);
 
 		return results;
-	}
-
-	/**
-	 * Utility method to check if the passed in error is a `MongoServerError` with the `codeName` of `'CursorNotFound'`.
-	 */
-	protected isCursorNotFoundError(error: unknown): error is MongoServerError & { codeName: 'CursorNotFound' } {
-		return typeof error === 'object' && error !== null && 'codeName' in error && error.codeName === 'CursorNotFound';
 	}
 }

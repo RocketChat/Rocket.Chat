@@ -14,6 +14,7 @@ export * from './isBareJid.js';
 export * from './isObject.js';
 export * from './isRecord.js';
 export * from './isTruthy.js';
+export * from './mongoErrors.js';
 export * from './normalizeLanguage.js';
 export * from './objectMap.js';
 export * from './pick.js';
