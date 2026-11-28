@@ -55,6 +55,8 @@ export class S2SManager {
 
 	private readonly routes = new Map<string, DomainRoute>();
 
+	private dialbackVerificationsInFlight = 0;
+
 	private reapTimer: NodeJS.Timeout | undefined;
 
 	private stopped = true;
@@ -347,6 +349,12 @@ export class S2SManager {
 		streamId: string;
 		key: string;
 	}): Promise<DialbackVerdict> {
+		const limit = this.deps.config.maxConcurrentDialbackVerifications;
+		if (this.dialbackVerificationsInFlight >= limit) {
+			this.logger.warn({ domain: req.originatingDomain, limit }, 'Too many dialback verifications running');
+			return 'error';
+		}
+
 		const session = new OutboundSession({
 			config: this.deps.config,
 			logger: this.logger,
@@ -356,7 +364,12 @@ export class S2SManager {
 			resolver: this.deps.resolver,
 		});
 
-		return session.verifyDialback({ originatingStreamId: req.streamId, key: req.key });
+		this.dialbackVerificationsInFlight += 1;
+		try {
+			return await session.verifyDialback({ originatingStreamId: req.streamId, key: req.key });
+		} finally {
+			this.dialbackVerificationsInFlight -= 1;
+		}
 	}
 
 	/** Authoritative-server side of dialback: only keys derived from our own secret are valid. */

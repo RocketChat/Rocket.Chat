@@ -106,6 +106,15 @@ spoof check, domain lists) and the authentication (STARTTLS, SASL EXTERNAL, dial
 - **R18** Stopping the server ends each outbound stream with the closing
   `</stream:stream>` (RFC 6120 §4.4), after everything already written to it, so a stanza
   whose send resolved is not lost to the stop.
+- **R19** While it negotiates, an outbound stream holds at most 4 stream, TLS, SASL or
+  dialback elements that no negotiation step has taken yet. One more MUST close the stream
+  with `policy-violation`, which fails the connection or, for a dialback verification, gives
+  the `error` verdict of R5, even when the peer's answer arrived before it. Once the stream
+  is authenticated it holds none: those left are dropped, and later ones are ignored. The
+  limit is a Rocket.Chat choice, not a protocol rule.
+- **R20** At most 64 dialback verifications (R5) run at once across the server. A
+  `<db:result/>` that would start one more is answered `type='error'` without connecting to
+  the claimed domain. The limit is a Rocket.Chat choice, not a protocol rule.
 
 **Routing of authenticated stanzas**
 
@@ -146,6 +155,10 @@ The dialback secret is generated at start and never persisted
 - A cap on inbound connections, overall or per peer address, and closing authenticated
   inbound streams that sit idle: only the authentication deadline (R17) bounds them today.
   Part of [scale-and-availability](../intents/scale-and-availability.md).
+- A cap on dialback verifications per inbound stream or per peer address: only the overall
+  cap (R20) bounds them, so one peer can take every slot and delay other peers' dialback.
+  Inbound streams hold no unanswered elements, so R19 has no inbound counterpart. Part of
+  the same intent.
 
 ## Known defects
 

@@ -15,6 +15,8 @@ import { resolveElement } from '../xml/resolve';
 
 const NEGOTIATION_STEP_TIMEOUT_MS = 30000;
 
+const MAX_PENDING_NEGOTIATION_ELEMENTS = 4;
+
 export type OutboundSessionOptions = {
 	config: ResolvedXMPPServerConfig;
 	logger: Logger;
@@ -89,8 +91,11 @@ export class OutboundSession {
 		this.markClosed();
 	}
 
+	/** Drops the connection at once, unless it is already gone or closing on its own. */
 	destroy(): void {
-		this.stream?.destroy();
+		if (!this.closed) {
+			this.stream?.destroy();
+		}
 		this.markClosed();
 	}
 
@@ -102,7 +107,7 @@ export class OutboundSession {
 		if (config.saslExternalEnabled && config.tls && this.stream?.isSecure && this.offersSaslExternal(features)) {
 			try {
 				await this.authenticateSaslExternal();
-				this.authMethod = 'sasl-external';
+				this.markAuthenticated('sasl-external');
 				return;
 			} catch (error) {
 				this.logger.debug({ err: error }, 'SASL EXTERNAL failed, falling back to dialback');
@@ -114,7 +119,14 @@ export class OutboundSession {
 		}
 
 		await this.authenticateDialback();
-		this.authMethod = 'dialback';
+		this.markAuthenticated('dialback');
+	}
+
+	/** Negotiation is over: nothing the peer sent unasked can be taken by a step any more. */
+	private markAuthenticated(method: 'dialback' | 'sasl-external'): void {
+		this.assertOpen();
+		this.pending.length = 0;
+		this.authMethod = method;
 	}
 
 	/**
@@ -132,6 +144,7 @@ export class OutboundSession {
 				(stanza, { localName, ns }) =>
 					ns === NS_DIALBACK && localName === 'verify' && !!stanza.attrs.type && stanza.attrs.id === req.originatingStreamId,
 			);
+			this.assertOpen();
 
 			return answer.attrs.type === 'valid' || answer.attrs.type === 'invalid' ? answer.attrs.type : 'error';
 		} catch (error) {
@@ -273,6 +286,10 @@ export class OutboundSession {
 	}
 
 	private dispatchStanza(stanza: Element): void {
+		if (this.closed) {
+			return;
+		}
+
 		const resolved = resolveElement(stanza, this.streamHeader);
 
 		for (const waiter of this.waiters) {
@@ -295,12 +312,27 @@ export class OutboundSession {
 			return;
 		}
 
-		if (resolved.ns === NS_STREAMS || resolved.ns === NS_TLS || resolved.ns === NS_SASL || resolved.ns === NS_DIALBACK) {
+		const isNegotiationElement =
+			resolved.ns === NS_STREAMS || resolved.ns === NS_TLS || resolved.ns === NS_SASL || resolved.ns === NS_DIALBACK;
+		if (isNegotiationElement && !this.authMethod) {
+			if (this.pending.length >= MAX_PENDING_NEGOTIATION_ELEMENTS) {
+				this.logger.warn({ limit: MAX_PENDING_NEGOTIATION_ELEMENTS }, 'Too many unrequested negotiation elements');
+				void this.stream?.close({ condition: 'policy-violation' });
+				this.markClosed(new ConnectionFailedError(this.options.targetDomain, new Error('Too many unrequested negotiation elements')));
+				return;
+			}
 			this.pending.push(stanza);
 			return;
 		}
 
 		this.logger.debug({ name: stanza.name }, 'Ignoring unexpected element on outbound stream');
+	}
+
+	/** An answer that arrived on a stream closed before it was acted on authenticates nothing. */
+	private assertOpen(): void {
+		if (this.closed) {
+			throw this.closedError ?? new ConnectionFailedError(this.options.targetDomain);
+		}
 	}
 
 	private waitForStreamStart(): Promise<Element> {
