@@ -73,8 +73,6 @@ export const strike = generate('STRIKE');
 
 export const codeLine = generate('CODE_LINE');
 
-const isValidLink = (link: string) => URL.canParse(link);
-
 const hasAbsoluteSchemePrefix = (src: string) => /^[A-Za-z][A-Za-z0-9+.-]{0,31}:\/\//.test(src);
 
 export const link = (src: string, label?: Markup[]): Link => ({
@@ -101,7 +99,7 @@ export const autoLink = (src: string, customDomains?: string[]) => {
 		return plain(src);
 	}
 
-	const href = isValidLink(src) || src.startsWith('//') || hasAbsoluteSchemePrefix(src) ? src : `//${src}`;
+	const href = src.startsWith('//') || hasAbsoluteSchemePrefix(src) ? src : `//${src}`;
 
 	return link(href, [plain(src)]);
 };

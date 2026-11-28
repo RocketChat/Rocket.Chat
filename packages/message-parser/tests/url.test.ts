@@ -89,6 +89,13 @@ test.each([
 	['https://1developer.rocket.chat', [paragraph([link('https://1developer.rocket.chat')])]],
 	['https://en.m.wikipedia.org/wiki/Main_Page', [paragraph([link('https://en.m.wikipedia.org/wiki/Main_Page')])]],
 	['test.1test.com', [paragraph([link('//test.1test.com', [plain('test.1test.com')])])]],
+	['rocket.chat:3000', [paragraph([link('//rocket.chat:3000', [plain('rocket.chat:3000')])])]],
+	['www.rocket.chat:8080/path', [paragraph([link('//www.rocket.chat:8080/path', [plain('www.rocket.chat:8080/path')])])]],
+	[
+		'rocket.chat:3000/path?query=value#section',
+		[paragraph([link('//rocket.chat:3000/path?query=value#section', [plain('rocket.chat:3000/path?query=value#section')])])],
+	],
+	['127.0.0.1:3000/path', [paragraph([link('//127.0.0.1:3000/path', [plain('127.0.0.1:3000/path')])])]],
 	['http://test.e-xample.com', [paragraph([link('http://test.e-xample.com')])]],
 	['www.n-tv.de', [paragraph([link('//www.n-tv.de', [plain('www.n-tv.de')])])]],
 	['www.n-tv.de/test, test', [paragraph([link('//www.n-tv.de/test', [plain('www.n-tv.de/test')]), plain(', test')])]],
