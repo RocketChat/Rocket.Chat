@@ -535,3 +535,20 @@ describe('Offline license', () => {
 		expect(licenseManager.hasOfflineLicense()).toBe(false);
 	});
 });
+
+it('should keep the workspace licensed while a renewed license validates', async () => {
+	const licenseManager = await getReadyLicenseManager();
+	const limits = [{ max: 100, behavior: 'invalidate_license' as const }];
+	await licenseManager.setLicense(await new MockedLicenseBuilder().withLimits('activeUsers', limits).sign());
+
+	let licensedWhileCounting = false;
+	licenseManager.setLicenseLimitCounter('activeUsers', () => {
+		licensedWhileCounting = licenseManager.hasValidLicense();
+		return 0;
+	});
+	const renewed = await new MockedLicenseBuilder().withLimits('activeUsers', limits).withGrantedTo({ name: 'renewed' }).sign();
+	await licenseManager.setLicense(renewed);
+
+	expect(licensedWhileCounting).toBe(true);
+	expect(licenseManager.encryptedLicense).toBe(renewed);
+});
