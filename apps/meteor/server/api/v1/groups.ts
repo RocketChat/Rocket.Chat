@@ -68,6 +68,7 @@ import { addUserToFileObj } from '../lib/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../lib/composeRoomWithLastMessage';
 import { getPaginationItems } from '../lib/getPaginationItems';
 import { getUserFromParams, getUserListFromParams, getUsernameListFromParams } from '../lib/getUserFromParams';
+import { parsePinned } from '../lib/parsePinned';
 
 async function getRoomFromParams(params: { roomId?: string } | { roomName?: string }): Promise<IRoom> {
 	if (
@@ -1208,7 +1209,7 @@ API.v1.get(
 			rid: findResult.rid,
 			...parseIds(mentionIds, 'mentions._id'),
 			...parseIds(starredIds, 'starred._id'),
-			...(pinned?.toLowerCase() === 'true' ? { pinned: true } : {}),
+			...parsePinned(pinned),
 			_hidden: { $ne: true },
 		};
 

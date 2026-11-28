@@ -4402,6 +4402,27 @@ describe('[Channels]', () => {
 				});
 		});
 
+		it('should return unpinned messages when pinned is false', async () => {
+			await request
+				.get(api('channels.messages'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					pinned: false,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages).to.have.lengthOf(4);
+					expect(res.body).to.have.property('count', 4);
+					expect(res.body).to.have.property('total', 4);
+					res.body.messages.forEach((message: any) => {
+						expect(message).to.not.have.property('pinned', true);
+					});
+				});
+		});
+
 		describe('_hidden messages behavior when Message_KeepHistory is enabled', async () => {
 			before(async () => {
 				await updateSetting('Message_KeepHistory', true);
