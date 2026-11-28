@@ -187,6 +187,7 @@ export const syncContactFolder = async (
 		);
 
 		let avatarsSynced = true;
+		let throttled: unknown;
 
 		if (syncAvatarsEnabled) {
 			if (fetchAvatars || upserts.size) {
@@ -194,6 +195,10 @@ export const syncContactFolder = async (
 					await syncAvatars(provider, uid, mailbox, folderId, fetchAvatars ? undefined : [...upserts.keys()]);
 				} catch (err) {
 					avatarsSynced = false;
+					if (isExchangeError(err) && err.code === 'mailbox-rate-limited') {
+						throttled = err;
+					}
+
 					logger.warn({ msg: 'Could not read Exchange contact photos for a folder', uid, folderId, err: scrubForLog(err) });
 				}
 			}
@@ -223,8 +228,9 @@ export const syncContactFolder = async (
 			modified: imported.modifiedCount,
 			deleted: deleted?.deletedCount ?? 0,
 			pruned: pruned?.deletedCount ?? 0,
-			failed: false,
+			failed: throttled !== undefined,
 			fatal: false,
+			error: throttled,
 		};
 	} catch (err) {
 		const code = isExchangeError(err) ? err.code : 'unknown';

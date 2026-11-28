@@ -1,3 +1,4 @@
+import { ExchangeError } from '@rocket.chat/exchange';
 import type { ContactFolder, IExchangeProvider } from '@rocket.chat/exchange';
 
 import { syncUserContacts } from './syncUserContacts';
@@ -7,12 +8,14 @@ const findFolderIdsByUserId = jest.fn();
 const deleteByUserIdAndFolders = jest.fn();
 const syncContactFolder = jest.fn();
 const deleteFolderContactAvatars = jest.fn();
+const clearLastSyncByUserId = jest.fn();
 
 jest.mock('@rocket.chat/models', () => ({
 	Contacts: { deleteImportedByFolder: (...args: unknown[]) => deleteImportedByFolder(...args) },
 	ExchangeContactSyncState: {
 		findFolderIdsByUserId: (...args: unknown[]) => findFolderIdsByUserId(...args),
 		deleteByUserIdAndFolders: (...args: unknown[]) => deleteByUserIdAndFolders(...args),
+		clearLastSyncByUserId: (...args: unknown[]) => clearLastSyncByUserId(...args),
 	},
 }));
 
@@ -83,6 +86,19 @@ describe('syncUserContacts', () => {
 			expect(syncContactFolder).toHaveBeenCalledTimes(1);
 			expect(deleteImportedByFolder).not.toHaveBeenCalled();
 			expect(summary.fatal).toBe(true);
+		});
+
+		it('leaves the rest of a throttled mailbox for the next run, without stopping the run', async () => {
+			findFolderIdsByUserId.mockResolvedValue(['default', 'Suppliers', 'Gone']);
+			const provider = providerListing('graph', [folder('default'), folder('Suppliers')]);
+			syncContactFolder.mockResolvedValueOnce(outcome({ failed: true, error: new ExchangeError('mailbox-rate-limited', 'x') }));
+
+			const summary = await syncUserContacts(provider, UID, MAILBOX, REGION);
+
+			expect(syncContactFolder).toHaveBeenCalledTimes(1);
+			expect(deleteImportedByFolder).not.toHaveBeenCalled();
+			expect(clearLastSyncByUserId).toHaveBeenCalledWith(UID);
+			expect(summary).toMatchObject({ failed: 1, fatal: false });
 		});
 	});
 

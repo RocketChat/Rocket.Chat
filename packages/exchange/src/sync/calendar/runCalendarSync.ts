@@ -9,6 +9,7 @@ import { MAILBOX_CONCURRENCY } from '../limits';
 import { iterateMailboxCandidates } from '../resolveMailboxes';
 import { syncCalendarWindow } from './syncCalendarWindow';
 import { acquireSyncLease } from '../syncLease';
+import { createThrottledStreak } from '../throttledStreak';
 
 export type CalendarSyncRunSummary = {
 	mailboxes: number;
@@ -53,6 +54,7 @@ export const runCalendarSync = async (): Promise<CalendarSyncRunSummary> => {
 		const now = new Date();
 
 		const candidates = iterateMailboxCandidates();
+		const throttledTooOften = createThrottledStreak();
 
 		await forEachWithConcurrency(candidates, MAILBOX_CONCURRENCY, async ({ uid, mailbox, utcOffset }) => {
 			if (summary.aborted || !isServerSyncEnabled()) {
@@ -94,7 +96,7 @@ export const runCalendarSync = async (): Promise<CalendarSyncRunSummary> => {
 					dirty.add(uid);
 				}
 
-				if (outcome.fatal) {
+				if (outcome.fatal || throttledTooOften(outcome.error)) {
 					summary.aborted = true;
 
 					await candidates.return(undefined);

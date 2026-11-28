@@ -246,6 +246,13 @@ describe('GraphTokenClient', () => {
 			await expect(client.getAccessToken()).rejects.toMatchObject({ code: 'authentication-failed' });
 		});
 
+		it('reports a throttled token request as rate-limited, since the token belongs to the app and not to a mailbox', async () => {
+			serverFetch.mockResolvedValue(jsonResponse(429, {}, { 'retry-after': '120' }));
+
+			const client = new GraphTokenClient(config);
+			await expect(client.getAccessToken()).rejects.toMatchObject({ code: 'rate-limited' });
+		});
+
 		it('reports a response without an access_token as unexpected', async () => {
 			serverFetch.mockResolvedValue(jsonResponse(200, { token_type: 'Bearer' }));
 

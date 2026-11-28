@@ -29,6 +29,10 @@ jest.mock('@rocket.chat/models', () => ({
 	},
 }));
 jest.mock('../../../../../../server/settings', () => ({ settings: { get: (key: string) => settingsGet(key) } }));
+jest.mock('@rocket.chat/exchange/dist/sync/limits', () => ({
+	...jest.requireActual('@rocket.chat/exchange/dist/sync/limits'),
+	MAX_THROTTLED_MAILBOXES_IN_A_ROW: 3,
+}));
 
 const outcome = (over: Partial<UserContactSyncOutcome> = {}): UserContactSyncOutcome => ({
 	folders: 0,
@@ -267,6 +271,36 @@ describe('runContactSync', () => {
 
 			expect(summary.aborted).toBe(true);
 			expect(syncUserContacts.mock.calls.length).toEqual(1);
+		});
+
+		it('stops opening mailboxes at the third in a row that comes back throttled', async () => {
+			iterateMailboxCandidates.mockImplementation(
+				from(Array.from({ length: 20 }, (_, i) => ({ uid: `u${i}`, mailbox: `u${i}@corp.example` }))),
+			);
+			syncUserContacts.mockImplementation(async (_provider: unknown, uid: string) =>
+				['u0', 'u1', 'u2'].includes(uid)
+					? outcome({ failed: 1, error: new ExchangeError('mailbox-rate-limited', 'throttled') })
+					: outcome(),
+			);
+
+			const summary = await runContactSync();
+
+			expect(summary.aborted).toBe(true);
+			expect(syncUserContacts.mock.calls.map(([, uid]) => uid)).toEqual(['u0', 'u1', 'u2']);
+		});
+
+		it('keeps going while no three throttled mailboxes come in a row', async () => {
+			iterateMailboxCandidates.mockImplementation(
+				from(Array.from({ length: 20 }, (_, i) => ({ uid: `u${i}`, mailbox: `u${i}@corp.example` }))),
+			);
+			syncUserContacts.mockImplementation(async (_provider: unknown, uid: string) =>
+				Number(uid.slice(1)) % 3 === 2 ? outcome() : outcome({ failed: 1, error: new ExchangeError('mailbox-rate-limited', 'throttled') }),
+			);
+
+			const summary = await runContactSync();
+
+			expect(summary.aborted).toBe(false);
+			expect(syncUserContacts).toHaveBeenCalledTimes(20);
 		});
 	});
 });

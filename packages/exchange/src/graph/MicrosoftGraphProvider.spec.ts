@@ -274,6 +274,14 @@ describe('MicrosoftGraphProvider', () => {
 			await expect(new MicrosoftGraphProvider(config).listEvents(MAILBOX, timeWindow)).rejects.toMatchObject({ code });
 		});
 
+		it('reports a 429 whose Retry-After exceeds the retry budget as mailbox-rate-limited', async () => {
+			mockTokenThen({ ...graphResponse({ error: {} }, 429), headers: { get: (name: string) => (name === 'retry-after' ? '120' : null) } });
+
+			await expect(new MicrosoftGraphProvider(config).listEvents(MAILBOX, timeWindow)).rejects.toMatchObject({
+				code: 'mailbox-rate-limited',
+			});
+		});
+
 		it('maps 410 to unexpected-response outside a delta query, which has no sync state to reset', async () => {
 			mockTokenThen(graphResponse({ error: {} }, 410));
 

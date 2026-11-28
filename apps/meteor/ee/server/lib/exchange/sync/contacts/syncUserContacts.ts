@@ -70,6 +70,13 @@ export const syncUserContacts = async (
 				summary.fatal = true;
 				return summary;
 			}
+
+			// The throttle holds every folder of this mailbox, so the rest wait for the next run, which has to see it as due.
+			if (isExchangeError(outcome.error) && outcome.error.code === 'mailbox-rate-limited') {
+				await ExchangeContactSyncState.clearLastSyncByUserId(uid);
+				summary.error = outcome.error;
+				return summary;
+			}
 		}
 
 		if (complete) {

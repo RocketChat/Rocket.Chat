@@ -24,3 +24,4 @@ export { runCalendarSync } from './sync/calendar/runCalendarSync';
 export type { CalendarSyncRunSummary } from './sync/calendar/runCalendarSync';
 export { syncCalendarForUser } from './sync/calendar/syncCalendarForUser';
 export { acquireSyncLease, whenSyncsIdle } from './sync/syncLease';
+export { createThrottledStreak } from './sync/throttledStreak';

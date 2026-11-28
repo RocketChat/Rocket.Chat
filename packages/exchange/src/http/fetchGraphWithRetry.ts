@@ -15,6 +15,8 @@ import { sleep } from '../sleep';
  *   validation is the exception: it must never be looped on.
  * - A total budget bounds the call. Waiting less than the server asked only prolongs the throttling, so a
  *   wait that does not fit ends the attempt rather than being shortened.
+ * - A request that reads one mailbox treats running out on a 429 as mailbox-scoped, since Outlook limits
+ *   each app and mailbox pair apart and Graph names no scope on such a 429.
  */
 
 const MAX_RETRIES = 5;
@@ -46,7 +48,11 @@ const waitMsFor = (response: Response, attempt: number): number => {
 export async function fetchGraphWithRetry(
 	url: string,
 	options: ExtendedFetchOptions,
-	{ maxRetries = MAX_RETRIES, budgetMs = RETRY_BUDGET_MS }: { maxRetries?: number; budgetMs?: number } = {},
+	{
+		maxRetries = MAX_RETRIES,
+		budgetMs = RETRY_BUDGET_MS,
+		perMailbox = false,
+	}: { maxRetries?: number; budgetMs?: number; perMailbox?: boolean } = {},
 ): Promise<Response> {
 	const deadline = Date.now() + budgetMs;
 	let lastResponse: Response | undefined;
@@ -106,7 +112,9 @@ export async function fetchGraphWithRetry(
 	}
 
 	if (lastResponse?.status === 429) {
-		throw new ExchangeError('rate-limited', 'Exchange rate limit exceeded and retries exhausted', {
+		const code = perMailbox ? 'mailbox-rate-limited' : 'rate-limited';
+
+		throw new ExchangeError(code, 'Exchange rate limit exceeded and retries exhausted', {
 			detail: outOfBudget
 				? `the wait the server asked for does not fit the ${Math.round(budgetMs / 1000)}s retry budget`
 				: `gave up after ${maxRetries} retries`,

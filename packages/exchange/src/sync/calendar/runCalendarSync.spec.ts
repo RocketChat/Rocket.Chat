@@ -30,6 +30,7 @@ jest.mock('../../registry', () => ({
 	getCalendarSyncWindow: (...args: unknown[]) => getCalendarSyncWindow(...args),
 	isServerSyncEnabled: () => isServerSyncEnabled(),
 }));
+jest.mock('../limits', () => ({ ...jest.requireActual('../limits'), MAX_THROTTLED_MAILBOXES_IN_A_ROW: 3 }));
 
 const outcome = (over: Partial<CalendarSyncOutcome> = {}): CalendarSyncOutcome => ({
 	upserted: 0,
@@ -119,6 +120,32 @@ describe('runCalendarSync', () => {
 
 		expect(summary.aborted).toBe(true);
 		expect(syncCalendarWindow.mock.calls.length).toBe(1);
+	});
+
+	it('stops the run at the third mailbox in a row that comes back throttled', async () => {
+		candidates.mockImplementation(from(Array.from({ length: 20 }, (_, i) => ({ uid: `u${i}`, mailbox: `u${i}@x` }))));
+		syncCalendarWindow.mockImplementation(async (_provider: unknown, uid: string) =>
+			['u0', 'u1', 'u2'].includes(uid)
+				? outcome({ failed: true, error: new ExchangeError('mailbox-rate-limited', 'throttled') })
+				: outcome(),
+		);
+
+		const summary = await runCalendarSync();
+
+		expect(summary.aborted).toBe(true);
+		expect(syncCalendarWindow.mock.calls.map(([, uid]) => uid)).toEqual(['u0', 'u1', 'u2']);
+	});
+
+	it('keeps going while no three throttled mailboxes come in a row', async () => {
+		candidates.mockImplementation(from(Array.from({ length: 20 }, (_, i) => ({ uid: `u${i}`, mailbox: `u${i}@x` }))));
+		syncCalendarWindow.mockImplementation(async (_provider: unknown, uid: string) =>
+			Number(uid.slice(1)) % 3 === 2 ? outcome() : outcome({ failed: true, error: new ExchangeError('mailbox-rate-limited', 'throttled') }),
+		);
+
+		const summary = await runCalendarSync();
+
+		expect(summary.aborted).toBe(false);
+		expect(syncCalendarWindow).toHaveBeenCalledTimes(20);
 	});
 
 	it('leaves a mailbox alone while another sync holds its lease', async () => {
