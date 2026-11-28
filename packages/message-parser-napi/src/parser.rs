@@ -230,40 +230,82 @@ impl<'a> Parser<'a> {
     }
 
     fn scan_line_hints(&mut self) {
-        let remaining = &self.input[self.pos..];
-        let line_end = remaining.find('\n').unwrap_or(remaining.len());
-        let line = remaining[..line_end].as_bytes();
-        self.line_has_at = line.contains(&b'@');
-        self.line_has_dot = line.contains(&b'.');
-        self.line_has_colon_slash = remaining[..line_end].contains("://");
-        self.line_has_underscore = line.contains(&b'_');
-        self.line_has_hash = line.contains(&b'#');
+        let bytes = self.input.as_bytes();
+        let start = self.pos;
+        let end = bytes[start..].iter().position(|&b| b == b'\n').map_or(bytes.len(), |i| start + i);
+        let line = &bytes[start..end];
+        let mut has_at = false;
+        let mut has_dot = false;
+        let mut has_colon_slash = false;
+        let mut has_underscore = false;
+        let mut has_hash = false;
+        let len = line.len();
+        for i in 0..len {
+            match line[i] {
+                b'@' => has_at = true,
+                b'.' => has_dot = true,
+                b'_' => has_underscore = true,
+                b'#' => has_hash = true,
+                b':' if i + 2 < len && line[i + 1] == b'/' && line[i + 2] == b'/' => has_colon_slash = true,
+                _ => {}
+            }
+        }
+        self.line_has_at = has_at;
+        self.line_has_dot = has_dot;
+        self.line_has_colon_slash = has_colon_slash;
+        self.line_has_underscore = has_underscore;
+        self.line_has_hash = has_hash;
     }
 
     // ── Primitives ───────────────────────────────────────────────────
 
+    #[inline(always)]
     fn remaining(&self) -> &'a str { &self.input[self.pos..] }
+    #[inline(always)]
     fn at_end(&self) -> bool { self.pos >= self.input.len() }
 
-    fn peek_char(&self) -> Option<char> { self.remaining().chars().next() }
+    #[inline(always)]
+    fn peek_char(&self) -> Option<char> {
+        let bytes = self.input.as_bytes();
+        if self.pos >= bytes.len() { return None; }
+        let b = bytes[self.pos];
+        if b < 128 { Some(b as char) } else { self.input[self.pos..].chars().next() }
+    }
 
+    #[inline(always)]
+    fn peek_byte(&self) -> Option<u8> {
+        self.input.as_bytes().get(self.pos).copied()
+    }
+
+    #[inline(always)]
     fn advance(&mut self, n: usize) { self.pos += n; }
 
     fn expect_str(&mut self, s: &str) -> Option<&'a str> {
-        if self.remaining().starts_with(s) {
+        let bytes = self.input.as_bytes();
+        let sb = s.as_bytes();
+        let end = self.pos + sb.len();
+        if end <= bytes.len() && bytes[self.pos..end] == *sb {
             let start = self.pos;
-            self.advance(s.len());
-            Some(&self.input[start..self.pos])
+            self.pos = end;
+            Some(&self.input[start..end])
         } else {
             None
         }
     }
 
     fn any_char(&mut self) -> Option<char> {
-        let c = self.peek_char()?;
-        if c == '\n' || c == '\r' { return None; }
-        self.advance(c.len_utf8());
-        Some(c)
+        let bytes = self.input.as_bytes();
+        if self.pos >= bytes.len() { return None; }
+        let b = bytes[self.pos];
+        if b == b'\n' || b == b'\r' { return None; }
+        if b < 128 {
+            self.pos += 1;
+            Some(b as char)
+        } else {
+            let c = self.input[self.pos..].chars().next()?;
+            self.pos += c.len_utf8();
+            Some(c)
+        }
     }
 
     fn try_parse<T>(&mut self, f: impl FnOnce(&mut Self) -> Option<T>) -> Option<T> {
@@ -307,9 +349,17 @@ impl<'a> Parser<'a> {
 
     fn consume_while(&mut self, pred: impl Fn(char) -> bool) -> &'a str {
         let start = self.pos;
-        while let Some(c) = self.peek_char() {
-            if !pred(c) { break; }
-            self.advance(c.len_utf8());
+        let bytes = self.input.as_bytes();
+        while self.pos < bytes.len() {
+            let b = bytes[self.pos];
+            if b < 128 {
+                if !pred(b as char) { break; }
+                self.pos += 1;
+            } else {
+                let c = unsafe { self.input.get_unchecked(self.pos..) }.chars().next().unwrap();
+                if !pred(c) { break; }
+                self.pos += c.len_utf8();
+            }
         }
         &self.input[start..self.pos]
     }
@@ -320,12 +370,16 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_end_of_line(&mut self) -> Option<()> {
-        if self.remaining().starts_with("\r\n") {
-            self.advance(2); Some(())
-        } else if self.remaining().starts_with('\n') || self.remaining().starts_with('\r') {
-            self.advance(1); Some(())
-        } else {
-            None
+        let bytes = self.input.as_bytes();
+        if self.pos >= bytes.len() { return None; }
+        match bytes[self.pos] {
+            b'\n' => { self.pos += 1; Some(()) }
+            b'\r' => {
+                self.pos += 1;
+                if self.pos < bytes.len() && bytes[self.pos] == b'\n' { self.pos += 1; }
+                Some(())
+            }
+            _ => None,
         }
     }
 
@@ -6481,7 +6535,8 @@ mod tests {
 
     #[test]
     fn test_empty() {
-        assert!(Parser::matches("", ParserConfig::default()));
+        let result = Parser::parse("", ParserConfig::default());
+        assert_eq!(result.len(), 1);
     }
 
     #[test]
@@ -6534,5 +6589,84 @@ mod tests {
     fn test_parse_empty() {
         let nodes = Parser::parse("", ParserConfig::default());
         assert!(!nodes.is_empty());
+    }
+
+    #[test]
+    fn bench_native_speed() {
+        let cases = [
+            "hello world",
+            "**bold text**",
+            "*bold too*",
+            "_italic text_",
+            "__italic too__",
+            "~~strikethrough~~",
+            "~strike too~",
+            "`inline code`",
+            ":smile:",
+            ":rocket: :thumbsup:",
+            "@user",
+            "#channel",
+            "Visit https://rocket.chat",
+            "[Link](https://example.com)",
+            "_italic @mention inside_",
+            "hello **bold _italic_** world",
+            "Plain text with no markup at all",
+            "user@example.com",
+            "<https://example.com|Example>",
+            "**bold :emoji: text**",
+            ":smile: :rocket: :thumbsup:",
+            "||spoiler text||",
+            "a__b__c",
+            "word_not_italic_word",
+            "test **bold** and _italic_ mix",
+            "https://example.com/path?q=1&b=2",
+        ];
+        let config = ParserConfig::default();
+        let n = 50_000u64;
+
+        // Warmup
+        for _ in 0..5000 {
+            for c in &cases { let _ = Parser::parse(c, config.clone()); }
+        }
+
+        // Parse only (build tree + String alloc)
+        let t = std::time::Instant::now();
+        for _ in 0..n {
+            for c in &cases {
+                let _ = std::hint::black_box(Parser::parse(c, config.clone()));
+            }
+        }
+        let d_parse = t.elapsed();
+
+        // Parse flat (no tree, no String alloc)
+        let t = std::time::Instant::now();
+        for _ in 0..n {
+            for c in &cases {
+                let _ = std::hint::black_box(Parser::parse_flat(c, config.clone()));
+            }
+        }
+        let d_flat = t.elapsed();
+
+        // Serde JSON
+        let t = std::time::Instant::now();
+        for _ in 0..n {
+            for c in &cases {
+                let ast = Parser::parse(c, config.clone());
+                let _ = std::hint::black_box(serde_json::to_string(&ast));
+            }
+        }
+        let d_serde = t.elapsed();
+
+        let total = n as f64 * cases.len() as f64;
+        let parse_ns = d_parse.as_nanos() as f64 / total;
+        let flat_ns = d_flat.as_nanos() as f64 / total;
+        let serde_ns = d_serde.as_nanos() as f64 / total;
+
+        println!("\n=== Native Rust Speed (no N-API) ===");
+        println!("parse (tree+alloc):   {:.1} ns/msg ({:.2} µs)", parse_ns, parse_ns / 1000.0);
+        println!("parse_flat (no alloc): {:.1} ns/msg ({:.2} µs)", flat_ns, flat_ns / 1000.0);
+        println!("parse+serde:          {:.1} ns/msg ({:.2} µs)", serde_ns, serde_ns / 1000.0);
+        println!("flat vs parse:        {:.1}x", parse_ns / flat_ns);
+        println!("serde overhead:       {:.1} ns ({:.0}% of parse+serde)", serde_ns - parse_ns, (serde_ns - parse_ns) / serde_ns * 100.0);
     }
 }
