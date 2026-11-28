@@ -24,7 +24,7 @@ export type IncomingPresence = {
 };
 
 /** Why an occupant is no longer in a hosted room: their own leave, a removal on the Rocket.Chat side, or a failed delivery. */
-export type MucLeaveReason = 'left' | 'kicked' | 'unreachable';
+export type MucLeaveReason = 'left' | 'kicked' | 'unreachable' | 'displaced';
 
 export type MucRemoteOccupant = {
 	nick: string;

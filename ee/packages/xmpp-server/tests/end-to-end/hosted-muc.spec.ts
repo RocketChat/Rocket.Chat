@@ -488,30 +488,22 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 			await alice.waitFor(isRoomSubject({ roomJid: muc, subject: topic }), 'the new subject');
 		});
 
-		// Known defect: ../../docs/specs/hosted-muc.md#d5-a-rocketchat-member-takes-the-nick-of-an-xmpp-occupant
-		it.skip('never leaves an XMPP occupant unaware that a Rocket.Chat member took their nick (D5)', async () => {
+		it('removes an XMPP occupant whose nick a Rocket.Chat member takes, telling her with 110 and 307 and keeping her a member (R20)', async () => {
 			const member = await createLocalUser(rc, 'nick');
 			const room = await createHostedRoom(rc, owner, { type: 'c', name: `xe2e-nick-${uniqueSuffix()}` });
 			const muc = mucJidOf(room);
-			// Refusing the nick up front settles the clash as well as telling her later does
-			try {
-				await alice.joinRoom(muc, member.username);
-			} catch (error) {
-				assert.ok(error instanceof StanzaError && error.condition === 'conflict', `unexpected join error: ${error}`);
-				return;
-			}
+			await alice.joinRoom(muc, member.username);
 			await waitForMember(owner, room, alice.bareJid);
 
 			const after = alice.cursor();
 			await inviteToRoom(owner, room, member.username);
-			const text = `after the clash ${uniqueSuffix()}`;
-			await sendMessage(owner, room._id, text);
-			await alice.waitFor(
-				(stanza) =>
-					isGroupchat({ roomJid: muc, body: text })(stanza) || isOccupantPresence(muc, member.username, { type: 'unavailable' })(stanza),
-				'the next message, or word that she was removed',
-				{ after },
-			);
+			const removed = await alice.waitFor(isOccupantPresence(muc, member.username, { type: 'unavailable' }), 'word that she was removed', {
+				after,
+			});
+			assert.deepEqual(statusCodes(removed), ['110', '307']);
+
+			await sleep(DUPLICATE_SETTLE_MS);
+			assert.ok((await listMemberUsernames(owner, room)).includes(alice.bareJid), 'alice lost her membership');
 		});
 
 		// Known defect: ../../docs/specs/hosted-muc.md#d4-a-deleted-room-keeps-running-until-the-service-restarts

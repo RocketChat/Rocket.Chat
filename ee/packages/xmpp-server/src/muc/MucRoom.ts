@@ -75,6 +75,10 @@ export class MucRoom {
 	}
 
 	addLocalOccupant(params: { nick: string; realJid: string; role?: MucRole }): void {
+		const holder = this.occupants.get(params.nick);
+		if (holder && !holder.isLocal) {
+			this.displace(holder);
+		}
 		const occupant: MucOccupant = { nick: params.nick, realJid: params.realJid, role: params.role ?? 'participant', isLocal: true };
 		this.occupants.set(params.nick, occupant);
 		this.broadcastPresence(occupant);
@@ -231,6 +235,24 @@ export class MucRoom {
 			this.broadcastPresence(occupant, 'unavailable', [MUC_STATUS.removedForError]);
 			this.deps.emit('occupantLeft', occupant, 'unreachable');
 		}
+	}
+
+	/** Hands a remote occupant's nick to a Rocket.Chat member, telling them and the others it was taken (hosted-muc R20). */
+	private displace(occupant: MucOccupant): void {
+		this.occupants.delete(occupant.nick);
+		this.broadcastPresence(occupant, 'unavailable', [MUC_STATUS.kicked]);
+		this.deps.send(
+			buildOccupantPresence({
+				roomJid: this.roomJid,
+				nick: occupant.nick,
+				to: occupant.realJid,
+				realJid: occupant.realJid,
+				role: occupant.role,
+				type: 'unavailable',
+				statusCodes: [MUC_STATUS.selfPresence, MUC_STATUS.kicked],
+			}),
+		);
+		this.deps.emit('occupantLeft', occupant, 'displaced');
 	}
 
 	private broadcastPresence(occupant: MucOccupant, type?: 'unavailable', statusCodes?: MucStatusCode[]): void {
