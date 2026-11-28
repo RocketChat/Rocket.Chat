@@ -27,7 +27,10 @@ export async function saveTransferHistory(room: IOmnichannelRoom, transferData: 
 		},
 	};
 
-	await Message.saveSystemMessageAndNotifyUser('livechat_transfer_history', room._id, '', { _id, username }, transferMessage);
+	// Include comment in message body so it wraps properly in the UI
+	const messageText = comment ?? '';
+
+	await Message.saveSystemMessageAndNotifyUser('livechat_transfer_history', room._id, messageText, { _id, username }, transferMessage);
 }
 
 export async function forwardOpenChats(userId: string) {
