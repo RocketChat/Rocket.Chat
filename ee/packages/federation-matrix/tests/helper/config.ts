@@ -21,17 +21,11 @@ type FederationServerConfig = {
 };
 
 /**
- * Only Synapse carries fixture users: specs cannot register Matrix accounts, so everything beyond
- * the admin is provisioned at container boot. Rocket.Chat specs create and delete their own.
+ * Only Synapse carries fixture users, provisioned at container boot. Rocket.Chat specs create and
+ * delete their own.
  */
 type SynapseServerConfig = FederationServerConfig & {
 	additionalUser1: FederationUserConfig;
-	/**
-	 * Reserved for tests that need a user the other side has never seen. Must not be used
-	 * anywhere else: the moment another spec touches it, the local user document exists and
-	 * first-contact behaviour can no longer be observed.
-	 */
-	firstContactUser: FederationUserConfig;
 };
 
 export interface IFederationConfig {
@@ -80,9 +74,6 @@ function getFederationConfig(): IFederationConfig {
 	const hs1AdminPassword = validateEnvVar('FEDERATION_SYNAPSE_ADMIN_PASSWORD', 'admin');
 	const hs1AdditionalUser1 = validateEnvVar('FEDERATION_SYNAPSE_ADDITIONAL_USER1', 'alice');
 	const hs1AdditionalUser1Password = validateEnvVar('FEDERATION_SYNAPSE_ADDITIONAL_USER1_PASSWORD', 'alice');
-	// `cleiton` is registered by docker-compose.test.yml and deliberately used by no other spec
-	const hs1FirstContactUser = validateEnvVar('FEDERATION_SYNAPSE_FIRST_CONTACT_USER', 'cleiton');
-	const hs1FirstContactUserPassword = validateEnvVar('FEDERATION_SYNAPSE_FIRST_CONTACT_USER_PASSWORD', 'cleiton');
 
 	return {
 		rc1: {
@@ -102,11 +93,6 @@ function getFederationConfig(): IFederationConfig {
 				username: hs1AdditionalUser1,
 				password: hs1AdditionalUser1Password,
 				matrixUserId: `@${hs1AdditionalUser1}:${hs1Domain}`,
-			},
-			firstContactUser: {
-				username: hs1FirstContactUser,
-				password: hs1FirstContactUserPassword,
-				matrixUserId: `@${hs1FirstContactUser}:${hs1Domain}`,
 			},
 		},
 	};
