@@ -482,6 +482,10 @@
 	var smallScreen = false;
 	var bodyStyle;
 	var scrollPosition;
+	var navigationInterval = null;
+	var messageListener = null;
+	var mediaQueryList = null;
+	var mediaQueryListener = null;
 
 	var widgetWidth = '320px';
 	var widgetHeightOpened = '350px';
@@ -510,6 +514,66 @@
 			callbacks.emit(eventName, data);
 		} else {
 			callbacks.emit(eventName);
+		}
+	};
+
+	var detachMessageListener = function() {
+		if (!messageListener) {
+			return;
+		}
+
+		w.removeEventListener('message', messageListener, false);
+		messageListener = null;
+	};
+
+	var stopNavigationTracking = function() {
+		if (navigationInterval === null) {
+			return;
+		}
+
+		clearInterval(navigationInterval);
+		navigationInterval = null;
+	};
+
+	var detachMediaQueryListener = function() {
+		if (!mediaQueryList || !mediaQueryListener) {
+			return;
+		}
+
+		if (typeof mediaQueryList.removeEventListener === 'function') {
+			mediaQueryList.removeEventListener('change', mediaQueryListener);
+		} else {
+			mediaQueryList.removeListener(mediaQueryListener);
+		}
+
+		mediaQueryList = null;
+		mediaQueryListener = null;
+	};
+
+	var teardownWidget = function() {
+		stopNavigationTracking();
+		detachMessageListener();
+		detachMediaQueryListener();
+
+		var isWidgetOpened = widget && widget.dataset && widget.dataset.state === 'opened';
+		if (smallScreen && isWidgetOpened && typeof bodyStyle === 'string') {
+			document.body.style.cssText = bodyStyle;
+			if (typeof scrollPosition === 'number') {
+				document.body.scrollTop = scrollPosition;
+			}
+		}
+
+		if (widget && widget.parentNode) {
+			widget.parentNode.removeChild(widget);
+		}
+
+		widget = null;
+		iframe = null;
+		ready = false;
+		hookQueue = [];
+		if (currentPage) {
+			currentPage.href = null;
+			currentPage.title = null;
 		}
 	};
 
@@ -617,7 +681,7 @@
 			openWidget();
 		},
 		removeWidget: function() {
-			document.getElementsByTagName('body')[0].removeChild(widget);
+			teardownWidget();
 		},
 		callback: function(eventName, data) {
 			emitCallback(eventName, data);
@@ -672,7 +736,11 @@
 		title: null
 	};
 	var trackNavigation = function() {
-		setInterval(function() {
+		if (navigationInterval !== null) {
+			return;
+		}
+
+		navigationInterval = setInterval(function() {
 			if (document.location.href !== currentPage.href) {
 				pageVisited('url');
 				currentPage.href = document.location.href;
@@ -687,6 +755,10 @@
 	var init = function(url) {
 		if (!url) {
 			return;
+		}
+
+		if (widget) {
+			teardownWidget();
 		}
 
 		config.url = url;
@@ -712,14 +784,15 @@
 		widget = document.querySelector('.rocketchat-widget');
 		iframe = document.getElementById('rocketchat-iframe');
 
-		w.addEventListener('message', function(msg) {
+		messageListener = function(msg) {
 			if (typeof msg.data === 'object' && msg.data.src !== undefined && msg.data.src === 'rocketchat') {
 				if (api[msg.data.fn] !== undefined && typeof api[msg.data.fn] === 'function') {
 					var args = [].concat(msg.data.args || []);
 					api[msg.data.fn].apply(null, args);
 				}
 			}
-		}, false);
+		};
+		w.addEventListener('message', messageListener, false);
 
 		var mediaqueryresponse = function(mql) {
 			if (mql.matches) {
@@ -734,9 +807,14 @@
 			}
 		};
 
-		var mql = window.matchMedia('screen and (max-device-width: 480px)');
-		mediaqueryresponse(mql);
-		mql.addListener(mediaqueryresponse);
+		mediaQueryList = window.matchMedia('screen and (max-device-width: 480px)');
+		mediaQueryListener = mediaqueryresponse;
+		mediaqueryresponse(mediaQueryList);
+		if (typeof mediaQueryList.addEventListener === 'function') {
+			mediaQueryList.addEventListener('change', mediaQueryListener);
+		} else {
+			mediaQueryList.addListener(mediaQueryListener);
+		}
 
 		// track user navigation
 		trackNavigation();
