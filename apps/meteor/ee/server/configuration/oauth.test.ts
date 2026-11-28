@@ -64,6 +64,55 @@ describe('Custom OAuth callbacks', () => {
 		expect(deps.updateRolesFromSSO.called).to.be.false;
 	});
 
+	it('uses an empty rolesToSync for an existing OAuth user when the setting is omitted', async () => {
+		const settings = {
+			get: sinon.stub().callsFake((key: string) => {
+				const values: Record<string, unknown> = {
+					'Accounts_OAuth_Custom-Myprovider-map_channels': false,
+					'Accounts_OAuth_Custom-Myprovider-merge_roles': true,
+					'Accounts_OAuth_Custom-Myprovider-roles_claim': 'roles',
+					'Accounts_OAuth_Custom-Myprovider-groups_claim': 'groups',
+					'Accounts_OAuth_Custom-Myprovider-channels_admin': 'admin',
+					'Accounts_OAuth_Custom-Myprovider-groups_channel_map': '{}',
+				};
+				return values[key];
+			}),
+		};
+		const deps = makeDependencies({ mergeRoles: true, mapChannels: false });
+		deps.settings = settings;
+		const callbacks = createOAuthCallbacks(deps);
+		const user = { _id: 'existing-user', roles: ['user'] } as any;
+
+		await callbacks.afterProcessOAuthUser({ serviceName: 'myprovider', serviceData: {}, user });
+
+		expect(deps.updateRolesFromSSO.calledOnceWithExactly(user, {}, 'roles', '')).to.be.true;
+	});
+
+	it('uses an empty rolesToSync for a new OAuth user when the setting is omitted', async () => {
+		const settings = {
+			get: sinon.stub().callsFake((key: string) => {
+				const values: Record<string, unknown> = {
+					'Accounts_OAuth_Custom-Myprovider-map_channels': false,
+					'Accounts_OAuth_Custom-Myprovider-merge_roles': true,
+					'Accounts_OAuth_Custom-Myprovider-roles_claim': 'roles',
+					'Accounts_OAuth_Custom-Myprovider-groups_claim': 'groups',
+					'Accounts_OAuth_Custom-Myprovider-channels_admin': 'admin',
+					'Accounts_OAuth_Custom-Myprovider-groups_channel_map': '{}',
+				};
+				return values[key];
+			}),
+		};
+		const deps = makeDependencies({ mergeRoles: true, mapChannels: false });
+		deps.settings = settings;
+		const callbacks = createOAuthCallbacks(deps);
+		const user = { _id: 'new-user', roles: [] } as any;
+		const identity = { id: 'identity-id', roles: ['admin'] };
+
+		await callbacks.afterValidateNewOAuthUser({ serviceName: 'myprovider', identity, user });
+
+		expect(deps.syncOAuthUserRoles.calledOnceWithExactly({ user, identity, roleClaimName: 'roles', rolesToSync: '' })).to.be.true;
+	});
+
 	it('skips existing-user role synchronization when mergeRoles is false', async () => {
 		const deps = makeDependencies({ mergeRoles: false, mapChannels: false });
 		const callbacks = createOAuthCallbacks(deps);
