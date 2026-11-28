@@ -6,8 +6,21 @@ import { addUserToRoom } from '../../../../server/lib/rooms/addUserToRoom';
 import { createRoom } from '../../../../server/lib/rooms/createRoom';
 import { getValidRoomName } from '../../../../server/lib/utils/lib/getValidRoomName';
 import { syncUserRoles } from '../syncUserRoles';
+import { _syncOAuthUserRoles, type OAuthRoleSyncOptions } from './syncOAuthUserRoles';
 
 const logger = new Logger('OAuth');
+
+
+export async function syncOAuthUserRoles(options: OAuthRoleSyncOptions): Promise<void> {
+	return _syncOAuthUserRoles(
+		{
+			findRoles: async (names) => (await Roles.findInIdsOrNames(names).toArray()).map((role) => ({ _id: role._id })),
+			mapRolesFromSSO: OAuthEEManager.mapRolesFromSSO,
+			syncUserRoles,
+		},
+		options,
+	);
+}
 
 export class OAuthEEManager {
 	static async mapSSOGroupsToChannels(
@@ -59,22 +72,14 @@ export class OAuthEEManager {
 		user: Record<string, any>,
 		identity: Record<string, any>,
 		roleClaimName: string,
-		rolesToSync: string[],
+		rolesToSync: string | string[] | undefined,
 	): Promise<void> {
-		if (user && identity && roleClaimName) {
-			const rolesFromSSO = await this.mapRolesFromSSO(identity, roleClaimName);
-
-			if (!Array.isArray(user.roles)) {
-				user.roles = [];
-			}
-
-			const rolesIdsFromSSO = (await Roles.findInIdsOrNames(rolesFromSSO).toArray()).map((role) => role._id);
-			const allowedRoles = (await Roles.findInIdsOrNames(rolesToSync).toArray()).map((role) => role._id);
-
-			await syncUserRoles(user._id, rolesIdsFromSSO, {
-				allowedRoles,
-			});
-		}
+		await syncOAuthUserRoles({
+			user,
+			identity,
+			roleClaimName,
+			rolesToSync,
+		});
 	}
 
 	// Returns list of roles from SSO identity
