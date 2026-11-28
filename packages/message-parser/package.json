@@ -49,7 +49,7 @@
 		"@types/node": "~24.13.6",
 		"fast-check": "^4.6.0",
 		"jest": "~30.5.2",
-		"peggy": "4.1.1",
+		"peggy": "5.1.1",
 		"tinybench": "^3.0.7",
 		"ts-loader": "~9.5.7",
 		"ts-node": "~10.9.2",
