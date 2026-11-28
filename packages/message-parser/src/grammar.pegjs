@@ -346,6 +346,8 @@ InlineEmoticon = emo:Emoticon & (EmoticonNeighbor / InlineItemPattern) { return 
 // Match "-" only when "-_-" is followed by more (so "-_-italic" → plain+italic); don't match when "-_-" is the full emoticon
 PlainRunBeforeEmoticon = "-" &("_" "-" .) { return plain('-'); }
 
+PlainWordUnderscore = value:$([a-zA-Z0-9]+ [\x5F] [\x5F]?) { return plain(value); }
+
 PlainRun = run:$[^*_~`:\n<\[\]! \t\u00a0()\\|]+ { return plain(run); }
 
 EscapedTimestampRules
@@ -371,7 +373,7 @@ InlineItemPattern
   / & "`"    @InlineCode
   / & "+"    @(AutolinkedPhone / AutolinkedEmail / PlainRun)
   / & "$"    @KatexInline
-  / & ":"    @(InlineEmoji / InlineEmoticon)
+  / & ":"    @(InlineEmoji / InlineEmoticon / ChannelMention)
   / & "*"    @(EmphasisWithWhitespace / Emphasis / InlineEmoticon)
   / & "~"    @(EmphasisWithWhitespace / Emphasis)
   / & "-"    @(PlainRunBeforeEmoticon / InlineEmoticon)
@@ -396,21 +398,28 @@ InlineItemAlphaPath
   = AutolinkedEmail
   / AutolinkedURL
   / ChannelMention
+  / PlainWordUnderscore
   / PlainRun
 
 // Alpha chars that can also start emoticons (B D O X 0 8 b d o x)
 InlineItemAlphaOrEmoticon
-  = InlineEmoticon
-  / InlineItemAlphaPath
+  = AutolinkedEmail
+  / AutolinkedURL
+  / InlineEmoticon
+  / ChannelMention
+  / PlainWordUnderscore
+  / PlainRun
 
 // 'c' can start "color:#..."
 InlineItemAlphaOrColor
   = Color
   / InlineItemAlphaPath
 
-// Remaining: non-ASCII (Unicode emoji) and rare punct not dispatched above
+// Remaining: non-ASCII, rare punct not dispatched above
 InlineItemNonAlphaSlowPath
-  = InlineEmoji
+  = AutolinkedEmail
+  / AutolinkedURL
+  / InlineEmoji
   / PlainRun
 
 /**
@@ -549,8 +558,8 @@ LocalPartChar = AlphaNumericOrMarkChar+ LocalPartSpecialChars*
 
 LocalPartSpecialChars = [!#$%&'*+/=?^_\`{|}~-]
 
-// Guard: only attempt email parse if @ exists ahead within valid local-part chars
-AutolinkedEmail = &([a-zA-Z0-9.!#$%&'*+/=?^_\`{|}~-]+ "@") e:Email { return autoEmail(e); }
+// Guard: only attempt email parse if @ exists ahead
+AutolinkedEmail = &("mailto:"? [^ \t\r\n@]+ "@") e:Email { return autoEmail(e); }
 
 /**
  *
