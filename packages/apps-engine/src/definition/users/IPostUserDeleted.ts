@@ -11,7 +11,7 @@ import type { IUserContext } from './IUserContext';
  * user has been removed from the database.
  */
 export interface IPostUserDeleted {
-	[AppMethod.EXECUTE_POST_USER_CREATED](
+	[AppMethod.EXECUTE_POST_USER_DELETED](
 		context: IUserContext,
 		read: IRead,
 		http: IHttp,
