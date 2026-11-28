@@ -6353,6 +6353,116 @@ impl<'a> Parser<'a> {
         }
         parser.build_tree()
     }
+
+    // ── Flat buffer serialization (zero-copy) ────────────────────────
+    //
+    // Buffer layout (little-endian):
+    //   [0..4]  event_count: u32
+    //   [4..8]  string_table_offset: u32
+    //   [8..N]  event records (variable size)
+    //   [N..]   string table (raw UTF-8, referenced by offset+length)
+    //
+    // Event tags:
+    //   1  Start(sk:u8)                                    2 bytes
+    //   2  Finish(sk:u8)                                   2 bytes
+    //   3  LeafText(start:u32, end:u32)                    9 bytes
+    //   4  LeafStr(sk:u8, start:u32, end:u32)             10 bytes
+    //   5  LeafEmoji(off1:u32, len1:u16, off2:u32, len2:u16)  13 bytes
+    //   6  LeafUnicodeEmoji(off:u32, len:u16)              7 bytes
+    //   7  LeafLineBreak                                   1 byte
+    //   8  LeafHorizontalRule                              1 byte
+    //   9  DataStr(off:u32, len:u16)                       7 bytes
+    //  10  DataU8(value:u8)                                2 bytes
+
+    pub fn parse_flat(input: &'a str, config: ParserConfig) -> Vec<u8> {
+        let mut parser = Parser::new(input, config);
+        if parser.parse_start().is_none() {
+            let mut buf = Vec::with_capacity(32);
+            buf.extend_from_slice(&3u32.to_le_bytes());
+            buf.extend_from_slice(&0u32.to_le_bytes());
+            buf.push(1); buf.push(SK::Paragraph as u8);
+            buf.push(3);
+            buf.extend_from_slice(&0u32.to_le_bytes());
+            buf.extend_from_slice(&(input.len() as u32).to_le_bytes());
+            buf.push(2); buf.push(SK::Paragraph as u8);
+            let st_off = buf.len() as u32;
+            buf[4..8].copy_from_slice(&st_off.to_le_bytes());
+            return buf;
+        }
+        parser.serialize_flat()
+    }
+
+    fn serialize_flat(&self) -> Vec<u8> {
+        let mut buf = Vec::with_capacity(self.events.len() * 6 + 16);
+        let mut strings: Vec<u8> = Vec::new();
+
+        buf.extend_from_slice(&(self.events.len() as u32).to_le_bytes());
+        buf.extend_from_slice(&0u32.to_le_bytes());
+
+        for event in &self.events {
+            match event {
+                GreenEvent::Start(sk) => {
+                    buf.push(1);
+                    buf.push(*sk as u8);
+                }
+                GreenEvent::Finish(sk) => {
+                    buf.push(2);
+                    buf.push(*sk as u8);
+                }
+                GreenEvent::LeafText(s, e) => {
+                    buf.push(3);
+                    buf.extend_from_slice(&(*s as u32).to_le_bytes());
+                    buf.extend_from_slice(&(*e as u32).to_le_bytes());
+                }
+                GreenEvent::LeafStr(sk, s, e) => {
+                    buf.push(4);
+                    buf.push(*sk as u8);
+                    buf.extend_from_slice(&(*s as u32).to_le_bytes());
+                    buf.extend_from_slice(&(*e as u32).to_le_bytes());
+                }
+                GreenEvent::LeafEmoji(value, shortcode) => {
+                    buf.push(5);
+                    let off1 = strings.len() as u32;
+                    let b1 = value.as_bytes();
+                    strings.extend_from_slice(b1);
+                    buf.extend_from_slice(&off1.to_le_bytes());
+                    buf.extend_from_slice(&(b1.len() as u16).to_le_bytes());
+                    let off2 = strings.len() as u32;
+                    let b2 = shortcode.as_bytes();
+                    strings.extend_from_slice(b2);
+                    buf.extend_from_slice(&off2.to_le_bytes());
+                    buf.extend_from_slice(&(b2.len() as u16).to_le_bytes());
+                }
+                GreenEvent::LeafUnicodeEmoji(unicode) => {
+                    buf.push(6);
+                    let off = strings.len() as u32;
+                    let b = unicode.as_bytes();
+                    strings.extend_from_slice(b);
+                    buf.extend_from_slice(&off.to_le_bytes());
+                    buf.extend_from_slice(&(b.len() as u16).to_le_bytes());
+                }
+                GreenEvent::LeafLineBreak => buf.push(7),
+                GreenEvent::LeafHorizontalRule => buf.push(8),
+                GreenEvent::DataStr(s) => {
+                    buf.push(9);
+                    let off = strings.len() as u32;
+                    let b = s.as_bytes();
+                    strings.extend_from_slice(b);
+                    buf.extend_from_slice(&off.to_le_bytes());
+                    buf.extend_from_slice(&(b.len() as u16).to_le_bytes());
+                }
+                GreenEvent::DataU8(v) => {
+                    buf.push(10);
+                    buf.push(*v);
+                }
+            }
+        }
+
+        let st_off = buf.len() as u32;
+        buf[4..8].copy_from_slice(&st_off.to_le_bytes());
+        buf.extend_from_slice(&strings);
+        buf
+    }
 }
 
 #[cfg(test)]
