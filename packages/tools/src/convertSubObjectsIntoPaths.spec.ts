@@ -72,6 +72,30 @@ describe('convertSubObjectsIntoPaths', () => {
 		expect(convertSubObjectsIntoPaths(input)).to.deep.equal(expected);
 	});
 
+	it('should preserve empty nested objects under their full path', () => {
+		const input = {
+			username: 'akshita',
+			profile: {
+				customFields: {},
+				status: 'active',
+			},
+		};
+		const expected = {
+			'username': 'akshita',
+			'profile.customFields': {},
+			'profile.status': 'active',
+		};
+
+		expect(convertSubObjectsIntoPaths(input)).to.deep.equal(expected);
+	});
+
+	it('should preserve empty objects at any depth', () => {
+		const input = { a: { b: { c: {} } }, d: {} };
+		const expected = { 'a.b.c': {}, 'd': {} };
+
+		expect(convertSubObjectsIntoPaths(input)).to.deep.equal(expected);
+	});
+
 	it('should handle objects with mixed types of values', () => {
 		const input = {
 			a: 1,
