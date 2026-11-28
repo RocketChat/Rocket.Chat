@@ -450,6 +450,7 @@
 		"istanbul-lib-instrument": "^6.0.2",
 		"jest": "~30.5.2",
 		"jsdom-global": "^3.0.2",
+		"mongodb-memory-server": "^10.2.3",
 		"nyc": "^17.1.0",
 		"outdent": "~0.8.0",
 		"oxc-transform-react": "~0.158.0",
