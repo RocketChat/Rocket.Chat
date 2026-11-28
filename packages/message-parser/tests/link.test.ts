@@ -412,6 +412,11 @@ Text after line break`,
 	],
 	['[link](https://example.com/path/to/func(param))', [paragraph([link('https://example.com/path/to/func(param)', [plain('link')])])]],
 	['[link](https://example.com/path/(section)/page)', [paragraph([link('https://example.com/path/(section)/page', [plain('link')])])]],
+	// Test cases for issue - link title with hyphens and underscore combined with underscore in URL
+	['[testwithatextcontainingan_here](http://example.com?a_param)', [paragraph([link('http://example.com?a_param', [plain('testwithatextcontainingan_here')])])]],
+	['[test-with-a-text-containing-an_here](http://example.com)', [paragraph([link('http://example.com', [plain('test-with-a-text-containing-an_here')])])]],
+	['[test-with-a-text-containing-an_here](http://example.com?param=my_value)', [paragraph([link('http://example.com?param=my_value', [plain('test-with-a-text-containing-an_here')])])]],
+	['[a-b_c](http://example.com?d_e)', [paragraph([link('http://example.com?d_e', [plain('a-b_c')])])]],
 ])('parses %p', (input, output) => {
 	expect(parse(input)).toEqual(output);
 });
