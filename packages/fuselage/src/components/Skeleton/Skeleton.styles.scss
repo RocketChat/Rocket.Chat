@@ -1,47 +1,21 @@
-@use '../../styles/colors.scss';
-@use '../../styles/lengths.scss';
-@use '../Box/Box.styles.scss';
-
+// Web only. What a frame cannot state: the height in a unit relative to the font, which a `height` of the caller
+// replaces; the keyframe animation; the font smoothing; and the pseudo-element that keeps an empty text placeholder one
+// line tall.
 .rcx-skeleton {
-	display: block;
-
 	height: 1.2em;
 
 	animation: rcx-skeleton__animation 1s linear 0s infinite running;
 
-	opacity: 10%;
-
-	border-radius: lengths.border-radius(medium);
-
-	background: repeat 0% 0%/100vw 100%
-		linear-gradient(
-			to right,
-			colors.stroke(extra-dark),
-			color-mix(in srgb, colors.stroke(extra-dark), transparent 50%) 50%,
-			colors.stroke(extra-dark)
-		);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 
 	&--text {
 		height: auto;
-		margin-block: lengths.margin(none);
-
-		transform: scale(1, 0.6);
-		transform-origin: 0 60%;
 
 		&:empty::before {
 			content: '\00a0';
 		}
 	}
-
-	&--circle {
-		border-radius: lengths.border-radius(full);
-	}
-
-	&--inverted {
-		background-color: colors.surface(light);
-	}
-
-	@extend .rcx-box;
 }
 
 @keyframes rcx-skeleton__animation {

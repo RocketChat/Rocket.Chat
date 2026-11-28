@@ -68,7 +68,7 @@ const ImageBlock = ({ className, block, surfaceRenderer }: ImageBlockProps) => {
 				)}
 				{loading ? (
 					<Box display='flex' borderRadius='large' overflow='hidden'>
-						<Skeleton variant='rect' width='100%' style={{ aspectRatio: '21 / 9' }} />
+						<Skeleton variant='rect' width='100%' aspectRatio='21 / 9' />
 					</Box>
 				) : (
 					<Image imageUrl={block.imageUrl} width={width} height={height} aria-label={block.altText} />
