@@ -199,6 +199,24 @@ describe('Message Converter', () => {
 		it('should insert the username literally', async () => {
 			expect(await convertMentions('hi @U1', { U1: 'a$&b' })).to.equal('hi @a$&b');
 		});
+
+		it('should prefer the longest import id when a shorter one is listed first', async () => {
+			expect(await convertMentions('@c @c++', { 'c': 'cat', 'c++': 'cpp' })).to.equal('@cat @cpp');
+		});
+
+		it('should not rewrite a username that is another import id', async () => {
+			expect(await convertMentions('@U1 @U2', { U1: 'U2', U2: 'alice' })).to.equal('@U2 @alice');
+		});
+
+		it('should leave mentions of a user on another server alone', async () => {
+			expect(await convertMentions('@U1:matrix.org, @U1@other.server and @U1: hi', { U1: 'alice' })).to.equal(
+				'@U1:matrix.org, @U1@other.server and @alice: hi',
+			);
+		});
+
+		it('should leave URL paths alone', async () => {
+			expect(await convertMentions('https://host/@U1 and @U1', { U1: 'alice' })).to.equal('https://host/@U1 and @alice');
+		});
 	});
 
 	describe('[convertMessageChannels]', () => {
@@ -226,6 +244,12 @@ describe('Message Converter', () => {
 
 		it('should match the channel name literally', async () => {
 			expect(await convertChannels('#devXops and #dev.ops', { 'dev.ops': 'devops' })).to.equal('#devXops and #devops');
+		});
+
+		it('should not rewrite a channel name that is another import id', async () => {
+			expect(await convertChannels('#general #general-2', { 'general': 'general-2', 'general-2': 'random' })).to.equal(
+				'#general-2 #random',
+			);
 		});
 	});
 
