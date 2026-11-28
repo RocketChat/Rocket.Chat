@@ -10,7 +10,11 @@ const AppEvents = {
 
 let AppUIKitInteractionApi: any;
 
+const withRecordedView = sinon.stub();
+const recordInteractionView = sinon.stub();
+
 before(async () => {
+	const interactionResponses = await import('../../../../server/lib/uikit/interactionResponses');
 	mock.module('@rocket.chat/apps', { exports: { AppEvents } });
 	mock.module('@rocket.chat/core-services', { exports: { UiKitCoreApp: { isRegistered: sinon.stub() } } });
 	mock.module('@rocket.chat/http-router', { exports: { nodeHandler: () => () => undefined } });
@@ -20,17 +24,9 @@ before(async () => {
 	mock.module('../../../../server/lib/http/httpServer', { exports: { httpApp: { use: sinon.stub() } } });
 	mock.module('../../../../server/lib/uikit/confirmViewFiles', { exports: { confirmViewFiles: sinon.stub().resolves() } });
 	mock.module('../../../../server/lib/uikit/interactionResponses', {
-		exports: {
-			withDefaultCloseTarget: sinon.stub().resolves(),
-			viewSubmitAnswer: (_delivered: boolean, body: unknown) => ({ status: 200, body }),
-		},
+		exports: { ...interactionResponses, withDefaultCloseTarget: sinon.stub().resolves() },
 	});
-	mock.module('../../../../server/lib/uikit/recordedViews', {
-		exports: {
-			recordInteractionView: sinon.stub().resolves(true),
-			withRecordedView: async (view: unknown) => view,
-		},
-	});
+	mock.module('../../../../server/lib/uikit/recordedViews', { exports: { recordInteractionView, withRecordedView } });
 	mock.module('../../../../server/lib/uikit/reportInvalidBlocks', {
 		exports: { reportInvalidInteractionBlocks: sinon.stub().returns(false) },
 	});
@@ -68,11 +64,15 @@ describe('AppUIKitInteractionApi routeHandler', () => {
 		convertRoomById.reset();
 		triggerEvent.reset();
 		getConverters.reset();
+		withRecordedView.reset();
+		recordInteractionView.reset();
 
 		convertToApp.returns(appUser);
 		convertMessageById.resolves(appMessage);
 		convertRoomById.resolves(appRoom);
 		triggerEvent.resolves({ success: true });
+		withRecordedView.callsFake(async (view) => view);
+		recordInteractionView.resolves(true);
 		getConverters.returns(
 			new Map<string, unknown>([
 				['users', { convertToApp }],
@@ -329,6 +329,19 @@ describe('AppUIKitInteractionApi routeHandler', () => {
 			expect(res.status.calledOnceWithExactly(500)).to.equal(true);
 			expect(res.send.calledOnceWithExactly({ error: 'handler failed' })).to.equal(true);
 		});
+
+		it('answers an empty result without notifying the app when the server no longer has the view', async () => {
+			withRecordedView.resolves(undefined);
+
+			await api.routeHandler(
+				{ params: { id: 'app-id' }, user: reqUser, body: { type: 'viewClosed', payload: { view: { id: 'view-id' } } } },
+				res,
+			);
+
+			expect(triggerEvent.called).to.equal(false);
+			expect(res.status.called).to.equal(false);
+			expect(res.send.calledOnceWithExactly({})).to.equal(true);
+		});
 	});
 
 	describe('viewSubmit', () => {
@@ -377,6 +390,39 @@ describe('AppUIKitInteractionApi routeHandler', () => {
 			expect(convertRoomById.called).to.equal(false);
 			expect(res.status.calledOnceWithExactly(500)).to.equal(true);
 			expect(res.send.calledOnceWithExactly({ error: 'handler failed' })).to.equal(true);
+		});
+
+		it('responds 400 without notifying the app when the server no longer has the view', async () => {
+			withRecordedView.resolves(undefined);
+
+			await api.routeHandler(
+				{
+					params: { id: 'app-id' },
+					user: reqUser,
+					body: { type: 'viewSubmit', actionId: 'action-id', triggerId: 'trigger-id', payload: { view: { id: 'view-id' } } },
+				},
+				res,
+			);
+
+			expect(triggerEvent.called).to.equal(false);
+			expect(res.status.calledOnceWithExactly(400)).to.equal(true);
+			expect(res.send.calledOnceWithExactly({ error: 'The view is no longer available' })).to.equal(true);
+		});
+
+		it('responds 409 so the client keeps the view open when the view update was not delivered', async () => {
+			recordInteractionView.resolves(false);
+
+			await api.routeHandler(
+				{
+					params: { id: 'app-id' },
+					user: reqUser,
+					body: { type: 'viewSubmit', actionId: 'action-id', triggerId: 'trigger-id', payload: { view: { id: 'view-id' } } },
+				},
+				res,
+			);
+
+			expect(res.status.calledOnceWithExactly(409)).to.equal(true);
+			expect(res.send.calledOnceWithExactly({ error: 'The view update was not delivered' })).to.equal(true);
 		});
 	});
 
