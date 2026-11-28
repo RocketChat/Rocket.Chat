@@ -106,6 +106,7 @@ export class S2SManager {
 			: Promise.resolve();
 		this.server = undefined;
 
+		const outboundClosed: Promise<void>[] = [];
 		for (const route of this.routes.values()) {
 			if (route.reconnectTimer) {
 				clearTimeout(route.reconnectTimer);
@@ -114,11 +115,13 @@ export class S2SManager {
 				queued.reject(new ConnectionFailedError('*', new Error('Server stopping')));
 			}
 			route.queue = [];
-			route.session?.destroy();
+			if (route.session) {
+				outboundClosed.push(route.session.close());
+			}
 		}
 		this.routes.clear();
 
-		await Promise.all([...this.inboundSessions].map((session) => session.close()));
+		await Promise.all([...outboundClosed, ...[...this.inboundSessions].map((session) => session.close())]);
 		this.inboundSessions.clear();
 
 		await listenerClosed;
