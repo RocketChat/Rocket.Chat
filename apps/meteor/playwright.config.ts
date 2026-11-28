@@ -48,17 +48,17 @@ export default {
 				draft: process.env.REPORTER_ROCKETCHAT_DRAFT === 'true',
 			},
 		],
-		[
+		process.env.QASE_TESTOPS_RUN_ID && [
 			'playwright-qase-reporter',
 			{
-				apiToken: `${process.env.QASE_API_TOKEN}`,
-				rootSuiteTitle: 'Rocket.chat automation',
-				projectCode: 'RC',
-				runComplete: true,
-				basePath: 'https://api.qase.io/v1',
-				logging: true,
-				uploadAttachments: false,
-				environmentId: '1',
+				mode: 'testops',
+				rootSuite: 'Rocket.chat automation',
+				testops: {
+					api: { token: process.env.QASE_API_TOKEN },
+					project: 'RC',
+					run: { id: Number(process.env.QASE_TESTOPS_RUN_ID), complete: false },
+					uploadAttachments: false,
+				},
 			},
 		],
 	].filter(Boolean) as unknown as PlaywrightTestConfig['reporter'],
