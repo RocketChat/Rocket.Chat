@@ -2,7 +2,7 @@
 	"name": "@rocket.chat/message-parser-napi",
 	"version": "0.1.0-experimental",
 	"private": true,
-	"description": "Experimental N-API message parser using logos DFA lexer (12.8x faster than Peggy)",
+	"description": "Experimental N-API message parser — PEG codegen recursive descent (~1743x native, ~10-20x via N-API over Peggy)",
 	"main": "index.js",
 	"types": "index.d.ts",
 	"napi": {
@@ -12,8 +12,10 @@
 		}
 	},
 	"scripts": {
+		"codegen": "node scripts/peg-to-rust-codegen.cjs",
 		"build": "napi build --release",
-		"prepublishOnly": "napi prepublish -t npm"
+		"prepublishOnly": "napi prepublish -t npm",
+		"test": "node tests/compare.cjs"
 	},
 	"devDependencies": {
 		"@napi-rs/cli": "^2.18.0"

@@ -1,4 +1,4 @@
 target/
 *.node
-index.js
+Cargo.lock
 index.d.ts
