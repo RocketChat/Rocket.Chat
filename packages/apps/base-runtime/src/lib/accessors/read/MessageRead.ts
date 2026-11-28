@@ -13,8 +13,8 @@ export class MessageRead implements IMessageRead {
 		return bridgeCall<IMessage>(this.senderFn, 'getMessageBridge', 'doGetById', id, 'APP_ID');
 	}
 
-	public async getSenderUser(messageId: string): Promise<IUser> {
-		const msg = (await bridgeCall(this.senderFn, 'getMessageBridge', 'doGetById', messageId, 'APP_ID')) as IMessage;
+	public async getSenderUser(messageId: string): Promise<IUser | undefined> {
+		const msg = await bridgeCall<IMessage | null | undefined>(this.senderFn, 'getMessageBridge', 'doGetById', messageId, 'APP_ID');
 
 		if (!msg) {
 			return undefined;
@@ -23,8 +23,8 @@ export class MessageRead implements IMessageRead {
 		return msg.sender;
 	}
 
-	public async getRoom(messageId: string): Promise<IRoom> {
-		const msg = (await bridgeCall(this.senderFn, 'getMessageBridge', 'doGetById', messageId, 'APP_ID')) as IMessage;
+	public async getRoom(messageId: string): Promise<IRoom | undefined> {
+		const msg = await bridgeCall<IMessage | null | undefined>(this.senderFn, 'getMessageBridge', 'doGetById', messageId, 'APP_ID');
 
 		if (!msg) {
 			return undefined;
