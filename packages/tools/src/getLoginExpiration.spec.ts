@@ -23,6 +23,9 @@ describe('getLoginExpirationInDays', () => {
 	it('should return the value passed when its valid', () => {
 		expect(getLoginExpirationInDays(85)).toBe(85);
 	});
+	it.each([0.5, 85.5, Infinity])('should return 90 for a non-integer expiration of %s', (expiry) => {
+		expect(getLoginExpirationInDays(expiry)).toBe(90);
+	});
 });
 
 describe('getLoginExpirationInMs', () => {
@@ -31,5 +34,8 @@ describe('getLoginExpirationInMs', () => {
 	});
 	it('should return the value passed when its valid', () => {
 		expect(getLoginExpirationInMs(85)).toBe(85 * 24 * 60 * 60 * 1000);
+	});
+	it.each([0.5, 85.5, Infinity])('should use the default without throwing for an expiration of %s', (expiry) => {
+		expect(getLoginExpirationInMs(expiry)).toBe(90 * 24 * 60 * 60 * 1000);
 	});
 });
