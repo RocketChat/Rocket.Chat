@@ -1,9 +1,10 @@
 import type { IMessage, IRoom, MessageTypesValues } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 
+import { expandSystemMessageOptions } from '../../../../lib/expandSystemMessageOptions';
 import { settings } from '../../../settings/cached';
 import { notifyOnMessageChange } from '../../notifyListener';
-import { expandSystemMessageOptions, shouldHideSystemMessage } from '../../systemMessage/hideSystemMessage';
+import { shouldHideSystemMessage } from '../../systemMessage/hideSystemMessage';
 
 type DiscussionRoom = Pick<IRoom, '_id' | 'msgs' | 'lm' | 'sysMes'>;
 
