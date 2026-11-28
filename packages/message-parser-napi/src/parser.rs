@@ -520,18 +520,19 @@ impl<'a> Parser<'a> {
     fn parse_inline(&mut self) -> Option<()> {
         self.scan_line_hints();
         if self.try_parse(|p| { p.parse_inline_item_pattern()?; Some(()) }).is_some() {
-        } else if self.try_parse(|p| { p.parse_any()?; Some(()) }).is_some() {
+        } else if self.parse_any().is_some() {
         } else {
             return None;
         }
-        while self.try_parse(|p| {
-            if p.try_parse(|p| { p.parse_inline_item_pattern()?; Some(()) }).is_some() {
-            } else if p.try_parse(|p| { p.parse_any()?; Some(()) }).is_some() {
-            } else {
-                return None;
+        loop {
+            if self.try_parse(|p| { p.parse_inline_item_pattern()?; Some(()) }).is_some() {
+                continue;
             }
-            Some(())
-        }).is_some() {}
+            if self.parse_any().is_some() {
+                continue;
+            }
+            break;
+        }
         self.try_parse(|p| { p.parse_end_of_line()?; Some(()) });
         Some(())
     }
