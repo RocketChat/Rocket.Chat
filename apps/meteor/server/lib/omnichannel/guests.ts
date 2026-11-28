@@ -10,6 +10,7 @@ import {
 	ReadReceiptsArchive,
 	Subscriptions,
 	LivechatContacts,
+	Uploads,
 	Users,
 } from '@rocket.chat/models';
 import UAParser from 'ua-parser-js';
@@ -100,33 +101,95 @@ export async function removeContactsByVisitorId({ _id }: { _id: string }) {
 	}
 }
 
+/**
+ * Clears a guest's room history and inquiries before the guest is disabled.
+ */
 async function cleanGuestHistory(_id: string) {
 	// This shouldn't be possible, but just in case
 	if (!_id) {
 		throw new Error('error-invalid-guest');
 	}
 
-	// TODO: optimize function => instead of removing one by one, fetch the _ids of the rooms and then remove them in bulk
-	const cursor = LivechatRooms.findByVisitorId(_id, { projection: { _id: 1 } });
-	for await (const room of cursor) {
-		await Promise.all([
-			Subscriptions.removeByRoomId(room._id, {
-				async onTrash(doc) {
-					void notifyOnSubscriptionChanged(doc, 'removed');
-				},
-			}),
-			FileUpload.removeFilesByRoomId(room._id),
-			Messages.removeByRoomId(room._id),
-			ReadReceipts.removeByRoomId(room._id),
-			ReadReceiptsArchive.removeByRoomId(room._id),
-		]);
+	const rooms: Pick<IOmnichannelRoom, '_id'>[] = await LivechatRooms.findByVisitorId(_id, { projection: { _id: 1 } }).toArray();
+	const roomIds = rooms.map(({ _id }) => _id);
+	if (roomIds.length) {
+		const { completedRoomIds, errors: cleanupErrors } = await removeGuestRoomFilesAndSubscriptions(roomIds);
+
+		if (completedRoomIds.length) {
+			const cleanupResults = await Promise.allSettled([
+				Messages.removeByRoomIds(completedRoomIds),
+				ReadReceipts.removeByRoomIds(completedRoomIds),
+				ReadReceiptsArchive.removeByRoomIds(completedRoomIds),
+			]);
+			cleanupErrors.push(...cleanupResults.flatMap((result) => (result.status === 'rejected' ? [result.reason as unknown] : [])));
+		}
+
+		throwCleanupErrors(cleanupErrors, 'error-cleaning-guest-history');
 	}
 
 	await LivechatRooms.removeByVisitorId(_id);
+	if (roomIds.length) {
+		await removeRemainingRoomUploads(roomIds);
+	}
 
 	const livechatInquiries = await LivechatInquiry.findByVisitorIds([_id]).toArray();
 	await LivechatInquiry.removeByIds(livechatInquiries.map(({ _id }) => _id));
 	void notifyOnLivechatInquiryChanged(livechatInquiries, 'removed');
+}
+
+const GUEST_ROOM_CLEANUP_CONCURRENCY = 5;
+
+/**
+ * Removes each room's uploads and subscriptions with bounded concurrency, and reports which rooms are ready for their history to be deleted.
+ */
+async function removeGuestRoomFilesAndSubscriptions(roomIds: string[]) {
+	let nextRoomIndex = 0;
+	const errors: unknown[] = [];
+	const completedRoomIds = new Set<string>();
+	const workerCount = Math.min(roomIds.length, GUEST_ROOM_CLEANUP_CONCURRENCY);
+
+	await Promise.all(
+		Array.from({ length: workerCount }, async () => {
+			while (nextRoomIndex < roomIds.length) {
+				const roomId = roomIds[nextRoomIndex++];
+				try {
+					await FileUpload.removeFilesByRoomId(roomId);
+					await Subscriptions.removeByRoomId(roomId, {
+						async onTrash(doc) {
+							void notifyOnSubscriptionChanged(doc, 'removed');
+						},
+					});
+					completedRoomIds.add(roomId);
+				} catch (error) {
+					errors.push(error);
+				}
+			}
+		}),
+	);
+
+	return { completedRoomIds: roomIds.filter((roomId) => completedRoomIds.has(roomId)), errors };
+}
+
+/**
+ * Removes uploads still stored for the guest's deleted rooms, including those whose upload finished while cleanup was running.
+ */
+async function removeRemainingRoomUploads(roomIds: string[]) {
+	const uploadStore = FileUpload.getStore('Uploads');
+	for await (const upload of Uploads.findByRoomIds(roomIds, { projection: { _id: 1 } })) {
+		await uploadStore.deleteById(upload._id);
+	}
+}
+
+/**
+ * Rethrows a single cleanup error unchanged and groups multiple failures after all work settles.
+ */
+function throwCleanupErrors(errors: unknown[], message: string): void {
+	if (errors.length === 1) {
+		throw errors[0];
+	}
+	if (errors.length > 1) {
+		throw new AggregateError(errors, message);
+	}
 }
 
 export async function getLivechatRoomGuestInfo(room: IOmnichannelRoom) {

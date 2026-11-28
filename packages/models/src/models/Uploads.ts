@@ -85,4 +85,11 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 	): FindCursor<DocumentWithProjection<T, O>> {
 		return this.find<T, O>({ originalFileId }, options);
 	}
+
+	findByRoomIds<T extends Document = IUpload, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rids: IRoom['_id'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>({ rid: { $in: rids } }, options);
+	}
 }
