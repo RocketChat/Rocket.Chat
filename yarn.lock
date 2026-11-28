@@ -4763,25 +4763,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lezer/common@npm:^1.1.0, @lezer/common@npm:^1.2.3":
-  version: 1.5.6
-  resolution: "@lezer/common@npm:1.5.6"
-  checksum: 10/d7b58f93e28627cab3edc1f3ec8a35e5a7363f090b4eb62ba3497784943b0901bdda3d10e5b079a9a6cb1f5b0882cf8c682375f00b678fb4679b346976ac303c
-  languageName: node
-  linkType: hard
-
-"@lezer/generator@npm:^1.7.2":
-  version: 1.8.1
-  resolution: "@lezer/generator@npm:1.8.1"
-  dependencies:
-    "@lezer/common": "npm:^1.1.0"
-    "@lezer/lr": "npm:^1.3.0"
-  bin:
-    lezer-generator: src/lezer-generator.cjs
-  checksum: 10/73ab404b59a16b11a9401981d12b559fa8565ef560014b4b716d4b70207f6e0162399c0643905528dc285e524593d76033ac5047c2c467f12d75d08e8f24b6bf
-  languageName: node
-  linkType: hard
-
 "@lezer/highlight@npm:^1.0.0, @lezer/highlight@npm:^1.1.3, @lezer/highlight@npm:^1.2.5":
   version: 1.2.5
   resolution: "@lezer/highlight@npm:1.2.5"
@@ -4817,15 +4798,6 @@ __metadata:
   dependencies:
     "@lezer/common": "npm:^1.0.0"
   checksum: 10/cf7adf0d8ed14ba4a6b42454a1892b61bf40a28de94e62e704f2b0feb89e52ca1d1e15ae0406a0f7dd177f2119a0eca85ec10a691c9dd5a6e68306fa5d25e0d4
-  languageName: node
-  linkType: hard
-
-"@lezer/lr@npm:^1.4.2":
-  version: 1.4.12
-  resolution: "@lezer/lr@npm:1.4.12"
-  dependencies:
-    "@lezer/common": "npm:^1.0.0"
-  checksum: 10/1dada93114ffff0554a2f0f085d51e299ebb01dd3750dacd16683243aff32653fe8cd0f84370d82af7bde24c2b0dd7f8e826b43df2375ca37598d2d48929361a
   languageName: node
   linkType: hard
 
@@ -4951,15 +4923,6 @@ __metadata:
   dependencies:
     sparse-bitfield: "npm:^3.0.3"
   checksum: 10/071957d2a0b6f70393291b7f87ac803d190fa64a44781447293db8b9a809c479c37909fa737918611f844e672c7131bfde8efa1bf04d8dab13b1c5db967deb28
-  languageName: node
-  linkType: hard
-
-"@napi-rs/cli@npm:^2.18.0":
-  version: 2.18.4
-  resolution: "@napi-rs/cli@npm:2.18.4"
-  bin:
-    napi: scripts/index.js
-  checksum: 10/b9bdb0e0f96328315a5ad7846df5c72f5f00c707aa58bf2e8b753ad419c4a45989ba6967c8a27acf1552051d2693ae43a9be9ab2c173671040c1861e6d920ac6
   languageName: node
   linkType: hard
 
@@ -6768,12 +6731,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@peggyjs/from-mem@npm:1.3.4":
-  version: 1.3.4
-  resolution: "@peggyjs/from-mem@npm:1.3.4"
+"@peggyjs/from-mem@npm:4.0.0":
+  version: 4.0.0
+  resolution: "@peggyjs/from-mem@npm:4.0.0"
   dependencies:
-    semver: "npm:7.6.3"
-  checksum: 10/d32ce47af78eb6ccec3cb5b98f4c592bbdb634b05dd99a0fb107cfa48c17069ea0b5fb284705839de7be3a43638e05b0c9733fa83b30e3e2cf608790e42b5e31
+    semver: "npm:~7.8.5"
+  checksum: 10/ab444bcc4a8b7eab6950b0458214469e3295d8af49a21a7d7bea38438cea2731c272a287f32139d14c35ea0b548025efbb37554e177c176d27a9bfec16d41cf8
   languageName: node
   linkType: hard
 
@@ -9947,29 +9910,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/message-parser-lezer@workspace:packages/message-parser-lezer":
-  version: 0.0.0-use.local
-  resolution: "@rocket.chat/message-parser-lezer@workspace:packages/message-parser-lezer"
-  dependencies:
-    "@lezer/common": "npm:^1.2.3"
-    "@lezer/generator": "npm:^1.7.2"
-    "@lezer/lr": "npm:^1.4.2"
-    "@rocket.chat/jest-presets": "workspace:~"
-    "@rocket.chat/message-parser": "workspace:^"
-    jest: "npm:~30.5.2"
-    tsx: "npm:^4.19.2"
-    typescript: "npm:~5.9.3"
-  languageName: unknown
-  linkType: soft
-
-"@rocket.chat/message-parser-napi@workspace:packages/message-parser-napi":
-  version: 0.0.0-use.local
-  resolution: "@rocket.chat/message-parser-napi@workspace:packages/message-parser-napi"
-  dependencies:
-    "@napi-rs/cli": "npm:^2.18.0"
-  languageName: unknown
-  linkType: soft
-
 "@rocket.chat/message-parser@workspace:^, @rocket.chat/message-parser@workspace:packages/message-parser, @rocket.chat/message-parser@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/message-parser@workspace:packages/message-parser"
@@ -9979,7 +9919,7 @@ __metadata:
     "@types/node": "npm:~24.13.6"
     fast-check: "npm:^4.6.0"
     jest: "npm:~30.5.2"
-    peggy: "npm:4.1.1"
+    peggy: "npm:5.1.1"
     tinybench: "npm:^3.0.7"
     tldts: "npm:~6.1.86"
     ts-loader: "npm:~9.5.7"
@@ -10757,7 +10697,7 @@ __metadata:
   resolution: "@rocket.chat/peggy-loader@workspace:packages/peggy-loader"
   dependencies:
     "@types/node": "npm:~24.13.6"
-    peggy: "npm:4.1.1"
+    peggy: "npm:5.1.1"
     typescript: "npm:~7.0.2"
     webpack: "npm:~5.104.1"
   peerDependencies:
@@ -19920,7 +19860,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^14.0.0":
+"commander@npm:^14.0.0, commander@npm:^14.0.3":
   version: 14.0.3
   resolution: "commander@npm:14.0.3"
   checksum: 10/dfa9ebe2a433d277de5cb0252d23b10a543d245d892db858d23b516336a835c50fd4f52bee4cd13c705cc8acb6f03dc632c73dd806f7d06d3353eb09953dd17a
@@ -30225,16 +30165,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"peggy@npm:4.1.1":
-  version: 4.1.1
-  resolution: "peggy@npm:4.1.1"
+"peggy@npm:5.1.1":
+  version: 5.1.1
+  resolution: "peggy@npm:5.1.1"
   dependencies:
-    "@peggyjs/from-mem": "npm:1.3.4"
-    commander: "npm:^12.1.0"
-    source-map-generator: "npm:0.8.0"
+    "@peggyjs/from-mem": "npm:4.0.0"
+    commander: "npm:^14.0.3"
+    source-map-generator: "npm:2.0.7"
   bin:
     peggy: bin/peggy.js
-  checksum: 10/a2531d6a2448addd7a38640c5f73ba1a762f5974caa33f44c8f0dff735d7a701c4befe630ad2b0ed8e46ffda1f3ea503c3844e477cb7e55b62759918a365585f
+  checksum: 10/204392f76afc2244b8bf452ac5b64347f674dbf51190a6117a7fbcc68d46510b780e21478ca572f7c78ed1b789dbf2ded75791d8efd1fbd138a91316fd5883b2
   languageName: node
   linkType: hard
 
@@ -34050,10 +33990,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map-generator@npm:0.8.0":
-  version: 0.8.0
-  resolution: "source-map-generator@npm:0.8.0"
-  checksum: 10/f57df2c1bf33d84fc8a74fa030d4d355b033548569977b63d6930f6b2bf37f575946c88fb89c73b42a54ff6a46bd24253f0ddfa2c2226341e25c22240d168ed1
+"source-map-generator@npm:2.0.7":
+  version: 2.0.7
+  resolution: "source-map-generator@npm:2.0.7"
+  checksum: 10/70557922ecb3806eb4df6365da30622ce442f96ddf060f427cd376437a18695fce6faa17e191c5a0ef75d845b457fd4f3173c591fdd27c4caa2068cbfe9c7ec9
   languageName: node
   linkType: hard
 
@@ -35772,21 +35712,6 @@ __metadata:
   version: 1.0.6
   resolution: "tsscmp@npm:1.0.6"
   checksum: 10/850405080ea3ecb158e9e01bc4e87c9edb94a829d8ad8747f30ba103fcc41a287d7949ab84d7b27c36294036a2c9878f050db15b73a1a1961abfb7688b82ac53
-  languageName: node
-  linkType: hard
-
-"tsx@npm:^4.19.2":
-  version: 4.23.15
-  resolution: "tsx@npm:4.23.15"
-  dependencies:
-    esbuild: "npm:~0.28.0"
-    fsevents: "npm:~2.3.3"
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  bin:
-    tsx: dist/cli.mjs
-  checksum: 10/f531aca9143a8ba08cf3053bd403a8b036d7bfffacc83c611486215d8cd41febad754d89f02c0bf92e55b747518b9ea124bfe76b55262b40be850f3ee938e4ff
   languageName: node
   linkType: hard
 

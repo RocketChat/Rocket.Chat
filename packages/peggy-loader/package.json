@@ -40,7 +40,7 @@
 	},
 	"devDependencies": {
 		"@types/node": "~24.13.6",
-		"peggy": "4.1.1",
+		"peggy": "5.1.1",
 		"typescript": "~7.0.2",
 		"webpack": "~5.104.1"
 	},
