@@ -72,8 +72,8 @@
 		"displayContents": 0
 	},
 	"Button/Button.styles.scss": {
-		"rules": 26,
-		"nested": 22,
+		"rules": 28,
+		"nested": 24,
 		"combinators": 0,
 		"important": 0,
 		"specificityBumps": 0,

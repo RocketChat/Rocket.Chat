@@ -20,6 +20,17 @@ export type ButtonProps = {
 } & ElementProps<HTMLButtonElement | HTMLAnchorElement, AllHTMLAttributes<HTMLButtonElement | HTMLAnchorElement>>;
 
 /**
+ * The 40px and 48px buttons pair with a 20px icon; the smaller sizes use 16px.
+ */
+const resolveIconSize = (size: ButtonProps['size']): IconProps['size'] => (size === undefined || size === 'large' ? 'x20' : 'x16');
+
+/**
+ * A label counts as present whenever React would render something for it, which
+ * includes the numeric `0` a truthiness check would discard.
+ */
+const hasVisibleLabel = (children: ButtonProps['children']): boolean => children === 0 || Boolean(children);
+
+/**
  * Indicates an actionable user action.
  */
 function Button({
@@ -49,6 +60,10 @@ function Button({
 
 	const kindAndVariantProps = useMemo(() => (variant ? { [`rcx-button--${variant}`]: true } : {}), [variant]);
 
+	const iconSize = resolveIconSize(size);
+	const hasLeadingIcon = Boolean(icon || loading);
+	const hasLabel = hasVisibleLabel(children);
+
 	return (
 		<Box
 			is={is}
@@ -59,6 +74,7 @@ function Button({
 			rcx-button--large={size === 'large'}
 			rcx-button--square={square}
 			rcx-button--compact={compact}
+			rcx-button--with-icon={hasLeadingIcon && !square && hasLabel}
 			rcx-button--tiny-square={size === 'tiny' && square}
 			rcx-button--mini-square={size === 'mini' && square}
 			rcx-button--small-square={size === 'small' && square}
@@ -71,8 +87,8 @@ function Button({
 			{...props}
 		>
 			<span className='rcx-button--content'>
-				{icon && !loading && <Icon className='rcx-button__icon' size='x16' name={icon} />}
-				{loading && <Icon className='rcx-button__icon' size='x16' name='loading' />}
+				{icon && !loading && <Icon className='rcx-button__icon' size={iconSize} name={icon} />}
+				{loading && <Icon className='rcx-button__icon' size={iconSize} name='loading' />}
 				{children}
 			</span>
 		</Box>
