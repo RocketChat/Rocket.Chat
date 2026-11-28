@@ -48,7 +48,7 @@ Once the user picks an option, the element behaves like any other select: its va
 
 ### View state
 
-`state` in `viewSubmit` and `viewClosed` is `{ [blockId]: { [actionId]: value } }`. It starts from the initial values in the layout, and every element change updates it. Only elements with a `blockId` are included, so an input block without `blockId` never reaches the app.
+`state` in `viewSubmit` and `viewClosed` is `{ [blockId]: { [actionId]: value } }`. It starts from the initial values in the layout, and every element change updates it. When the app updates the view (`modal.update`, `contextual_bar.update`, `banner.update`), an element whose `actionId` stays keeps its value, even if the app changed its initial value; a new element starts from its initial value; a removed one leaves the state. An element whose block has no `blockId` goes under the `blockId` of the nearest container or layout block holding it. An element with no `blockId` either way is left out until the user changes it; from then on it is sent under `default`, as `state.default[actionId]`. If an update moves a kept element into a block with no `blockId` either way, its value stays under the `blockId` it had.
 
 ### Files in views
 
@@ -121,6 +121,8 @@ Differences from the web client:
 
 - The server does not record the views apps open for a visitor, so `viewSubmit` and `viewClosed` carry the view as the widget holds it.
 - `viewSubmit` and `viewClosed` do not carry `rid`; `room` is empty in the app handlers.
+- When the app updates the modal, an input the visitor hasn't changed takes its new initial value, and a changed value is kept only while both its `blockId` and its `actionId` stay.
+- Only `input` blocks with their own `blockId` are in the state of `viewSubmit` and `viewClosed`, and no `blockId` is taken from a container. Each change to an input without one is sent as `blockAction` instead.
 - Apps cannot push views to a visitor outside an interaction response. `UIController` needs a user, and no `uiInteraction` stream exists for visitors.
 
 ## Validation
