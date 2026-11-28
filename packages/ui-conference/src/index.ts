@@ -11,6 +11,7 @@ export type {
 	ConferenceChatAccess,
 	ConferenceFailure,
 	ConferenceMember,
+	ConferenceNewMessage,
 	ConferenceRoom,
 	ConferenceSession,
 	ConferenceSlots,

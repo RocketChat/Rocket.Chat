@@ -2,6 +2,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { DeviceSelection } from '@rocket.chat/ui-media';
 import { DeviceSelectionProvider } from '@rocket.chat/ui-media';
 import { render, screen } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 
 import ConferenceWindow from './ConferenceWindow.js';
@@ -126,7 +127,10 @@ describe('a call that runs in this window', () => {
 	const renderNative = ({ state, ...overrides }: Partial<ConferenceContextValue> & { state?: CallState } = {}) => {
 		const AppRoot = mockAppRoot()
 			.withJohnDoe()
-			.withTranslations('en', 'core', { __name__raised_their_hand: '{{name}} raised their hand' })
+			.withTranslations('en', 'core', {
+				__name__raised_their_hand: '{{name}} raised their hand',
+				Chat_message_from_name: '{{name}}: {{message}}',
+			})
 			.build();
 
 		const value = buildConferenceContext({
@@ -188,6 +192,56 @@ describe('a call that runs in this window', () => {
 		});
 
 		expect(screen.getByRole('button', { name: 'Ada Lovelace raised their hand' })).toBeInTheDocument();
+	});
+
+	it('opens the chat at a previewed message', async () => {
+		const set = jest.fn();
+		const jumpToMessage = jest.fn();
+
+		renderNative({
+			room: {
+				...buildConferenceContext().room,
+				rid: 'room-id',
+				onNewMessage: (listener) => {
+					listener({ _id: 'message-id', username: 'ada', text: 'Can everyone see my screen?' });
+					return () => undefined;
+				},
+				jumpToMessage,
+			},
+			panel: { set },
+		});
+
+		await userEvent.click(screen.getByRole('button', { name: /Can everyone see my screen\?/ }));
+
+		expect(set).toHaveBeenCalledWith('chat');
+		expect(jumpToMessage).toHaveBeenCalledWith('message-id');
+	});
+
+	it('clears the previews when the chat is opened', async () => {
+		let sent = false;
+
+		renderNative({
+			room: {
+				...buildConferenceContext().room,
+				rid: 'room-id',
+				onNewMessage: (listener) => {
+					if (!sent) {
+						sent = true;
+						listener({ _id: 'message-id', username: 'ada', text: 'Can everyone see my screen?' });
+					}
+					return () => undefined;
+				},
+			},
+		});
+
+		await userEvent.click(screen.getByRole('button', { name: /Can everyone see my screen\?/ }));
+
+		expect(screen.getByRole('button', { name: 'Chat' })).toHaveFocus();
+		expect(screen.queryByRole('button', { name: /Can everyone see my screen\?/ })).not.toBeInTheDocument();
+
+		await userEvent.click(screen.getByRole('button', { name: 'Chat' }));
+
+		expect(screen.queryByRole('button', { name: /Can everyone see my screen\?/ })).not.toBeInTheDocument();
 	});
 });
 

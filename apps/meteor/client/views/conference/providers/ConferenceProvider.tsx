@@ -8,6 +8,7 @@ import { Suspense, useCallback, useMemo, useState } from 'react';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
 import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
 import { isRefusal } from '../../../lib/utils/isRefusal';
+import { setMessageJumpQueryStringParameter } from '../../../lib/utils/setMessageJumpQueryStringParameter';
 import { embeddedCallProviders } from '../../../lib/videoConference/embeddedCallProviders';
 import { useUnreadDisplay } from '../../../sidebar/hooks/useUnreadDisplay';
 import PageLoading from '../../root/PageLoading';
@@ -20,6 +21,7 @@ import { useConferencePresenceLease } from '../hooks/useConferencePresenceLease'
 import { useConferenceSubscription } from '../hooks/useConferenceSubscription';
 import { useConfinedNavigation } from '../hooks/useConfinedNavigation';
 import { useLeaveConferenceOnClose } from '../hooks/useLeaveConferenceOnClose';
+import { useNewCallMessages } from '../hooks/useNewCallMessages';
 import { useProviderPlugin } from '../hooks/useProviderPlugin';
 import { conferencePreflightMedia } from '../lib/conferencePreflightMedia';
 
@@ -75,6 +77,15 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 	// its reader asked not to be told about it at all — is the product's business rather than the window's.
 	const subscription = useUserSubscription(room.rid ?? '');
 	const { showUnread, unreadCount, unreadVariant, unreadTitle } = useUnreadDisplay(subscription ?? emptyUnreadData);
+
+	const onNewMessage = useNewCallMessages({
+		rid: room.rid,
+		tmid: room.tmid,
+		joinedAt: call.members.find(({ _id }) => _id === uid)?.joinedAt,
+		ignored: subscription?.ignored,
+	});
+
+	const jumpToMessage = useCallback((mid: string) => void setMessageJumpQueryStringParameter(mid), []);
 
 	/**
 	 * Which panel the window is showing, held here rather than in the window because a provider's page can carry
@@ -182,6 +193,8 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 					variant: unreadVariant,
 					title: unreadTitle,
 				},
+				onNewMessage,
+				jumpToMessage,
 			},
 			session: {
 				url: conference.url,
@@ -224,6 +237,8 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 			uid,
 			useRealName,
 			showUnread,
+			onNewMessage,
+			jumpToMessage,
 			subscription,
 			thread,
 			unreadCount.total,

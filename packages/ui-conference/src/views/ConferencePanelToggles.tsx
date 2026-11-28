@@ -1,6 +1,9 @@
 import { Badge, Icon, IconButton } from '@rocket.chat/fuselage';
+import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import CallMessagePreviews from '../components/CallMessagePreviews/CallMessagePreviews.js';
+import CallStageNoticesPortal from '../components/CallStageNoticesPortal.js';
 import type { ConferencePanel } from '../context/ConferenceContext.js';
 import type { ConferenceRoom } from '../context/definitions.js';
 
@@ -8,11 +11,24 @@ export type ConferencePanelTogglesProps = {
 	activePanel: ConferencePanel | undefined;
 	presentCount: number;
 	unread: ConferenceRoom['unread'];
+	/** How the chat's new messages are previewed over the call; not at all when undefined. */
+	messagePreviews?: 'regular' | 'compact';
 	onToggle: (panel: ConferencePanel) => void;
+	/** Opens the chat at a previewed message. */
+	onOpenMessage: (mid: string) => void;
 };
 
-const ConferencePanelToggles = ({ activePanel, presentCount, unread: roomUnread, onToggle }: ConferencePanelTogglesProps) => {
+const ConferencePanelToggles = ({
+	activePanel,
+	presentCount,
+	unread: roomUnread,
+	messagePreviews,
+	onToggle,
+	onOpenMessage,
+}: ConferencePanelTogglesProps) => {
 	const { t } = useTranslation();
+	const chatButtonRef = useRef<HTMLButtonElement>(null);
+	const focusChatButton = () => chatButtonRef.current?.focus();
 	const chatVisible = activePanel === 'chat';
 
 	const { count: unreadCount, hasUnseenActivity, variant: unreadVariant, title: unreadTitle = '' } = roomUnread;
@@ -38,6 +54,7 @@ const ConferencePanelToggles = ({ activePanel, presentCount, unread: roomUnread,
 			<IconButton
 				size='small'
 				variant='secondary'
+				ref={chatButtonRef}
 				// The badge is `aria-hidden`, so what it says has to be in the button's name.
 				aria-label={showChatBadge && unreadTitle ? `${t('Chat')}, ${unreadTitle}` : t('Chat')}
 				title={t('Chat')}
@@ -53,6 +70,18 @@ const ConferencePanelToggles = ({ activePanel, presentCount, unread: roomUnread,
 					) : undefined
 				}
 			/>
+			{messagePreviews && (
+				<CallStageNoticesPortal>
+					<CallMessagePreviews
+						compact={messagePreviews === 'compact'}
+						onOpen={(mid) => {
+							onOpenMessage(mid);
+							focusChatButton();
+						}}
+						onFocusLeave={focusChatButton}
+					/>
+				</CallStageNoticesPortal>
+			)}
 		</>
 	);
 };

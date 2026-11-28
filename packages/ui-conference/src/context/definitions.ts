@@ -87,6 +87,19 @@ export type ConferenceRoom = {
 		variant?: ComponentProps<typeof Badge>['variant'];
 		title?: string;
 	};
+	/** Calls `listener` with each message someone else sends to the call's chat after the reader joined, and returns how to stop. */
+	onNewMessage: (listener: (message: ConferenceNewMessage) => void) => () => void;
+	/** Takes the call's chat to a message. */
+	jumpToMessage: (mid: string) => void;
+};
+
+/** A chat message as the window previews it: who sent it, and what it says as plain text. */
+export type ConferenceNewMessage = {
+	_id: string;
+	username: string;
+	name?: string;
+	/** Absent for an encrypted message this window could not read. */
+	text?: string;
 };
 
 /** This window's own standing with the call: whether it holds a session, and what it has to show for one. */
