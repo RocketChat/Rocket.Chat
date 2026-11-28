@@ -83,10 +83,11 @@ describe('/hide', () => {
 
 	it('reports a missing channel without hiding another room', async () => {
 		findRoomByName.resolves(null);
-		subscription.resolves(null);
 		await slashCommand.runCommand('hide', { params: '#missing' });
 		sinon.assert.calledOnceWithExactly(findRoomByName, 'missing');
+		sinon.assert.notCalled(subscription);
 		slashCommand.expectTranslatedFeedback('Channel_doesnt_exist');
+		sinon.assert.calledOnce(slashCommand.broadcast);
 		sinon.assert.notCalled(hide);
 	});
 
