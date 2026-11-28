@@ -6,12 +6,12 @@ const getUnreadTitle = (
 		mentions,
 		threads,
 		groupMentions,
-		total,
+		plainUnread,
 	}: {
 		mentions: number;
 		threads: number;
 		groupMentions: number;
-		total: number;
+		plainUnread: number;
 	},
 	t: TFunction,
 ) => {
@@ -25,9 +25,8 @@ const getUnreadTitle = (
 	if (groupMentions) {
 		title.push(t('group_mentions_counter', { count: groupMentions }));
 	}
-	const count = total - mentions - groupMentions - threads;
-	if (count > 0) {
-		title.push(t('unread_messages_counter', { count }));
+	if (plainUnread > 0) {
+		title.push(t('unread_messages_counter', { count: plainUnread }));
 	}
 
 	return title.join(', ');
@@ -47,6 +46,9 @@ export const getSubscriptionUnreadData = (
 		threads: tunread?.length || 0,
 		groupMentions,
 		total: unread + (tunread?.length || 0),
+		// `unread` already includes userMentions/groupMentions (the server increments them together),
+		// and never includes thread-origin messages, so this is the plain-message-only count.
+		plainUnread: unread - userMentions - groupMentions,
 	};
 
 	const unreadTitle = getUnreadTitle(unreadCount, t);

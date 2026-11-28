@@ -72,6 +72,18 @@ const tunreadUser = createFakeSubscription({
 	alert: true,
 });
 
+// `unread` never includes thread-origin messages (server-side, thread replies never increment it),
+// so a plain unread message can coexist with an unread thread mention and must still be reported.
+const plainUnreadWithThreadMention = createFakeSubscription({
+	t: 'p',
+	unread: 2,
+	userMentions: 0,
+	groupMentions: 0,
+	tunread: ['1'],
+	tunreadUser: ['1'],
+	alert: true,
+});
+
 const hideUnreadStatus = createFakeSubscription({
 	t: 'p',
 	hideUnreadStatus: true,
@@ -189,12 +201,24 @@ it('should return correct unread data for [Thread and thread user mention]', asy
 		wrapper,
 	});
 	expect(result.current.unreadVariant).toBe('danger');
-	expect(result.current.unreadTitle).toBe('1 mention, 1 unread threaded message');
+	expect(result.current.unreadTitle).toBe('1 mention, 1 unread threaded message, 1 unread message');
 
 	expect(result.current.unreadCount).toHaveProperty('mentions', 1);
 	expect(result.current.unreadCount).toHaveProperty('groupMentions', 0);
 	expect(result.current.unreadCount).toHaveProperty('threads', 1);
 	expect(result.current.unreadCount).toHaveProperty('total', 2);
+});
+
+it('should still report plain unread messages when an unread thread mention coexists [regression]', async () => {
+	const { result } = renderHook(() => useUnreadDisplay(plainUnreadWithThreadMention), {
+		wrapper,
+	});
+	expect(result.current.unreadTitle).toBe('1 mention, 1 unread threaded message, 2 unread messages');
+
+	expect(result.current.unreadCount).toHaveProperty('mentions', 1);
+	expect(result.current.unreadCount).toHaveProperty('threads', 1);
+	expect(result.current.unreadCount).toHaveProperty('plainUnread', 2);
+	expect(result.current.unreadCount).toHaveProperty('total', 3);
 });
 
 it('should not highlight unread if hideUnreadStatus is enabled', async () => {
