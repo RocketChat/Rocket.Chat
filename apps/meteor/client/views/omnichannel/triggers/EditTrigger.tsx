@@ -167,7 +167,10 @@ const EditTrigger = ({ triggerData, onClose }: { triggerData?: Serialized<ILivec
 								<Controller
 									name='name'
 									control={control}
-									rules={{ required: t('Required_field', { field: t('Name') }) }}
+									rules={{
+										required: t('Required_field', { field: t('Name') }),
+										validate: (value) => !!value?.trim() || t('Required_field', { field: t('Name') }),
+									}}
 									render={({ field }) => (
 										<TextInput
 											{...field}
@@ -190,8 +193,28 @@ const EditTrigger = ({ triggerData, onClose }: { triggerData?: Serialized<ILivec
 						<Field>
 							<FieldLabel htmlFor={descriptionField}>{t('Description')}</FieldLabel>
 							<FieldRow>
-								<Controller name='description' control={control} render={({ field }) => <TextInput id={descriptionField} {...field} />} />
+								<Controller
+									name='description'
+									control={control}
+									rules={{
+										validate: (value) => !value || !!value.trim() || t('Required_field', { field: t('Description') }),
+									}}
+									render={({ field }) => (
+										<TextInput
+											{...field}
+											id={descriptionField}
+											error={errors?.description?.message}
+											aria-invalid={Boolean(errors?.description)}
+											aria-describedby={`${descriptionField}-error`}
+										/>
+									)}
+								/>
 							</FieldRow>
+							{errors?.description && (
+								<FieldError aria-live='assertive' id={`${descriptionField}-error`}>
+									{errors?.description.message}
+								</FieldError>
+							)}
 						</Field>
 
 						{conditionsFields.map((field, index) => (
