@@ -196,8 +196,6 @@ describe('useRoomToolboxActions', () => {
 		});
 
 		const collapsedLayoutContextValue: LayoutContextValue = {
-			isEmbedded: false,
-			showTopNavbarEmbeddedLayout: false,
 			isTablet: false,
 			isMobile: false,
 			roomToolboxExpanded: false,
@@ -225,12 +223,6 @@ describe('useRoomToolboxActions', () => {
 			},
 			contextualBarPosition: 'relative',
 			contextualBarExpanded: false,
-			hiddenActions: {
-				roomToolbox: [],
-				messageToolbox: [],
-				composerToolbox: [],
-				userToolbox: [],
-			},
 		};
 
 		describe('when a demoted action can not render as a menu item', () => {

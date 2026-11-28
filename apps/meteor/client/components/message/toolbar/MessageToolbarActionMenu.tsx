@@ -1,7 +1,7 @@
 import { isE2EEMessage, type IMessage, type IRoom, type ISubscription } from '@rocket.chat/core-typings';
 import { isTruthy } from '@rocket.chat/tools';
 import { GenericMenu, type GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
+import { useHiddenActions } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -74,7 +74,7 @@ const MessageToolbarActionMenu = ({ message, context, room, subscription, onChan
 		useReadReceiptsDetailsAction(message),
 	];
 
-	const hiddenActions = useLayoutHiddenActions().messageToolbox;
+	const hiddenActions = useHiddenActions().messageToolbox;
 	const data = menuItems
 		.filter(isTruthy)
 		.filter((button) => button.group === 'menu')

@@ -4,7 +4,7 @@ import {
 	useSetting,
 	useRouter,
 	useRouteParameter,
-	useLayoutHiddenActions,
+	useHiddenActions,
 	RoomToolboxContext,
 	type RoomToolboxContextValue,
 } from '@rocket.chat/ui-contexts';
@@ -35,7 +35,7 @@ const RoomToolboxProvider = ({ children }: RoomToolboxProviderProps) => {
 	const allowAnonymousRead = useSetting<boolean>('Accounts_AllowAnonymousRead', false);
 	const uid = useUserId();
 
-	const { roomToolbox: hiddenActions } = useLayoutHiddenActions();
+	const { roomToolbox: hiddenActions } = useHiddenActions();
 
 	const actions = useStableArray(
 		[...coreRoomActions, ...appsRoomActions]
