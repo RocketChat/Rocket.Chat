@@ -358,6 +358,8 @@ EscapedTimestampRules
 
 // First-character dispatch: skip the full alternative chain by routing
 // each character to only the rules that can start with it.
+// Every ASCII char that can start an inline rule is dispatched here;
+// only non-ASCII (Unicode emoji) falls to the final catch-all.
 InlineItemPattern
   = & [ \t\u00a0] @Whitespace
   / & "\\"   @(EscapedTimestampRules / KatexInline / Escaped)
@@ -367,33 +369,48 @@ InlineItemPattern
   / & "|"    @Spoiler
   / & "@"    @UserMentionDirect
   / & "`"    @InlineCode
-  / & "+"    @AutolinkedPhone
+  / & "+"    @(AutolinkedPhone / AutolinkedEmail / PlainRun)
   / & "$"    @KatexInline
   / & ":"    @(InlineEmoji / InlineEmoticon)
   / & "*"    @(EmphasisWithWhitespace / Emphasis / InlineEmoticon)
   / & "~"    @(EmphasisWithWhitespace / Emphasis)
   / & "-"    @(PlainRunBeforeEmoticon / InlineEmoticon)
-  / InlineItemSlowPath
+  / & "_"    @(PlainUnderscoreThenDomain / EmphasisWithWhitespace / Emphasis)
+  / & "#"    @(ChannelMention / InlineEmoticon)
+  / & ";"    @(InlineEmoticon / PlainRun)
+  / & "="    @(InlineEmoticon / PlainRun)
+  / & ">"    @(InlineEmoticon / PlainRun)
+  / & "'"    @(InlineEmoticon / PlainRun)
+  / & "%"    @(InlineEmoticon / PlainRun)
+  / & "("    @InlineEmoticon
+  / & [BDOX] @InlineItemAlphaOrEmoticon
+  / & [bdox] @InlineItemAlphaPath
+  / & [08]       @InlineItemAlphaOrEmoticon
+  / & "c"        @InlineItemAlphaOrColor
+  / & [a-zA-Z1-79]  @InlineItemAlphaPath
+  / InlineItemNonAlphaSlowPath
 
-// Non-dispatched chars: emphasis with _, URLs, emails, emoticons, color, plain text
-// Preserves original rule ordering to maintain parsing behavior
-InlineItemSlowPath
-  = AutolinkedEmail
-  / PlainUnderscoreThenDomain
-  / AutolinkedURL
-  / EmphasisWithWhitespace
-  / Emphasis
-  / ChannelMention
-  / InlineEmoji
-  / PlainRunBeforeEmoticon
-  / InlineEmoticon
-  / Color
-  / PlainRun
-
-// Letters/digits: try email/URL (with cheap guards), then plain text
+// Letters/digits: email, URL, channel(text#), then plain
+// Emphasis removed: alpha can't start ** ~~ or _x_ (underscore dispatched separately)
 InlineItemAlphaPath
   = AutolinkedEmail
   / AutolinkedURL
+  / ChannelMention
+  / PlainRun
+
+// Alpha chars that can also start emoticons (B D O X 0 8 b d o x)
+InlineItemAlphaOrEmoticon
+  = InlineEmoticon
+  / InlineItemAlphaPath
+
+// 'c' can start "color:#..."
+InlineItemAlphaOrColor
+  = Color
+  / InlineItemAlphaPath
+
+// Remaining: non-ASCII (Unicode emoji) and rare punct not dispatched above
+InlineItemNonAlphaSlowPath
+  = InlineEmoji
   / PlainRun
 
 /**
@@ -532,8 +549,8 @@ LocalPartChar = AlphaNumericOrMarkChar+ LocalPartSpecialChars*
 
 LocalPartSpecialChars = [!#$%&'*+/=?^_\`{|}~-]
 
-// Guard: only attempt email parse if @ exists ahead on this line
-AutolinkedEmail = &([^ \t\r\n@]* "@") e:Email { return autoEmail(e); }
+// Guard: only attempt email parse if @ exists ahead within valid local-part chars
+AutolinkedEmail = &([a-zA-Z0-9.!#$%&'*+/=?^_\`{|}~-]+ "@") e:Email { return autoEmail(e); }
 
 /**
  *

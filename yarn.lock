@@ -4763,6 +4763,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lezer/common@npm:^1.1.0, @lezer/common@npm:^1.2.3":
+  version: 1.5.6
+  resolution: "@lezer/common@npm:1.5.6"
+  checksum: 10/d7b58f93e28627cab3edc1f3ec8a35e5a7363f090b4eb62ba3497784943b0901bdda3d10e5b079a9a6cb1f5b0882cf8c682375f00b678fb4679b346976ac303c
+  languageName: node
+  linkType: hard
+
+"@lezer/generator@npm:^1.7.2":
+  version: 1.8.1
+  resolution: "@lezer/generator@npm:1.8.1"
+  dependencies:
+    "@lezer/common": "npm:^1.1.0"
+    "@lezer/lr": "npm:^1.3.0"
+  bin:
+    lezer-generator: src/lezer-generator.cjs
+  checksum: 10/73ab404b59a16b11a9401981d12b559fa8565ef560014b4b716d4b70207f6e0162399c0643905528dc285e524593d76033ac5047c2c467f12d75d08e8f24b6bf
+  languageName: node
+  linkType: hard
+
 "@lezer/highlight@npm:^1.0.0, @lezer/highlight@npm:^1.1.3, @lezer/highlight@npm:^1.2.5":
   version: 1.2.5
   resolution: "@lezer/highlight@npm:1.2.5"
@@ -4798,6 +4817,15 @@ __metadata:
   dependencies:
     "@lezer/common": "npm:^1.0.0"
   checksum: 10/cf7adf0d8ed14ba4a6b42454a1892b61bf40a28de94e62e704f2b0feb89e52ca1d1e15ae0406a0f7dd177f2119a0eca85ec10a691c9dd5a6e68306fa5d25e0d4
+  languageName: node
+  linkType: hard
+
+"@lezer/lr@npm:^1.4.2":
+  version: 1.4.12
+  resolution: "@lezer/lr@npm:1.4.12"
+  dependencies:
+    "@lezer/common": "npm:^1.0.0"
+  checksum: 10/1dada93114ffff0554a2f0f085d51e299ebb01dd3750dacd16683243aff32653fe8cd0f84370d82af7bde24c2b0dd7f8e826b43df2375ca37598d2d48929361a
   languageName: node
   linkType: hard
 
@@ -4923,6 +4951,15 @@ __metadata:
   dependencies:
     sparse-bitfield: "npm:^3.0.3"
   checksum: 10/071957d2a0b6f70393291b7f87ac803d190fa64a44781447293db8b9a809c479c37909fa737918611f844e672c7131bfde8efa1bf04d8dab13b1c5db967deb28
+  languageName: node
+  linkType: hard
+
+"@napi-rs/cli@npm:^2.18.0":
+  version: 2.18.4
+  resolution: "@napi-rs/cli@npm:2.18.4"
+  bin:
+    napi: scripts/index.js
+  checksum: 10/b9bdb0e0f96328315a5ad7846df5c72f5f00c707aa58bf2e8b753ad419c4a45989ba6967c8a27acf1552051d2693ae43a9be9ab2c173671040c1861e6d920ac6
   languageName: node
   linkType: hard
 
@@ -9907,6 +9944,29 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:~"
     jest: "npm:~30.5.2"
     typescript: "npm:~7.0.2"
+  languageName: unknown
+  linkType: soft
+
+"@rocket.chat/message-parser-lezer@workspace:packages/message-parser-lezer":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/message-parser-lezer@workspace:packages/message-parser-lezer"
+  dependencies:
+    "@lezer/common": "npm:^1.2.3"
+    "@lezer/generator": "npm:^1.7.2"
+    "@lezer/lr": "npm:^1.4.2"
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/message-parser": "workspace:^"
+    jest: "npm:~30.5.2"
+    tsx: "npm:^4.19.2"
+    typescript: "npm:~5.9.3"
+  languageName: unknown
+  linkType: soft
+
+"@rocket.chat/message-parser-napi@workspace:packages/message-parser-napi":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/message-parser-napi@workspace:packages/message-parser-napi"
+  dependencies:
+    "@napi-rs/cli": "npm:^2.18.0"
   languageName: unknown
   linkType: soft
 
@@ -35712,6 +35772,21 @@ __metadata:
   version: 1.0.6
   resolution: "tsscmp@npm:1.0.6"
   checksum: 10/850405080ea3ecb158e9e01bc4e87c9edb94a829d8ad8747f30ba103fcc41a287d7949ab84d7b27c36294036a2c9878f050db15b73a1a1961abfb7688b82ac53
+  languageName: node
+  linkType: hard
+
+"tsx@npm:^4.19.2":
+  version: 4.23.15
+  resolution: "tsx@npm:4.23.15"
+  dependencies:
+    esbuild: "npm:~0.28.0"
+    fsevents: "npm:~2.3.3"
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    tsx: dist/cli.mjs
+  checksum: 10/f531aca9143a8ba08cf3053bd403a8b036d7bfffacc83c611486215d8cd41febad754d89f02c0bf92e55b747518b9ea124bfe76b55262b40be850f3ee938e4ff
   languageName: node
   linkType: hard
 
