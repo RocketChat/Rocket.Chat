@@ -5,6 +5,7 @@ import { createElement, memo } from 'react';
 import { useBoxTransform, BoxTransforms } from './BoxTransforms';
 import type { StylingProps } from './stylingProps';
 import { useStylingProps } from './useStylingProps';
+import { resolveHost } from '../../helpers/resolveHost';
 import { useArrayLikeClassNameProp } from '../../hooks/useArrayLikeClassNameProp';
 import { useBoxOnlyProps } from '../../hooks/useBoxOnlyProps';
 import type { Falsy } from '../../types/Falsy';
@@ -35,7 +36,7 @@ function Box({ is = 'div', ...props }: BoxProps) {
 	const propsWithoutStylingProps = useStylingProps(propsWithStringClassName);
 	const propsWithoutBoxOnlyProps = useBoxOnlyProps(propsWithoutStylingProps);
 
-	const element = createElement(is, propsWithoutBoxOnlyProps);
+	const element = createElement(resolveHost(is), propsWithoutBoxOnlyProps);
 
 	if (transformFn) {
 		return <BoxTransforms.Provider value={null}>{element}</BoxTransforms.Provider>;

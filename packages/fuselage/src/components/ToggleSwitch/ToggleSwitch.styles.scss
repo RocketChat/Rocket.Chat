@@ -1,26 +1,10 @@
 @use '../../styles/colors.scss';
 @use '../../styles/lengths.scss';
-@use '../../styles/functions.scss' as *;
-@use '../../styles/mixins/selection-button.scss' as *;
-@use '../../styles/primitives/selection-button.scss';
+@use '../../styles/mixins/selection-states.scss' as *;
 
-$toggle-switch-border-radius: theme('toggle-switch-border-radius', lengths.border-radius(full));
-
+// Web only. Category: the state of a hidden native input and the pseudo-element that draws the knob.
 .rcx-toggle-switch {
-	@include is-selection-button($checked: 'primary', $unchecked: 'off');
-
-	&__input {
-		@extend %selection-button__input;
-	}
-
-	&__fake {
-		@extend %selection-button__fake;
-
-		width: lengths.size(2 * 18);
-		height: calc(lengths.size(20) - 2 * lengths.border-width(default));
-
-		border-radius: $toggle-switch-border-radius;
-	}
+	@include selection-states($unchecked: off, $checked: (':checked'));
 
 	&__input + &__fake::before {
 		position: absolute;
@@ -34,7 +18,7 @@ $toggle-switch-border-radius: theme('toggle-switch-border-radius', lengths.borde
 		content: '';
 		transform: translateY(-50%);
 
-		border-radius: $toggle-switch-border-radius;
+		border-radius: lengths.border-radius(full);
 
 		background-color: colors.button(on-primary);
 	}

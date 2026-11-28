@@ -45,7 +45,9 @@ export type PaletteStyleTagProps = {
 function PaletteStyleTag({ theme = 'light', tagId = 'main-palette', prefix = '--rcx-color', selector, palette }: PaletteStyleTagProps) {
 	const themePalette = palette ? withThemeKeys(palette, prefix, light) : convertToCss(themes[theme], prefix, selector);
 
-	return <>{createPortal(themePalette, useCreateStyleContainer(tagId))}</>;
+	const container = useCreateStyleContainer(tagId);
+
+	return container ? <>{createPortal(themePalette, container)}</> : null;
 }
 
 export default memo(PaletteStyleTag);

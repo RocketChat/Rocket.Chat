@@ -2,6 +2,7 @@ import { createElement, type HTMLAttributes, type LabelHTMLAttributes, type Time
 
 import type { statusColors, textIconColors } from '../../Theme';
 import { cx, cxx } from '../../helpers/composeClassNames';
+import { resolveTextHost } from '../../helpers/resolveHost';
 import type { ElementProps } from '../../types/ElementProps';
 
 type FontColor<T> = T extends `font-${infer Color}` ? Color : never;
@@ -53,7 +54,7 @@ export const textClassName = ({ fontScale, color, truncate }: Pick<TextProps, 'f
  * Text set in one of the design system's font scales and text colours.
  */
 function Text({ is = 'div', fontScale, color, truncate, className, ...props }: TextProps) {
-	return createElement(is, {
+	return createElement(resolveTextHost(is), {
 		className: cx(textClassName({ fontScale, color, truncate }), className),
 		...props,
 	});

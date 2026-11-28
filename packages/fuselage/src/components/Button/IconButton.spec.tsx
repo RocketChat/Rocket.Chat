@@ -54,7 +54,8 @@ describe('[IconButton Component]', () => {
 		const { container } = render(<Icon name='balloon' size={glyph} />);
 
 		expect(screen.getByRole('button')).toHaveClass(`rcx-button--${size}-square`);
-		expect(screen.getByRole('button').firstElementChild?.className).toBe(container.firstElementChild?.className);
+		// oxlint-disable-next-line testing-library/no-node-access -- the glyph has no role, label or text to query by
+		expect(screen.getByRole('button').querySelector('.rcx-icon')?.className).toBe(container.firstElementChild?.className);
 	});
 
 	it('should be large by default', () => {

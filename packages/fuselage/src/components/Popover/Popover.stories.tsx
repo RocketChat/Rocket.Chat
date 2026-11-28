@@ -116,11 +116,12 @@ export const Default: Story = {
 		const ref = useRef<HTMLAnchorElement | HTMLButtonElement>(null);
 		const state = useOverlayTriggerState({});
 		const { triggerProps, overlayProps } = useOverlayTrigger({ type: 'dialog' }, state, ref);
-		delete triggerProps.onPress;
+		// The story toggles the popover itself, and Button's own onPress takes no event
+		const { onPress: _onPress, ...trigger } = triggerProps;
 
 		return (
 			<>
-				<Button {...triggerProps} onClick={() => state.toggle()} ref={ref}>
+				<Button {...trigger} onClick={() => state.toggle()} ref={ref}>
 					Open Popover
 				</Button>
 				{state.isOpen && (

@@ -21,7 +21,7 @@ export const useStyle = (cssFn: cssFn | undefined, arg?: unknown) => {
 	const { document } = useOwnerDocument();
 
 	useInsertionEffect(() => {
-		if (!content || !className) {
+		if (!content || !className || !document) {
 			return;
 		}
 
