@@ -1,8 +1,8 @@
 import type { ICustomEmojiDescriptor, IEmojiCustom, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { WithId } from 'mongodb';
 
-import { ajv, ajvQuery } from './Ajv';
-import type { PaginatedRequest } from '../helpers/PaginatedRequest';
+import { ajv, ajvQuery } from './Ajv.js';
+import type { PaginatedRequest } from '../helpers/PaginatedRequest.js';
 
 type emojiCustomDeleteProps = {
 	emojiId: ICustomEmojiDescriptor['_id'];

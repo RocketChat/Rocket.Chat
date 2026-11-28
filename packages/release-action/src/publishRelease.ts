@@ -7,7 +7,7 @@ import * as github from '@actions/github';
 import semver from 'semver';
 
 import { createNpmFile } from './createNpmFile.js';
-import { fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish.js';
+import { assertPublicPackagesInstallable, fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish.js';
 import { checkoutBranch, commitChanges, createTag, getCurrentBranch, mergeBranch, pushChanges } from './gitUtils.js';
 import { setupOctokit } from './setupOctokit.js';
 import {
@@ -45,6 +45,8 @@ export async function publishRelease({
 	if (baseRef) {
 		await checkoutBranch(baseRef);
 	}
+
+	await assertPublicPackagesInstallable();
 
 	const { version: currentVersion } = await readPackageJson(cwd);
 
@@ -124,7 +126,12 @@ export async function publishRelease({
 	core.info('fix dependencies in workspace packages');
 	await fixWorkspaceVersionsBeforePublish();
 
-	await exec('yarn', ['changeset', 'publish', '--no-git-tag']);
+	const publishArgs = ['changeset', 'publish', '--no-git-tag'];
+	// a patch for an older line must not move the `latest` dist-tag back from the newest line
+	if (!isLatestRelease && !prerelease) {
+		publishArgs.push('--tag', `release-${semver.major(newVersion)}.${semver.minor(newVersion)}`);
+	}
+	await exec('yarn', publishArgs);
 
 	await createTag(newVersion);
 

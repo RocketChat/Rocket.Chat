@@ -9,7 +9,7 @@
 	},
 	"license": "MIT",
 	"files": [
-		"/build"
+		"/dist"
 	],
 	"scripts": {
 		"build": "yarn clean && vite build && vite build --config vite.widget.config.mts",
@@ -30,9 +30,7 @@
 	],
 	"dependencies": {
 		"@rocket.chat/emitter": "workspace:~",
-		"@rocket.chat/gazzodown": "workspace:^",
 		"@rocket.chat/message-parser": "workspace:^",
-		"@rocket.chat/random": "workspace:~",
 		"@rocket.chat/ui-kit": "workspace:~",
 		"ajv": "^8.20.0",
 		"ajv-formats": "^3.0.1",
@@ -61,8 +59,10 @@
 		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/fuselage-hooks": "workspace:^",
 		"@rocket.chat/fuselage-tokens": "workspace:^",
+		"@rocket.chat/gazzodown": "workspace:^",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/logo": "workspace:~",
+		"@rocket.chat/random": "workspace:~",
 		"@rocket.chat/storybook-config": "workspace:~",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@storybook/addon-docs": "~10.6.5",

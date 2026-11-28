@@ -15,12 +15,12 @@ import type {
 } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
-import type { AppLogsExportProps } from './appLogsExportProps';
-import type { AppLogsProps } from './appLogsProps';
-import type { PaginatedResult } from '../helpers/PaginatedResult';
+import type { AppLogsExportProps } from './appLogsExportProps.js';
+import type { AppLogsProps } from './appLogsProps.js';
+import type { PaginatedResult } from '../helpers/PaginatedResult.js';
 
-export * from './appLogsExportProps';
-export * from './appLogsProps';
+export * from './appLogsExportProps.js';
+export * from './appLogsProps.js';
 
 export type AppsEndpoints = {
 	'/apps/count': {

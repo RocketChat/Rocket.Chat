@@ -13,13 +13,34 @@ to a `release-action` mode:
 | ----------------------------- | --------------- | ---------- | --------------- |
 | `push` to `master`            | `publish-final` | yes        | `latest`        |
 | `schedule` (monthly, 20th)    | `next`          | yes        | `rc`            |
-| `workflow_dispatch` → `cut`   | `cut`           | yes        | `latest` / `rc` |
+| `workflow_dispatch` → `cut`   | `cut`           | yes        | `latest` / `rc` / `release-<major>.<minor>` |
 | `workflow_dispatch` → `next`  | `next`          | yes        | `rc`            |
 | `workflow_dispatch` → `patch` | `patch`         | no         | —               |
 
 `publishRelease.ts` and `bumpNextVersion.ts` both end with `yarn changeset publish --no-git-tag`.
 Changesets then spawns `npm publish <packageDir> --access public --tag <tag>` from the repo root, so
 **the npm CLI on `PATH` is what authenticates** — not yarn.
+
+A final release that is not the newest line, such as 8.9.2 after 9.0.0, publishes with the dist-tag
+`release-<major>.<minor>`. Without it, npm moves `latest` back to the older line.
+
+## What a public package must pass
+
+The `packed-packages` job in `ci.yml` runs `scripts/check-packed-packages.mjs` after the build. For each
+public package, the script packs the tarball as the release does, and fails when:
+
+- npm cannot install the tarballs together, for example because a package depends on a private
+  package or keeps a Yarn `patch:` range;
+- an entry point does not load with `require()` or `import()`;
+- npm already has the version the next release would publish, and the file list or one of the fields
+  `dependencies`, `peerDependencies`, `exports`, `main`, `module` and `type` differs from npm's copy.
+  Add a changeset for the package.
+
+`fixWorkspaceVersionsBeforePublish.ts` also stops the publish when a public package has a `patch:`
+range in `dependencies` or `peerDependencies`.
+
+A package that moves into the monorepo from another repository gets a changeset in the migration pull
+request. Its first publish from the monorepo is then a new version, and never collides with npm.
 
 ## Trusted publishing (OIDC)
 

@@ -1,7 +1,7 @@
 import type { IUserPhoneNumber } from '@rocket.chat/core-typings';
 
-import { ajv } from '../Ajv';
-import { phonesSchema } from './phonesSchema';
+import { ajv } from '../Ajv.js';
+import { phonesSchema } from './phonesSchema.js';
 
 export type UsersUpdateOwnBasicInfoParamsPOST = {
 	data: {

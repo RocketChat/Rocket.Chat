@@ -1,5 +1,8 @@
-import Ajv from 'ajv/dist/2020';
-import addFormats from 'ajv-formats';
+import { Ajv2020 as Ajv } from 'ajv/dist/2020.js';
+import addFormatsModule from 'ajv-formats';
+
+// ajv-formats is CommonJS: its types put the plugin on `default`, which also exists at run time.
+const addFormats = addFormatsModule.default;
 
 const ajv = new Ajv({
 	coerceTypes: true,

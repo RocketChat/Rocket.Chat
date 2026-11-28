@@ -1,6 +1,6 @@
-import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-import { ajvQuery } from '../Ajv';
-import { paginationQueryProperties } from '../pagination';
+import type { PaginatedRequest } from '../../helpers/PaginatedRequest.js';
+import { ajvQuery } from '../Ajv.js';
+import { paginationQueryProperties } from '../pagination.js';
 
 export type TeamsListRoomsOfUserProps = PaginatedRequest<
 	({ teamId: string } | { teamName: string }) & {

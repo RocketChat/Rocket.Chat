@@ -65,6 +65,7 @@ export function getChangelogEntry(changelog: string, version: string) {
 type PackageJson = {
 	name: string;
 	version: string;
+	private?: boolean;
 	engines?: { node?: string; yarn?: string; npm?: string };
 	houston?: { updateFiles?: string[] };
 	dependencies?: Record<string, string>;
