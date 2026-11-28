@@ -61,6 +61,7 @@ import * as dataExport from '../../lib/dataExport';
 import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoomOrderedByRole } from '../../lib/findUsersOfRoomOrderedByRole';
 import { FileUpload } from '../../lib/media/file-upload';
+import { canSeeMessage, getHistoryVisibleFrom, getUploadVisibility, withVisibleLastMessage } from '../../lib/messages/historyVisibility';
 import { loadRoomHistory, type RoomHistoryResult } from '../../lib/messages/loadRoomHistory';
 import { notifyOnSubscriptionChanged } from '../../lib/notifyListener';
 import { openRoom } from '../../lib/openRoom';
@@ -585,7 +586,9 @@ API.v1.get(
 		const { enforcementOn, requiredAttributeKeys } = getRoomAbacLockContext();
 
 		return API.v1.success({
-			room: await Rooms.findOneByIdOrName(room._id, { projection: fields }),
+			room: await Rooms.findOneByIdOrName(room._id, { projection: fields }).then(
+				async (info) => info && (await withVisibleLastMessage(this.userId, [info]))[0],
+			),
 			...(team && { team }),
 			...(parent && { parent }),
 			...(classificationBanner && { classificationBanner }),
@@ -661,9 +664,7 @@ API.v1.get(
 			return API.v1.forbidden('User does not have access to the room');
 		}
 
-		const ourQuery = { prid: room._id };
-
-		const { cursor, totalCount } = Rooms.findPaginated(ourQuery, {
+		const { cursor, totalCount } = Rooms.findPaginatedDiscussionsByParentId(room._id, await getHistoryVisibleFrom(this.userId, room._id), {
 			sort: sort || { fname: 1 },
 			skip: offset,
 			limit: count,
@@ -711,16 +712,28 @@ API.v1.get(
 			return API.v1.forbidden();
 		}
 
-		const initialImage = this.queryParams.startingFromId
+		const visibility = await getUploadVisibility(this.userId, room._id);
+		const isHiddenUpload = ({ _id, uploadedAt }: IUpload) =>
+			visibility &&
+			!visibility.followedFileIds.includes(_id) &&
+			(!uploadedAt || uploadedAt < visibility.since || visibility.hiddenFileIds.includes(_id));
+
+		const startingImage = this.queryParams.startingFromId
 			? await Uploads.findOneConfirmedImageByIdAndRoomId(this.queryParams.startingFromId, room._id)
 			: null;
+		const initialImage = startingImage && !isHiddenUpload(startingImage) ? startingImage : null;
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
 
-		const { cursor, totalCount } = Uploads.findConfirmedImagesByRoomId(room._id, initialImage?.uploadedAt, {
-			skip: offset,
-			limit: count,
-		});
+		const { cursor, totalCount } = Uploads.findConfirmedImagesByRoomId(
+			room._id,
+			initialImage?.uploadedAt,
+			{
+				skip: offset,
+				limit: count,
+			},
+			visibility,
+		);
 
 		const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
 
@@ -1826,7 +1839,7 @@ export const roomEndpoints = API.v1
 			let around: IMessage | undefined;
 			if (aroundId) {
 				const message = await Messages.findOneVisibleByRoomIdAndMessageId(roomId, aroundId);
-				if (!message) {
+				if (!message || !(await canSeeMessage(this.userId, message))) {
 					return API.v1.notFound();
 				}
 				around = message;

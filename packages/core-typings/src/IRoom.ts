@@ -29,6 +29,8 @@ export interface IRoom extends IRocketChatRecord {
 
 	reactWhenReadOnly?: boolean;
 
+	hideHistoryForNewMembers?: boolean;
+
 	// TODO: this boolean might be an accident
 	sysMes?: MessageTypesValues[] | boolean;
 

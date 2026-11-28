@@ -6,6 +6,7 @@ import { Messages, Rooms, Uploads, Users, ReadReceipts, ReadReceiptsArchive, Sub
 import { settings } from '../../settings';
 import { canDeleteMessageAsync } from '../authorization/canDeleteMessage';
 import { callbacks } from '../callbacks';
+import { canSeeMessage } from './historyVisibility';
 import { FileUpload } from '../media/file-upload';
 import { notifyOnRoomChangedById, notifyOnMessageChange, notifyOnSubscriptionChangedByRoomIdAndUserIds } from '../notifyListener';
 
@@ -20,7 +21,12 @@ export const deleteMessageValidatingPermission = async (message: AtLeast<IMessag
 	const user = await Users.findOneById(userId);
 	const originalMessage = await Messages.findOneById(message._id);
 
-	if (!originalMessage || !user || !(await canDeleteMessageAsync(user, originalMessage))) {
+	if (
+		!originalMessage ||
+		!user ||
+		!(await canSeeMessage(userId, originalMessage)) ||
+		!(await canDeleteMessageAsync(user, originalMessage))
+	) {
 		throw new ClientSafeError('error-action-not-allowed', 'Not allowed');
 	}
 

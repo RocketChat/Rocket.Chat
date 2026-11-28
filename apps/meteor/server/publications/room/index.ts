@@ -8,6 +8,7 @@ import _ from 'underscore';
 import { roomFields } from '../../../lib/publishFields';
 import { canAccessRoomAsync } from '../../lib/authorization';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { withVisibleLastMessage } from '../../lib/messages/historyVisibility';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { settings } from '../../settings';
 
@@ -37,12 +38,15 @@ export const roomsGetMethod = async (userId?: string | null, updatedAt?: Date): 
 
 	if (updatedAt instanceof Date) {
 		return {
-			update: await (await Rooms.findBySubscriptionUserIdUpdatedAfter(userId, updatedAt, options)).toArray(),
+			update: await withVisibleLastMessage(
+				userId,
+				await (await Rooms.findBySubscriptionUserIdUpdatedAfter(userId, updatedAt, options)).toArray(),
+			),
 			remove: await Rooms.trashFindDeletedAfter(updatedAt, {}, { projection: { _id: 1, _deletedAt: 1 } }).toArray(),
 		};
 	}
 
-	return (await Rooms.findBySubscriptionUserId(userId, options)).toArray();
+	return withVisibleLastMessage(userId, await (await Rooms.findBySubscriptionUserId(userId, options)).toArray());
 };
 
 Meteor.methods<ServerMethods>({
@@ -94,6 +98,7 @@ Meteor.methods<ServerMethods>({
 			delete room.lastMessage;
 		}
 
-		return roomMap(room);
+		const [visibleRoom] = await withVisibleLastMessage(user?._id, [room]);
+		return roomMap(visibleRoom);
 	},
 });

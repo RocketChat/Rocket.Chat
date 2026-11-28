@@ -5,8 +5,18 @@ import type { FindPaginated } from './IBaseModel';
 import type { IBaseUploadsModel } from './IBaseUploadsModel';
 import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
 
+export type UploadHistoryVisibility = {
+	since: Date;
+	hiddenFileIds: IUpload['_id'][];
+	followedFileIds: IUpload['_id'][];
+};
+
 export interface IUploadsModel extends IBaseUploadsModel<IUpload> {
-	findPaginatedWithoutThumbs(query: Filter<IUpload>, options?: any): FindPaginated<FindCursor<WithId<IUpload>>>;
+	findPaginatedWithoutThumbs(
+		query: Filter<IUpload>,
+		options?: any,
+		visibility?: UploadHistoryVisibility,
+	): FindPaginated<FindCursor<WithId<IUpload>>>;
 
 	findOneConfirmedImageByIdAndRoomId(_id: IUpload['_id'], rid: IRoom['_id']): Promise<IUpload | null>;
 
@@ -14,6 +24,7 @@ export interface IUploadsModel extends IBaseUploadsModel<IUpload> {
 		rid: IRoom['_id'],
 		uploadedAt?: Date,
 		options?: Omit<FindOptions<IUpload>, 'sort'>,
+		visibility?: UploadHistoryVisibility,
 	): FindPaginated<FindCursor<WithId<IUpload>>>;
 
 	findByFederationMediaIdAndServerName(mediaId: string, serverName: string): Promise<IUpload | null>;

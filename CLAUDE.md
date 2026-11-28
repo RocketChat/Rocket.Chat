@@ -22,6 +22,13 @@ POC or once the definition settles the expected behavior, but opening a pull req
 it out of draft are a person's decisions: never do either without confirmation. Full rules:
 [docs/change-organization.md](docs/change-organization.md).
 
+Members can be barred from a room's earlier messages, and only the code that serves messages
+enforces it. Any server code that gives someone a room's message content, or acts on a message ID
+for them, applies the history restriction and gets a case in the restricted-history API test:
+endpoints, methods, publications, stream events, search, exports, notifications, and messages
+copied or quoted into others. Full rules:
+[docs/features/restricted-message-history.md](docs/features/restricted-message-history.md#adding-a-path-that-returns-messages).
+
 Changes never introduce lint warnings. When a warning can't be avoided, disable the rule on
 that line with `// oxlint-disable-next-line <rule> -- <reason>`, where the reason says why the
 code can't comply.

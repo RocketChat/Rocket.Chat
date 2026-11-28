@@ -4,3 +4,4 @@ import './oauth';
 import './saml';
 import './voip';
 import './abac';
+import './restricted-message-history';

@@ -14,6 +14,7 @@ import {
 import type { JSONSchemaType } from 'ajv';
 
 import { canAccessRoomAsync } from '../../lib/authorization/canAccessRoom';
+import { canSeeMessage } from '../../lib/messages/historyVisibility';
 import PushNotification from '../../lib/notifications/push-config/lib/PushNotification';
 import { executePushTest } from '../../lib/pushConfig';
 import { settings } from '../../settings';
@@ -308,6 +309,10 @@ const pushGetInfoEndpoints = API.v1
 
 			if (!(await canAccessRoomAsync(room, receiver))) {
 				throw new Error('error-not-allowed');
+			}
+
+			if (!(await canSeeMessage(receiver._id, message))) {
+				throw new Error('error-message-not-found');
 			}
 
 			const data = await PushNotification.getNotificationForMessageId({ receiver, room, message });

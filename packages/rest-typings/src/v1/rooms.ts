@@ -359,6 +359,7 @@ type RoomsSaveRoomSettingsProps = {
 	roomType?: IRoom['t'];
 	readOnly?: boolean;
 	reactWhenReadOnly?: boolean;
+	hideHistoryForNewMembers?: boolean;
 	systemMessages?: MessageTypesValues[];
 	default?: boolean;
 	joinCode?: string;
@@ -418,6 +419,10 @@ const RoomsSaveRoomSettingsSchema = {
 			nullable: true,
 		},
 		reactWhenReadOnly: {
+			type: 'boolean',
+			nullable: true,
+		},
+		hideHistoryForNewMembers: {
 			type: 'boolean',
 			nullable: true,
 		},

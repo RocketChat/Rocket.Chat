@@ -17,6 +17,7 @@ const stubs = {
 	findPaginatedMessagesTotal: sinon.stub(),
 	translateKey: sinon.stub(),
 	settings: sinon.stub(),
+	restrictToVisibleHistory: sinon.stub().callsFake(async (_uid: string, _rid: string, query: object) => query),
 };
 
 let getMessageData: any;
@@ -40,6 +41,11 @@ before(async () => {
 	mock.module('../../settings', {
 		exports: {
 			settings: stubs.settings,
+		},
+	});
+	mock.module('../messages/historyVisibility', {
+		exports: {
+			restrictToVisibleHistory: stubs.restrictToVisibleHistory,
 		},
 	});
 	({ getMessageData, exportRoomMessages, exportMessageObject } = await import('./exportRoomMessagesToFile'));
@@ -229,6 +235,17 @@ describe('Export - exportRoomMessages', () => {
 		expect(result).to.have.property('messages').that.is.an('array').of.length(exportMessagesMock.length);
 		const messagesWithFiles = exportMessagesMock.filter((message) => message.file);
 		expect(result).to.have.property('uploads').that.is.an('array').of.length(messagesWithFiles.length);
+	});
+
+	it('should export only the messages the requesting user can read', async () => {
+		const visibleOnly = { rid: 'test-rid', visibleTo: userData._id };
+		stubs.restrictToVisibleHistory.resetHistory();
+		stubs.restrictToVisibleHistory.onFirstCall().resolves(visibleOnly);
+
+		await exportRoomMessages('test-rid', 'json', 0, 100, userData);
+
+		expect(stubs.restrictToVisibleHistory.calledWith(userData._id, 'test-rid')).to.be.true;
+		expect(stubs.findPaginatedMessages.lastCall.args[0]).to.equal(visibleOnly);
 	});
 
 	it('should export multiple files and filter out thumbnails', async () => {

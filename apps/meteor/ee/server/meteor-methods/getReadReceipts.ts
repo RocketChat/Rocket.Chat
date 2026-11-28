@@ -4,6 +4,7 @@ import { License } from '@rocket.chat/license';
 import { Messages } from '@rocket.chat/models';
 
 import { canAccessRoomIdAsync } from '../../../server/lib/authorization/canAccessRoom';
+import { canSeeMessage, historyCheckedMessageProjection } from '../../../server/lib/messages/historyVisibility';
 import { ReadReceipt } from '../lib/message-read-receipt/ReadReceipt';
 
 export const getReadReceiptsFunction = async function (messageId: IMessage['_id'], userId: string): Promise<IReadReceiptWithUser[]> {
@@ -11,8 +12,8 @@ export const getReadReceiptsFunction = async function (messageId: IMessage['_id'
 		throw new ClientSafeError('error-action-not-allowed', 'This is an enterprise feature', { method: 'getReadReceipts' });
 	}
 
-	const message = await Messages.findOneById(messageId, { projection: { _id: 1, rid: 1, receiptsArchived: 1 } });
-	if (!message) {
+	const message = await Messages.findOneById(messageId, { projection: { ...historyCheckedMessageProjection, receiptsArchived: 1 } });
+	if (!message || !(await canSeeMessage(userId, message))) {
 		throw new ClientSafeError('error-invalid-message', 'Invalid message', {
 			method: 'getReadReceipts',
 		});

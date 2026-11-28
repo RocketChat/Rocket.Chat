@@ -5,6 +5,7 @@ import { Messages } from '@rocket.chat/models';
 import { updateThreadUsersSubscriptions, getMentions } from './notifyUsersOnMessage';
 import { sendMessageNotifications } from './sendNotificationsOnMessage';
 import { callbacks } from '../../lib/callbacks';
+import { getMembersWithoutAccessToMessage } from '../../lib/messages/historyVisibility';
 import type { SendMessageOptions } from '../../lib/messages/sendMessage';
 import { reply } from '../../lib/messaging/threads/functions';
 import { notifyOnMessageChange } from '../../lib/notifyListener';
@@ -49,7 +50,7 @@ export async function processThreads(message: IMessage, room: IRoom, options?: S
 		return message;
 	}
 
-	const { mentionIds } = await getMentions(message);
+	const [{ mentionIds }, membersWithoutAccess] = await Promise.all([getMentions(message), getMembersWithoutAccessToMessage(parentMessage)]);
 
 	const replies = [
 		...new Set([
@@ -57,7 +58,7 @@ export async function processThreads(message: IMessage, room: IRoom, options?: S
 			...(!parentMessage.tcount && room.t === 'd' && room.uids ? room.uids : []),
 			...mentionIds,
 		]),
-	].filter((userId) => userId !== message.u._id);
+	].filter((userId) => userId !== message.u._id && !membersWithoutAccess.has(userId));
 
 	await notifyUsersOnReply(message, replies);
 	await metaData(message, parentMessage, replies);

@@ -20,6 +20,7 @@ import { closeUnclosedCodeBlock } from '../../../lib/utils/closeUnclosedCodeBloc
 import { notifyUsersOnSystemMessage } from '../../hooks/messages/notifyUsersOnMessage';
 import { SystemLogger } from '../../lib/logger/system';
 import { deleteMessage } from '../../lib/messages/deleteMessage';
+import { getHiddenMessageIds } from '../../lib/messages/historyVisibility';
 import { parseUrlsInMessage } from '../../lib/messages/parseUrlsInMessage';
 import { sendMessage } from '../../lib/messages/sendMessage';
 import { updateMessage } from '../../lib/messages/updateMessage';
@@ -54,8 +55,10 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		this.badWords = new BeforeSaveBadWords();
 		this.spotify = new BeforeSaveSpotify();
 		this.jumpToMessage = new BeforeSaveJumpToMessage({
-			getMessages(messageIds) {
-				return Messages.findVisibleByIds(messageIds).toArray();
+			async getMessages(messageIds, user) {
+				const messages = await Messages.findVisibleByIds(messageIds).toArray();
+				const hiddenMessageIds = await getHiddenMessageIds(user._id, messages);
+				return messages.filter(({ _id }) => !hiddenMessageIds.has(_id));
 			},
 			getRooms(roomIds) {
 				return Rooms.findByIds(roomIds).toArray();
