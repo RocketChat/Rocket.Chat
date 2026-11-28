@@ -1168,14 +1168,25 @@ const chatEndpoints = API.v1
 			authRequired: true,
 			query: isChatSyncThreadsListProps,
 			response: {
-				200: ajv.compile<{ threads: { update: IMessage[]; remove: IMessage[] } }>({
+				200: ajv.compile<{ threads: { update: IMessage[]; remove: { _id: string; _deletedAt: string }[] } }>({
 					type: 'object',
 					properties: {
 						threads: {
 							type: 'object',
 							properties: {
 								update: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
-								remove: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
+								remove: {
+									type: 'array',
+									items: {
+										type: 'object',
+										properties: {
+											_id: { type: 'string' },
+											_deletedAt: { type: 'string', format: 'date-time' },
+										},
+										required: ['_id', '_deletedAt'],
+										additionalProperties: false,
+									},
+								},
 							},
 							required: ['update', 'remove'],
 							additionalProperties: false,
@@ -1219,10 +1230,12 @@ const chatEndpoints = API.v1
 							projection: fields,
 						},
 					).toArray(),
-					remove: await Messages.trashFindDeletedAfter(updatedSinceDate, threadQuery, {
-						sort,
-						projection: fields,
-					}).toArray(),
+					remove: (
+						await Messages.trashFindDeletedAfter(updatedSinceDate, threadQuery, {
+							sort,
+							projection: { _id: 1, _deletedAt: 1 },
+						}).toArray()
+					).map(({ _id, _deletedAt }) => ({ _id, _deletedAt: _deletedAt.toISOString() })),
 				},
 			});
 		},
@@ -1310,14 +1323,25 @@ const chatEndpoints = API.v1
 			authRequired: true,
 			query: isChatSyncThreadMessagesProps,
 			response: {
-				200: ajv.compile<{ messages: { update: IMessage[]; remove: IMessage[] } }>({
+				200: ajv.compile<{ messages: { update: IMessage[]; remove: { _id: string; _deletedAt: string }[] } }>({
 					type: 'object',
 					properties: {
 						messages: {
 							type: 'object',
 							properties: {
 								update: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
-								remove: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
+								remove: {
+									type: 'array',
+									items: {
+										type: 'object',
+										properties: {
+											_id: { type: 'string' },
+											_deletedAt: { type: 'string', format: 'date-time' },
+										},
+										required: ['_id', '_deletedAt'],
+										additionalProperties: false,
+									},
+								},
 							},
 							required: ['update', 'remove'],
 							additionalProperties: false,
@@ -1359,7 +1383,9 @@ const chatEndpoints = API.v1
 			return API.v1.success({
 				messages: {
 					update: await Messages.find({ tmid, _updatedAt: { $gt: updatedSinceDate } }, { projection: fields, sort }).toArray(),
-					remove: await Messages.trashFindDeletedAfter(updatedSinceDate, { tmid }, { projection: fields, sort }).toArray(),
+					remove: (
+						await Messages.trashFindDeletedAfter(updatedSinceDate, { tmid }, { projection: { _id: 1, _deletedAt: 1 }, sort }).toArray()
+					).map(({ _id, _deletedAt }) => ({ _id, _deletedAt: _deletedAt.toISOString() })),
 				},
 			});
 		},
