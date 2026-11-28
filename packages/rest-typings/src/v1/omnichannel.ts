@@ -4662,9 +4662,6 @@ export type OmnichannelEndpoints = {
 	'/v1/livechat/offline.message': {
 		POST: (params: POSTLivechatOfflineMessageParams) => { message: string };
 	};
-	'/v1/livechat/page.visited': {
-		POST: (params: POSTLivechatPageVisitedParams) => { page: Pick<IOmnichannelSystemMessage, 'msg' | 'navigation'> } | void;
-	};
 	'/v1/livechat/message': {
 		POST: (params: POSTLivechatMessageParams) => { message: IMessage };
 	};
