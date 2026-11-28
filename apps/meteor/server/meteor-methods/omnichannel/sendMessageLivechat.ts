@@ -2,9 +2,9 @@ import { ClientSafeError } from '@rocket.chat/core-services';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors } from '@rocket.chat/models';
 
+import { getLivechatMessageCharacterLimit } from '../../lib/omnichannel/getLivechatMessageCharacterLimit';
 import type { ILivechatMessage } from '../../lib/omnichannel/localTypes';
 import { sendMessage } from '../../lib/omnichannel/messages';
-import { settings } from '../../settings';
 
 interface ILivechatMessageAgent {
 	agentId: string;
@@ -27,7 +27,8 @@ export const sendMessageLivechat = async ({
 		throw new ClientSafeError('invalid-token');
 	}
 
-	if (settings.get('Livechat_enable_message_character_limit') && msg.length > parseInt(settings.get('Livechat_message_character_limit'))) {
+	const characterLimit = getLivechatMessageCharacterLimit();
+	if (characterLimit !== undefined && msg.length > characterLimit) {
 		throw new ClientSafeError('message-length-exceeds-character-limit');
 	}
 
