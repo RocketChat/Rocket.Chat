@@ -405,9 +405,9 @@ InlineItemAlphaPath
 InlineItemAlphaOrEmoticon
   = AutolinkedEmail
   / AutolinkedURL
+  / PlainWordUnderscore
   / InlineEmoticon
   / ChannelMention
-  / PlainWordUnderscore
   / PlainRun
 
 // 'c' can start "color:#..."
