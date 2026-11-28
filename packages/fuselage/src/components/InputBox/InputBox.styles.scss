@@ -1,3 +1,4 @@
+@use '../../styles/colors.scss';
 @use '../../styles/lengths.scss';
 @use '../../styles/typography.scss' as *;
 @use '../../styles/variables/input-colors.scss' as *;
@@ -288,6 +289,21 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 
 	@include use-font-scale(p2m);
 	color: $input-colors-color;
+}
+
+.rcx-input-box__item {
+	flex-grow: 1;
+
+	margin-inline: lengths.margin(4);
+
+	color: colors.font(titles-labels);
+
+	@include use-font-scale(p2);
+	@include use-text-ellipsis;
+
+	&--placeholder {
+		color: colors.font(hint);
+	}
 }
 
 .rcx-skeleton__input {
