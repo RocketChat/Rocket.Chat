@@ -31,7 +31,6 @@ const makeDependencies = ({ mergeRoles = true, mapChannels = true } = {}) => {
 		logger: { error: sinon.stub() },
 		mapSSOGroupsToChannels,
 		updateRolesFromSSO,
-		syncOAuthUserRoles,
 	};
 };
 
