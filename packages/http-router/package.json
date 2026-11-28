@@ -17,7 +17,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@hono/node-server": "2.1.5",
+		"@hono/node-server": "2.1.6",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/logger": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
