@@ -8,6 +8,7 @@ export const mapSubscriptionFromApi = ({
 	oldRoomKeys,
 	suggestedOldRoomKeys,
 	abacLastTimeChecked,
+	tunreadSince,
 	...subscription
 }: Serialized<ISubscription>): ISubscription => ({
 	...subscription,
@@ -18,4 +19,5 @@ export const mapSubscriptionFromApi = ({
 	...(abacLastTimeChecked && { abacLastTimeChecked: new Date(abacLastTimeChecked) }),
 	...(oldRoomKeys && { oldRoomKeys: oldRoomKeys.map(({ ts, ...key }) => ({ ...key, ts: new Date(ts) })) }),
 	...(suggestedOldRoomKeys && { suggestedOldRoomKeys: suggestedOldRoomKeys.map(({ ts, ...key }) => ({ ...key, ts: new Date(ts) })) }),
+	...(tunreadSince && { tunreadSince: Object.fromEntries(Object.entries(tunreadSince).map(([tmid, since]) => [tmid, new Date(since)])) }),
 });

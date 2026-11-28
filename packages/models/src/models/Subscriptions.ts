@@ -202,6 +202,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 					tunread: 1,
 					tunreadUser: 1,
 					tunreadGroup: 1,
+					tunreadSince: 1,
 				} as const,
 			}),
 			$set: {
@@ -1874,6 +1875,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		rid: string,
 		users: string[],
 		tmid: string,
+		ts: Date,
 		senderId: IUser['_id'],
 		{ groupMention = false, userMention = false }: { groupMention?: boolean; userMention?: boolean } = {},
 	): Promise<UpdateResult | Document | void> {
@@ -1893,6 +1895,9 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 					...(groupMention && { tunreadGroup: tmid }),
 					...(userMention && { tunreadUser: tmid }),
 				},
+				$min: {
+					[`tunreadSince.${tmid}`]: ts,
+				},
 			},
 		);
 	}
@@ -1903,6 +1908,9 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 				tunread: tmid,
 				tunreadGroup: tmid,
 				tunreadUser: tmid,
+			},
+			$unset: {
+				[`tunreadSince.${tmid}`]: 1,
 			},
 		};
 
@@ -1931,6 +1939,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 				tunreadUser: tunread,
 				tunreadGroup: tunread,
 			},
+			$unset: Object.fromEntries(tunread.map((tmid) => [`tunreadSince.${tmid}`, 1])),
 		};
 
 		return this.updateMany(query, update);

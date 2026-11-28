@@ -45,6 +45,7 @@ export const subscriptionFields = {
 	tunread: 1,
 	tunreadGroup: 1,
 	tunreadUser: 1,
+	tunreadSince: 1,
 	status: 1,
 	inviter: 1,
 

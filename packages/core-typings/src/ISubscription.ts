@@ -36,6 +36,7 @@ export interface ISubscription extends IRocketChatRecord {
 	tunread?: Array<string>;
 	tunreadGroup?: Array<string>;
 	tunreadUser?: Array<string>;
+	tunreadSince?: Record<string, Date>;
 
 	prid?: IRoom['_id'];
 

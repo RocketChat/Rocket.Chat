@@ -30,10 +30,10 @@ import {
 import LoadingMessagesIndicator from '../../../body/LoadingMessagesIndicator';
 import { useRoom } from '../../../contexts/RoomContext';
 import { useDateScroll } from '../../../hooks/useDateScroll';
-import { useFirstUnreadMessageId } from '../../../hooks/useFirstUnreadMessageId';
 import { useMessageListNavigation } from '../../../hooks/useMessageListNavigation';
 import MessageListLoadMore from '../../../layout/MessageListLoadMore';
 import { SelectedMessageStore } from '../../../providers/SelectedMessageStore';
+import { useThreadFirstUnreadMessageId } from '../hooks/useThreadFirstUnreadMessageId';
 import { useThreadMessagesQuery } from '../hooks/useThreadMessagesQuery';
 import './threads.css';
 
@@ -128,7 +128,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
-	const firstUnreadMessageId = useFirstUnreadMessageId();
+	const firstUnreadMessageId = useThreadFirstUnreadMessageId(mainMessage._id, messages);
 	const messageGroupingPeriod = useSetting('Message_GroupingPeriod', 300);
 
 	const { messageListRef } = useMessageListNavigation();
