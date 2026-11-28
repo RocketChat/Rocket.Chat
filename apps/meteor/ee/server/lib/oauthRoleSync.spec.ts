@@ -5,6 +5,33 @@ import { _syncOAuthUserRoles } from './oauth/syncOAuthUserRoles';
 import { filterRoleList } from './filterRoleList';
 
 describe('OAuth role sync', () => {
+	it('normalizes rolesToSync strings and arrays without joining arrays', async () => {
+		for (const [rolesToSync, expected] of [
+			['admin, user', ['admin', 'user']],
+			[['admin', 'user'], ['admin', 'user']],
+			[['role,admin'], ['role,admin']],
+			[undefined, ['']],
+			['', ['']],
+		] as const) {
+			const findRoles = sinon.stub();
+			findRoles.resolves([]);
+			const mapRolesFromSSO = sinon.stub().resolves([]);
+			const syncUserRoles = sinon.stub().resolves();
+
+			await _syncOAuthUserRoles(
+				{ findRoles, mapRolesFromSSO, syncUserRoles },
+				{
+					user: { _id: 'user-id', roles: [] },
+					identity: { roles: [] },
+					roleClaimName: 'roles',
+					rolesToSync,
+				},
+			);
+
+			expect(findRoles.secondCall.args[0]).to.deep.equal(expected);
+		}
+	});
+
 	it('normalizes a missing rolesToSync setting to an empty restrictive allowlist', async () => {
 		const findRoles = sinon.stub();
 		findRoles.onFirstCall().resolves([{ _id: 'role-user' }]);

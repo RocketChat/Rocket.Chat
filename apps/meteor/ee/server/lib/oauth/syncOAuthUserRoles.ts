@@ -22,9 +22,8 @@ export async function _syncOAuthUserRoles(deps: OAuthRoleSyncDependencies, optio
 	const rolesFromSSO = await deps.mapRolesFromSSO(identity, roleClaimName);
 	const rolesIdsFromSSO = await deps.findRoles(rolesFromSSO);
 	const rolesToSyncSetting = rolesToSync ?? '';
-	const normalizedRolesToSync = (typeof rolesToSyncSetting === 'string' ? rolesToSyncSetting : rolesToSyncSetting.join(','))
-		.split(',')
-		.map((role) => role.trim());
+	const normalizedRolesToSync =
+		typeof rolesToSyncSetting === 'string' ? rolesToSyncSetting.split(',').map((role) => role.trim()) : rolesToSyncSetting.map((role) => role.trim());
 	const allowedRoles = (await deps.findRoles(normalizedRolesToSync)).map((role) => role._id);
 
 	if (!Array.isArray(user.roles)) {
