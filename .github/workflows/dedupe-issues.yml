@@ -29,7 +29,7 @@ jobs:
         with:
           prompt: '/dedupe ${{ github.repository }}/issues/${{ github.event.issue.number || inputs.issue_number }}'
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          model: 'claude-sonnet-4-5-20250929'
+          model: 'claude-sonnet-5-5'
           claude_env: |
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
