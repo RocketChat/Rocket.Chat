@@ -183,7 +183,8 @@ test.describe('E2EE Encrypted Channels', () => {
 
 		await poHomeChannel.content.sendMessage('hello @user1');
 
-		const userMention = page.getByRole('button', {
+		const sentMessage = poHomeChannel.content.messageListItems.filter({ hasText: 'hello' });
+		const userMention = sentMessage.getByRole('button', {
 			name: 'user1',
 		});
 
@@ -223,11 +224,12 @@ test.describe('E2EE Encrypted Channels', () => {
 
 		await poHomeChannel.content.sendMessage('Are you in the #general channel, @user1 ?');
 
-		const channelMention = page.getByRole('button', {
+		const sentMessage = poHomeChannel.content.messageListItems.filter({ hasText: 'Are you in the' });
+		const channelMention = sentMessage.getByRole('button', {
 			name: 'general',
 		});
 
-		const userMention = page.getByRole('button', {
+		const userMention = sentMessage.getByRole('button', {
 			name: 'user1',
 		});
 
