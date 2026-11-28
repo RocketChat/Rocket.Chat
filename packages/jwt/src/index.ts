@@ -22,8 +22,10 @@ export async function getPairs(): Promise<[string, string]> {
 		throw new Error('This function should only be used in tests');
 	}
 	const { publicKey, privateKey } = await generateKeyPair('RS256');
-	const spki = await exportSPKI(publicKey);
-	const pkcs8 = await exportPKCS8(privateKey);
+	const [spki, pkcs8] = await Promise.all([
+		exportSPKI(publicKey),
+		exportPKCS8(privateKey)
+	]);
 
 	return [spki, pkcs8];
 }
