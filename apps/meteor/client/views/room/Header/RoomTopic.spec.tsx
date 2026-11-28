@@ -6,6 +6,12 @@ import { render, screen } from '@testing-library/react';
 import RoomTopic from './RoomTopic';
 import FakeRoomProvider from '../../../../tests/mocks/client/FakeRoomProvider';
 import { createFakeRoom, createFakeSubscription, createFakeUser } from '../../../../tests/mocks/data';
+import * as meteorRuntimeConfig from '../../../lib/meteorRuntimeConfig';
+
+jest.mock('../../../lib/meteorRuntimeConfig', () => ({
+	...jest.requireActual('../../../lib/meteorRuntimeConfig'),
+	getRootUrlPathPrefix: jest.fn(() => ''),
+}));
 
 const user = createFakeUser({
 	active: true,
@@ -30,6 +36,10 @@ const user3 = createFakeUser({
 });
 
 describe('RoomTopic', () => {
+	afterEach(() => {
+		jest.mocked(meteorRuntimeConfig.getRootUrlPathPrefix).mockReturnValue('');
+	});
+
 	it('should render Add Topic when no topic is present and user can edit room', () => {
 		const room = createFakeRoom({ topic: '', t: 'c', u: { _id: user._id, username: user.username, name: user.name } });
 		const subscription = createFakeSubscription({ t: 'c', rid: room._id, u: room.u, roles: ['owner'] });
@@ -48,6 +58,48 @@ describe('RoomTopic', () => {
 		);
 
 		expect(screen.getByText('Add_topic')).toBeInTheDocument();
+	});
+
+	describe.each([
+		{ label: 'public channel', t: 'c', teamMain: false, prefix: 'channel', tab: 'channel-settings' },
+		{ label: 'private channel', t: 'p', teamMain: false, prefix: 'group', tab: 'channel-settings' },
+		{ label: 'public team', t: 'c', teamMain: true, prefix: 'channel', tab: 'team-info' },
+		{ label: 'private team', t: 'p', teamMain: true, prefix: 'group', tab: 'team-info' },
+	] as const)('$label settings link', ({ t, teamMain, prefix, tab }) => {
+		it.each([
+			{ panel: '', sitePrefix: '', name: 'test-room', encodedName: 'test-room' },
+			{ panel: '/thread/message-id', sitePrefix: '', name: 'test-room', encodedName: 'test-room' },
+			{ panel: '/rocket-search', sitePrefix: '', name: 'test-room', encodedName: 'test-room' },
+			{ panel: '/thread/message-id', sitePrefix: '/subdir', name: 'test-room', encodedName: 'test-room' },
+			{ panel: '/thread/message-id', sitePrefix: '', name: 'room#one', encodedName: 'room%23one' },
+			{ panel: '/thread/message-id', sitePrefix: '/subdir', name: 'room#one', encodedName: 'room%23one' },
+		])('builds the settings link for "$name" from "$sitePrefix$panel"', ({ panel, sitePrefix, name, encodedName }) => {
+			jest.mocked(meteorRuntimeConfig.getRootUrlPathPrefix).mockReturnValue(sitePrefix);
+			const room = createFakeRoom({ name, topic: '', t, teamMain, u: user });
+			const subscription = createFakeSubscription({ t, rid: room._id, u: room.u, roles: ['owner'] });
+			const href = `${sitePrefix}/${prefix}/${encodedName}/${tab}`;
+			const getRoomRoute = jest.fn().mockImplementation((_type, { name }) => ({ path: `/${prefix}/${name}` }));
+
+			render(
+				<FakeRoomProvider roomOverrides={room} subscriptionOverrides={subscription}>
+					<RoomTopic room={room} />
+				</FakeRoomProvider>,
+				{
+					wrapper: mockAppRoot()
+						.withSubscriptions([{ ...subscription, ...room }] as unknown as SubscriptionWithRoom[])
+						.withPermission('edit-room')
+						.withUser(user)
+						.withRouter({
+							getLocationPathname: jest.fn().mockReturnValue(`${sitePrefix}/${prefix}/${encodedName}${panel}`),
+							getRoomRoute,
+						})
+						.build(),
+				},
+			);
+
+			expect(screen.getByRole('link', { name: 'Add_topic' })).toHaveAttribute('href', href);
+			expect(getRoomRoute).toHaveBeenCalledWith(t, { name: encodedName });
+		});
 	});
 
 	it('should not render Add Topic when no topic is present and user cannot edit room', () => {
