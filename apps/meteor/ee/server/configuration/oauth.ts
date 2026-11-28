@@ -7,6 +7,7 @@ import { capitalize } from '@rocket.chat/tools';
 import { callbacks } from '../../../server/lib/callbacks';
 import { settings } from '../../../server/settings';
 import { OAuthEEManager } from '../lib/oauth/Manager';
+import { parseRolesToSync } from '../lib/oauth/parseRolesToSync';
 import { syncUserRoles } from '../lib/syncUserRoles';
 
 interface IOAuthUserService {
@@ -24,7 +25,7 @@ interface IOAuthUserIdentity {
 interface IOAuthSettings {
 	mapChannels: boolean;
 	mergeRoles: boolean;
-	rolesToSync: string;
+	rolesToSync: string | undefined;
 	rolesClaim: string;
 	groupsClaim: string;
 	channelsAdmin: string;
@@ -71,7 +72,7 @@ await License.onLicense('oauth-enterprise', () => {
 				auth.user,
 				auth.serviceData,
 				settings.rolesClaim,
-				settings.rolesToSync.split(',').map((role) => role.trim()),
+				parseRolesToSync(settings.rolesToSync),
 			);
 		}
 	});
@@ -88,7 +89,7 @@ await License.onLicense('oauth-enterprise', () => {
 		if (settings.mergeRoles) {
 			const rolesFromSSO = await OAuthEEManager.mapRolesFromSSO(auth.identity, settings.rolesClaim);
 			const mappedRoles = (await Roles.findInIdsOrNames(rolesFromSSO).toArray()).map((role) => role._id);
-			const rolesToSync = settings.rolesToSync.split(',').map((role) => role.trim());
+			const rolesToSync = parseRolesToSync(settings.rolesToSync);
 
 			const allowedRoles = (await Roles.findInIdsOrNames(rolesToSync).toArray()).map((role) => role._id);
 
