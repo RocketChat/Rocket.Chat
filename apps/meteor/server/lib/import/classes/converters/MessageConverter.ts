@@ -25,6 +25,36 @@ type IMessageReaction = {
 
 type IMessageReactions = Record<string, IMessageReaction>;
 
+const nameChar = '[\\p{L}\\p{M}\\p{N}_-]';
+
+const escapeName = (name: string) => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+// A user mention can name another server, as in `@user:server` or `@user@server`.
+const nameSeparator = { '@': '[.:@]', '#': '\\.' } as const;
+
+/**
+ * Rewrites, in one pass, the whole mentions of the imported users or channels of a message, so each mention keeps
+ * pointing at the user or channel it named. Longer names, mentions on other servers, email addresses and URL paths
+ * are left untouched.
+ */
+const replaceMentions = (text: string, symbol: '@' | '#', names: Map<string, string>): string => {
+	const importIds = [...names.keys()].filter(Boolean).sort((a, b) => b.length - a.length);
+	if (!importIds.length) {
+		return text;
+	}
+
+	const alternatives = importIds.map((importId) => `(${escapeName(importId)})`).join('|');
+	const pattern = new RegExp(
+		`(?<![\\p{L}\\p{M}\\p{N}_.@/-])${symbol}(?:${alternatives})(?!${nameChar}|${nameSeparator[symbol]}${nameChar})`,
+		'giu',
+	);
+
+	return text.replace(pattern, (...groups: (string | undefined)[]) => {
+		const index = groups.slice(1, importIds.length + 1).findIndex((group) => group !== undefined);
+		return `${symbol}${names.get(importIds[index])}`;
+	});
+};
+
 const createUniqueClock = () => {
 	let last = 0;
 	return (): Date => {
@@ -132,6 +162,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 		}
 
 		const result: MentionedChannel[] = [];
+		const names = new Map<string, string>();
 		for (const importId of channels) {
 			const { name, _id } = (await this.getMentionedChannelData(importId)) || {};
 
@@ -140,13 +171,15 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 				continue;
 			}
 
-			message.msg = message.msg.replace(new RegExp(`#${importId}`, 'gi'), `#${name}`);
+			names.set(importId, name);
 
 			result.push({
 				_id,
 				name,
 			});
 		}
+
+		message.msg = replaceMentions(message.msg, '#', names);
 
 		return result;
 	}
@@ -158,6 +191,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 		}
 
 		const result: MentionedUser[] = [];
+		const usernames = new Map<string, string>();
 		for (const importId of mentions) {
 			if (importId === ('all' as 'string') || importId === 'here') {
 				result.push({
@@ -181,7 +215,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 				throw new Error('importer-message-mentioned-username-not-found');
 			}
 
-			message.msg = message.msg.replace(new RegExp(`@${importId}`, 'gi'), `@${data.username}`);
+			usernames.set(importId, data.username);
 
 			result.push({
 				_id: data._id,
@@ -189,6 +223,9 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 				name,
 			});
 		}
+
+		message.msg = replaceMentions(message.msg, '@', usernames);
+
 		return result;
 	}
 
