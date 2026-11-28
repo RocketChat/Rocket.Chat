@@ -32,4 +32,5 @@ export const adminFields: Partial<Record<keyof IRoom, 1>> = {
 	federated: 1,
 	xmppFederation: 1,
 	abacAttributes: 1,
+	encrypted: 1,
 } as const;

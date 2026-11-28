@@ -1,4 +1,5 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
+import { Box } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
@@ -10,11 +11,13 @@ export type DeleteTeamConfirmationProps = {
 	onConfirm: (roomsToDelete: IRoom['_id'][]) => void;
 	onReturn?: () => void;
 	onCancel: () => void;
+	teamIsEncrypted?: boolean;
 };
 
-const DeleteTeamConfirmation = ({ deletedRooms, keptRooms, onConfirm, onReturn, onCancel }: DeleteTeamConfirmationProps) => {
+const DeleteTeamConfirmation = ({ deletedRooms, keptRooms, onConfirm, onReturn, onCancel, teamIsEncrypted }: DeleteTeamConfirmationProps) => {
 	const { t } = useTranslation();
 	const roomIds = Object.values(deletedRooms).map(({ _id }) => _id);
+	const hasEncryptedRooms = teamIsEncrypted || Object.values(deletedRooms).some((room) => room.encrypted);
 
 	return (
 		<GenericModal
@@ -27,6 +30,11 @@ const DeleteTeamConfirmation = ({ deletedRooms, keptRooms, onConfirm, onReturn, 
 			onClose={onCancel}
 		>
 			<p>{t('Delete_roomType_description', { roomType: 'team' })}</p>
+			{hasEncryptedRooms && (
+				<Box is='p' color='status-font-on-danger' mbs={16}>
+					{t('E2E_Delete_Room_Warning')}
+				</Box>
+			)}
 			{!!Object.values(deletedRooms).length && (
 				<>
 					<br />
