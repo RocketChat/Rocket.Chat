@@ -255,7 +255,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 
 						return Object.keys(collection)
 							.map((_id) => {
-								const data = collection[key];
+								const data = collection[_id];
 								return { _id, data };
 							})
 							.filter(({ _id }) => matchesEmojiSuggestion(_id, key, filterRegex, toneRegexes))
@@ -310,7 +310,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 
 					return Object.keys(collection)
 						.map((_id) => {
-							const data = collection[key];
+							const data = collection[_id];
 							return { _id, data };
 						})
 						.filter(({ _id }) => matchesEmojiSuggestion(_id, key, filterRegex, toneRegexes))
