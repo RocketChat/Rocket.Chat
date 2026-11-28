@@ -6,17 +6,25 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { e2e } from '../../../../lib/e2ee/rocketchat.e2e';
 import { roomsQueryKeys } from '../../../../lib/queryKeys';
 
-export const useImagesList = ({ roomId, startingFromId }: { roomId: IRoom['_id']; startingFromId?: string }) => {
+type UseImagesListOptions = {
+	roomId: IRoom['_id'];
+	startingFromId?: string;
+	/** `older` lists the starting image and the ones before it, newest first; `newer` lists the ones after it, oldest first. */
+	direction?: 'older' | 'newer';
+};
+
+export const useImagesList = ({ roomId, startingFromId, direction = 'older' }: UseImagesListOptions) => {
 	const getFiles = useEndpoint('GET', '/v1/rooms.images');
 
 	const count = 5;
 
 	return useInfiniteQuery({
-		queryKey: roomsQueryKeys.images(roomId, { startingFromId }),
+		queryKey: roomsQueryKeys.images(roomId, { startingFromId, direction }),
 		queryFn: async ({ pageParam: offset }) => {
 			const { files, total } = await getFiles({
 				roomId,
 				startingFromId,
+				direction,
 				offset,
 				count,
 			});

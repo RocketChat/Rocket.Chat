@@ -104,15 +104,18 @@ type ImageGalleryProps = {
 	/** The image shown first; the last one when it is not given. */
 	initialImageId?: string;
 	onClose: () => void;
-	loadMore?: () => void;
+	/** Called on reaching the first image; images it loads are prepended. */
+	loadPrevious?: () => void;
+	/** Called on reaching the last image; images it loads are appended. */
+	loadNext?: () => void;
 };
 
-export const ImageGallery = ({ images, initialImageId, onClose, loadMore }: ImageGalleryProps) => {
+export const ImageGallery = ({ images, initialImageId, onClose, loadPrevious, loadNext }: ImageGalleryProps) => {
 	const { t } = useTranslation();
 	const swiperRef = useRef<SwiperRef>(null);
 	const [, setSwiperInst] = useState<SwiperClass>();
 	const [zoomScale, setZoomScale] = useState(1);
-	const [gridSize, setGridSize] = useState(images.length);
+	const firstImageIdRef = useRef(images[0]?._id);
 
 	const handleZoom = (ratio: number) => {
 		if (swiperRef.current?.swiper.zoom) {
@@ -195,10 +198,15 @@ export const ImageGallery = ({ images, initialImageId, onClose, loadMore }: Imag
 							modules={[Navigation, Zoom, Keyboard, A11y]}
 							onInit={(swiper: SwiperClass) => setSwiperInst(swiper)}
 							onSlidesGridLengthChange={(swiper: SwiperClass) => {
-								swiper.slideTo(images.length - gridSize, 0);
-								setGridSize(images.length);
+								// Keep the current image in view when older images are prepended
+								const prependedCount = images.findIndex(({ _id }) => _id === firstImageIdRef.current);
+								firstImageIdRef.current = images[0]?._id;
+								if (prependedCount > 0) {
+									swiper.slideTo(swiper.activeIndex + prependedCount, 0, false);
+								}
 							}}
-							onReachBeginning={loadMore}
+							onReachBeginning={loadPrevious}
+							onReachEnd={loadNext}
 							initialSlide={initialIndex === -1 ? images.length - 1 : initialIndex}
 						>
 							{images.map(({ _id, path, url, description }) => (

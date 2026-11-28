@@ -717,6 +717,20 @@ API.v1.get(
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
 
+		if (this.queryParams.direction === 'newer') {
+			if (!initialImage?.uploadedAt) {
+				return API.v1.success({ files: [], count, offset, total: 0 });
+			}
+
+			const { cursor, totalCount } = Uploads.findConfirmedImagesByRoomIdUploadedAfter(room._id, initialImage.uploadedAt, {
+				skip: offset,
+				limit: count,
+			});
+			const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+			return API.v1.success({ files: files.map(normalizeLegacyUfsLocation), count, offset, total });
+		}
+
 		const { cursor, totalCount } = Uploads.findConfirmedImagesByRoomId(room._id, initialImage?.uploadedAt, {
 			skip: offset,
 			limit: count,
@@ -725,7 +739,7 @@ API.v1.get(
 		const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 		// If the initial image was not returned in the query, insert it as the first element of the list
-		if (initialImage && !files.find(({ _id }) => _id === initialImage._id)) {
+		if (offset === 0 && initialImage && !files.find(({ _id }) => _id === initialImage._id)) {
 			files.splice(0, 0, initialImage);
 		}
 

@@ -645,6 +645,11 @@ export const isRoomsBannedUsersProps = ajvQuery.compile<RoomsBannedUsersProps>(R
 export type RoomsImagesProps = {
 	roomId: string;
 	startingFromId?: string;
+	/**
+	 * `older` (default): the starting image and the ones uploaded before it, newest first.
+	 * `newer`: the images uploaded after the starting image, oldest first.
+	 */
+	direction?: 'older' | 'newer';
 	count?: number;
 	offset?: number;
 };
@@ -656,6 +661,11 @@ const roomsImagesPropsSchema = {
 		},
 		startingFromId: {
 			type: 'string',
+			nullable: true,
+		},
+		direction: {
+			type: 'string',
+			enum: ['older', 'newer'],
 			nullable: true,
 		},
 		...paginationQueryProperties,

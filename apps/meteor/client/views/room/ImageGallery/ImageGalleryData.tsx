@@ -10,17 +10,32 @@ const ImageGalleryData = () => {
 
 	const { imageId, onClose } = useContext(ImageGalleryContext);
 
-	const { isPending, isError, data: images, fetchNextPage } = useImagesList({ roomId: rid, startingFromId: imageId });
+	const older = useImagesList({ roomId: rid, startingFromId: imageId, direction: 'older' });
+	const newer = useImagesList({ roomId: rid, startingFromId: imageId, direction: 'newer' });
 
-	if (isPending) {
+	if (older.isPending || newer.isPending) {
 		return <ImageGalleryLoading onClose={onClose} />;
 	}
 
-	if (isError) {
+	if (older.isError || newer.isError) {
 		return <ImageGalleryError onClose={onClose} />;
 	}
 
-	return <ImageGallery images={[...images].reverse()} loadMore={fetchNextPage} onClose={onClose} />;
+	const images = [...older.data].reverse().concat(newer.data);
+
+	const loadOlder = () => {
+		if (older.hasNextPage && !older.isFetchingNextPage) {
+			older.fetchNextPage();
+		}
+	};
+
+	const loadNewer = () => {
+		if (newer.hasNextPage && !newer.isFetchingNextPage) {
+			newer.fetchNextPage();
+		}
+	};
+
+	return <ImageGallery images={images} initialImageId={imageId} loadPrevious={loadOlder} loadNext={loadNewer} onClose={onClose} />;
 };
 
 export default ImageGalleryData;
