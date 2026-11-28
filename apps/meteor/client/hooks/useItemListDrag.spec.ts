@@ -148,7 +148,7 @@ describe('useItemListDrag', () => {
 		});
 
 		// jsdom has no hit testing nor PointerEvent: nothing is under the pointer, and mouse events carry its coordinates.
-		jest.spyOn(document, 'elementsFromPoint').mockReturnValue([]);
+		document.elementsFromPoint = () => [];
 		rows[0].dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, button: 0, clientX: 0, clientY: 0 }));
 		act(() => {
 			window.dispatchEvent(new MouseEvent('pointermove', { clientX: 0, clientY: 20 }));
