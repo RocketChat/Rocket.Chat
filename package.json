@@ -125,7 +125,7 @@
 		"picomatch@npm:^4.0.2": "^4.0.4",
 		"picomatch@npm:^4.0.3": "^4.0.4",
 		"path-to-regexp@npm:^8.1.0": "^8.4.0",
-		"serialize-javascript": "^7.0.5",
+		"serialize-javascript": "^7.1.4",
 		"launch-editor/shell-quote": "1.11.0",
 		"npm-run-all/shell-quote": "1.11.0",
 		"socks-proxy-agent/socks": "^2.8.9",
