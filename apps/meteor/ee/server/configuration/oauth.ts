@@ -1,13 +1,11 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
-import { Roles } from '@rocket.chat/models';
 import { capitalize } from '@rocket.chat/tools';
 
 import { callbacks } from '../../../server/lib/callbacks';
 import { settings } from '../../../server/settings';
-import { OAuthEEManager } from '../lib/oauth/Manager';
-import { syncUserRoles } from '../lib/syncUserRoles';
+import { OAuthEEManager, syncOAuthUserRoles } from '../lib/oauth/Manager';
 
 interface IOAuthUserService {
 	serviceName: string;
@@ -37,7 +35,7 @@ function getOAuthSettings(serviceName: string): IOAuthSettings {
 	return {
 		mapChannels: settings.get<boolean>(`Accounts_OAuth_Custom-${serviceName}-map_channels`),
 		mergeRoles: settings.get<boolean>(`Accounts_OAuth_Custom-${serviceName}-merge_roles`),
-		rolesToSync: settings.get<string>(`Accounts_OAuth_Custom-${serviceName}-roles_to_sync`),
+		rolesToSync: settings.get<string>(`Accounts_OAuth_Custom-${serviceName}-roles_to_sync`) ?? '',
 		rolesClaim: settings.get<string>(`Accounts_OAuth_Custom-${serviceName}-roles_claim`),
 		groupsClaim: settings.get<string>(`Accounts_OAuth_Custom-${serviceName}-groups_claim`),
 		channelsAdmin: settings.get<string>(`Accounts_OAuth_Custom-${serviceName}-channels_admin`),
@@ -70,7 +68,7 @@ await License.onLicense('oauth-enterprise', () => {
 				auth.user,
 				auth.serviceData,
 				settings.rolesClaim,
-				settings.rolesToSync.split(',').map((role) => role.trim()),
+				settings.rolesToSync,
 			);
 		}
 	});
@@ -85,14 +83,11 @@ await License.onLicense('oauth-enterprise', () => {
 		}
 
 		if (settings.mergeRoles) {
-			const rolesFromSSO = await OAuthEEManager.mapRolesFromSSO(auth.identity, settings.rolesClaim);
-			const mappedRoles = (await Roles.findInIdsOrNames(rolesFromSSO).toArray()).map((role) => role._id);
-			const rolesToSync = settings.rolesToSync.split(',').map((role) => role.trim());
-
-			const allowedRoles = (await Roles.findInIdsOrNames(rolesToSync).toArray()).map((role) => role._id);
-
-			await syncUserRoles(auth.user._id, mappedRoles, {
-				allowedRoles,
+			await syncOAuthUserRoles({
+				user: auth.user,
+				identity: auth.identity,
+				roleClaimName: settings.rolesClaim,
+				rolesToSync: settings.rolesToSync,
 			});
 		}
 	});

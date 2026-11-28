@@ -6,6 +6,9 @@ import { Users } from '@rocket.chat/models';
 import { addUserRolesAsync } from '../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../server/lib/roles/removeUserFromRoles';
 import { settings } from '../../../server/settings';
+import { filterRoleList } from './filterRoleList';
+
+export { filterRoleList } from './filterRoleList';
 
 type setUserRolesOptions = {
 	// If specified, the function will not add nor remove any role that is not on this list.
@@ -15,20 +18,6 @@ type setUserRolesOptions = {
 	// the scope value (eg: room id) to assign the roles to
 	scope?: string;
 };
-
-function filterRoleList(
-	roleList: Array<IRole['_id']>,
-	rolesToFilterOut: Array<IRole['_id']>,
-	rolesToFilterIn?: Array<IRole['_id']>,
-): Array<IRole['_id']> {
-	const filteredRoles = roleList.filter((roleId) => !rolesToFilterOut.includes(roleId));
-
-	if (!rolesToFilterIn) {
-		return filteredRoles;
-	}
-
-	return filteredRoles.filter((roleId) => rolesToFilterIn.includes(roleId));
-}
 
 function broadcastRoleChange(
 	type: 'changed' | 'added' | 'removed',
