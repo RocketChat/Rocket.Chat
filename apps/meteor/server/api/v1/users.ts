@@ -83,8 +83,7 @@ import { saveUserPreferences } from '../../meteor-methods/users/saveUserPreferen
 import { executeSaveUserProfile } from '../../meteor-methods/users/saveUserProfile';
 import { executeSetUserActiveStatus } from '../../meteor-methods/users/setUserActiveStatus';
 import { settings } from '../../settings';
-import type { ExtractRoutesFromAPI } from '../ApiClass';
-import { API } from '../api';
+import { API, type ExtractRoutesFromAPI } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { getUserFromParams } from '../lib/getUserFromParams';
