@@ -100,6 +100,28 @@ describe('Server method contracts', () => {
 		]);
 	});
 
+	describe.each(['local', 'remote'] as const)('%s falsy return values', (source) => {
+		it.each([
+			['false', false],
+			['0', 0],
+			['empty string', ''],
+			['null', null],
+		])('preserves %s in the result packet', async (_label, returnValue) => {
+			if (source === 'local') {
+				server.methods({ check: jest.fn().mockResolvedValue(returnValue) });
+			} else {
+				remoteCall.mockResolvedValue(returnValue);
+			}
+
+			await server.call(session, makePacket('check'));
+
+			expect(sentPackets(session)).toEqual([
+				{ msg: 'result', id: 'test-id', result: returnValue },
+				{ msg: 'updated', methods: ['test-id'] },
+			]);
+		});
+	});
+
 	describe.each(['local', 'remote'] as const)('%s failures', (source) => {
 		it.each([
 			[
