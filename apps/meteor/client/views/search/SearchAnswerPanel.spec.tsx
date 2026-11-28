@@ -63,6 +63,16 @@ describe('SearchAnswerPanel', () => {
 		expect(screen.getByTitle('Generated with OpenAI compatible · example-model')).toBeInTheDocument();
 	});
 
+	it('renders links and images in the answer as text', () => {
+		renderPanel({
+			answer: 'Deployment completed, see [the runbook](https://example.com/runbook) ![status chart](https://example.com/chart.png)',
+		});
+
+		expect(screen.queryByRole('link', { name: 'the runbook' })).not.toBeInTheDocument();
+		expect(screen.queryByRole('img', { name: 'status chart' })).not.toBeInTheDocument();
+		expect(screen.getByText('Deployment completed, see the runbook status chart')).toBeInTheDocument();
+	});
+
 	it('falls back to a generic description on the info icon without a provider', () => {
 		renderPanel();
 
