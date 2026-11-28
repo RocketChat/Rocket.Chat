@@ -23,4 +23,16 @@ describe('[Margins Component]', () => {
 
 		expect(screen.getByText('Content')).toHaveCssInJsClass();
 	});
+
+
+	it('applies a zero margin to non-`Box` children', () => {
+		const { container } = render(
+			<Margins all={0}>
+				<div />
+			</Margins>,
+		);
+
+		expect(container.firstElementChild).toHaveCssInJsClass();
+		expect(container.firstElementChild).toHaveStyle({ margin: '0px' });
+	});
 });
