@@ -9,7 +9,11 @@ type UserLogin = { user: UsernameLogin | EmailLogin | string };
 export type LoginProps = (EmailLogin | UsernameLogin | UserLogin) & { code?: string; password?: Password };
 
 type LogoutResponse = {
-	message: string;
+	status: 'success';
+	data: {
+		message: string;
+	};
+	success: true;
 };
 
 export type AuthEndpoints = {
