@@ -287,6 +287,12 @@
 			}
 		},
 		{
+			"files": ["packages/apps/**/*"],
+			"rules": {
+				"react/rules-of-hooks": "off"
+			}
+		},
+		{
 			"files": ["packages/apps/**/*.ts"],
 			"rules": {
 				"typescript/only-throw-error": ["error", { "allow": ["JsonRpcError", "ErrorObject"] }]

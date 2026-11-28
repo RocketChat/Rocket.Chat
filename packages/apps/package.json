@@ -6,12 +6,14 @@
 	"types": "./dist/index.d.ts",
 	"files": [
 		"dist/",
+		"protocol/",
 		"base-runtime/",
 		"node-runtime/"
 	],
 	"scripts": {
-		"build": "run-s build:clean build:default build:base-runtime build:node-runtime",
-		"build:clean": "rm -rf dist base-runtime/dist node-runtime/dist",
+		"build": "run-s build:clean build:protocol build:default build:base-runtime build:node-runtime",
+		"build:clean": "rm -rf dist protocol/dist base-runtime/dist node-runtime/dist",
+		"build:protocol": "tsc -p protocol/tsconfig.json",
 		"build:default": "tsc -p tsconfig.json",
 		"build:base-runtime": "tsc -p base-runtime/tsconfig.json",
 		"build:node-runtime": "tsc -p node-runtime/tsconfig.json",
@@ -19,12 +21,15 @@
 		"lint": "yarn run -T oxlint",
 		"test:node": "NODE_ENV=test node --require ts-node/register/transpile-only --test-reporter spec --test-concurrency=1 --test-timeout=60000 --test \"tests/**/*.test.ts\"",
 		"test:base-runtime": "NODE_ENV=test node --require ts-node/register/transpile-only --test-reporter spec --test-concurrency=1 --test \"base-runtime/**/*.test.ts\"",
-		"testunit": "run-s test:node test:base-runtime",
+		"test:protocol": "NODE_ENV=test node --import tsx --test-reporter spec --test \"protocol/tests/**/*.test.ts\"",
+		"testunit": "run-s test:node test:base-runtime test:protocol",
+		"typecheck:protocol": "tsc -p protocol/tsconfig.json --noEmit",
+		"typecheck:protocol-tests": "tsc -p protocol/tsconfig-tests.json",
 		"typecheck:default": "tsc -p tsconfig.json --noEmit",
 		"typecheck:base-runtime": "tsc -p base-runtime/tsconfig.json --noEmit",
 		"typecheck:node-runtime": "tsc -p node-runtime/tsconfig.json --noEmit",
-		"typecheck:types": "tsc -p tsconfig-types-test.json",
-		"typecheck": "run-s typecheck:default typecheck:base-runtime typecheck:node-runtime typecheck:types"
+		"typecheck:types": "tsc -p tsconfig-types-test.json && tsc -p protocol/tsconfig-types-test.json",
+		"typecheck": "run-s typecheck:protocol typecheck:protocol-tests typecheck:default typecheck:base-runtime typecheck:node-runtime typecheck:types"
 	},
 	"dependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",
@@ -42,7 +47,8 @@
 		"lodash.clonedeep": "^4.5.0",
 		"semver": "^7.6.3",
 		"stack-trace": "0.0.10",
-		"uuid": "~11.1.1"
+		"uuid": "~11.1.1",
+		"zod": "~4.3.6"
 	},
 	"devDependencies": {
 		"@rocket.chat/tsconfig": "workspace:*",
@@ -54,6 +60,7 @@
 		"@types/uuid": "~10.0.0",
 		"npm-run-all": "^4.1.5",
 		"ts-node": "^10.9.2",
+		"tsx": "~4.22.5",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

@@ -1,4 +1,5 @@
-import type { RequestObject } from './jsonrpc';
+import type { RequestObject } from '@rocket.chat/apps/protocol/dist/framing/jsonrpc';
+
 import type { Logger } from './logger';
 
 export type RequestContext = RequestObject & {
