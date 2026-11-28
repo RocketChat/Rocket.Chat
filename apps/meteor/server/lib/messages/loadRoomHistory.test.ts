@@ -1,6 +1,6 @@
 import { before, describe, it, mock } from 'node:test';
 
-import { mockModel } from '@rocket.chat/models/testing';
+import { fakeCursor, mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -16,9 +16,7 @@ before(async () => {
 	({ loadRoomHistory } = await import('./loadRoomHistory'));
 });
 
-const pageOf = (...timestamps: number[]) => ({
-	toArray: async () => timestamps.map((ts, i) => ({ _id: `m${i}`, rid: 'room', ts: new Date(ts) })),
-});
+const pageOf = (...timestamps: number[]) => fakeCursor(timestamps.map((ts, i) => ({ _id: `m${i}`, rid: 'room', ts: new Date(ts) })));
 
 describe('loadRoomHistory', () => {
 	before(() => {

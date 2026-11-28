@@ -1,6 +1,6 @@
 import { before, beforeEach, describe, it, mock } from 'node:test';
 
-import { mockModel } from '@rocket.chat/models/testing';
+import { fakeCursor, mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -147,16 +147,13 @@ describe('Team service', () => {
 			}),
 		);
 
-		Rooms.findDefaultRoomsForTeam.returns({
-			toArray: () => Promise.resolve([{ _id: 'default-room' }]),
-		});
-		Users.findActiveByIds.returns({
-			toArray: () =>
-				Promise.resolve([
-					{ _id: 'user-1', username: 'user-1' },
-					{ _id: 'user-2', username: 'user-2' },
-				]),
-		});
+		Rooms.findDefaultRoomsForTeam.returns(fakeCursor([{ _id: 'default-room' }]));
+		Users.findActiveByIds.returns(
+			fakeCursor([
+				{ _id: 'user-1', username: 'user-1' },
+				{ _id: 'user-2', username: 'user-2' },
+			]),
+		);
 
 		await service.addMembersToDefaultRooms({ _id: 'inviter', username: 'inviter' }, 'team-id', [
 			{ userId: 'user-1' },
@@ -168,12 +165,8 @@ describe('Team service', () => {
 
 	it('should propagate errors from default room membership operations', { timeout: 15000 }, async () => {
 		addUserToRoom.rejects(new Error('room-add-failed'));
-		Rooms.findDefaultRoomsForTeam.returns({
-			toArray: () => Promise.resolve([{ _id: 'default-room' }]),
-		});
-		Users.findActiveByIds.returns({
-			toArray: () => Promise.resolve([{ _id: 'user-1', username: 'user-1' }]),
-		});
+		Rooms.findDefaultRoomsForTeam.returns(fakeCursor([{ _id: 'default-room' }]));
+		Users.findActiveByIds.returns(fakeCursor([{ _id: 'user-1', username: 'user-1' }]));
 
 		await expect(
 			service.addMembersToDefaultRooms({ _id: 'inviter', username: 'inviter' }, 'team-id', [{ userId: 'user-1' }]),
@@ -187,12 +180,8 @@ describe('Team service', () => {
 		const refusedRoom = { _id: 'refused-room' };
 
 		addUserToRoom.resolves(true);
-		Rooms.findDefaultRoomsForTeam.returns({
-			toArray: () => Promise.resolve([allowedRoom, refusedRoom]),
-		});
-		Users.findActiveByIds.returns({
-			toArray: () => Promise.resolve([{ _id: 'user-1', username: 'user-1' }]),
-		});
+		Rooms.findDefaultRoomsForTeam.returns(fakeCursor([allowedRoom, refusedRoom]));
+		Users.findActiveByIds.returns(fakeCursor([{ _id: 'user-1', username: 'user-1' }]));
 		filterDefaultChannelsForUser.resolves([allowedRoom]);
 
 		await service.addMembersToDefaultRooms({ _id: 'inviter', username: 'inviter' }, 'team-id', [{ userId: 'user-1' }]);
@@ -202,12 +191,8 @@ describe('Team service', () => {
 	});
 
 	it('should filter the default rooms without refreshing the member attributes or auditing the grant', async () => {
-		Rooms.findDefaultRoomsForTeam.returns({
-			toArray: () => Promise.resolve([{ _id: 'default-room' }]),
-		});
-		Users.findActiveByIds.returns({
-			toArray: () => Promise.resolve([{ _id: 'user-1', username: 'user-1' }]),
-		});
+		Rooms.findDefaultRoomsForTeam.returns(fakeCursor([{ _id: 'default-room' }]));
+		Users.findActiveByIds.returns(fakeCursor([{ _id: 'user-1', username: 'user-1' }]));
 
 		await service.addMembersToDefaultRooms({ _id: 'inviter', username: 'inviter' }, 'team-id', [{ userId: 'user-1' }]);
 

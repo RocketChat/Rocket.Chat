@@ -1,6 +1,6 @@
 import { before, beforeEach, describe, it, mock } from 'node:test';
 
-import { mockModel } from '@rocket.chat/models/testing';
+import { fakeCursor, mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -50,13 +50,6 @@ before(async () => {
 });
 
 const ids = (prefix: string, count: number) => Array.from({ length: count }, (_, i) => `${prefix}${i}`);
-const cursorOf = (docs: unknown[]) => ({
-	toArray: async () => docs,
-	forEach: async (fn: (doc: any) => void) => docs.forEach(fn),
-	async *[Symbol.asyncIterator]() {
-		yield* docs;
-	},
-});
 
 describe('cleanRoomHistory', () => {
 	before(() => {
@@ -80,8 +73,8 @@ describe('cleanRoomHistory', () => {
 			notifyOnMessageChangeMock,
 		].forEach((stub) => stub.reset());
 
-		modelsMock.Rooms.findDiscussionsWithOriginMessageByParentRoomId.returns(cursorOf([]));
-		modelsMock.Messages.findFilesByRoomIdPinnedTimestampAndUsers.returns(cursorOf([]));
+		modelsMock.Rooms.findDiscussionsWithOriginMessageByParentRoomId.returns(fakeCursor([]));
+		modelsMock.Messages.findFilesByRoomIdPinnedTimestampAndUsers.returns(fakeCursor([]));
 		modelsMock.Messages.findByIdPinnedTimestampLimitAndUsers.resolves([]);
 		modelsMock.Messages.removeByIdPinnedTimestampLimitAndUsers.callsFake(async (...args: unknown[]) => ({
 			count: (args[7] as string[]).length,
@@ -141,7 +134,7 @@ describe('cleanRoomHistory', () => {
 	});
 
 	it('spares the messages that discussions started from, together with their files', async () => {
-		modelsMock.Rooms.findDiscussionsWithOriginMessageByParentRoomId.returns(cursorOf([{ pmid: 'origin' }]));
+		modelsMock.Rooms.findDiscussionsWithOriginMessageByParentRoomId.returns(fakeCursor([{ pmid: 'origin' }]));
 
 		await cleanRoomHistory({ rid: 'rid', ignoreDiscussionOrigin: true });
 
@@ -151,13 +144,13 @@ describe('cleanRoomHistory', () => {
 
 	it('shows the deleted file in the quotes of a discussion whose origin file was pruned', async () => {
 		modelsMock.Rooms.findDiscussionsWithOriginMessageByParentRoomId.returns(
-			cursorOf([
+			fakeCursor([
 				{ _id: 'pruned-discussion', pmid: 'origin' },
 				{ _id: 'kept-discussion', pmid: 'kept-origin' },
 			]),
 		);
-		modelsMock.Messages.findFilesByRoomIdPinnedTimestampAndUsers.returns(cursorOf([{ _id: 'origin', files: [] }]));
-		modelsMock.Messages.findByDiscussionIdsOrQuotingInRoomIds.returns(cursorOf([{ _id: 'quote' }]));
+		modelsMock.Messages.findFilesByRoomIdPinnedTimestampAndUsers.returns(fakeCursor([{ _id: 'origin', files: [] }]));
+		modelsMock.Messages.findByDiscussionIdsOrQuotingInRoomIds.returns(fakeCursor([{ _id: 'quote' }]));
 
 		await cleanRoomHistory({ rid: 'rid', ignoreDiscussion: false, filesOnly: true });
 
@@ -175,10 +168,10 @@ describe('cleanRoomHistory', () => {
 	it('shows the deleted file in the quotes of every pruned origin, in bounded batches', async () => {
 		const origins = ids('origin-', 501);
 		modelsMock.Rooms.findDiscussionsWithOriginMessageByParentRoomId.returns(
-			cursorOf(origins.map((pmid) => ({ _id: `discussion-${pmid}`, pmid }))),
+			fakeCursor(origins.map((pmid) => ({ _id: `discussion-${pmid}`, pmid }))),
 		);
-		modelsMock.Messages.findFilesByRoomIdPinnedTimestampAndUsers.returns(cursorOf(origins.map((_id) => ({ _id, files: [] }))));
-		modelsMock.Messages.findByDiscussionIdsOrQuotingInRoomIds.returns(cursorOf([]));
+		modelsMock.Messages.findFilesByRoomIdPinnedTimestampAndUsers.returns(fakeCursor(origins.map((_id) => ({ _id, files: [] }))));
+		modelsMock.Messages.findByDiscussionIdsOrQuotingInRoomIds.returns(fakeCursor([]));
 
 		await cleanRoomHistory({ rid: 'rid', ignoreDiscussion: false, filesOnly: true });
 
@@ -187,8 +180,8 @@ describe('cleanRoomHistory', () => {
 	});
 
 	it('clears pruned threads from unread lists in bounded batches', async () => {
-		modelsMock.Messages.findThreadsByRoomIdPinnedTimestampAndUsers.returns(cursorOf(ids('t', 1500).map((_id) => ({ _id }))));
-		modelsMock.Subscriptions.findUnreadThreadsByRoomId.returns(cursorOf([{ _id: 'sub1' }]));
+		modelsMock.Messages.findThreadsByRoomIdPinnedTimestampAndUsers.returns(fakeCursor(ids('t', 1500).map((_id) => ({ _id }))));
+		modelsMock.Subscriptions.findUnreadThreadsByRoomId.returns(fakeCursor([{ _id: 'sub1' }]));
 		modelsMock.Subscriptions.removeUnreadThreadsByRoomId.resolves({ modifiedCount: 1 });
 
 		await cleanRoomHistory({ rid: 'rid', ignoreThreads: false });

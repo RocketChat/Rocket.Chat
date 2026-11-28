@@ -7,7 +7,7 @@ import { buffer } from 'node:stream/consumers';
 import { api } from '@rocket.chat/core-services';
 import type { IMessage, IUpload, IUser } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { mockModel } from '@rocket.chat/models/testing';
+import { fakeCursor, mockModel } from '@rocket.chat/models/testing';
 import sharp from 'sharp';
 
 import { UploadService } from './service';
@@ -44,10 +44,6 @@ const usersModel = { unsetAvatarData: jest.fn() };
 const uploadsStore = { insert: jest.fn(), deleteById: jest.fn(), _store: { getReadStream: jest.fn() } };
 const avatarsStore = { deleteByName: jest.fn() };
 
-const cursorOf = (ids: string[]) => ({
-	map: (fn: (doc: { _id: string }) => string) => ({ toArray: async () => ids.map((_id) => fn({ _id })) }),
-});
-
 const user = { _id: 'u1', username: 'jane' } as IUser;
 const uploadedAt = new Date('2026-09-01T10:00:00.000Z');
 
@@ -62,7 +58,7 @@ describe('UploadService', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
 		jest.mocked(FileUpload.getStore).mockImplementation((name) => ({ Uploads: uploadsStore, Avatars: avatarsStore })[name] as any);
-		uploadsModel.findAllByOriginalFileId.mockReturnValue(cursorOf([]) as any);
+		uploadsModel.findAllByOriginalFileId.mockReturnValue(fakeCursor([]));
 		uploadsStore.deleteById.mockResolvedValue(undefined);
 		service = new UploadService();
 	});
@@ -125,7 +121,7 @@ describe('UploadService', () => {
 
 	describe('deleteFile', () => {
 		it('deletes the original file before its derivatives and returns every id removed', async () => {
-			uploadsModel.findAllByOriginalFileId.mockReturnValue(cursorOf(['thumb1', 'thumb2']) as any);
+			uploadsModel.findAllByOriginalFileId.mockReturnValue(fakeCursor([{ _id: 'thumb1' }, { _id: 'thumb2' }]));
 
 			await expect(service.deleteFile(user, 'f1', null)).resolves.toEqual({ deletedFiles: ['f1', 'thumb1', 'thumb2'] });
 
@@ -134,7 +130,7 @@ describe('UploadService', () => {
 		});
 
 		it('updates the message before any file is deleted', async () => {
-			uploadsModel.findAllByOriginalFileId.mockReturnValue(cursorOf(['thumb1']) as any);
+			uploadsModel.findAllByOriginalFileId.mockReturnValue(fakeCursor([{ _id: 'thumb1' }]));
 			const msg = { _id: 'm1', rid: 'r1', files: [{ _id: 'f1', name: 'a' }] } as IMessage;
 
 			await service.deleteFile(user, 'f1', msg);
@@ -145,7 +141,7 @@ describe('UploadService', () => {
 		});
 
 		it('logs a derivative that could not be deleted and removes the remaining ones', async () => {
-			uploadsModel.findAllByOriginalFileId.mockReturnValue(cursorOf(['thumb1', 'thumb2']) as any);
+			uploadsModel.findAllByOriginalFileId.mockReturnValue(fakeCursor([{ _id: 'thumb1' }, { _id: 'thumb2' }]));
 			const err = new Error('storage is down');
 			uploadsStore.deleteById.mockResolvedValueOnce(undefined).mockRejectedValueOnce(err).mockResolvedValueOnce(undefined);
 
@@ -156,7 +152,7 @@ describe('UploadService', () => {
 		});
 
 		it('propagates a failure to delete the original file and leaves its derivatives alone', async () => {
-			uploadsModel.findAllByOriginalFileId.mockReturnValue(cursorOf(['thumb1']) as any);
+			uploadsModel.findAllByOriginalFileId.mockReturnValue(fakeCursor([{ _id: 'thumb1' }]));
 			const err = new Error('storage is down');
 			uploadsStore.deleteById.mockRejectedValueOnce(err);
 
@@ -170,7 +166,7 @@ describe('UploadService', () => {
 		const removedMarker = { type: 'removed-file', color: '#FD745E', text: '_File_removed_' };
 
 		it('drops the removed files and replaces only their attachments', async () => {
-			uploadsModel.findAllByOriginalFileId.mockReturnValue(cursorOf(['thumb1']) as any);
+			uploadsModel.findAllByOriginalFileId.mockReturnValue(fakeCursor([{ _id: 'thumb1' }]));
 			const msg = {
 				_id: 'm1',
 				rid: 'r1',
