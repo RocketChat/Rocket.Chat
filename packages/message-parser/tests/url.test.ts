@@ -146,6 +146,15 @@ describe('autoLink with custom hosts settings comming from Rocket.Chat', () => {
 	});
 });
 
+describe('autoLink with the private-use .internal top-level domain', () => {
+	test.each([
+		['https://wiki.corp.internal/page', [paragraph([link('https://wiki.corp.internal/page')])]],
+		['wiki.internal', [paragraph([link('//wiki.internal', [plain('wiki.internal')])])]],
+	])('parses %p', (input, output) => {
+		expect(parse(input)).toEqual(output);
+	});
+});
+
 describe('autoLink WITHOUT custom hosts settings comming from Rocket.Chat', () => {
 	test.each([['https://internaltool.testt', [paragraph([plain('https://internaltool.testt')])]]])('parses %p', (input, output) => {
 		expect(parse(input, { customDomains: ['local'] })).toEqual(output);
