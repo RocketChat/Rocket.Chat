@@ -4,6 +4,9 @@ import { settings } from '../../settings/cached';
 let current: Bridge | undefined;
 
 export async function startIrcBridge(): Promise<void> {
+	current?.stop();
+	current?.remove();
+
 	const config = {
 		server: {
 			protocol: settings.get('IRC_Protocol'),
