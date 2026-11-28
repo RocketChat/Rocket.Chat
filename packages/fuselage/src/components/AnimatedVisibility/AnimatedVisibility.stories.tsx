@@ -16,7 +16,7 @@ export default {
 		},
 		children: {
 			control: false,
-			description: 'Content to render while visible; unmounted entirely once fully hidden.',
+			description: 'Element to render while visible; it must forward `className` and `onAnimationEnd` to its DOM element, and is unmounted entirely once fully hidden.',
 			table: { category: 'Content' },
 		},
 	},
