@@ -136,6 +136,16 @@ test.each([
 	expect(parse(input)).toEqual(output);
 });
 
+describe('autoLink inside angle brackets', () => {
+	test.each([
+		['<https://example.com/angle>', [paragraph([plain('<'), link('https://example.com/angle'), plain('>')])]],
+		['see <https://example.com/a?b=1> now', [paragraph([plain('see <'), link('https://example.com/a?b=1'), plain('> now')])]],
+		['https://example.com/a>b', [paragraph([link('https://example.com/a>b')])]],
+	])('parses %p', (input, output) => {
+		expect(parse(input)).toEqual(output);
+	});
+});
+
 describe('autoLink with custom hosts settings comming from Rocket.Chat', () => {
 	test.each([
 		['http://gitlab.local', [paragraph([link('http://gitlab.local', [plain('http://gitlab.local')])])]],
