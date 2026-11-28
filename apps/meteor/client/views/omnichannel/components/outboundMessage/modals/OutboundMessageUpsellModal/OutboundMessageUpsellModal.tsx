@@ -43,7 +43,7 @@ const OutboundMessageUpsellModal = ({ isCommunity, hasModule, isAdmin, onClose }
 			title={t('Outbound_message_upsell_title')}
 			description={t('Outbound_message_upsell_description')}
 			img={getURL('images/outbound-message-upsell.svg')}
-			imgAlt={t('Outbound_message_upsell_image_alt')}
+			imgAlt={t('Outbound_message_upsell_alt')}
 			imgHeight={255}
 		/>
 	);
