@@ -92,6 +92,7 @@ import { getPaginationItems } from '../lib/getPaginationItems';
 import { getRoomClassificationBanner } from '../lib/getRoomClassificationBanner';
 import { getUserFromParams } from '../lib/getUserFromParams';
 import { normalizeLegacyUfsLocation } from '../lib/normalizeLegacyUfsLocation';
+import { parseSelector } from '../lib/parseSelector';
 import {
 	findAdminRoom,
 	findAdminRooms,
@@ -810,7 +811,7 @@ API.v1.get(
 		return API.v1.success(
 			await findAdminRoomsAutocomplete({
 				uid: this.userId,
-				selector: JSON.parse(selector),
+				selector: parseSelector(selector),
 			}),
 		);
 	},
@@ -879,7 +880,7 @@ API.v1.get(
 		return API.v1.success(
 			await findChannelAndPrivateAutocomplete({
 				uid: this.userId,
-				selector: JSON.parse(selector),
+				selector: parseSelector(selector),
 			}),
 		);
 	},
@@ -913,7 +914,7 @@ API.v1.get(
 		return API.v1.success(
 			await findChannelAndPrivateAutocompleteWithPagination({
 				uid: this.userId,
-				selector: JSON.parse(selector),
+				selector: parseSelector(selector),
 				pagination: {
 					offset,
 					count,

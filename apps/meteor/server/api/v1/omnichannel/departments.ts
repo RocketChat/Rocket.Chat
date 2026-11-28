@@ -28,6 +28,7 @@ import {
 } from '../../../lib/omnichannel/departmentsLib';
 import { settings } from '../../../settings';
 import { getPaginationItems } from '../../lib/getPaginationItems';
+import { parseSelector } from '../../lib/parseSelector';
 
 API.v1.addRoute(
 	'livechat/department',
@@ -236,7 +237,7 @@ API.v1.addRoute(
 				return API.v1.failure("The 'selector' param is required");
 			}
 
-			const { term, exceptions } = JSON.parse(selector);
+			const { term, exceptions } = parseSelector<{ term: string; exceptions?: string[] }>(selector);
 
 			return API.v1.success(
 				await findDepartmentsToAutocomplete({
