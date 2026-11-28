@@ -1,17 +1,16 @@
-import { Tabs } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRouter, useRouteParameter, useSetting } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import { useEffect, useCallback } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ChannelsTab from './tabs/channels/ChannelsTab';
 import TeamsTab from './tabs/teams/TeamsTab';
 import UsersTab from './tabs/users/UsersTab';
+import { PageTabs } from '../../components/PageTabs';
 
 type TabName = 'users' | 'channels' | 'teams' | 'external';
 
-const DirectoryPage = (): ReactElement => {
+const DirectoryPage = () => {
 	const { t } = useTranslation();
 
 	const defaultTab = useSetting<TabName>('Accounts_Directory_DefaultView', 'users');
@@ -35,27 +34,19 @@ const DirectoryPage = (): ReactElement => {
 		[router, federationEnabled, defaultTab],
 	);
 
-	const handleTabClick = useCallback((tab: TabName) => () => router.navigate(`/directory/${tab}`), [router]);
-
 	return (
 		<Page background='room'>
 			<PageHeader title={t('Directory')} />
-			<Tabs flexShrink={0}>
-				<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>
-					{t('Channels')}
-				</Tabs.Item>
-				<Tabs.Item selected={tab === 'users'} onClick={handleTabClick('users')}>
-					{t('Users')}
-				</Tabs.Item>
-				<Tabs.Item selected={tab === 'teams'} onClick={handleTabClick('teams')}>
-					{t('Teams')}
-				</Tabs.Item>
-				{federationEnabled && (
-					<Tabs.Item selected={tab === 'external'} onClick={handleTabClick('external')}>
-						{t('External_Users')}
-					</Tabs.Item>
-				)}
-			</Tabs>
+			<PageTabs<TabName>
+				items={[
+					{ id: 'channels', label: t('Channels') },
+					{ id: 'users', label: t('Users') },
+					{ id: 'teams', label: t('Teams') },
+					{ id: 'external', label: t('External_Users'), hidden: !federationEnabled },
+				]}
+				selected={tab}
+				onSelect={(tab) => router.navigate(`/directory/${tab}`)}
+			/>
 			<PageContent>
 				{tab === 'channels' && <ChannelsTab />}
 				{tab === 'users' && <UsersTab />}

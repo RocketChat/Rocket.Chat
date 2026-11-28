@@ -18,7 +18,9 @@ export const useSDK = () => {
 	return context.sdk;
 };
 
-const SDKProvider = ({ children }: { serverURL: string; children: ComponentChildren }) => {
+export type SDKProviderProps = { serverURL: string; children: ComponentChildren };
+
+const SDKProvider = ({ children }: SDKProviderProps) => {
 	const sdk = useMemo(() => Livechat, []);
 
 	return <SDKContext.Provider value={{ sdk }}>{children}</SDKContext.Provider>;

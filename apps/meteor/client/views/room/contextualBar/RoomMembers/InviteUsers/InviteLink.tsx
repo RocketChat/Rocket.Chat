@@ -1,16 +1,15 @@
-import { Box, Field, FieldLabel, FieldRow, UrlInput, Icon, Button, InputBoxSkeleton } from '@rocket.chat/fuselage';
-import { useId, type ReactElement } from 'react';
+import { Field, FieldHint, FieldLabel, FieldRow, UrlInput, Icon, Button, ButtonGroup, InputBoxSkeleton } from '@rocket.chat/fuselage';
+import { useClipboardWithToast } from '@rocket.chat/ui-client';
+import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import useClipboardWithToast from '../../../../../hooks/useClipboardWithToast';
-
-type InviteLinkProps = {
+export type InviteLinkProps = {
 	linkText: string;
 	captionText: string;
 	onClickEdit: () => void;
 };
 
-const InviteLink = ({ linkText, captionText, onClickEdit }: InviteLinkProps): ReactElement => {
+const InviteLink = ({ linkText, captionText, onClickEdit }: InviteLinkProps) => {
 	const { t } = useTranslation();
 	const { copy } = useClipboardWithToast(linkText);
 	const inviteLinkId = useId();
@@ -18,25 +17,24 @@ const InviteLink = ({ linkText, captionText, onClickEdit }: InviteLinkProps): Re
 	return (
 		<>
 			<Field>
-				<FieldLabel htmlFor={inviteLinkId} flexGrow={0}>
-					{t('Invite_Link')}
-				</FieldLabel>
+				<FieldLabel htmlFor={inviteLinkId}>{t('Invite_Link')}</FieldLabel>
 				<FieldRow>
 					{!linkText && <InputBoxSkeleton />}
 					{linkText && (
-						<UrlInput id={inviteLinkId} value={linkText} addon={<Icon onClick={(): Promise<void> => copy()} name='copy' size='x16' />} />
+						<UrlInput
+							id={inviteLinkId}
+							value={linkText}
+							aria-describedby={captionText ? `${inviteLinkId}-hint` : undefined}
+							endAddon={<Icon onClick={(): Promise<void> => copy()} name='copy' size='x16' />}
+						/>
 					)}
 				</FieldRow>
-				{captionText && (
-					<Box pb={8} color='annotation' fontScale='c2'>
-						{captionText}
-					</Box>
-				)}
+				{captionText && <FieldHint id={`${inviteLinkId}-hint`}>{captionText}</FieldHint>}
 			</Field>
 			{onClickEdit && (
-				<Box mbs={8}>
+				<ButtonGroup>
 					<Button onClick={onClickEdit}>{t('Edit_Invite')}</Button>
-				</Box>
+				</ButtonGroup>
 			)}
 		</>
 	);

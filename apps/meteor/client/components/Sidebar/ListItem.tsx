@@ -1,5 +1,5 @@
 import { Option, OptionColumn, OptionContent, OptionIcon, OptionInput } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactElement, ReactNode } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 
 type ListItemCommonProps = {
 	text: ReactNode;
@@ -18,9 +18,9 @@ type ListItemConditionalProps =
 			gap?: boolean;
 	  };
 
-type ListItemProps = ListItemCommonProps & ListItemConditionalProps;
+export type ListItemProps = ListItemCommonProps & ListItemConditionalProps;
 
-const ListItem = ({ icon, text, input, children, gap, ...props }: ListItemProps): ReactElement => (
+const ListItem = ({ icon, text, input, children, gap, ...props }: ListItemProps) => (
 	<Option {...props}>
 		{icon && <OptionIcon name={icon} />}
 		{gap && <OptionColumn />}

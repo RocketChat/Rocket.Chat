@@ -1,12 +1,12 @@
 import type { IThreadMainMessage, IThreadMessage } from '@rocket.chat/core-typings';
-import { isE2EEMessage, isQuoteAttachment } from '@rocket.chat/core-typings';
+import { isE2EEMessage } from '@rocket.chat/core-typings';
 import { MessageBody } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserId, useUserPresence } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { splitQuoteAttachments } from '../../../../lib/utils/splitQuoteAttachments';
 import MessageContentBody from '../../MessageContentBody';
 import ReadReceiptIndicator from '../../ReadReceiptIndicator';
 import Attachments from '../../content/Attachments';
@@ -16,20 +16,17 @@ import MessageActions from '../../content/MessageActions';
 import Reactions from '../../content/Reactions';
 import UrlPreviews from '../../content/UrlPreviews';
 import { useNormalizedMessage } from '../../hooks/useNormalizedMessage';
-import { useOembedLayout } from '../../hooks/useOembedLayout';
-import { useSubscriptionFromMessageQuery } from '../../hooks/useSubscriptionFromMessageQuery';
-import { useMessageListReadReceipts } from '../../list/MessageListContext';
+import { useMessageListIsBroadcast, useMessageListOembedEnabled, useMessageListReadReceipts } from '../../list/MessageListContext';
 import UiKitMessageBlock from '../../uikit/UiKitMessageBlock';
 
-type ThreadMessageContentProps = {
+export type ThreadMessageContentProps = {
 	message: IThreadMessage | IThreadMainMessage;
 };
 
-const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElement => {
+const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 	const encrypted = isE2EEMessage(message);
-	const { enabled: oembedEnabled } = useOembedLayout();
-	const subscription = useSubscriptionFromMessageQuery(message).data ?? undefined;
-	const broadcast = subscription?.broadcast ?? false;
+	const oembedEnabled = useMessageListOembedEnabled();
+	const broadcast = useMessageListIsBroadcast();
 	const uid = useUserId();
 	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
 	const messageUser = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
@@ -40,9 +37,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 
 	const isMessageEncrypted = encrypted && normalizedMessage?.e2e === 'pending';
 
-	const quotes = normalizedMessage?.attachments?.filter(isQuoteAttachment) || [];
-
-	const attachments = normalizedMessage?.attachments?.filter((attachment) => !isQuoteAttachment(attachment)) || [];
+	const { quotes, attachments } = splitQuoteAttachments(normalizedMessage.attachments);
 
 	return (
 		<>
@@ -52,12 +47,22 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 				</MessageBody>
 			)}
 
-			{!!quotes?.length && <Attachments attachments={quotes} />}
+			{!!quotes?.length && (
+				<Attachments
+					attachments={quotes}
+					source={{ rid: message.rid, mid: message._id, username: message.u.username, name: message.u.name }}
+				/>
+			)}
 
 			{!normalizedMessage.blocks?.length && !!normalizedMessage.md?.length && (
 				<>
 					{(!encrypted || normalizedMessage.e2e === 'done') && (
-						<MessageContentBody md={normalizedMessage.md} mentions={normalizedMessage.mentions} channels={normalizedMessage.channels} />
+						<MessageContentBody
+							md={normalizedMessage.md}
+							msg={normalizedMessage.mdSource}
+							mentions={normalizedMessage.mentions}
+							channels={normalizedMessage.channels}
+						/>
 					)}
 				</>
 			)}
@@ -66,7 +71,13 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 				<UiKitMessageBlock rid={normalizedMessage.rid} mid={normalizedMessage._id} blocks={normalizedMessage.blocks} />
 			)}
 
-			{!!attachments && <Attachments id={message.files?.[0]?._id} attachments={attachments} />}
+			{!!attachments && (
+				<Attachments
+					id={message.files?.[0]?._id}
+					attachments={attachments}
+					source={{ rid: message.rid, mid: message._id, username: message.u.username, name: message.u.name }}
+				/>
+			)}
 
 			{oembedEnabled && !!normalizedMessage.urls?.length && <UrlPreviews urls={normalizedMessage.urls} />}
 

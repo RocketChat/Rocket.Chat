@@ -1,0 +1,77 @@
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
+
+import { mockModel } from '@rocket.chat/models/testing';
+import { expect } from 'chai';
+import sinon from 'sinon';
+
+const notificationQueueModelStub = {
+	findNextInQueueOrExpired: sinon.stub(),
+	clearScheduleByUserId: sinon.stub(),
+	removeById: sinon.stub(),
+	unsetSendingById: sinon.stub(),
+	setErrorById: sinon.stub(),
+};
+const pushNotificationStub = { send: sinon.stub() };
+
+let Notification: any;
+
+before(async () => {
+	mock.module('@rocket.chat/tracing', { exports: { tracerSpan: (_name: string, _options: unknown, fn: () => unknown) => fn() } });
+	mock.module('../../logger/system', { exports: { SystemLogger: { error: sinon.stub() } } });
+	mock.module('../message/email', { exports: { sendEmailFromData: sinon.stub() } });
+	mock.module('../push-config', { exports: { PushNotification: pushNotificationStub } });
+	({ Notification } = await import('./NotificationQueue'));
+});
+
+const queueItem = (id: string) => ({ _id: id, uid: 'user1', rid: 'room1', mid: 'msg1', items: [{ type: 'push', data: {} }] });
+
+describe('NotificationQueue worker', () => {
+	before(() => {
+		mockModel('NotificationQueue', notificationQueueModelStub);
+	});
+
+	beforeEach(() => {
+		Notification.maxBatchSize = 2;
+		notificationQueueModelStub.clearScheduleByUserId.resolves({ modifiedCount: 0 });
+		notificationQueueModelStub.removeById.resolves();
+		pushNotificationStub.send.resolves();
+	});
+
+	afterEach(() => {
+		Notification.stopWorker();
+		Object.values(notificationQueueModelStub).forEach((stub) => stub.reset());
+		pushNotificationStub.send.reset();
+	});
+
+	it('reports the queue as empty once there is nothing left to send', async () => {
+		notificationQueueModelStub.findNextInQueueOrExpired.onFirstCall().resolves(queueItem('n1')).resolves(null);
+
+		expect(await Notification.worker()).to.be.true;
+		expect(pushNotificationStub.send.calledOnce).to.be.true;
+	});
+
+	it('reports the queue as not empty when the batch limit stops it', async () => {
+		notificationQueueModelStub.findNextInQueueOrExpired.resolves(queueItem('n1'));
+
+		expect(await Notification.worker()).to.be.false;
+		expect(pushNotificationStub.send.callCount).to.equal(3);
+	});
+
+	it('starts the next batch right away when the batch limit was reached, and waits when the queue is empty', async () => {
+		const clock = sinon.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'] });
+		const executeWorkerLaterSpy = sinon.spy(Notification, 'executeWorkerLater');
+		try {
+			notificationQueueModelStub.findNextInQueueOrExpired.resolves(null);
+			[0, 1, 2].forEach((call) => notificationQueueModelStub.findNextInQueueOrExpired.onCall(call).resolves(queueItem(`n${call}`)));
+
+			Notification.initWorker();
+			await clock.tickAsync(Notification.cyclePause);
+			await clock.tickAsync(1);
+
+			expect(executeWorkerLaterSpy.args).to.deep.equal([[], [0], [Notification.cyclePause]]);
+			expect(pushNotificationStub.send.callCount).to.equal(3);
+		} finally {
+			clock.restore();
+		}
+	});
+});

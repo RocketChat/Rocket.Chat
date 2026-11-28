@@ -1,4 +1,4 @@
-import { useEffectEvent, useStableArray } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback, useStableArray } from '@rocket.chat/fuselage-hooks';
 import {
 	useUserId,
 	useSetting,
@@ -17,54 +17,12 @@ import { useAppsRoomActions } from './hooks/useAppsRoomActions';
 import { useCoreRoomActions } from './hooks/useCoreRoomActions';
 import { useCoreRoomRoutes } from './hooks/useCoreRoomRoutes';
 
-type RoomToolboxProviderProps = { children: ReactNode };
+export type RoomToolboxProviderProps = { children: ReactNode };
 
 const RoomToolboxProvider = ({ children }: RoomToolboxProviderProps) => {
 	const room = useRoom();
 
 	const router = useRouter();
-
-	const openTab = useEffectEvent((actionId: string, context?: string) => {
-		if (actionId === tab?.id && context === undefined) {
-			return closeTab();
-		}
-
-		const routeName = router.getRouteName();
-
-		if (!routeName) {
-			throw new Error('Route name is not defined');
-		}
-
-		const { layout } = router.getSearchParameters();
-
-		router.navigate({
-			name: routeName,
-			params: {
-				...router.getRouteParameters(),
-				tab: actionId,
-				context: context ?? '',
-			},
-			search: layout ? { layout } : undefined,
-		});
-	});
-
-	const closeTab = useEffectEvent(() => {
-		const routeName = router.getRouteName();
-
-		if (!routeName) {
-			throw new Error('Route name is not defined');
-		}
-
-		router.navigate({
-			name: routeName,
-			params: {
-				...router.getRouteParameters(),
-				tab: '',
-				context: '',
-			},
-			search: router.getSearchParameters(),
-		});
-	});
 
 	const context = useRouteParameter('context');
 
@@ -100,6 +58,48 @@ const RoomToolboxProvider = ({ children }: RoomToolboxProviderProps) => {
 
 		return actions.find((action) => action.id === tabActionId);
 	}, [coreRoomRoutes, actions, tabActionId]);
+
+	const closeTab = useStableCallback(() => {
+		const routeName = router.getRouteName();
+
+		if (!routeName) {
+			throw new Error('Route name is not defined');
+		}
+
+		router.navigate({
+			name: routeName,
+			params: {
+				...router.getRouteParameters(),
+				tab: '',
+				context: '',
+			},
+			search: (({ msg: _, ...rest }) => rest)(router.getSearchParameters()),
+		});
+	});
+
+	const openTab = useStableCallback((actionId: string, context?: string) => {
+		if (actionId === tab?.id && context === undefined) {
+			return closeTab();
+		}
+
+		const routeName = router.getRouteName();
+
+		if (!routeName) {
+			throw new Error('Route name is not defined');
+		}
+
+		const { layout } = router.getSearchParameters();
+
+		router.navigate({
+			name: routeName,
+			params: {
+				...router.getRouteParameters(),
+				tab: actionId,
+				context: context ?? '',
+			},
+			search: layout ? { layout } : undefined,
+		});
+	});
 
 	const contextValue = useMemo(
 		(): RoomToolboxContextValue => ({

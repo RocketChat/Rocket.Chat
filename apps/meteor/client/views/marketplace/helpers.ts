@@ -1,10 +1,10 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { App } from '@rocket.chat/core-typings';
+import { AppSubscriptionStatus } from '@rocket.chat/core-typings';
 import semver from 'semver';
 
-// import { t } from '../../../app/utils/client';
 import { appErroredStatuses } from './helpers/appErroredStatuses';
-import { t } from '../../../app/utils/lib/i18n';
+import { t } from '../../../lib/i18n';
 
 export const appEnabledStatuses = [AppStatus.AUTO_ENABLED, AppStatus.MANUALLY_ENABLED];
 
@@ -225,7 +225,7 @@ export const appStatusSpanProps = (
 		};
 	}
 
-	const isOnTrialPeriod = subscriptionInfo && subscriptionInfo.status === 'trialing';
+	const isOnTrialPeriod = subscriptionInfo?.status === AppSubscriptionStatus.Trialing;
 	if (isOnTrialPeriod) {
 		return {
 			icon: 'checkmark-circled',

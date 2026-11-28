@@ -1,0 +1,114 @@
+import type { Meta, StoryObj } from '@storybook/react';
+
+import {
+	Sidepanel,
+	SidepanelHeader,
+	SidepanelHeaderActions,
+	SidepanelHeaderTitle,
+	SidepanelList,
+	SidepanelListItem,
+	SidepanelSearch,
+} from '.';
+import {
+	Avatar,
+	Box,
+	Icon,
+	IconButton,
+	Sidebar,
+	SidebarItemTitle,
+	SidebarItemCol,
+	SidebarItemBadge,
+	SidebarItemIcon,
+	SidebarItemMenu,
+	SidebarItemContent,
+	SidebarItemRow,
+	SidebarItem,
+	SidebarItemTimestamp,
+	Tag,
+} from '../..';
+import { SidebarItemAvatarWrapper } from '../Sidebar/SidebarItem/SidebarItemAvatarWrapper';
+import { MenuTemplate, leterAvatarUrls, names } from '../Sidebar/helpers';
+
+export default {
+	title: 'Navigation/Sidepanel',
+	component: Sidepanel,
+	decorators: [
+		(Story) => (
+			<Box height='90vh' width='x276'>
+				<Story />
+			</Box>
+		),
+	],
+	argTypes: {
+		children: {
+			control: false,
+			description: 'Content of the sidepanel.',
+		},
+	},
+} satisfies Meta<typeof Sidepanel>;
+
+type Story = StoryObj<typeof Sidepanel>;
+
+const render: Story['render'] = (args) => (
+	<Sidepanel {...args}>
+		<SidepanelHeader>
+			<SidepanelHeaderTitle>Title Lorem Ipsum Indolor Ipsum Dolor Ipsum Ipsum</SidepanelHeaderTitle>
+			<IconButton icon='burger-menu' title='menu' />
+		</SidepanelHeader>
+		<SidepanelSearch placeholder='Search' />
+		<Box overflowY='auto' height='full'>
+			<SidepanelList>
+				{new Array(20).fill(null).map((_, index) => {
+					return (
+						<SidepanelListItem key={index}>
+							<SidebarItem level={2} href='#'>
+								<SidebarItemCol>
+									<SidebarItemRow>
+										<SidebarItemAvatarWrapper>
+											<Avatar size='x20' url={leterAvatarUrls[index % 4]} alt='avatar' />
+										</SidebarItemAvatarWrapper>
+										<SidebarItemIcon highlighted={Boolean(index === 0)} icon='team' />
+										<SidebarItemTitle unread={Boolean(index === 0)}>{names[index % 10]}</SidebarItemTitle>
+										<SidebarItemTimestamp>11:22:21 AM</SidebarItemTimestamp>
+									</SidebarItemRow>
+									<SidebarItemRow>
+										<SidebarItemContent unread={Boolean(index === 0)}>Lorem Ipsum Indolor Dolor Ipsum Ipsum</SidebarItemContent>
+										<Box display='flex' maxWidth='50%' flexShrink={1} flexGrow={0}>
+											<Tag role='button' icon={<Icon size='x12' name='team' />}>
+												Team title
+											</Tag>
+										</Box>
+										<SidebarItemBadge title='unread messages'>{index + 3}</SidebarItemBadge>
+										<SidebarItemMenu>
+											<MenuTemplate />
+										</SidebarItemMenu>
+									</SidebarItemRow>
+								</SidebarItemCol>
+							</SidebarItem>
+						</SidepanelListItem>
+					);
+				})}
+			</SidepanelList>
+		</Box>
+	</Sidepanel>
+);
+
+export const Default: Story = {
+	render,
+};
+
+export const InSidebar: Story = {
+	render: () => (
+		<Sidebar>
+			<SidepanelHeader>
+				<SidepanelHeaderTitle role='heading' aria-level={2}>
+					Inbox
+				</SidepanelHeaderTitle>
+				<SidepanelHeaderActions>
+					<IconButton icon='magnifier' size='small' title='Search' pressed />
+				</SidepanelHeaderActions>
+			</SidepanelHeader>
+			<SidepanelSearch variant='rooms-list' small placeholder='Search rooms' aria-label='Search rooms' />
+		</Sidebar>
+	),
+};

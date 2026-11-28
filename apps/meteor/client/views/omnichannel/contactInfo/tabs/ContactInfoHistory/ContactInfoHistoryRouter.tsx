@@ -5,7 +5,9 @@ import { useState } from 'react';
 import ContactInfoHistory from './ContactInfoHistory';
 import ContactInfoHistoryMessages from './ContactInfoHistoryMessages';
 
-const ContactInfoHistoryRouter = ({ contact }: { contact: Serialized<ILivechatContact> }) => {
+export type ContactInfoHistoryRouterProps = { contact: Serialized<ILivechatContact> };
+
+const ContactInfoHistoryRouter = ({ contact }: ContactInfoHistoryRouterProps) => {
 	const [chatId, setChatId] = useState<string | undefined>();
 	const { navigate } = useRouter();
 

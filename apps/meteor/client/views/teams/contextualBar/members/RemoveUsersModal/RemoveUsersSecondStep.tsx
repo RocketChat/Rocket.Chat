@@ -1,9 +1,9 @@
 import type { Serialized, IRoom } from '@rocket.chat/core-typings';
-import { Icon } from '@rocket.chat/fuselage';
+import { ModalIcon } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-type RemoveUsersSecondStepProps = {
+export type RemoveUsersSecondStepProps = {
 	onClose: () => void;
 	onCancel: () => void;
 	onConfirm: (deletedRooms: { [key: string]: Serialized<IRoom> }) => void;
@@ -28,7 +28,7 @@ const RemoveUsersSecondStep = ({
 	return (
 		<GenericModal
 			variant='danger'
-			icon={<Icon name='modal-warning' size='x24' color='status-font-on-warning' />}
+			icon={<ModalIcon variant='warning' name='modal-warning' />}
 			cancelText={rooms?.length > 0 ? t('Back') : t('Cancel')}
 			confirmText={t('Remove')}
 			title={t('Confirmation')}

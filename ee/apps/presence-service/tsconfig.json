@@ -1,10 +1,12 @@
 {
 	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
+		"rootDir": "./src",
 		"strictPropertyInitialization": false, // TODO: Remove this line
+		"rootDir": "./src",
 		"outDir": "./dist/ee/apps/presence-service/src",
 	},
-	"files": ["./src/service.ts"],
+	"files": ["./src/service.ts", "./src/fips.ts"],
 	"include": ["../../../apps/meteor/definition/externals/meteor"],
 	"exclude": ["./dist"]
 }

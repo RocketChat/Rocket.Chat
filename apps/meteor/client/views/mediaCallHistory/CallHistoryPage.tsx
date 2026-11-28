@@ -1,20 +1,21 @@
+import type { CallHistoryItem, Serialized } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useSort, usePagination, GenericTableLoadingRow } from '@rocket.chat/ui-client';
+import { useSort, usePagination, usePaginatedQuery, GenericTableLoadingRow, GenericNoResults } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
-import { MediaCallHistoryTable, isCallHistoryUnknownContact, isCallHistoryTableInternalContact } from '@rocket.chat/ui-voip';
-import type { CallHistoryTableInternalContact, CallHistoryUnknownContact, CallHistoryTableExternalContact } from '@rocket.chat/ui-voip';
-import { useQuery } from '@tanstack/react-query';
+import { MediaCallHistoryTable, isCallHistoryUnknownContact, isCallHistoryInternalContact } from '@rocket.chat/ui-voip';
+import type { CallHistoryContact } from '@rocket.chat/ui-voip';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useCallHistoryPageFilters } from './CallHistoryPageFilters';
+import CallHistoryPageFilters, { useCallHistoryPageFilters } from './CallHistoryPageFilters';
+import type { CallHistoryTab } from './CallHistoryPageLayout';
 import CallHistoryPageLayout from './CallHistoryPageLayout';
 import CallHistoryRowExternalUser from './CallHistoryRowExternalUser';
 import CallHistoryRowInternalUser from './CallHistoryRowInternalUser';
 import CallHistoryRowUnknownUser from './CallHistoryRowUnknownUser';
 import MediaCallHistoryContextualbar from './MediaCallHistoryContextualbar';
-import GenericNoResults from '../../components/GenericNoResults';
+import { getExternalContact } from './MediaCallHistoryExternal';
 import UserInfoWithData from '../room/contextualBar/UserInfo/UserInfoWithData';
 
 const getSort = (sortBy: 'contact' | 'type' | 'status' | 'timestamp', sortDirection: 'asc' | 'desc') => {
@@ -43,6 +44,18 @@ const getStateFilter = <T extends string[]>(states: T): T | [...T, 'error'] | un
 	return states;
 };
 
+const getContact = (item: Serialized<CallHistoryItem>): CallHistoryContact => {
+	if (item.external) {
+		return getExternalContact(item);
+	}
+
+	if (!item.contactUsername || !item.contactName) {
+		return { unknown: true };
+	}
+
+	return { _id: item.contactId, username: item.contactUsername, name: item.contactName };
+};
+
 type DetailsTab = {
 	openTab: 'details';
 	rid: string;
@@ -56,13 +69,17 @@ type UserInfoTab = {
 
 type Tab = DetailsTab | UserInfoTab;
 
-const CallHistoryPage = () => {
+type CallHistoryPageProps = {
+	tab: CallHistoryTab;
+	onChangeTab: (tab: CallHistoryTab) => void;
+};
+
+const CallHistoryPage = ({ tab: currentTab, onChangeTab }: CallHistoryPageProps) => {
 	const { t } = useTranslation();
 	const [tab, setTab] = useState<Tab | null>(null);
 	const sortProps = useSort<'contact' | 'type' | 'status' | 'timestamp'>('timestamp', 'desc');
 
 	const getCallHistory = useEndpoint('GET', '/v1/call-history.list');
-	const { setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 
 	const router = useRouter();
 	const historyId = useRouteParameter('historyId');
@@ -72,6 +89,16 @@ const CallHistoryPage = () => {
 	const { searchText, type, states } = filterProps;
 
 	const debouncedSearchText = useDebouncedValue(searchText, 400);
+
+	const stateFilter = getStateFilter(states);
+	const query = {
+		sort: JSON.stringify(getSort(sortProps.sortBy, sortProps.sortDirection)),
+		...(type !== 'all' && { direction: type }),
+		...(stateFilter && { state: stateFilter }),
+		...(debouncedSearchText && { filter: debouncedSearchText }),
+	};
+	const queryKey = ['call-history', 'list', query];
+	const { setItemsPerPage, setCurrent, ...paginationProps } = usePagination({ resetKey: queryKey });
 
 	const onClickRow = useCallback(
 		(rid: string, _id: string) => {
@@ -101,62 +128,23 @@ const CallHistoryPage = () => {
 		setTab(null);
 	}, [setTab, historyId, onClickRow, tab?.rid]);
 
-	const { data, isPending, error, refetch } = useQuery({
-		queryKey: [
-			'call-history',
-			'list',
-			sortProps.sortBy,
-			sortProps.sortDirection,
-			paginationProps.current,
-			paginationProps.itemsPerPage,
-			type,
-			states,
-			debouncedSearchText,
-		],
-		queryFn: () => {
-			const sort = getSort(sortProps.sortBy, sortProps.sortDirection);
-			const stateFilter = getStateFilter(states);
-
-			return getCallHistory({
-				count: paginationProps.itemsPerPage,
-				offset: paginationProps.current,
-				sort: JSON.stringify(sort),
-				...(type !== 'all' && { direction: type }),
-				...(stateFilter && { state: stateFilter }),
-				...(debouncedSearchText && { filter: debouncedSearchText }),
-			});
+	const { data, isPending, error, refetch } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getCallHistory({ ...query, ...page }),
 		},
+		itemsKey: 'items',
+		offset: paginationProps.current,
+		count: paginationProps.itemsPerPage,
 	});
 
 	const tableData = useMemo(() => {
 		return data?.items.map((item) => {
-			if (item.external) {
-				return {
-					_id: item._id,
-					contact: item.contactExtension
-						? ({ number: item.contactExtension } as CallHistoryTableExternalContact)
-						: ({ unknown: true } as CallHistoryUnknownContact),
-					type: item.direction,
-					status: item.state,
-					timestamp: item.ts,
-					duration: item.duration,
-				};
-			}
-			if (!item.contactUsername || !item.contactName) {
-				return {
-					_id: item._id,
-					contact: { unknown: true } as CallHistoryUnknownContact,
-					type: item.direction,
-					status: item.state,
-					timestamp: item.ts,
-					duration: item.duration,
-				};
-			}
 			return {
 				_id: item._id,
-				rid: item.rid,
-				contact: { _id: item.contactId, username: item.contactUsername, name: item.contactName } as CallHistoryTableInternalContact,
-				messageId: item.messageId,
+				...('rid' in item && { rid: item.rid }),
+				contact: getContact(item),
+				...('messageId' in item && { messageId: item.messageId }),
 				type: item.direction,
 				status: item.state,
 				timestamp: item.ts,
@@ -181,7 +169,7 @@ const CallHistoryPage = () => {
 
 	if (isPending) {
 		return (
-			<CallHistoryPageLayout filterProps={filterProps}>
+			<CallHistoryPageLayout filters={<CallHistoryPageFilters {...filterProps} />} tab={currentTab} onChangeTab={onChangeTab}>
 				<MediaCallHistoryTable sort={sortProps}>
 					<GenericTableLoadingRow cols={5} />
 					<GenericTableLoadingRow cols={5} />
@@ -195,7 +183,7 @@ const CallHistoryPage = () => {
 
 	if (error) {
 		return (
-			<CallHistoryPageLayout filterProps={filterProps}>
+			<CallHistoryPageLayout filters={<CallHistoryPageFilters {...filterProps} />} tab={currentTab} onChangeTab={onChangeTab}>
 				<GenericNoResults
 					icon='warning'
 					title={t('Something_went_wrong')}
@@ -208,7 +196,12 @@ const CallHistoryPage = () => {
 	}
 
 	return (
-		<CallHistoryPageLayout filterProps={filterProps} contextualBar={contextualBar}>
+		<CallHistoryPageLayout
+			filters={<CallHistoryPageFilters {...filterProps} />}
+			contextualBar={contextualBar}
+			tab={currentTab}
+			onChangeTab={onChangeTab}
+		>
 			{!tableData || (tableData.length === 0 && <GenericNoResults />)}
 			{tableData && tableData.length > 0 && (
 				<MediaCallHistoryTable sort={sortProps}>
@@ -216,7 +209,7 @@ const CallHistoryPage = () => {
 						if (isCallHistoryUnknownContact(item.contact)) {
 							return <CallHistoryRowUnknownUser key={item._id} {...item} contact={item.contact} onClick={() => onClickRow('', item._id)} />;
 						}
-						if (isCallHistoryTableInternalContact(item.contact)) {
+						if (isCallHistoryInternalContact(item.contact)) {
 							return (
 								<CallHistoryRowInternalUser
 									key={item._id}

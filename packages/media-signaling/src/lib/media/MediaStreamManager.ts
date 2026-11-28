@@ -1,9 +1,9 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import { MediaStreamWrapper } from './MediaStreamWrapper';
-import type { IMediaSignalLogger } from '../../definition';
-import type { IMediaStreamManager, MediaStreamManagerEvents } from '../../definition/media/IMediaStreamManager';
-import type { MediaStreamIdentification } from '../../definition/media/MediaStreamIdentification';
+import { MediaStreamWrapper } from './MediaStreamWrapper.js';
+import type { IMediaSignalLogger } from '../../definition/index.js';
+import type { IMediaStreamManager, MediaStreamManagerEvents } from '../../definition/media/IMediaStreamManager.js';
+import type { MediaStreamIdentification } from '../../definition/media/MediaStreamIdentification.js';
 
 export class MediaStreamManager implements IMediaStreamManager {
 	public readonly emitter: Emitter<MediaStreamManagerEvents>;
@@ -101,9 +101,9 @@ export class MediaStreamManager implements IMediaStreamManager {
 			return [this.mainRemote];
 		}
 
-		// A video track for an unidentified stream, let's ignore it
-		this.logger?.debug('unidentified stream, ignoring video track');
-		return [];
+		// A video track for an unidentified stream - since the only video we support now is screen share, assume that's what this is
+		this.logger?.debug('unidentified stream, assuming screen-share');
+		return [this.screenShareRemote];
 	}
 
 	private createStream(remote: boolean, tag: string): MediaStreamWrapper {

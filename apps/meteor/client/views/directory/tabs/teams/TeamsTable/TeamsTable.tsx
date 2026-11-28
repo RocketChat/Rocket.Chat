@@ -1,5 +1,5 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
-import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -7,26 +7,28 @@ import {
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableLoadingTable,
+	usePaginatedQuery,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
-import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent, MouseEvent } from 'react';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import TeamsTableRow from './TeamsTableRow';
 import FilterByText from '../../../../../components/FilterByText';
-import GenericNoResults from '../../../../../components/GenericNoResults';
 import { useDirectoryQuery } from '../../../hooks/useDirectoryQuery';
 
 const TeamsTable = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 768px)');
 	const [text, setText] = useState('');
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'usersCount' | 'lastMessage' | 'createdAt'>('name');
+
+	const columns: TableColumnWidth[] = ['auto', '100px', ...(mediaQuery ? (['150px'] as const) : [])];
 
 	const headers = useMemo(
 		() =>
@@ -34,9 +36,7 @@ const TeamsTable = () => {
 				<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 					{t('Name')}
 				</GenericTableHeaderCell>,
-				<GenericTableHeaderCell key='channelsCount' w='100px'>
-					{t('Channels')}
-				</GenericTableHeaderCell>,
+				<GenericTableHeaderCell key='channelsCount'>{t('Channels')}</GenericTableHeaderCell>,
 				mediaQuery && (
 					<GenericTableHeaderCell
 						key='createdAt'
@@ -44,7 +44,6 @@ const TeamsTable = () => {
 						active={sortBy === 'createdAt'}
 						onClick={setSort}
 						sort='createdAt'
-						w='150px'
 					>
 						{t('Created_at')}
 					</GenericTableHeaderCell>
@@ -57,16 +56,35 @@ const TeamsTable = () => {
 	const groupsRoute = useRoute('group');
 
 	const getDirectoryData = useEndpoint('GET', '/v1/directory');
-	const query = useDirectoryQuery({ text, current, itemsPerPage }, [sortBy, sortDirection], 'teams');
-	const { data, isFetched, isLoading, isError, refetch } = useQuery({
-		queryKey: ['getDirectoryData', query],
-		queryFn: () => getDirectoryData(query),
+	const query = useDirectoryQuery({ text }, [sortBy, sortDirection], 'teams');
+	const queryKey = ['getDirectoryData', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetKey: queryKey,
+	});
+	const { data, isFetched, isLoading, isError, refetch } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getDirectoryData({ ...query, ...page }),
+		},
+		itemsKey: 'result',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	const onClick = useMemo(
 		() => (name: IRoom['name'], type: IRoom['t']) => (e: KeyboardEvent | MouseEvent) => {
 			if (name && (e.type === 'click' || (e as KeyboardEvent).key === 'Enter')) {
-				type === 'c' ? channelsRoute.push({ name }) : groupsRoute.push({ name });
+				if (type === 'c') {
+					channelsRoute.push({ name });
+				} else {
+					groupsRoute.push({ name });
+				}
 			}
 		},
 		[channelsRoute, groupsRoute],
@@ -76,7 +94,7 @@ const TeamsTable = () => {
 		<>
 			<FilterByText placeholder={t('Teams_Search_teams')} value={text} onChange={(event) => setText(event.target.value)} />
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingTable headerCells={3} />
@@ -85,7 +103,7 @@ const TeamsTable = () => {
 			)}
 			{data?.result && data.result.length > 0 && isFetched && (
 				<>
-					<GenericTable>
+					<GenericTable columns={columns}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.result.map((team) => (

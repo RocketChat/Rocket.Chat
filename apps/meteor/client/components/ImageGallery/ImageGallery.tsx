@@ -6,7 +6,7 @@ import { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Navigation, Zoom, Keyboard, A11y } from 'swiper/modules/index.mjs';
-import type { SwiperClass, SwiperRef } from 'swiper/swiper-react';
+import type { SwiperClass, SwiperRef } from 'swiper/react';
 import { Swiper, SwiperSlide } from 'swiper/swiper-react.mjs';
 
 import 'swiper/swiper.css';
@@ -98,7 +98,16 @@ const swiperStyle = css`
 	}
 `;
 
-export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[]; onClose: () => void; loadMore?: () => void }) => {
+type ImageGalleryProps = {
+	/** The images in the order they are shown, left to right. */
+	images: Pick<IUpload, '_id' | 'path' | 'url' | 'description'>[];
+	/** The image shown first; the last one when it is not given. */
+	initialImageId?: string;
+	onClose: () => void;
+	loadMore?: () => void;
+};
+
+export const ImageGallery = ({ images, initialImageId, onClose, loadMore }: ImageGalleryProps) => {
 	const { t } = useTranslation();
 	const swiperRef = useRef<SwiperRef>(null);
 	const [, setSwiperInst] = useState<SwiperClass>();
@@ -107,7 +116,7 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 
 	const handleZoom = (ratio: number) => {
 		if (swiperRef.current?.swiper.zoom) {
-			const { scale, in: zoomIn } = swiperRef.current?.swiper.zoom;
+			const { scale, in: zoomIn } = swiperRef.current.swiper.zoom;
 			setZoomScale(scale + ratio);
 			return zoomIn(scale + ratio);
 		}
@@ -119,6 +128,8 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 
 	const preventPropagation = usePreventPropagation();
 
+	const initialIndex = images.findIndex(({ _id }) => _id === initialImageId);
+
 	return createPortal(
 		<>
 			<PaletteStyleTag theme='dark' selector='.swiper-container.image-gallery' tagId='image-gallery-palette' />
@@ -129,47 +140,45 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 							{zoomScale !== 1 && (
 								<IconButton
 									name='resize'
-									small
+									size='small'
 									icon='arrow-collapse'
 									title={t('Resize')}
-									rcx-swiper-zoom-out
-									secondary
+									variant='secondary'
 									onClick={handleResize}
 								/>
 							)}
 							<IconButton
 								name='zoom-out'
-								small
+								size='small'
 								icon='h-bar'
 								title={t('Zoom_out')}
-								rcx-swiper-zoom-out
 								onClick={handleZoomOut}
-								secondary
+								variant='secondary'
 								disabled={zoomScale === 1}
 							/>
-							<IconButton name='zoom-in' small icon='plus' title={t('Zoom_in')} rcx-swiper-zoom-in secondary onClick={handleZoomIn} />
+							<IconButton name='zoom-in' size='small' icon='plus' title={t('Zoom_in')} variant='secondary' onClick={handleZoomIn} />
 							<IconButton
 								name='close'
-								small
+								size='small'
 								icon='cross'
 								aria-label={t('Close_gallery')}
 								className='rcx-swiper-close-button'
-								secondary
+								variant='secondary'
 								onClick={onClose}
 							/>
 						</ButtonGroup>
 						<IconButton
-							icon='chevron-right'
-							aria-label={t('Next_image')}
+							icon='chevron-left'
+							aria-label={t('Previous_image')}
 							className='rcx-swiper-prev-button'
-							secondary
+							variant='secondary'
 							onClick={preventPropagation}
 						/>
 						<IconButton
-							icon='chevron-left'
-							aria-label={t('Previous_image')}
+							icon='chevron-right'
+							aria-label={t('Next_image')}
 							className='rcx-swiper-next-button'
-							secondary
+							variant='secondary'
 							onClick={preventPropagation}
 						/>
 						<Swiper
@@ -190,15 +199,12 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 								setGridSize(images.length);
 							}}
 							onReachBeginning={loadMore}
-							initialSlide={images.length - 1}
+							initialSlide={initialIndex === -1 ? images.length - 1 : initialIndex}
 						>
-							{[...images].reverse().map(({ _id, path, url, description }) => (
+							{images.map(({ _id, path, url, description }) => (
 								<SwiperSlide key={_id}>
 									<div className='swiper-zoom-container'>
-										{/* eslint-disable-next-line
-											jsx-a11y/no-noninteractive-element-interactions,
-											jsx-a11y/click-events-have-key-events
-										*/}
+										{/* oxlint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events */}
 										<img
 											src={path || url}
 											loading='lazy'

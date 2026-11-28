@@ -1,5 +1,5 @@
 import { Room, Upload } from '@rocket.chat/core-services';
-import { isBannedSubscription, isRegisterUser } from '@rocket.chat/core-typings';
+import { isBannedSubscription } from '@rocket.chat/core-typings';
 import type { IRoomNativeFederated, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 import { federationSDK, type HomeserverEventSignatures, type PduForType } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
@@ -7,8 +7,11 @@ import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import debounce from 'lodash.debounce';
 import mem from 'mem';
 
-import { createOrUpdateFederatedUser } from '../helpers/createOrUpdateFederatedUser';
 import { extractDomainFromMatrixUserId } from '../helpers/extractDomainFromMatrixUserId';
+import { getFederatedRoomName } from '../helpers/getFederatedRoomName';
+import { getJoinRuleType } from '../helpers/getJoinRuleType';
+import { getOrCreateFederatedUser } from '../helpers/getOrCreateFederatedUser';
+import { getRoomOrigin } from '../helpers/getRoomOrigin';
 import { getUsernameServername } from '../helpers/getUsernameServername';
 import { MatrixMediaService } from '../services/MatrixMediaService';
 
@@ -73,33 +76,9 @@ async function downloadAndSetAvatar(user: IUser, avatarUrl: string | null): Prom
 	}
 }
 
-async function getOrCreateFederatedUser(userId: string): Promise<IUser> {
-	try {
-		const serverName = federationSDK.getConfig('serverName');
-		const [username, userServerName, isLocal] = getUsernameServername(userId, serverName);
-
-		const user = await Users.findOneByUsername(username);
-		if (user) {
-			return user;
-		}
-
-		if (isLocal) {
-			throw new Error(`Local user ${username} not found for Matrix ID: ${userId}`);
-		}
-
-		return createOrUpdateFederatedUser({
-			username: userId,
-			name: userId,
-			origin: userServerName,
-		});
-	} catch (err) {
-		logger.error({ msg: 'Error getting or creating federated user', err, userId });
-		throw new Error(`Error getting or creating federated user ${userId}`);
-	}
-}
-
 async function getOrCreateFederatedRoom({
 	matrixRoomId,
+	origin,
 	roomName,
 	roomFName,
 	roomType,
@@ -108,6 +87,7 @@ async function getOrCreateFederatedRoom({
 	inviteeUsername,
 }: {
 	matrixRoomId: string;
+	origin: string;
 	roomName: string;
 	roomFName: string;
 	roomType: RoomType;
@@ -119,11 +99,6 @@ async function getOrCreateFederatedRoom({
 		const room = await Rooms.findOne({ 'federation.mrid': matrixRoomId });
 		if (room) {
 			return room;
-		}
-
-		const origin = matrixRoomId.split(':').pop();
-		if (!origin) {
-			throw new Error(`Room origin not found for Matrix ID: ${matrixRoomId}`);
 		}
 
 		// TODO room creator is not always the inviter
@@ -148,37 +123,7 @@ async function getOrCreateFederatedRoom({
 		});
 	} catch (err) {
 		logger.error({ msg: 'Error getting or creating federated room', err, roomName });
-		throw new Error(`Error getting or creating federated room ${roomName}`);
-	}
-}
-
-// get the join rule type from the stripped state stored in the unsigned section of the event
-// as per the spec, we must support several types but we only support invite and public for now.
-// in the future, we must start looking into 'knock', 'knock_restricted', 'restricted' and 'private'.
-function getJoinRuleType(strippedState: PduForType<'m.room.join_rules'>[]): 'p' | 'c' | 'd' {
-	const joinRulesState = strippedState?.find((state: PduForType<'m.room.join_rules'>) => state.type === 'm.room.join_rules');
-
-	// as per the spec, users need to be invited to join a room, unless the room’s join rules state otherwise.
-	if (!joinRulesState) {
-		return 'p';
-	}
-
-	const joinRule = joinRulesState?.content?.join_rule;
-	switch (joinRule) {
-		case 'invite':
-			return 'p';
-		case 'public':
-			return 'c';
-		case 'knock':
-			throw new Error(`Knock join rule is not supported`);
-		case 'knock_restricted':
-			throw new Error(`Knock restricted join rule is not supported`);
-		case 'restricted':
-			throw new Error(`Restricted join rule is not supported`);
-		case 'private':
-			throw new Error(`Private join rule is not supported`);
-		default:
-			throw new Error(`Unknown join rule type: ${joinRule}`);
+		throw new Error(`Error getting or creating federated room ${roomName}`, { cause: err });
 	}
 }
 
@@ -190,29 +135,15 @@ async function handleInvite({
 	unsigned,
 }: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
 	const inviterUser = await getOrCreateFederatedUser(senderId);
-	if (!inviterUser) {
-		throw new Error(`Failed to get or create inviter user: ${senderId}`);
-	}
-
-	if (!isRegisterUser(inviterUser)) {
-		throw new Error('Inviter user is not registered');
-	}
-
 	const inviteeUser = await getOrCreateFederatedUser(userId);
-	if (!inviteeUser) {
-		throw new Error(`Failed to get or create invitee user: ${userId}`);
-	}
 
-	const strippedState = unsigned.invite_room_state;
+	const strippedState: PduForType[] | undefined = unsigned.invite_room_state;
 
 	const joinRuleType = getJoinRuleType(strippedState);
 
-	const roomOriginDomain = senderId.split(':')?.pop();
-	if (!roomOriginDomain) {
-		throw new Error(`Room origin domain not found: ${roomId}`);
-	}
+	const roomOriginDomain = getRoomOrigin(roomId, strippedState);
 
-	const roomNameState = strippedState?.find((state: PduForType<'m.room.name'>) => state.type === 'm.room.name');
+	const roomNameState = strippedState?.find((state) => state.type === 'm.room.name');
 	const matrixRoomName = roomNameState?.content?.name;
 
 	// DMs do not have a join rule type (they are treated as invite only rooms),
@@ -226,12 +157,13 @@ async function handleInvite({
 		roomName = senderId;
 		roomFName = senderId;
 	} else {
-		roomName = roomId.replace('!', '').replace(':', '_');
+		roomName = getFederatedRoomName(roomId);
 		roomFName = `${matrixRoomName}:${roomOriginDomain}`;
 	}
 
 	const room = await getOrCreateFederatedRoom({
 		matrixRoomId: roomId,
+		origin: roomOriginDomain,
 		roomName,
 		roomFName,
 		roomType,
@@ -288,9 +220,6 @@ async function handleJoin({
 	content,
 }: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
 	const joiningUser = await getOrCreateFederatedUser(userId);
-	if (!joiningUser?.username) {
-		throw new Error(`Failed to get or create joining user: ${userId}`);
-	}
 
 	const room = await Rooms.findOneFederatedByMrid(roomId);
 	if (!room) {
@@ -301,8 +230,15 @@ async function handleJoin({
 	// it means the join event was sent before the invite event, so we need to create the subscription and then accept the invite.
 	// this will happen when for example the user is unbanned, so the leave event will remove the subscription and then we just
 	// receive the join event without receiving the invite.
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, joiningUser._id);
-
+	let subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, joiningUser._id);
+	if (!subscription) {
+		const subId = await Room.createUserSubscription({
+			ts: new Date(),
+			room,
+			userToBeAdded: joiningUser,
+		});
+		subscription = subId ? await Subscriptions.findOneById(subId) : null;
+	}
 	if (!subscription) {
 		throw new Error(`Subscription not found while joining user ${userId} to room ${roomId}`);
 	}
@@ -326,7 +262,7 @@ async function handleJoin({
 		await Room.updateDirectMessageRoomName(
 			room,
 			[subscription._id],
-			[{ _id: joiningUser._id, name: content.displayname || joiningUser.name || joiningUser.username, username: joiningUser.username }],
+			[{ _id: joiningUser._id, name: content.displayname || joiningUser.name, username: joiningUser.username }],
 		);
 	}
 

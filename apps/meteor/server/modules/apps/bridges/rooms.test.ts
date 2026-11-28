@@ -1,0 +1,138 @@
+import { before, beforeEach, describe, it, mock } from 'node:test';
+
+import { suppliesAbacAttributes } from '@rocket.chat/apps/dist/server/bridges/RoomBridge';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import { mockModel } from '@rocket.chat/models/testing';
+import { expect } from 'chai';
+import sinon from 'sinon';
+
+const createPrivateGroupMethod = sinon.stub();
+const createChannelMethod = sinon.stub();
+const createDirectMessage = sinon.stub();
+const getSetting = sinon.stub();
+
+let AppRoomBridge: any;
+
+before(async () => {
+	mock.module('@rocket.chat/apps/dist/server/bridges/RoomBridge', { exports: { RoomBridge: class {}, suppliesAbacAttributes } });
+	mock.module('../../../lib/rooms/addUserToRoom', { exports: {} });
+	mock.module('../../../lib/rooms/deleteRoom', { exports: {} });
+	mock.module('../../../lib/rooms/removeUserFromRoom', { exports: {} });
+	mock.module('../../../meteor-methods/messages/createDirectMessage', { exports: { createDirectMessage } });
+	mock.module('../../../meteor-methods/messages/createDiscussion', { exports: {} });
+	mock.module('../../../meteor-methods/rooms/createChannel', { exports: { createChannelMethod } });
+	mock.module('../../../meteor-methods/rooms/createPrivateGroup', { exports: { createPrivateGroupMethod } });
+	mock.module('../../../settings', { exports: { settings: { get: getSetting } } });
+	({ AppRoomBridge } = await import('./rooms'));
+});
+
+const orchestrator = {
+	debugLog: () => undefined,
+	getConverters: () => ({
+		get: () => ({ convertAppRoom: async (room: IRoom) => ({ name: room.slugifiedName }) }),
+	}),
+	getManager: () => ({ getOneById: (appId: string) => (appId === 'app-id' ? { getName: () => 'Classifier' } : undefined) }),
+};
+
+const abacAttributes = [{ key: 'clearance', values: ['secret'] }];
+
+const buildRoom = (type: RoomType, attributes?: IRoom['abacAttributes']): IRoom =>
+	({
+		type,
+		slugifiedName: 'classified',
+		creator: { id: 'creator-id' },
+		...(attributes && { abacAttributes: attributes }),
+	}) as IRoom;
+
+describe('AppRoomBridge.create', () => {
+	let bridge: any;
+
+	before(() => {
+		mockModel('Users', { findOneById: async (_id: string) => ({ _id, username: 'creator' }) });
+	});
+
+	beforeEach(() => {
+		for (const stub of [createPrivateGroupMethod, createChannelMethod, createDirectMessage]) {
+			stub.reset();
+			stub.resolves({ rid: 'room-id' });
+		}
+		getSetting.reset();
+		getSetting.withArgs('ABAC_Enabled').returns(true);
+		bridge = new AppRoomBridge(orchestrator);
+	});
+
+	it('passes the ABAC attributes of a private room to the creation guard', async () => {
+		expect(await bridge.create(buildRoom(RoomType.PRIVATE_GROUP, abacAttributes), [], 'app-id')).to.equal('room-id');
+		expect(createPrivateGroupMethod.firstCall.args[7]).to.deep.equal(abacAttributes);
+	});
+
+	it('names the app creating a private room', async () => {
+		await bridge.create(buildRoom(RoomType.PRIVATE_GROUP, abacAttributes), [], 'app-id');
+
+		expect(createPrivateGroupMethod.firstCall.args[8]).to.deep.equal({ creator: 'creator-id', app: { _id: 'app-id', name: 'Classifier' } });
+	});
+
+	it('names the app by id when its name is unknown', async () => {
+		await bridge.create(buildRoom(RoomType.PRIVATE_GROUP, abacAttributes), [], 'unknown-app-id');
+
+		expect(createPrivateGroupMethod.firstCall.args[8]).to.deep.equal({
+			creator: 'creator-id',
+			app: { _id: 'unknown-app-id', name: undefined },
+		});
+	});
+
+	it('passes no ABAC attributes when the app supplies an empty list', async () => {
+		await bridge.create(buildRoom(RoomType.PRIVATE_GROUP, []), [], 'app-id');
+
+		expect(createPrivateGroupMethod.firstCall.args[7]).to.be.undefined;
+	});
+
+	[
+		{ shape: 'a string', abacAttributes: 'clearance' },
+		{ shape: 'an object', abacAttributes: {} },
+		{ shape: 'a list holding null', abacAttributes: [null] },
+		{ shape: 'an attribute without values', abacAttributes: [{ key: 'clearance' }] },
+		{ shape: 'an attribute whose values are a string', abacAttributes: [{ key: 'clearance', values: 'secret' }] },
+		{ shape: 'an attribute whose key is a list', abacAttributes: [{ key: ['clearance'], values: ['secret'] }] },
+		{
+			shape: 'a list repeating a key',
+			abacAttributes: [
+				{ key: 'clearance', values: ['secret'] },
+				{ key: 'clearance', values: ['topsecret'] },
+			],
+		},
+	].forEach(({ shape, abacAttributes: malformed }) => {
+		it(`refuses ABAC attributes given as ${shape}`, async () => {
+			await expect(bridge.create({ ...buildRoom(RoomType.PRIVATE_GROUP), abacAttributes: malformed }, [], 'app-id')).to.be.rejectedWith(
+				'error-abac-invalid-attributes',
+			);
+			expect(createPrivateGroupMethod.called).to.be.false;
+		});
+	});
+
+	it('refuses ABAC attributes when ABAC is disabled', async () => {
+		getSetting.withArgs('ABAC_Enabled').returns(false);
+
+		await expect(bridge.create(buildRoom(RoomType.PRIVATE_GROUP, abacAttributes), [], 'app-id')).to.be.rejectedWith(
+			'error-abac-not-enabled',
+		);
+		expect(createPrivateGroupMethod.called).to.be.false;
+	});
+
+	it('creates a private room without ABAC attributes when ABAC is disabled', async () => {
+		getSetting.withArgs('ABAC_Enabled').returns(false);
+
+		expect(await bridge.create(buildRoom(RoomType.PRIVATE_GROUP), [], 'app-id')).to.equal('room-id');
+	});
+
+	[RoomType.CHANNEL, RoomType.DIRECT_MESSAGE].forEach((type) => {
+		it(`refuses ABAC attributes on a room of type ${type}`, async () => {
+			await expect(bridge.create(buildRoom(type, abacAttributes), ['member'], 'app-id')).to.be.rejectedWith(
+				'error-abac-attributes-private-rooms-only',
+			);
+			expect(createChannelMethod.called).to.be.false;
+			expect(createDirectMessage.called).to.be.false;
+		});
+	});
+});

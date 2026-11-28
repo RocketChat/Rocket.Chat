@@ -7,21 +7,20 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	GenericTableRow,
+	usePaginatedQuery,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
-import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
+import { useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import SendTestButton from './SendTestButton';
-import GenericNoResults from '../../../components/GenericNoResults';
 
-const EmailInboxTable = (): ReactElement => {
-	const t = useTranslation();
+const EmailInboxTable = () => {
+	const { t } = useTranslation();
 	const router = useRoute('admin-email-inboxes');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'email' | 'active'>('name');
 
 	const onClick = useCallback(
@@ -38,13 +37,25 @@ const EmailInboxTable = (): ReactElement => {
 
 	const query = {
 		sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-		...(itemsPerPage && { count: itemsPerPage }),
-		...(current && { offset: current }),
 	};
 
-	const result = useQuery({
-		queryKey: ['email-list', query],
-		queryFn: () => endpoint(query),
+	const queryKey = ['email-list', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
+
+	const result = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => endpoint({ ...query, ...page }),
+		},
+		itemsKey: 'emailInboxes',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	const headers = useMemo(
@@ -86,11 +97,10 @@ const EmailInboxTable = (): ReactElement => {
 									tabIndex={0}
 									role='link'
 									action
-									width='full'
 								>
-									<GenericTableCell withTruncatedText>{emailInbox.name}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{emailInbox.email}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{emailInbox.active ? t('Yes') : t('No')}</GenericTableCell>
+									<GenericTableCell truncate>{emailInbox.name}</GenericTableCell>
+									<GenericTableCell truncate>{emailInbox.email}</GenericTableCell>
+									<GenericTableCell truncate>{emailInbox.active ? t('Yes') : t('No')}</GenericTableCell>
 									<SendTestButton id={emailInbox._id} />
 								</GenericTableRow>
 							))}
@@ -100,7 +110,7 @@ const EmailInboxTable = (): ReactElement => {
 						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
-						count={result.data.count}
+						count={result.data.total}
 						onSetItemsPerPage={onSetItemsPerPage}
 						onSetCurrent={onSetCurrent}
 						{...paginationProps}

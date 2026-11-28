@@ -9,47 +9,121 @@ DISCLAIMER: App related source code shown here are for testing purposes only, an
 In your tests, add a `before` step and call the `installLocalTestPackage` function, passing the path of your desired package. For instance:
 
 ```javascript
-import { appImplementsIPreFileUpload } from '../../data/apps/app-packages';
+import { appFileUploadTest } from '../../data/apps/app-packages';
 import { installLocalTestPackage } from '../../data/apps/helper';
 
 describe('My tests', () => {
 	before(async () => {
-		await installLocalTestPackage(appImplementsIPreFileUpload);
+		await installLocalTestPackage(appFileUploadTest);
 	});
 });
 ```
 
+Playwright tests use the equivalent helpers from `tests/e2e/utils/apps.ts` (`installLocalTestPackage`, `uninstallApp`, `getAppLogs`, `findAppLogItem`) instead.
+
+## How to rebuild a package
+
+Every package here is pre-built, and its source is in a `<details>` block below. To change one, copy that
+source into a scratch app directory, edit it, and package it again:
+
+```sh
+rc-apps package                      # @rocket.chat/apps-cli
+cp dist/<app-name>_<version>.zip <path to this folder>
+```
+
+Copy the new source back into the `<details>` block, and delete the scratch directory.
+
+Three things to know:
+
+- The scratch dir **must** be inside this repo. `@rocket.chat/apps-engine` is not installed there; it resolves
+  upward to the monorepo root `node_modules`, which is a symlink to `packages/apps-engine`. This is what lets
+  a fixture typecheck against unreleased engine APIs with no install step.
+- `@rocket.chat/apps-engine/*` is left **external** in the bundle (see `external:` in
+  `packages/apps/src/server/runtime/base/bundler.ts`), and the Deno runtime maps it back to
+  `packages/apps-engine/` (`packages/apps/deno-runtime/deno.jsonc`). So a packaged app runs against the
+  *server's* engine, not a frozen copy of it — an app can call engine APIs that did not exist when it was
+  packaged, and the zip does not need rebuilding when those APIs change.
+- Keep an app to a single class file. `rc-apps package` bundles the whole app into one file anyway, and one
+  file is what this document can show.
+
+`rc-apps package` also needs these in the scratch dir, and none of them goes in the package's `<details>` block:
+
+- A `package.json` listing `@rocket.chat/apps-engine`, such as
+  `{ "name": "<app-name>", "private": true, "devDependencies": { "@rocket.chat/apps-engine": "^1.58.0" } }`. Without it,
+  `npx` runs from the enclosing workspace and reports a missing `app.json`.
+- TypeScript 5, installed with `npm i --no-save --no-package-lock --ignore-scripts typescript@5`. The CLI uses the
+  TypeScript compiler API, which the monorepo's TypeScript 7 does not ship.
+
 ### Available apps
 
-#### IPreFileUpload handler
+#### File upload test
 
 File name: `file-upload-test_0.0.1.zip`
 
 An app that handles the `IPreFileUpload` event. If the file name starts with `"test-should-reject"`, the app will prevent the upload from happening. The error message will contain the contents of the uploaded file as evidence that the app could successfully read them.
+
+It also provides a public `POST upload-buffer` endpoint that uploads a file through `UploadCreator.uploadBuffer`. The body is `{ roomId, userId, filename, base64 }`, and the response is `{ type }`, the MIME type the server gave the upload.
 
 <details>
 <summary>App source code</summary>
 
 ```typescript
 import {
-    IHttp,
-    IModify,
-    IPersistence,
-    IRead,
+	HttpStatusCode,
+	IConfigurationExtend,
+	IEnvironmentRead,
+	IHttp,
+	IModify,
+	IPersistence,
+	IRead,
 } from '@rocket.chat/apps-engine/definition/accessors';
+import { ApiEndpoint, ApiSecurity, ApiVisibility, IApiEndpointInfo, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
 import { App } from '@rocket.chat/apps-engine/definition/App';
 import { FileUploadNotAllowedException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { IPreFileUpload } from '@rocket.chat/apps-engine/definition/uploads';
 import { IFileUploadContext } from '@rocket.chat/apps-engine/definition/uploads/IFileUploadContext';
 
-export class TestIPreFileUpload extends App implements IPreFileUpload {
-    public async executePreFileUpload(context: IFileUploadContext, read: IRead, http: IHttp, persis: IPersistence, modify: IModify): Promise<void> {
-        if (context.file.name.startsWith('test-should-reject')) {
-            console.log('[executePreFileUpload] Rejecting file which name starts with "test-should-reject"');
-            throw new FileUploadNotAllowedException(`Test file rejected ${context.content.toString()}`);
-        }
-        console.log('[executePreFileUpload] Did not reject file');
-    }
+class UploadBufferEndpoint extends ApiEndpoint {
+	public path = 'upload-buffer';
+
+	public async post(request: IApiRequest, endpoint: IApiEndpointInfo, read: IRead, modify: IModify): Promise<IApiResponse> {
+		const { roomId, userId, filename, base64 } = request.content;
+		const room = await read.getRoomReader().getById(roomId);
+		if (!room) {
+			return { status: HttpStatusCode.NOT_FOUND };
+		}
+
+		const upload = await modify
+			.getCreator()
+			.getUploadCreator()
+			.uploadBuffer(Buffer.from(base64, 'base64'), { filename, room, user: await read.getUserReader().getById(userId) });
+
+		return { status: HttpStatusCode.OK, content: { type: upload.type } };
+	}
+}
+
+export class TestFileUpload extends App implements IPreFileUpload {
+	protected async extendConfiguration(configuration: IConfigurationExtend, environmentRead: IEnvironmentRead): Promise<void> {
+		await configuration.api.provideApi({
+			visibility: ApiVisibility.PUBLIC,
+			security: ApiSecurity.UNSECURE,
+			endpoints: [new UploadBufferEndpoint(this)],
+		});
+	}
+
+	public async executePreFileUpload(
+		context: IFileUploadContext,
+		read: IRead,
+		http: IHttp,
+		persis: IPersistence,
+		modify: IModify,
+	): Promise<void> {
+		if (context.file.name.startsWith('test-should-reject')) {
+			console.log('[executePreFileUpload] Rejecting file which name starts with "test-should-reject"');
+			throw new FileUploadNotAllowedException(`Test file rejected ${context.content.toString()}`);
+		}
+		console.log('[executePreFileUpload] Did not reject file');
+	}
 }
 ```
 
@@ -62,6 +136,7 @@ File name: `api-parameter-test_0.0.1.zip`
 An app that provides a public API endpoint with URL parameters. The endpoint path is `/api/:param1/:param2/test` and returns the values of both parameters in the response.
 
 **Response format:**
+
 - Content-Type: `text/plain`
 - Body: `Param1: <param1_value>, Param2: <param2_value>`
 - Status: 200 OK
@@ -70,66 +145,47 @@ An app that provides a public API endpoint with URL parameters. The endpoint pat
 <summary>App source code</summary>
 
 **APIParameterTestApp.ts**
+
 ```typescript
-import {
-    IAppAccessors,
-    IConfigurationExtend,
-    IEnvironmentRead,
-    ILogger,
-} from '@rocket.chat/apps-engine/definition/accessors';
+import { IAppAccessors, IConfigurationExtend, IEnvironmentRead, ILogger } from '@rocket.chat/apps-engine/definition/accessors';
 import { ApiSecurity, ApiVisibility } from '@rocket.chat/apps-engine/definition/api';
 import { App } from '@rocket.chat/apps-engine/definition/App';
 import { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import { TestEndpoint } from './TestEndpoint';
 
 export class APIParameterTestApp extends App {
-    constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
-        super(info, logger, accessors);
-    }
+	constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
+		super(info, logger, accessors);
+	}
 
-    protected async extendConfiguration(configuration: IConfigurationExtend, environmentRead: IEnvironmentRead): Promise<void> {
-        await configuration.api.provideApi({
-            visibility: ApiVisibility.PUBLIC,
-            security: ApiSecurity.UNSECURE,
-            endpoints: [
-                new TestEndpoint(this),
-            ]
-        })
-    }
+	protected async extendConfiguration(configuration: IConfigurationExtend, environmentRead: IEnvironmentRead): Promise<void> {
+		await configuration.api.provideApi({
+			visibility: ApiVisibility.PUBLIC,
+			security: ApiSecurity.UNSECURE,
+			endpoints: [new TestEndpoint(this)],
+		});
+	}
 }
 ```
 
 **TestEndpoint.ts**
+
 ```typescript
-import {
-    HttpStatusCode,
-    IModify,
-    IRead,
-} from "@rocket.chat/apps-engine/definition/accessors";
-import {
-    ApiEndpoint,
-    IApiEndpointInfo,
-    IApiRequest,
-    IApiResponse,
-} from "@rocket.chat/apps-engine/definition/api";
+import { HttpStatusCode, IModify, IRead } from '@rocket.chat/apps-engine/definition/accessors';
+import { ApiEndpoint, IApiEndpointInfo, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
 
 export class TestEndpoint extends ApiEndpoint {
-    public path = "api/:param1/:param2/test";
+	public path = 'api/:param1/:param2/test';
 
-    public async get(
-        request: IApiRequest,
-        endpoint: IApiEndpointInfo,
-        read: IRead,
-        modify: IModify,
-    ): Promise<IApiResponse> {
-        return {
-            content: `Param1: ${request.params.param1}, Param2: ${request.params.param2}`,
-            status: HttpStatusCode.OK,
-            headers: {
-                "Content-Type": "text/plain",
-            },
-        }
-    }
+	public async get(request: IApiRequest, endpoint: IApiEndpointInfo, read: IRead, modify: IModify): Promise<IApiResponse> {
+		return {
+			content: `Param1: ${request.params.param1}, Param2: ${request.params.param2}`,
+			status: HttpStatusCode.OK,
+			headers: {
+				'Content-Type': 'text/plain',
+			},
+		};
+	}
 }
 ```
 
@@ -295,34 +351,46 @@ This situation used to cause logs for the originating handler (the slashcommand 
 
 ```typescript
 export class NestedRequestsApp extends App implements IPostMessageSent {
-    public async executePostMessageSent(message: IMessage, _read: IRead, _http: IHttp, _persistence: IPersistence, _modify: IModify): Promise<void> {
-        this.getLogger().debug('executed_post_message_sent', message.id);
-    }
+	public async executePostMessageSent(
+		message: IMessage,
+		_read: IRead,
+		_http: IHttp,
+		_persistence: IPersistence,
+		_modify: IModify,
+	): Promise<void> {
+		this.getLogger().debug('executed_post_message_sent', message.id);
+	}
 
-    protected async extendConfiguration(configuration: IConfigurationExtend, _environmentRead: IEnvironmentRead): Promise<void> {
-        configuration.slashCommands.provideSlashCommand(new class implements ISlashCommand {
-            public command= 'nest';
-            public i18nParamsExample = 'nest';
-            public i18nDescription = 'nest';
-            public providesPreview = false;
+	protected async extendConfiguration(configuration: IConfigurationExtend, _environmentRead: IEnvironmentRead): Promise<void> {
+		configuration.slashCommands.provideSlashCommand(
+			new (class implements ISlashCommand {
+				public command = 'nest';
+				public i18nParamsExample = 'nest';
+				public i18nDescription = 'nest';
+				public providesPreview = false;
 
-            constructor(private readonly app: IApp) { }
+				constructor(private readonly app: IApp) {}
 
-            public async executor(context: SlashCommandContext, _read: IRead, modify: IModify, _http: IHttp, _persis: IPersistence): Promise<void> {
-                const [execId] = context.getArguments();
+				public async executor(
+					context: SlashCommandContext,
+					_read: IRead,
+					modify: IModify,
+					_http: IHttp,
+					_persis: IPersistence,
+				): Promise<void> {
+					const [execId] = context.getArguments();
 
-                this.app.getLogger().debug('slashcommand_triggered', execId);
+					this.app.getLogger().debug('slashcommand_triggered', execId);
 
-                const mb = modify.getCreator().startMessage()
-                    .setText(`nested_test_message ${execId}`)
-                    .setRoom(context.getRoom());
+					const mb = modify.getCreator().startMessage().setText(`nested_test_message ${execId}`).setRoom(context.getRoom());
 
-                const id = await modify.getCreator().finish(mb);
+					const id = await modify.getCreator().finish(mb);
 
-                this.app.getLogger().debug('slashcommand_message_sent', id);
-            }
-        }(this));
-    }
+					this.app.getLogger().debug('slashcommand_message_sent', id);
+				}
+			})(this),
+		);
+	}
 }
 ```
 
@@ -484,3 +552,1408 @@ export class MessageUpdaterTestApp extends App {
 }
 ```
 </details>
+
+#### UIKit Room Context Test
+
+File name: `uikit-room-test_0.0.1.zip`
+
+An app that validates room context propagation and interaction data in UIKit interactions across all surfaces (message, modal, contextual bar). It provides a slash command (`open-uikit-room-test-modal`) with three actions:
+
+- `modal` - Opens a modal with a button and submit action
+- `ctx` - Opens a contextual bar with a button and submit action
+- `message` - Sends a message with a button
+
+It also takes a second argument with a random "seed" used to identify the current execution context.
+
+Each interaction handler (`executeBlockActionHandler`, `executeViewSubmitHandler`, `executeViewClosedHandler`) logs detailed data including room ID, user name, view id, block value, triggerId, actionId, and container type. These logs are used by Playwright e2e tests to verify that interaction data is correctly propagated.
+
+<details>
+<summary>App source code</summary>
+
+```typescript
+import {
+	IAppAccessors,
+	IConfigurationExtend,
+	IEnvironmentRead,
+	IHttp,
+	ILogger,
+	IModify,
+	IPersistence,
+	IRead,
+} from '@rocket.chat/apps-engine/definition/accessors';
+import { App } from '@rocket.chat/apps-engine/definition/App';
+import { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import {
+	IUIKitInteractionHandler,
+	IUIKitResponse,
+	UIKitBlockInteractionContext,
+	UIKitViewCloseInteractionContext,
+	UIKitViewSubmitInteractionContext,
+} from '@rocket.chat/apps-engine/definition/uikit';
+import { AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
+import { UIKitSurfaceType } from '@rocket.chat/apps-engine/definition/uikit';
+
+export class UiKitRoomTestApp extends App implements IUIKitInteractionHandler {
+	constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
+		super(info, logger, accessors);
+	}
+
+	async [AppMethod.UIKIT_BLOCK_ACTION](
+		context: UIKitBlockInteractionContext,
+		_read: IRead,
+		_http: IHttp,
+		_persistence: IPersistence,
+		_modify: IModify,
+	): Promise<IUIKitResponse> {
+		const data = context.getInteractionData();
+		this.getLogger().debug('block_action_room', data.room ? data.room.id : 'no-room');
+		this.getLogger().debug('block_action_user', data.user ? data.user.username : 'no-user');
+		this.getLogger().debug('block_action_triggerId', data.triggerId || 'no-triggerId');
+		this.getLogger().debug('block_action_actionId', data.actionId || 'no-actionId');
+		this.getLogger().debug('block_action_value', data.value);
+		this.getLogger().debug('block_action_container', data.container ? data.container.type : 'no-container');
+		return context.getInteractionResponder().successResponse();
+	}
+
+	async [AppMethod.UIKIT_VIEW_SUBMIT](
+		context: UIKitViewSubmitInteractionContext,
+		_read: IRead,
+		_http: IHttp,
+		_persistence: IPersistence,
+		_modify: IModify,
+	): Promise<IUIKitResponse> {
+		const data = context.getInteractionData();
+		this.getLogger().debug('view_submit_room', data.room ? data.room.id : 'no-room');
+		this.getLogger().debug('view_submit_user', data.user ? data.user.username : 'no-user');
+		this.getLogger().debug('view_submit_id', data.view.id);
+		this.getLogger().debug('view_submit_triggerId', data.triggerId || 'no-triggerId');
+		this.getLogger().debug('view_submit_actionId', data.actionId || 'no-actionId');
+		return context.getInteractionResponder().successResponse();
+	}
+
+	async [AppMethod.UIKIT_VIEW_CLOSE](
+		context: UIKitViewCloseInteractionContext,
+		_read: IRead,
+		_http: IHttp,
+		_persistence: IPersistence,
+		_modify: IModify,
+	): Promise<IUIKitResponse> {
+		const data = context.getInteractionData();
+		this.getLogger().debug('view_closed_room', data.room ? data.room.id : 'no-room');
+		this.getLogger().debug('view_closed_user', data.user ? data.user.username : 'no-user');
+		this.getLogger().debug('view_closed_id', data.view.id);
+		this.getLogger().debug('view_closed_triggerId', data.triggerId || 'no-triggerId');
+		this.getLogger().debug('view_closed_actionId', data.actionId || 'no-actionId');
+		return context.getInteractionResponder().successResponse();
+	}
+
+	protected async extendConfiguration(configuration: IConfigurationExtend, _environmentRead: IEnvironmentRead): Promise<void> {
+		await configuration.slashCommands.provideSlashCommand({
+			command: 'open-uikit-room-test-modal',
+			i18nDescription: '',
+			i18nParamsExample: '',
+			providesPreview: false,
+			executor: async (context, _read, modify, _http, _persis) => {
+				const [action, seed] = context.getArguments();
+				const triggerId = context.getTriggerId();
+
+				if (!triggerId) {
+					this.getLogger().error('No triggerId provided to slash command');
+					return;
+				}
+
+				if (action === 'modal') {
+					await modify.getUiController().openSurfaceView(
+						{
+							id: `modal-${seed}`,
+							title: { type: 'plain_text', text: 'UIKit Room Test Modal' },
+							type: UIKitSurfaceType.MODAL,
+							blocks: [
+								{
+									type: 'section',
+									text: { type: 'plain_text', text: 'This modal tests room context in UIKit interactions.' },
+								},
+								{
+									type: 'actions',
+									elements: [{ type: 'button', value: seed, actionId: 'modal-button', text: { type: 'plain_text', text: 'Click!' } }],
+								},
+							],
+							submit: {
+								type: 'button',
+								actionId: `modal-submit-${seed}`,
+								text: { type: 'plain_text', text: 'Submit' },
+							},
+						},
+						{ triggerId },
+						context.getSender(),
+					);
+				}
+
+				if (action === 'ctx') {
+					await modify.getUiController().openSurfaceView(
+						{
+							id: `ctx-${seed}`,
+							title: { type: 'plain_text', text: 'UIKit Room Test Contextual Bar' },
+							type: UIKitSurfaceType.CONTEXTUAL_BAR,
+							blocks: [
+								{
+									type: 'section',
+									text: { type: 'plain_text', text: 'This contextual bar tests room context.' },
+								},
+								{
+									type: 'actions',
+									elements: [{ type: 'button', value: seed, actionId: 'ctx-button', text: { type: 'plain_text', text: 'Click!' } }],
+								},
+							],
+							submit: {
+								type: 'button',
+								actionId: `ctxbar-submit-${seed}`,
+								text: { type: 'plain_text', text: 'Submit' },
+							},
+						},
+						{ triggerId },
+						context.getSender(),
+					);
+				}
+
+				if (action === 'message') {
+					const msg = modify
+					.getCreator()
+					.startMessage()
+					.setRoom(context.getRoom())
+					.setBlocks([
+						{
+							type: 'section',
+							text: { type: 'plain_text', text: 'This message tests room context.' },
+						},
+						{
+							type: 'actions',
+							elements: [{ type: 'button', value: seed, actionId: 'msg-button', text: { type: 'plain_text', text: 'Click!' } }],
+						},
+					]);
+
+					await modify.getCreator().finish(msg);
+				}
+			},
+		});
+	}
+}
+```
+
+</details>
+
+#### UIKit Components Test
+
+File name: `uikit-components-test_0.0.1.zip`
+
+An app that renders the UIKit blocks and elements whose options or values come from the server: the user, channel and conversation selects (single and multi), the number, email and URL inputs, the date-time picker, and the header and markdown blocks. It also sends the display blocks: table, video, and context actions with feedback buttons. It provides a slash command (`open-uikit-components-test`) with four actions:
+
+- `modal` - Opens a modal with every element, most of them in input blocks, plus a users select as a section accessory
+- `ctx` - Opens a contextual bar with the same blocks
+- `message` - Sends a message with the header and markdown blocks, and a users select in an actions block
+- `display` - Sends a message with a table, a video, and a `context_actions` block holding feedback buttons and an icon button
+
+It also takes a second argument with a random "seed" used to identify the current execution context. The view id is `<action>-<seed>`.
+
+Each input block has a fixed `blockId` and `actionId`, so a test can read a value at `state[blockId][actionId]`.
+
+**Log labels** (read with `findAppLogItem`):
+
+- `executeViewSubmitHandler`: `view_submit_id`, and `view_submit_state` (the view state, as JSON)
+- `executeBlockActionHandler`: `block_action_actionId`, `block_action_value` (as JSON), `block_action_room`, `block_action_container`, and `block_action_view` (the container id)
+
+The block literals are cast to `LayoutBlock[]` through `unknown`, because the `@rocket.chat/ui-kit` element types require the `appId` and `blockId` that the engine fills in.
+
+<details>
+<summary>App source code</summary>
+
+```typescript
+import {
+	IAppAccessors,
+	IConfigurationExtend,
+	IEnvironmentRead,
+	IHttp,
+	ILogger,
+	IModify,
+	IPersistence,
+	IRead,
+} from '@rocket.chat/apps-engine/definition/accessors';
+import { App } from '@rocket.chat/apps-engine/definition/App';
+import { AppMethod, IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import {
+	IUIKitInteractionHandler,
+	IUIKitResponse,
+	UIKitBlockInteractionContext,
+	UIKitSurfaceType,
+	UIKitViewSubmitInteractionContext,
+} from '@rocket.chat/apps-engine/definition/uikit';
+import type { ButtonElement, LayoutBlock } from '@rocket.chat/ui-kit';
+
+// 2026-01-01T00:00:00Z
+const initialDateTime = 1767225600;
+
+// Element literals leave out `appId` and `blockId`; the engine fills them in.
+const viewBlocks = () =>
+	[
+		{ type: 'header', text: { type: 'plain_text', text: 'Components header' } },
+		{ type: 'markdown', text: 'Some **bold markdown** text' },
+		{
+			type: 'input',
+			blockId: 'users',
+			label: { type: 'plain_text', text: 'Users select' },
+			element: { type: 'users_select', actionId: 'users_select', initial_user: 'user2' },
+		},
+		{
+			type: 'input',
+			blockId: 'multi_users',
+			label: { type: 'plain_text', text: 'Multi users select' },
+			element: {
+				type: 'multi_users_select',
+				actionId: 'multi_users_select',
+				placeholder: { type: 'plain_text', text: 'Pick users' },
+				max_selected_items: 2,
+			},
+		},
+		{
+			type: 'input',
+			blockId: 'channels',
+			label: { type: 'plain_text', text: 'Channels select' },
+			element: { type: 'channels_select', actionId: 'channels_select', initial_channel: 'GENERAL' },
+		},
+		{
+			type: 'input',
+			blockId: 'multi_channels',
+			label: { type: 'plain_text', text: 'Multi channels select' },
+			element: {
+				type: 'multi_channels_select',
+				actionId: 'multi_channels_select',
+				placeholder: { type: 'plain_text', text: 'Pick channels' },
+			},
+		},
+		{
+			type: 'input',
+			blockId: 'conversations',
+			label: { type: 'plain_text', text: 'Conversations select' },
+			element: {
+				type: 'conversations_select',
+				actionId: 'conversations_select',
+				placeholder: { type: 'plain_text', text: 'Pick a conversation' },
+				filter: { include: ['public'] },
+			},
+		},
+		{
+			type: 'input',
+			blockId: 'multi_conversations',
+			label: { type: 'plain_text', text: 'Multi conversations select' },
+			element: {
+				type: 'multi_conversations_select',
+				actionId: 'multi_conversations_select',
+				default_to_current_conversation: true,
+			},
+		},
+		{
+			type: 'input',
+			blockId: 'number',
+			label: { type: 'plain_text', text: 'Number input' },
+			element: { type: 'number_input', actionId: 'number_input', is_decimal_allowed: false, initial_value: '42' },
+		},
+		{
+			type: 'input',
+			blockId: 'email',
+			label: { type: 'plain_text', text: 'Email input' },
+			element: { type: 'email_text_input', actionId: 'email_text_input', placeholder: { type: 'plain_text', text: 'Type an email' } },
+		},
+		{
+			type: 'input',
+			blockId: 'url',
+			label: { type: 'plain_text', text: 'URL input' },
+			element: { type: 'url_text_input', actionId: 'url_text_input', placeholder: { type: 'plain_text', text: 'Type a URL' } },
+		},
+		{
+			type: 'input',
+			blockId: 'datetime',
+			label: { type: 'plain_text', text: 'Date and time' },
+			element: { type: 'datetimepicker', actionId: 'datetimepicker', initial_date_time: initialDateTime },
+		},
+		{
+			type: 'section',
+			blockId: 'accessory',
+			text: { type: 'plain_text', text: 'Section with a users select accessory' },
+			accessory: {
+				type: 'users_select',
+				actionId: 'accessory_users_select',
+				placeholder: { type: 'plain_text', text: 'Accessory user' },
+			},
+		},
+	] as unknown as LayoutBlock[];
+
+// Message blocks that only display content, plus the context actions that rate or act on the message.
+const displayBlocks = () =>
+	[
+		{
+			type: 'table',
+			blockId: 'table',
+			column_settings: [null, { align: 'right' }],
+			rows: [
+				[
+					{ type: 'raw_text', text: 'Service' },
+					{ type: 'raw_text', text: 'Uptime' },
+				],
+				[
+					{ type: 'mrkdwn', text: '**API**' },
+					{ type: 'raw_text', text: '99.98%' },
+				],
+			],
+		},
+		{
+			type: 'video',
+			blockId: 'video',
+			video_url: 'https://www.youtube.com/embed/aqz-KE-bpKQ',
+			thumbnail_url: 'https://i.ytimg.com/vi/aqz-KE-bpKQ/hqdefault.jpg',
+			alt_text: 'Big Buck Bunny, an animated short film',
+			title: { type: 'plain_text', text: 'Big Buck Bunny' },
+			provider_name: 'YouTube',
+		},
+		{
+			type: 'context_actions',
+			blockId: 'context_actions',
+			elements: [
+				{
+					type: 'feedback_buttons',
+					actionId: 'feedback',
+					positive_button: { text: { type: 'plain_text', text: 'Good answer' }, value: 'good' },
+					negative_button: { text: { type: 'plain_text', text: 'Bad answer' }, value: 'bad' },
+				},
+				{
+					type: 'icon_button',
+					actionId: 'details',
+					icon: { type: 'icon', icon: 'info', variant: 'default' },
+					label: 'Show details',
+					value: 'details',
+				},
+			],
+		},
+	] as unknown as LayoutBlock[];
+
+const messageBlocks = () =>
+	[
+		{ type: 'header', text: { type: 'plain_text', text: 'Components header' } },
+		{ type: 'markdown', text: 'Some **bold markdown** text' },
+		{
+			type: 'actions',
+			blockId: 'message_actions',
+			elements: [
+				{
+					type: 'users_select',
+					actionId: 'message_users_select',
+					placeholder: { type: 'plain_text', text: 'Message user' },
+				},
+			],
+		},
+	] as unknown as LayoutBlock[];
+
+export class UiKitComponentsTestApp extends App implements IUIKitInteractionHandler {
+	constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
+		super(info, logger, accessors);
+	}
+
+	async [AppMethod.UIKIT_BLOCK_ACTION](
+		context: UIKitBlockInteractionContext,
+		_read: IRead,
+		_http: IHttp,
+		_persistence: IPersistence,
+		_modify: IModify,
+	): Promise<IUIKitResponse> {
+		const data = context.getInteractionData();
+		this.getLogger().debug('block_action_actionId', data.actionId || 'no-actionId');
+		this.getLogger().debug('block_action_value', JSON.stringify(data.value));
+		this.getLogger().debug('block_action_room', data.room ? data.room.id : 'no-room');
+		this.getLogger().debug('block_action_container', data.container ? data.container.type : 'no-container');
+		this.getLogger().debug('block_action_view', data.container ? data.container.id : 'no-container');
+		return context.getInteractionResponder().successResponse();
+	}
+
+	async [AppMethod.UIKIT_VIEW_SUBMIT](
+		context: UIKitViewSubmitInteractionContext,
+		_read: IRead,
+		_http: IHttp,
+		_persistence: IPersistence,
+		_modify: IModify,
+	): Promise<IUIKitResponse> {
+		const data = context.getInteractionData();
+		this.getLogger().debug('view_submit_id', data.view.id);
+		this.getLogger().debug('view_submit_state', JSON.stringify(data.view.state ?? {}));
+		return context.getInteractionResponder().successResponse();
+	}
+
+	protected async extendConfiguration(configuration: IConfigurationExtend, _environmentRead: IEnvironmentRead): Promise<void> {
+		await configuration.slashCommands.provideSlashCommand({
+			command: 'open-uikit-components-test',
+			i18nDescription: '',
+			i18nParamsExample: '',
+			providesPreview: false,
+			executor: async (context, _read, modify, _http, _persis) => {
+				const [action, seed] = context.getArguments();
+				const triggerId = context.getTriggerId();
+
+				if (!triggerId) {
+					this.getLogger().error('No triggerId provided to slash command');
+					return;
+				}
+
+				if (action === 'modal' || action === 'ctx') {
+					await modify.getUiController().openSurfaceView(
+						{
+							id: `${action}-${seed}`,
+							title: { type: 'plain_text', text: action === 'modal' ? 'UIKit Components Modal' : 'UIKit Components Contextual Bar' },
+							type: action === 'modal' ? UIKitSurfaceType.MODAL : UIKitSurfaceType.CONTEXTUAL_BAR,
+							blocks: viewBlocks(),
+							submit: {
+								type: 'button',
+								actionId: `${action}-submit-${seed}`,
+								text: { type: 'plain_text', text: 'Submit' },
+							} as ButtonElement,
+						},
+						{ triggerId },
+						context.getSender(),
+					);
+				}
+
+				if (action === 'message' || action === 'display') {
+					const msg = modify
+						.getCreator()
+						.startMessage()
+						.setRoom(context.getRoom())
+						.setBlocks(action === 'message' ? messageBlocks() : displayBlocks());
+
+					await modify.getCreator().finish(msg);
+				}
+			},
+		});
+	}
+}
+```
+
+</details>
+
+#### UIKit Capabilities Test
+
+File name: `uikit-capabilities-test_0.0.1.zip`
+
+An app that exercises the UIKit capabilities that need the app to answer or remember something: option suggestions for external selects, a two-step modal wizard, files collected in a view, and the app Home. It also sends a message with the `rich_text` block, the alternative element type names (`checkboxes`, `radio_buttons`, `timepicker`), new `icon_button` icons and an emoji-only table cell. It provides a slash command (`uikit-capabilities-test`) with these actions, plus a Home:
+
+- `rich` - Sends the message described above
+- `wizard` - Opens step 1 of a modal (callback id `wizard-1`) with an `external_select`, a `multi_external_select` and a `rich_text_input`, carrying `private_metadata` with the seed and the room. Submitting it pushes step 2 (`wizard-2`) with a `file_input`; submitting step 2 posts a message with the collected values and one `file` block per uploaded file, then clears the modals
+- `agent` - Sends an `alert`, a `plan` with three tasks and a `task_card` with sources; its `agent_advance` button moves the plan one step forward by updating the message
+- `cards` - Sends a `card` and a `carousel` of four cards, each with an `Open` button
+- `confirm` - Sends a `button` with a `confirm` dialog (`delete_release`), a `plain_text_input` that dispatches on Enter (`search_enter`) and a `time_picker` with a `timezone`; both actions post a reply in the room
+- Home - `executeAppHomeOpenedHandler` publishes a Home with a counter; its `home_refresh` button republishes it with the counter incremented
+
+The second argument is a random "seed" that identifies the execution context.
+
+**Log labels** (read with `findAppLogItem`):
+
+- `executeBlockSuggestionHandler`: `block_suggestion` (action id and query)
+- `executeViewSubmitHandler`: `view_submit_callback`, `view_submit_state` (JSON) and `view_submit_metadata`
+- `executeBlockActionHandler`: `block_action_actionId`, `block_action_value` (JSON)
+- `executeAppHomeOpenedHandler`: `app_home_opened` (user id)
+
+<details>
+<summary>App source code</summary>
+
+```typescript
+import {
+	IAppAccessors,
+	IConfigurationExtend,
+	IEnvironmentRead,
+	IHttp,
+	ILogger,
+	IModify,
+	IPersistence,
+	IRead,
+} from '@rocket.chat/apps-engine/definition/accessors';
+import { App } from '@rocket.chat/apps-engine/definition/App';
+import { AppMethod, IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import {
+	IUIKitBlockSuggestionResponse,
+	IUIKitInteractionHandler,
+	IUIKitResponse,
+	UIKitAppHomeOpenedInteractionContext,
+	UIKitBlockInteractionContext,
+	UIKitBlockSuggestionInteractionContext,
+	UIKitSurfaceType,
+	UIKitViewSubmitInteractionContext,
+} from '@rocket.chat/apps-engine/definition/uikit';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+import type { ButtonElement, LayoutBlock } from '@rocket.chat/ui-kit';
+
+const projects = [
+	{ value: 'rocketchat', label: 'Rocket.Chat' },
+	{ value: 'fuselage', label: 'Fuselage' },
+	{ value: 'apps-engine', label: 'Apps-Engine' },
+	{ value: 'livechat', label: 'Livechat' },
+	{ value: 'mobile', label: 'Mobile' },
+];
+
+const people = [
+	{ value: 'ada', label: 'Ada Lovelace' },
+	{ value: 'alan', label: 'Alan Turing' },
+	{ value: 'grace', label: 'Grace Hopper' },
+	{ value: 'linus', label: 'Linus Torvalds' },
+	{ value: 'margaret', label: 'Margaret Hamilton' },
+];
+
+const toOption = ({ value, label }: { value: string; label: string }) => ({ text: { type: 'plain_text', text: label }, value });
+
+const button = (actionId: string, text: string) => ({ type: 'button', actionId, text: { type: 'plain_text', text } }) as ButtonElement;
+
+// Block literals leave out `appId` and `blockId`; the engine fills them in.
+const richMessageBlocks = () =>
+	[
+		{
+			type: 'rich_text',
+			elements: [
+				{
+					type: 'rich_text_section',
+					elements: [
+						{ type: 'text', text: 'Release ', style: { bold: true } },
+						{ type: 'text', text: '7.0', style: { italic: true } },
+						{ type: 'text', text: ' is out. Read the ' },
+						{ type: 'link', url: 'https://docs.rocket.chat', text: 'release notes' },
+						{ type: 'text', text: ' ' },
+						{ type: 'emoji', name: 'tada' },
+					],
+				},
+				{
+					type: 'rich_text_list',
+					style: 'bullet',
+					elements: [
+						{ type: 'rich_text_section', elements: [{ type: 'text', text: 'Faster search' }] },
+						{
+							type: 'rich_text_section',
+							elements: [
+								{ type: 'text', text: 'New ' },
+								{ type: 'text', text: 'rich_text', style: { code: true } },
+								{ type: 'text', text: ' block' },
+							],
+						},
+					],
+				},
+				{ type: 'rich_text_quote', elements: [{ type: 'text', text: 'Ship it.' }] },
+				{ type: 'rich_text_preformatted', elements: [{ type: 'text', text: 'yarn install\nyarn build' }] },
+			],
+		},
+		{
+			type: 'table',
+			blockId: 'status',
+			rows: [
+				[
+					{ type: 'raw_text', text: 'Service' },
+					{ type: 'raw_text', text: 'Status' },
+				],
+				[
+					{ type: 'raw_text', text: 'API' },
+					{ type: 'mrkdwn', text: ':white_check_mark:' },
+				],
+			],
+		},
+		{
+			type: 'actions',
+			blockId: 'aliases',
+			elements: [
+				{
+					type: 'checkboxes',
+					actionId: 'aliases_checkboxes',
+					options: [toOption({ value: 'a', label: 'Option A' }), toOption({ value: 'b', label: 'Option B' })],
+				},
+				{
+					type: 'radio_buttons',
+					actionId: 'aliases_radio_buttons',
+					options: [toOption({ value: 'yes', label: 'Yes' }), toOption({ value: 'no', label: 'No' })],
+				},
+				{ type: 'timepicker', actionId: 'aliases_timepicker', initialTime: '10:30' },
+			],
+		},
+		{
+			type: 'context_actions',
+			blockId: 'message_actions',
+			elements: [
+				{ type: 'icon_button', actionId: 'copy', icon: { type: 'icon', icon: 'copy', variant: 'default' }, label: 'Copy', value: 'copy' },
+				{ type: 'icon_button', actionId: 'flag', icon: { type: 'icon', icon: 'flag', variant: 'default' }, label: 'Report', value: 'flag' },
+			],
+		},
+	] as unknown as LayoutBlock[];
+
+const wizardStepOne = () =>
+	[
+		{ type: 'header', text: { type: 'plain_text', text: 'New release — step 1 of 2' } },
+		{
+			type: 'input',
+			blockId: 'project',
+			label: { type: 'plain_text', text: 'Project' },
+			element: {
+				type: 'external_select',
+				actionId: 'project',
+				min_query_length: 1,
+				placeholder: { type: 'plain_text', text: 'Search projects' },
+			},
+		},
+		{
+			type: 'input',
+			blockId: 'reviewers',
+			label: { type: 'plain_text', text: 'Reviewers' },
+			element: {
+				type: 'multi_external_select',
+				actionId: 'reviewers',
+				min_query_length: 1,
+				max_selected_items: 3,
+				placeholder: { type: 'plain_text', text: 'Search people' },
+			},
+		},
+		{
+			type: 'input',
+			blockId: 'notes',
+			label: { type: 'plain_text', text: 'Release notes' },
+			element: {
+				type: 'rich_text_input',
+				actionId: 'notes',
+				placeholder: { type: 'plain_text', text: 'Write Markdown' },
+			},
+		},
+	] as unknown as LayoutBlock[];
+
+const wizardStepTwo = () =>
+	[
+		{ type: 'header', text: { type: 'plain_text', text: 'New release — step 2 of 2' } },
+		{
+			type: 'input',
+			blockId: 'attachments',
+			label: { type: 'plain_text', text: 'Attachments' },
+			element: { type: 'file_input', actionId: 'files', max_files: 3 },
+		},
+	] as unknown as LayoutBlock[];
+
+const homeBlocks = (user: IUser, count: number) =>
+	[
+		{ type: 'header', text: { type: 'plain_text', text: 'UiKit capabilities' } },
+		{ type: 'markdown', text: `Hello **${user.name || user.username}**. This page is your app home.` },
+		{ type: 'section', blockId: 'counter', text: { type: 'mrkdwn', text: `Refreshed **${count}** times` } },
+		{ type: 'actions', blockId: 'home_actions', elements: [button('home_refresh', 'Refresh')] },
+	] as unknown as LayoutBlock[];
+
+const agentSteps = ['Read the issue', 'Search the docs', 'Write the fix'];
+
+const agentBlocks = (done: number) =>
+	[
+		{
+			type: 'alert',
+			level: done >= agentSteps.length ? 'success' : 'info',
+			text: { type: 'plain_text', text: done >= agentSteps.length ? 'The agent finished.' : 'The agent is working on your request.' },
+		},
+		{
+			type: 'plan',
+			title: 'Fix the login bug',
+			tasks: agentSteps.map((title, index) => ({
+				task_id: `step-${index}`,
+				title,
+				status: index < done ? 'complete' : index === done ? 'in_progress' : 'pending',
+			})),
+		},
+		{
+			type: 'task_card',
+			task_id: 'search',
+			title: 'Searched the docs',
+			status: done >= 2 ? 'complete' : 'pending',
+			sources: [
+				{ type: 'url', url: 'https://docs.rocket.chat', text: 'Rocket.Chat docs' },
+				{ type: 'url', url: 'https://github.com/RocketChat/Rocket.Chat', text: 'Source code' },
+			],
+		},
+		...(done >= agentSteps.length ? [] : [{ type: 'actions', blockId: 'agent_actions', elements: [button('agent_advance', 'Next step')] }]),
+	] as unknown as LayoutBlock[];
+
+const card = (siteUrl: string, name: string, title: string, body: string) => ({
+	type: 'card',
+	hero_image: { type: 'image', image_url: `${siteUrl}/avatar/${name}`, alt_text: title },
+	title: { type: 'plain_text', text: title },
+	subtitle: { type: 'plain_text', text: `@${name}` },
+	body: { type: 'plain_text', text: body },
+	actions: [button(`card_open_${name}`, 'Open')],
+});
+
+const cardBlocks = (siteUrl: string) =>
+	[
+		card(siteUrl, 'rocket.cat', 'Rocket Cat', 'Keeps the build green.'),
+		{
+			type: 'carousel',
+			elements: [
+				card(siteUrl, 'ada', 'Ada', 'Reviews the parser.'),
+				card(siteUrl, 'grace', 'Grace', 'Owns the compiler.'),
+				card(siteUrl, 'alan', 'Alan', 'Breaks the codes.'),
+				card(siteUrl, 'linus', 'Linus', 'Merges the kernel.'),
+			],
+		},
+	] as unknown as LayoutBlock[];
+
+const confirmBlocks = () =>
+	[
+		{
+			type: 'actions',
+			blockId: 'danger_zone',
+			elements: [
+				{
+					type: 'button',
+					actionId: 'delete_release',
+					style: 'danger',
+					text: { type: 'plain_text', text: 'Delete release' },
+					confirm: {
+						title: { type: 'plain_text', text: 'Delete the release?' },
+						text: { type: 'plain_text', text: 'This removes release 7.0 for everyone.' },
+						confirm: { type: 'plain_text', text: 'Delete' },
+						deny: { type: 'plain_text', text: 'Keep it' },
+						style: 'danger',
+					},
+				},
+			],
+		},
+		{
+			type: 'input',
+			blockId: 'search',
+			label: { type: 'plain_text', text: 'Search, then press Enter' },
+			dispatchAction: true,
+			element: {
+				type: 'plain_text_input',
+				actionId: 'search_enter',
+				placeholder: { type: 'plain_text', text: 'Type and press Enter' },
+				dispatchActionConfig: ['on_enter_pressed'],
+			},
+		},
+		{
+			type: 'actions',
+			blockId: 'meeting',
+			elements: [{ type: 'time_picker', actionId: 'meeting_time', initialTime: '09:00', timezone: 'America/New_York' }],
+		},
+	] as unknown as LayoutBlock[];
+
+type WizardState = { seed: string; rid?: string; project?: unknown; reviewers?: unknown; notes?: unknown };
+
+export class UiKitCapabilitiesTestApp extends App implements IUIKitInteractionHandler {
+	private homeRefreshes = new Map<string, number>();
+
+	private agentProgress = new Map<string, number>();
+
+	constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
+		super(info, logger, accessors);
+	}
+
+	async [AppMethod.UIKIT_BLOCK_SUGGESTION](
+		context: UIKitBlockSuggestionInteractionContext,
+		_read: IRead,
+		_http: IHttp,
+		_persistence: IPersistence,
+		_modify: IModify,
+	): Promise<IUIKitBlockSuggestionResponse> {
+		const { actionId, value } = context.getInteractionData();
+		const query = value.toLowerCase();
+		const source = actionId === 'reviewers' ? people : projects;
+		this.getLogger().debug('block_suggestion', actionId, value);
+
+		return context.getInteractionResponder().optionsResponse({
+			options: source.filter(({ label }) => label.toLowerCase().includes(query)).map(toOption) as any,
+		});
+	}
+
+	async [AppMethod.UIKIT_BLOCK_ACTION](
+		context: UIKitBlockInteractionContext,
+		read: IRead,
+		_http: IHttp,
+		_persistence: IPersistence,
+		modify: IModify,
+	): Promise<IUIKitResponse> {
+		const data = context.getInteractionData();
+		this.getLogger().debug('block_action_actionId', data.actionId);
+		this.getLogger().debug('block_action_value', JSON.stringify(data.value));
+
+		if (data.actionId === 'agent_advance' && data.message?.id) {
+			const done = (this.agentProgress.get(data.message.id) ?? 0) + 1;
+			this.agentProgress.set(data.message.id, done);
+			const editor = await read.getUserReader().getAppUser();
+			if (editor) {
+				const update = (await modify.getUpdater().message(data.message.id, editor)).setBlocks(agentBlocks(done));
+				await modify.getUpdater().finish(update);
+			}
+		}
+
+		if ((data.actionId === 'search_enter' || data.actionId === 'delete_release') && data.room) {
+			const text = data.actionId === 'search_enter' ? `Searching for _${String(data.value ?? '')}_` : 'Release deleted.';
+			await modify.getCreator().finish(modify.getCreator().startMessage().setRoom(data.room).setText(text));
+		}
+
+		if (data.actionId === 'home_refresh') {
+			const count = (this.homeRefreshes.get(data.user.id) ?? 0) + 1;
+			this.homeRefreshes.set(data.user.id, count);
+			await this.publishHome(modify, data.user, data.triggerId, count);
+		}
+
+		return context.getInteractionResponder().successResponse();
+	}
+
+	async [AppMethod.UIKIT_VIEW_SUBMIT](
+		context: UIKitViewSubmitInteractionContext,
+		_read: IRead,
+		_http: IHttp,
+		_persistence: IPersistence,
+		modify: IModify,
+	): Promise<IUIKitResponse> {
+		const { view, user } = context.getInteractionData();
+		const state = (view.state ?? {}) as Record<string, Record<string, unknown>>;
+		const metadata = JSON.parse(view.private_metadata ?? '{}') as WizardState;
+		this.getLogger().debug('view_submit_callback', view.callback_id || 'none');
+		this.getLogger().debug('view_submit_state', JSON.stringify(state));
+		this.getLogger().debug('view_submit_metadata', view.private_metadata || 'none');
+
+		if (view.callback_id === 'wizard-1') {
+			const next: WizardState = {
+				...metadata,
+				project: state.project?.project,
+				reviewers: state.reviewers?.reviewers,
+				notes: state.notes?.notes,
+			};
+
+			return context.getInteractionResponder().pushModalViewResponse({
+				title: { type: 'plain_text', text: 'New release' },
+				blocks: wizardStepTwo(),
+				submit: button('wizard-finish', 'Finish'),
+				close: button('wizard-back', 'Back'),
+				callback_id: 'wizard-2',
+				private_metadata: JSON.stringify(next),
+			} as any);
+		}
+
+		if (view.callback_id === 'wizard-2') {
+			const fileIds = (state.attachments?.files as string[] | undefined) ?? [];
+
+			if (metadata.rid) {
+				const room = await this.getAccessors().reader.getRoomReader().getById(metadata.rid);
+				if (room) {
+					const blocks = [
+						{ type: 'header', text: { type: 'plain_text', text: `Release of ${String(metadata.project ?? 'a project')}` } },
+						{ type: 'section', text: { type: 'mrkdwn', text: `Reviewers: ${JSON.stringify(metadata.reviewers ?? [])}` } },
+						...(metadata.notes ? [metadata.notes] : []),
+						...fileIds.map((file_id) => ({ type: 'file', file_id, source: 'local' })),
+					] as unknown as LayoutBlock[];
+					const message = modify.getCreator().startMessage().setRoom(room).setSender(user).setBlocks(blocks);
+					await modify.getCreator().finish(message);
+				}
+			}
+
+			return context.getInteractionResponder().clearModalViewsResponse();
+		}
+
+		return context.getInteractionResponder().successResponse();
+	}
+
+	async [AppMethod.UIKIT_APP_HOME_OPENED](
+		context: UIKitAppHomeOpenedInteractionContext,
+		_read: IRead,
+		_http: IHttp,
+		_persistence: IPersistence,
+		modify: IModify,
+	): Promise<IUIKitResponse> {
+		const { user, triggerId } = context.getInteractionData();
+		this.getLogger().debug('app_home_opened', user.id);
+		await this.publishHome(modify, user, triggerId, this.homeRefreshes.get(user.id) ?? 0);
+
+		return context.getInteractionResponder().successResponse();
+	}
+
+	protected override async extendConfiguration(configuration: IConfigurationExtend, _environmentRead: IEnvironmentRead): Promise<void> {
+		await configuration.slashCommands.provideSlashCommand({
+			command: 'uikit-capabilities-test',
+			i18nDescription: '',
+			i18nParamsExample: '',
+			providesPreview: false,
+			executor: async (context, read, modify, _http, _persis) => {
+				const [action, seed] = context.getArguments();
+				const triggerId = context.getTriggerId();
+
+				if (action === 'rich') {
+					const message = modify.getCreator().startMessage().setRoom(context.getRoom()).setBlocks(richMessageBlocks());
+					await modify.getCreator().finish(message);
+					return;
+				}
+
+				if (action === 'agent' || action === 'cards' || action === 'confirm') {
+					const siteUrl = String(await read.getEnvironmentReader().getServerSettings().getValueById('Site_Url')).replace(/\/$/, '');
+					const blocks = { agent: () => agentBlocks(0), cards: () => cardBlocks(siteUrl), confirm: confirmBlocks }[action]();
+					await modify.getCreator().finish(modify.getCreator().startMessage().setRoom(context.getRoom()).setBlocks(blocks));
+					return;
+				}
+
+				if (action === 'wizard' && triggerId) {
+					await modify.getUiController().openSurfaceView(
+						{
+							id: `wizard-${seed}`,
+							type: UIKitSurfaceType.MODAL,
+							title: { type: 'plain_text', text: 'New release' },
+							blocks: wizardStepOne(),
+							submit: button('wizard-next', 'Next'),
+							callback_id: 'wizard-1',
+							private_metadata: JSON.stringify({ seed, rid: context.getRoom().id } satisfies WizardState),
+						} as any,
+						{ triggerId },
+						context.getSender(),
+					);
+				}
+			},
+		});
+	}
+
+	private async publishHome(modify: IModify, user: IUser, triggerId: string | undefined, count: number): Promise<void> {
+		await modify.getUiController().updateSurfaceView(
+			{
+				id: 'uikit-capabilities-home',
+				type: UIKitSurfaceType.HOME,
+				title: { type: 'plain_text', text: 'Home' },
+				blocks: homeBlocks(user, count),
+			} as any,
+			{ triggerId: triggerId ?? '' },
+			user,
+		);
+	}
+}
+```
+
+</details>
+
+#### Media call lifecycle events (IMediaCallHandler)
+
+File name: `media-call-events-test_0.0.1.zip`
+
+An app implementing every method of `IMediaCallHandler`. It records what each handler received in the app
+logs, which is how `tests/e2e/apps/media-call-events.spec.ts` asserts the events actually arrived, and it
+answers the pre-create event according to a mode the test sets beforehand.
+
+**Mode endpoint:**
+
+- `POST /api/apps/public/:appId/mode` with `{ "mode": "pass" | "prevent" | "prevent-i18n" | "drop-screen-share" }`
+- `GET /api/apps/public/:appId/mode` returns the current mode (defaults to `pass`)
+
+The mode drives `executePreMediaCallCreated`:
+
+| Mode | Returns |
+| --- | --- |
+| `pass` | `EventResult.pass()` |
+| `prevent` | `EventResult.prevent({ reason: 'blocked by media-call-events-test' })` |
+| `prevent-i18n` | `EventResult.prevent({ i18n: { key, args } })`, naming `call_prevented_for_callee` with the callee's username |
+| `drop-screen-share` | `EventResult.patch({ features })` with `screen-share` removed |
+
+`prevent-i18n` is why this package ships an `i18n/en.json`. An app that refuses a call by naming a key
+says nothing readable on its own, so the host reads the app's own wording for that key and stores a copy of
+it on the call - the only copy left once the app is uninstalled. The wording interpolates `{{callee}}`, so
+the stored copy proves the arguments were applied and not stored unexpanded.
+
+Driving the outcome from a mode rather than from the callee's username matters: a call that fails because the
+callee was unreachable looks identical in the UI to one an app blocked, so the tests need to run the *same*
+user pair through both a passing and a prevented call.
+
+**Log labels** (read with `findAppLogItem`): `pre_created_mode`, `pre_created_caller`, `pre_created_callee`,
+`pre_created_created_by`, `pre_created_features`, `pre_created_caller_keys`, `post_started_*`,
+`post_joined_*`, `post_ended_*`. `pre_created_caller_keys` / `post_joined_participant_keys` list the keys of
+the contact the app received, so a test can assert the per-session signing token (`contractId`) never
+crossed into the app.
+
+A post event's context holds the call and nothing the call already holds, so the app reads the moment of the
+event and the participant that joined off the call itself: `post_started_activated_at`,
+`post_joined_participant` (`call.callee`), `post_joined_accepted_at` and `post_ended_at`.
+
+Three of the end-event labels exist to exercise the outcome helpers, since there is no separate event for
+a call nobody answered:
+
+| Label | Value |
+| --- | --- |
+| `post_ended_outcome` | `answered` \| `rejected` \| `missed`, from `isAnsweredCall` / `isRejectedCall` / `isMissedCall`. `unreachable` would mean the three stopped partitioning every ended call, and the spec asserts it never appears. |
+| `post_ended_accepted_at` | Logged **only** inside the `isAnsweredCall` branch, so its presence is the guard firing and its absence is the guard correctly refusing. |
+| `post_ended_reason_known` | `isKnownMediaCallHangupReason(context.call.hangupReason)`. A `false` here means `MediaCallHangupReason` has drifted from what the server records. |
+
+**History endpoint:**
+
+- `POST /api/apps/public/:appId/history` with `{ "uid", "itemId"?, "callId"?, "search"? }`
+
+Drives `read.getCallHistoryReader()`. Each of the three accessors runs only when the request names what it
+wants: `itemId` for `getById`, `callId` for `getByCallId`, and `search` (`{ filters?, pagination? }`) for
+`search`. Every read is scoped to `uid`.
+
+The response is `{ "byId", "byCallId", "search" }`, with `null` where the accessor answered nothing. `null`
+rather than an absent key, so a test can tell a read the bridge refused from one it never asked for.
+
+The app reads the history on demand rather than from a call event because the history entry is written
+*after* the end event fires - an app that read it from the event would be racing the write.
+
+**Permissions:** this app declares `api`, `persistence` and `media-call.history` in its `app.json`.
+Declaring a list replaces the default permissions rather than adding to them, so the list has to name
+everything the app uses. `media-call.history` is not a default permission, and the accessors answer
+`undefined` without it. The install grants what the caller passes, so the spec passes the same three to
+`installLocalTestPackage` - the `app.json` list alone grants nothing.
+
+<details>
+<summary>App source code</summary>
+
+```typescript
+import { App } from '@rocket.chat/apps-engine/definition/App';
+import type {
+	IAppAccessors,
+	ICallHistorySearchFilters,
+	ICallHistorySearchPagination,
+	IConfigurationExtend,
+	IHttp,
+	ILogger,
+	IModify,
+	IPersistence,
+	IPersistenceRead,
+	IRead,
+} from '@rocket.chat/apps-engine/definition/accessors';
+import { HttpStatusCode } from '@rocket.chat/apps-engine/definition/accessors';
+import type { IApiEndpointInfo, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
+import { ApiEndpoint, ApiSecurity, ApiVisibility } from '@rocket.chat/apps-engine/definition/api';
+import { EventResult } from '@rocket.chat/apps-engine/definition/eventResult';
+import { isAnsweredCall, isKnownMediaCallHangupReason, isMissedCall, isRejectedCall } from '@rocket.chat/apps-engine/definition/mediaCalls';
+import type {
+	IMediaCallContact,
+	IMediaCallEndedContext,
+	IMediaCallHandler,
+	IMediaCallParticipantJoinedContext,
+	IMediaCallStartedContext,
+	IPreMediaCallCreatedContext,
+	MediaCallCreateEventResult,
+} from '@rocket.chat/apps-engine/definition/mediaCalls';
+import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import { AppMethod, RocketChatAssociationModel, RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata';
+
+/**
+ * How the app should answer the next `executePreMediaCallCreated`. Tests set this
+ * over the `mode` endpoint before driving a call, so a single user pair can be run
+ * through every outcome instead of encoding the outcome in the callee's username.
+ */
+type Mode = 'pass' | 'prevent' | 'prevent-i18n' | 'drop-screen-share';
+
+const MODES: Mode[] = ['pass', 'prevent', 'prevent-i18n', 'drop-screen-share'];
+
+/**
+ * The key the app names in `prevent-i18n` mode. The app ships its own wording for it in
+ * `i18n/en.json`, and nothing on the server side knows that wording: the host has to read it
+ * off the app to store a copy that survives the app's uninstall.
+ */
+const PREVENTION_I18N_KEY = 'call_prevented_for_callee';
+
+const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, 'media-call-events-test-mode');
+
+/**
+ * What the `history` endpoint should read. Each of the three reads runs only when the
+ * caller names what it wants, so one request can drive one accessor or all of them.
+ */
+type HistoryRequest = {
+	/** The user whose history to read. Every accessor scopes its answer to this user. */
+	uid?: string;
+	itemId?: string;
+	callId?: string;
+	search?: { filters?: ICallHistorySearchFilters; pagination?: ICallHistorySearchPagination };
+};
+
+/**
+ * Exercises every method of `IMediaCallHandler` and records what it saw in the app
+ * logs, which is how the e2e spec asserts the events actually arrived.
+ */
+export class MediaCallEventsTestApp extends App implements IMediaCallHandler {
+	constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
+		super(info, logger, accessors);
+	}
+
+	public async [AppMethod.EXECUTE_PRE_MEDIA_CALL_CREATED](
+		context: IPreMediaCallCreatedContext,
+		read: IRead,
+	): Promise<MediaCallCreateEventResult> {
+		const mode = await readMode(read.getPersistenceReader());
+
+		this.getLogger().debug('pre_created_mode', mode);
+		this.getLogger().debug('pre_created_caller', context.caller.username);
+		this.getLogger().debug('pre_created_callee', context.callee.username);
+		this.getLogger().debug('pre_created_created_by', context.createdBy.username);
+		this.getLogger().debug('pre_created_features', [...context.features].sort().join(','));
+		// Proves at the real serialization boundary that no credential rode along with
+		// the contact - `contractId` is the per-session signing token the host strips.
+		this.getLogger().debug('pre_created_caller_keys', contactKeys(context.caller));
+		this.getLogger().debug('pre_created_origin', context.origin);
+
+		if (mode === 'prevent') {
+			return EventResult.prevent({ reason: 'blocked by media-call-events-test' });
+		}
+
+		// The same refusal, said the other way: the app names a key it ships instead of words, so
+		// the reason reads in each reader's own language for as long as the app is installed.
+		if (mode === 'prevent-i18n') {
+			return EventResult.prevent({ i18n: { key: PREVENTION_I18N_KEY, args: { callee: context.callee.username ?? '' } } });
+		}
+
+		if (mode === 'drop-screen-share') {
+			return EventResult.patch({ features: context.features.filter((feature) => feature !== 'screen-share') });
+		}
+
+		return EventResult.pass();
+	}
+
+	public async [AppMethod.EXECUTE_POST_MEDIA_CALL_STARTED](context: IMediaCallStartedContext): Promise<void> {
+		this.getLogger().debug('post_started_call', context.call.id);
+		this.getLogger().debug('post_started_state', context.call.state);
+		this.getLogger().debug('post_started_features', [...context.call.features].sort().join(','));
+		this.getLogger().debug('post_started_activated_at', context.call.activatedAt.toISOString());
+		// Both shapes carry the origin, so the app can prove the pre context and the call agree
+		this.getLogger().debug('post_started_origin', context.call.origin);
+	}
+
+	public async [AppMethod.EXECUTE_POST_MEDIA_CALL_PARTICIPANT_JOINED](context: IMediaCallParticipantJoinedContext): Promise<void> {
+		this.getLogger().debug('post_joined_call', context.call.id);
+		// Calls are two-party, so the side that joined is the callee of the call itself
+		this.getLogger().debug('post_joined_participant', context.call.callee.username);
+		this.getLogger().debug('post_joined_participant_keys', contactKeys(context.call.callee));
+		this.getLogger().debug('post_joined_accepted_at', context.call.acceptedAt.toISOString());
+	}
+
+	public async [AppMethod.EXECUTE_POST_MEDIA_CALL_ENDED](context: IMediaCallEndedContext): Promise<void> {
+		this.getLogger().debug('post_ended_call', context.call.id);
+		this.getLogger().debug('post_ended_ended', String(context.call.ended));
+		this.getLogger().debug('post_ended_at', context.call.endedAt.toISOString());
+		this.getLogger().debug('post_ended_by_type', context.call.endedBy?.type ?? 'none');
+		this.getLogger().debug('post_ended_reason', context.call.hangupReason ?? 'none');
+		this.getLogger().debug('post_ended_duration_ms', String(context.durationMs));
+		this.getLogger().debug('post_ended_reason_known', String(isKnownMediaCallHangupReason(context.call.hangupReason)));
+		this.getLogger().debug('post_ended_outcome', describeOutcome(context));
+
+		if (isAnsweredCall(context)) {
+			// The guard narrows `acceptedAt` to a required Date, so this needs no assertion.
+			this.getLogger().debug('post_ended_accepted_at', context.call.acceptedAt.toISOString());
+		}
+	}
+
+	protected override async extendConfiguration(configuration: IConfigurationExtend): Promise<void> {
+		await configuration.api.provideApi({
+			visibility: ApiVisibility.PUBLIC,
+			security: ApiSecurity.UNSECURE,
+			endpoints: [
+				/** `POST /api/apps/public/:appId/mode` with `{ "mode": Mode }` - see `MODES`. */
+				new (class extends ApiEndpoint {
+					public override path = 'mode';
+
+					public async post(
+						request: IApiRequest,
+						_endpoint: IApiEndpointInfo,
+						_read: IRead,
+						_modify: IModify,
+						_http: IHttp,
+						persistence: IPersistence,
+					): Promise<IApiResponse> {
+						const { mode } = (request.content || {}) as { mode?: Mode };
+
+						if (!mode || !MODES.includes(mode)) {
+							return {
+								status: HttpStatusCode.BAD_REQUEST,
+								content: { error: `mode must be one of ${MODES.join(', ')}` },
+							};
+						}
+
+						await persistence.updateByAssociation(association, { mode }, true);
+
+						return { status: HttpStatusCode.OK, content: { mode } };
+					}
+
+					public async get(_request: IApiRequest, _endpoint: IApiEndpointInfo, read: IRead): Promise<IApiResponse> {
+						return { status: HttpStatusCode.OK, content: { mode: await readMode(read.getPersistenceReader()) } };
+					}
+				})(this),
+
+				/**
+				 * `POST /api/apps/public/:appId/history` - see `HistoryRequest`.
+				 *
+				 * Reads the call history through the accessor, on demand. The app cannot read it from a
+				 * call event instead: the history entry is written after the end event fires, so an app
+				 * that read it there would be racing the write.
+				 */
+				new (class extends ApiEndpoint {
+					public override path = 'history';
+
+					public async post(request: IApiRequest, _endpoint: IApiEndpointInfo, read: IRead): Promise<IApiResponse> {
+						const { uid, itemId, callId, search } = (request.content || {}) as HistoryRequest;
+
+						if (!uid) {
+							return { status: HttpStatusCode.BAD_REQUEST, content: { error: 'uid is required' } };
+						}
+
+						const callHistory = read.getCallHistoryReader();
+
+						const [byId, byCallId, searchResult] = await Promise.all([
+							itemId ? callHistory.getById(itemId, uid) : undefined,
+							callId ? callHistory.getByCallId(callId, uid) : undefined,
+							search ? callHistory.search(uid, search.filters, search.pagination) : undefined,
+						]);
+
+						// `undefined` would drop the key on the way out, and the caller could not tell an
+						// entry the accessor refused to return from one it was never asked for.
+						return {
+							status: HttpStatusCode.OK,
+							content: {
+								byId: byId ?? null,
+								byCallId: byCallId ?? null,
+								search: searchResult ?? null,
+							},
+						};
+					}
+				})(this),
+			],
+		});
+	}
+}
+
+async function readMode(persistenceRead: IPersistenceRead): Promise<Mode> {
+	const [record] = (await persistenceRead.readByAssociation(association)) as { mode?: Mode }[];
+
+	return record?.mode ?? 'pass';
+}
+
+function contactKeys(contact: IMediaCallContact): string {
+	return Object.keys(contact).sort().join(',');
+}
+
+/**
+ * There is no event for a call nobody answered, so an app has to read the outcome
+ * off the end event. `'unreachable'` can never be logged: the three guards partition
+ * every ended call, and the e2e spec asserts the label never appears.
+ */
+function describeOutcome(context: IMediaCallEndedContext): string {
+	if (isAnsweredCall(context)) {
+		return 'answered';
+	}
+
+	if (isRejectedCall(context)) {
+		return 'rejected';
+	}
+
+	if (isMissedCall(context)) {
+		return 'missed';
+	}
+
+	return 'unreachable';
+}
+```
+
+</details>
+
+#### ABAC room creation
+
+File name: `abac-room-creation-test_0.0.1.zip`
+
+An app that creates a room through `IModifyCreator.finish()`, passing `abacAttributes` in the room it builds, and sends a message to a room as its app user. `tests/end-to-end/apps/abac-room-creation.ts` installs it once with the `abac.write` permission granted and once without, through the `permissions` field of the install request.
+
+**Endpoints:**
+
+- `POST /api/apps/public/:appId/create-room` with `{ "type", "name", "creatorUsername"?, "members"?, "abacAttributes"? }`. Without `creatorUsername` the room is created by the app user. It returns `{ "roomId" }`, or a 400 with `{ "error" }` holding the message of the error `finish()` threw, which is what the tests assert on.
+- `POST /api/apps/public/:appId/send-message` with `{ "roomId", "text" }`. The message is sent as the app user. It returns `{ "messageId" }`, or a 400 with `{ "error" }` as above.
+
+<details>
+<summary>App source code</summary>
+
+```typescript
+import { App } from '@rocket.chat/apps-engine/definition/App';
+import type { IAppAccessors, IConfigurationExtend, IHttp, ILogger, IModify, IPersistence, IRead } from '@rocket.chat/apps-engine/definition/accessors';
+import { HttpStatusCode } from '@rocket.chat/apps-engine/definition/accessors';
+import { ApiEndpoint, ApiSecurity, ApiVisibility } from '@rocket.chat/apps-engine/definition/api';
+import type { IApiEndpointInfo, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
+import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+
+class CreateRoomEndpoint extends ApiEndpoint {
+	public path = 'create-room';
+
+	public async post(
+		request: IApiRequest,
+		_endpoint: IApiEndpointInfo,
+		read: IRead,
+		modify: IModify,
+		_http: IHttp,
+		_persistence: IPersistence,
+	): Promise<IApiResponse> {
+		const { type, name, creatorUsername, members = [], abacAttributes } = request.content;
+
+		const creator = creatorUsername
+			? await read.getUserReader().getByUsername(creatorUsername)
+			: await read.getUserReader().getAppUser();
+
+		if (!creator) {
+			return { status: HttpStatusCode.BAD_REQUEST, content: { error: 'creator-not-found' } };
+		}
+
+		const room = modify
+			.getCreator()
+			.startRoom({ type, slugifiedName: name, displayName: name, creator, abacAttributes } as IRoom)
+			.setMembersToBeAddedByUsernames(members);
+
+		try {
+			return { status: HttpStatusCode.OK, content: { roomId: await modify.getCreator().finish(room) } };
+		} catch (error) {
+			return { status: HttpStatusCode.BAD_REQUEST, content: { error: error instanceof Error ? error.message : String(error) } };
+		}
+	}
+}
+
+class SendMessageEndpoint extends ApiEndpoint {
+	public path = 'send-message';
+
+	public async post(
+		request: IApiRequest,
+		_endpoint: IApiEndpointInfo,
+		read: IRead,
+		modify: IModify,
+		_http: IHttp,
+		_persistence: IPersistence,
+	): Promise<IApiResponse> {
+		const { roomId, text } = request.content;
+
+		const room = await read.getRoomReader().getById(roomId);
+
+		if (!room) {
+			return { status: HttpStatusCode.BAD_REQUEST, content: { error: 'room-not-found' } };
+		}
+
+		const message = modify.getCreator().startMessage().setRoom(room).setText(text);
+
+		try {
+			return { status: HttpStatusCode.OK, content: { messageId: await modify.getCreator().finish(message) } };
+		} catch (error) {
+			return { status: HttpStatusCode.BAD_REQUEST, content: { error: error instanceof Error ? error.message : String(error) } };
+		}
+	}
+}
+
+export class AbacRoomCreationTestApp extends App {
+	constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
+		super(info, logger, accessors);
+	}
+
+	protected async extendConfiguration(configuration: IConfigurationExtend): Promise<void> {
+		await configuration.api.provideApi({
+			visibility: ApiVisibility.PUBLIC,
+			security: ApiSecurity.UNSECURE,
+			endpoints: [new CreateRoomEndpoint(this), new SendMessageEndpoint(this)],
+		});
+	}
+}
+```
+
+</details>
+
+#### Apps.RocketChat.Tester
+
+File name: `appsrocketchattester.zip`
+
+The general-purpose test app most suites install through `installTestApp()`: a video conference provider, slash commands, message senders and livechat hooks. Its source lives in [RocketChat/Apps.RocketChat.Tester](https://github.com/RocketChat/Apps.RocketChat.Tester); this is a copy of a release from that repository's `dist/` folder, kept here so those suites don't download it at run time. To replace it with the latest release, run `yarn test:update-tester-app` from `apps/meteor`.
+
+`tests/end-to-end/apps/installation.ts` covers installing from a URL, which the Rocket.Chat server downloads from `APP_TEST_URL`. CI points it at the mock-server, which serves this folder under `/__fixtures/`; without it, the tests download the package from GitHub.

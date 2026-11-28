@@ -1,8 +1,7 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box, Tag } from '@rocket.chat/fuselage';
+import { Stack, Tag, Text } from '@rocket.chat/fuselage';
 import { AppAvatar } from '@rocket.chat/ui-avatar';
-import { formatDistanceToNow } from 'date-fns';
-import type { ReactElement } from 'react';
+import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 import { useTranslation } from 'react-i18next';
 
 import AppMenu from '../AppMenu';
@@ -16,7 +15,9 @@ const versioni18nKey = (app: App): string => {
 	return installed ? version : marketplaceVersion;
 };
 
-const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
+export type AppDetailsPageHeaderProps = { app: App };
+
+const AppDetailsPageHeader = ({ app }: AppDetailsPageHeaderProps) => {
 	const { t } = useTranslation();
 	const {
 		iconFileData,
@@ -35,66 +36,58 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 	const incompatibleStatus = versionIncompatible ? appIncompatibleStatusProps() : undefined;
 
 	return (
-		<Box color='default' display='flex' flexDirection='row' mbe={20} w='full'>
-			<Box mie={32}>
-				<AppAvatar size='x124' iconFileContent={iconFileContent} iconFileData={iconFileData} />
-			</Box>
-			<Box display='flex' flexDirection='column'>
-				<Box display='flex' flexDirection='row' alignItems='center' mbe={8}>
-					<Box fontScale='h1' mie={8}>
-						{name}
-					</Box>
-					{bundledIn && Boolean(bundledIn.length) && <BundleChips bundledIn={bundledIn} />}
-				</Box>
-
-				{shortDescription && (
-					<Box fontScale='p1' mbe={16}>
-						{shortDescription}
-					</Box>
-				)}
-
-				<Box display='flex' flexDirection='row' alignItems='center' mbe={16}>
-					<AppStatus app={app} installed={installed} isAppDetailsPage />
-					{(installed || isSubscribed) && <AppMenu app={app} isAppDetailsPage />}
-				</Box>
-				<Box fontScale='c1' display='flex' flexDirection='row' color='hint' alignItems='center'>
-					{author?.name}
-					<Box mi={16} color='disabled'>
-						|
-					</Box>
-					<Box>{t('Version_version', { version: versioni18nKey(app) })}</Box>
-					{lastUpdated && (
-						<>
-							<Box mi={16} color='disabled'>
-								|
-							</Box>
-							<Box>
-								{t('Marketplace_app_last_updated', {
-									lastUpdated,
-								})}
-							</Box>
-						</>
+		<Stack direction='row' gap='x32'>
+			<AppAvatar size='x124' iconFileContent={iconFileContent} iconFileData={iconFileData} />
+			<Stack gap='x8'>
+				<Stack direction='row' align='center' gap='x8'>
+					<Text fontScale='h1'>{name}</Text>
+					{bundledIn && Boolean(bundledIn.length) && (
+						<Stack direction='row' align='center'>
+							<BundleChips bundledIn={bundledIn} />
+						</Stack>
 					)}
+				</Stack>
 
-					{versionIncompatible && (
-						<>
-							<Box mi={16} color='disabled'>
-								|
-							</Box>
+				<Stack gap='x16'>
+					{shortDescription && <Text fontScale='p1'>{shortDescription}</Text>}
 
-							<Box>
-								<Tag
-									title={incompatibleStatus?.tooltipText}
-									variant={incompatibleStatus?.label === 'Disabled' ? 'secondary-danger' : 'secondary'}
-								>
-									{incompatibleStatus?.label}
-								</Tag>
-							</Box>
-						</>
-					)}
-				</Box>
-			</Box>
-		</Box>
+					<Stack direction='row' align='center' gap='x8'>
+						<AppStatus app={app} installed={installed} isAppDetailsPage />
+						{(installed || isSubscribed) && <AppMenu app={app} isAppDetailsPage />}
+					</Stack>
+
+					<Text fontScale='c1' color='hint'>
+						<Stack direction='row' align='center' gap='x16'>
+							{author?.name}
+							<Text color='disabled'>|</Text>
+							<Text>{t('Version_version', { version: versioni18nKey(app) })}</Text>
+							{lastUpdated && (
+								<>
+									<Text color='disabled'>|</Text>
+									<Text>
+										{t('Marketplace_app_last_updated', {
+											lastUpdated,
+										})}
+									</Text>
+								</>
+							)}
+
+							{versionIncompatible && (
+								<>
+									<Text color='disabled'>|</Text>
+									<Tag
+										title={incompatibleStatus?.tooltipText}
+										variant={incompatibleStatus?.label === 'Disabled' ? 'secondary-danger' : 'secondary'}
+									>
+										{incompatibleStatus?.label}
+									</Tag>
+								</>
+							)}
+						</Stack>
+					</Text>
+				</Stack>
+			</Stack>
+		</Stack>
 	);
 };
 

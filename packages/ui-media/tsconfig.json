@@ -1,0 +1,12 @@
+{
+	"extends": "@rocket.chat/tsconfig/client.json",
+	"compilerOptions": {
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
+		"rootDirs": ["./src", "./"],
+		"outDir": "./dist",
+	},
+	"include": ["./src/**/*", "./jest.config.ts", "./.storybook/**/*"],
+	// Specs are typechecked too; the base config leaves them out.
+	"exclude": [],
+}

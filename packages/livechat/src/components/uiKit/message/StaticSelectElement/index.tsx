@@ -3,12 +3,12 @@ import type { ComponentChild } from 'preact';
 import type { TargetedEvent } from 'preact/compat';
 import { memo, useCallback, useMemo } from 'preact/compat';
 
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { createClassName } from '../../../../helpers/createClassName';
 import { SelectInput } from '../../../Form/SelectInput';
 import { usePerformAction } from '../Block';
 
-type StaticSelectElementProps = uikit.StaticSelectElement & {
+export type StaticSelectElementProps = uikit.StaticSelectElement & {
 	parser: uikit.SurfaceRenderer<ComponentChild>;
 };
 

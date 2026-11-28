@@ -5,6 +5,7 @@ import '@rocket.chat/fuselage/dist/fuselage.css';
 
 import App from './App';
 import PersistStore from './Components/PersistStore/PersistStore';
+import PlaygroundServer from './Components/PlaygroundServer/PlaygroundServer';
 import { Provider } from './Context';
 import './index.css';
 
@@ -20,7 +21,9 @@ root.render(
 	<StrictMode>
 		<Provider>
 			<PersistStore>
-				<App />
+				<PlaygroundServer>
+					<App />
+				</PlaygroundServer>
 			</PersistStore>
 		</Provider>
 	</StrictMode>,

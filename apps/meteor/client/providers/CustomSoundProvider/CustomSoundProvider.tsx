@@ -1,14 +1,12 @@
 import type { ICustomSound } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { CustomSoundContext, useStream, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { CustomSoundContext, useEndpoint, useStream } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 
-import { defaultSounds, getCustomSoundURL, formatVolume } from './lib';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
-import { useUserSoundPreferences } from '../../hooks/useUserSoundPreferences';
+import { defaultSounds, getCustomSoundURL } from './lib';
 
-type CustomSoundProviderProps = {
+export type CustomSoundProviderProps = {
 	children?: ReactNode;
 };
 
@@ -17,24 +15,42 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 
 	const queryClient = useQueryClient();
 	const streamAll = useStream('notify-all');
-
-	const newRoomNotification = useUserPreference<string>('newRoomNotification') || 'door';
-	const newMessageNotification = useUserPreference<string>('newMessageNotification') || 'chime';
-	const { notificationsSoundVolume, voipRingerVolume } = useUserSoundPreferences();
+	const getCustomSounds = useEndpoint('GET', '/v1/custom-sounds.list');
 
 	const { data: list } = useQuery({
-		queryFn: async () => {
-			const customSoundsList = await sdk.call('listCustomSounds');
-			if (!customSoundsList.length) {
+		queryFn: async (): Promise<Omit<ICustomSound, '_updatedAt'>[]> => {
+			// `/v1/custom-sounds.list` is paginated, so we page through all results to
+			// load every custom sound into the provider (the legacy `listCustomSounds`
+			// method returned them all at once).
+			const sounds: Awaited<ReturnType<typeof getCustomSounds>>['sounds'] = [];
+			let total = Infinity;
+			while (sounds.length < total) {
+				const page = await getCustomSounds({ count: 100, offset: sounds.length });
+				total = page.total;
+				sounds.push(...page.sounds);
+				if (!page.sounds.length) {
+					break;
+				}
+			}
+
+			if (!sounds.length) {
 				return defaultSounds;
 			}
-			return [...customSoundsList.map((sound) => ({ ...sound, src: getCustomSoundURL(sound) })), ...defaultSounds];
+			return [...sounds.map(({ _updatedAt: _, ...sound }) => ({ ...sound, src: getCustomSoundURL(sound) })), ...defaultSounds];
 		},
 		queryKey: ['listCustomSounds'],
 		initialData: defaultSounds,
 	});
 
-	const play = useEffectEvent((soundId: ICustomSound['_id'], { volume = 1, loop = false } = {}) => {
+	const stop = useStableCallback((soundId: ICustomSound['_id']) => {
+		const current = audioRefs.current?.find(({ id }) => id === soundId);
+		if (current) {
+			current.load();
+			audioRefs.current = audioRefs.current.filter(({ id }) => id !== soundId);
+		}
+	});
+
+	const play = useStableCallback((soundId: ICustomSound['_id'], { volume = 1, loop = false } = {}) => {
 		stop(soundId);
 
 		const item = list?.find(({ _id }) => _id === soundId);
@@ -56,7 +72,7 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 		};
 	});
 
-	const pause = useEffectEvent((soundId: ICustomSound['_id']) => {
+	const pause = useStableCallback((soundId: ICustomSound['_id']) => {
 		const current = audioRefs.current?.find(({ id }) => id === soundId);
 		if (current) {
 			current.pause();
@@ -64,53 +80,7 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 		}
 	});
 
-	const stop = useEffectEvent((soundId: ICustomSound['_id']) => {
-		const current = audioRefs.current?.find(({ id }) => id === soundId);
-		if (current) {
-			current.load();
-			audioRefs.current = audioRefs.current.filter(({ id }) => id !== soundId);
-		}
-	});
-
-	const contextValue = useMemo(() => {
-		const notificationSounds = {
-			playNewRoom: () => play(newRoomNotification, { loop: false, volume: formatVolume(notificationsSoundVolume) }),
-			playNewRoomLoop: () => play(newRoomNotification, { loop: true, volume: formatVolume(notificationsSoundVolume) }),
-			playNewMessage: () => play(newMessageNotification, { loop: false, volume: formatVolume(notificationsSoundVolume) }),
-			playNewMessageCustom: (soundId: ICustomSound['_id']) =>
-				play(soundId, { loop: false, volume: formatVolume(notificationsSoundVolume) }),
-			stopNewRoom: () => stop(newRoomNotification),
-			stopNewMessage: () => stop(newMessageNotification),
-		};
-		const voipSounds = {
-			playRinger: () => play('telephone', { loop: true, volume: formatVolume(voipRingerVolume) }),
-			playDialer: () => play('outbound-call-ringing', { loop: true, volume: formatVolume(voipRingerVolume) }),
-			playCallEnded: () => play('call-ended', { loop: false, volume: formatVolume(voipRingerVolume) }),
-			stopRinger: () => stop('telephone'),
-			stopDialer: () => stop('outbound-call-ringing'),
-			stopCallEnded: () => stop('call-ended'),
-			stopAll: () => {
-				stop('telephone');
-				stop('outbound-call-ringing');
-				stop('call-ended');
-			},
-		};
-		const callSounds = {
-			playRinger: () => play('ringtone', { loop: true, volume: formatVolume(voipRingerVolume) }),
-			playDialer: () => play('dialtone', { loop: true, volume: formatVolume(voipRingerVolume) }),
-			stopRinger: () => stop('ringtone'),
-			stopDialer: () => stop('dialtone'),
-		};
-		return {
-			list,
-			notificationSounds,
-			callSounds,
-			voipSounds,
-			play,
-			pause,
-			stop,
-		};
-	}, [list, newMessageNotification, newRoomNotification, notificationsSoundVolume, pause, play, stop, voipRingerVolume]);
+	const contextValue = useMemo(() => ({ list, play, pause, stop }), [list, pause, play, stop]);
 
 	useEffect(() => {
 		return streamAll('public-info', ([key]) => {

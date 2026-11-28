@@ -1,6 +1,6 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 
-import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { sdk } from '../lib/SDKClient';
 import { PrivateCachedStore } from '../lib/cachedStores/CachedStore';
 import { PrivateSettings } from '../stores';
 
@@ -9,7 +9,7 @@ class PrivateSettingsCachedStore extends PrivateCachedStore<ISetting> {
 		super({
 			name: 'private-settings',
 			eventType: 'notify-logged',
-			store: PrivateSettings.use,
+			store: PrivateSettings.useStore,
 		});
 	}
 

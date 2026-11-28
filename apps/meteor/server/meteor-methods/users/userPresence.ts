@@ -1,0 +1,28 @@
+import { Presence } from '@rocket.chat/core-services';
+import { UserStatus } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { Meteor } from 'meteor/meteor';
+
+declare module '@rocket.chat/ddp-client' {
+	interface ServerMethods {
+		'UserPresence:online'(): boolean | undefined;
+		'UserPresence:away'(): boolean | undefined;
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	'UserPresence:online'() {
+		const { userId, connection } = this;
+		if (!userId || !connection) {
+			return;
+		}
+		return Presence.setConnectionStatus(userId, UserStatus.ONLINE, connection.id);
+	},
+	'UserPresence:away'() {
+		const { userId, connection } = this;
+		if (!userId || !connection) {
+			return;
+		}
+		return Presence.setConnectionStatus(userId, UserStatus.AWAY, connection.id);
+	},
+});

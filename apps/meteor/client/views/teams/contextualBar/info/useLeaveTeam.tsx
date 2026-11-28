@@ -1,10 +1,10 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEndpointMutation } from '@rocket.chat/ui-client';
 import { useRouter, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import LeaveTeam from './LeaveTeam';
-import { useEndpointMutation } from '../../../../hooks/useEndpointMutation';
 
 export const useLeaveTeam = ({ teamId }: IRoom) => {
 	const { t } = useTranslation();
@@ -23,7 +23,7 @@ export const useLeaveTeam = ({ teamId }: IRoom) => {
 	});
 
 	// const canLeave = usePermission('leave-team'); /* && room.cl !== false && joined */
-	const handleLeaveTeam = useEffectEvent(() => {
+	const handleLeaveTeam = useStableCallback(() => {
 		if (!teamId) {
 			throw new Error('Invalid teamId');
 		}

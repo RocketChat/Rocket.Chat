@@ -1,7 +1,7 @@
+import type { DropResult } from '@hello-pangea/dnd';
 import { Box } from '@rocket.chat/fuselage';
 import { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import { useContext, useState, useEffect } from 'react';
-import type { DropResult } from 'react-beautiful-dnd';
 
 import { reorder } from './Reorder';
 import SurfaceRender from './SurfaceRender';
@@ -41,7 +41,7 @@ const Surface = () => {
 			})),
 			isChangeByDnd: false,
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, [screens[activeScreen]?.payload.blocks]);
 
 	useEffect(() => {
@@ -53,7 +53,7 @@ const Surface = () => {
 				}),
 			);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, [uniqueBlocks]);
 
 	const onDragEnd = ({ destination, source }: DropResult) => {
@@ -65,7 +65,7 @@ const Surface = () => {
 	};
 
 	return (
-		<Box w='100%' h='100%' padding='20px'>
+		<Box width='100%' height='100%' padding='20px'>
 			<UiKitContext.Provider
 				value={{
 					action: (a) => {

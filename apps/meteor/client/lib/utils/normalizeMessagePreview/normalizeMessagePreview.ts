@@ -1,20 +1,31 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { escapeHTML } from '@rocket.chat/string-helpers';
-import emojione from 'emojione';
 import type { TFunction } from 'i18next';
 
-import { filterMarkdown } from '../../../../app/markdown/lib/markdown';
+import { shortnameToUnicode } from '../../../../lib/emoji-native/shortnameToUnicode';
+import { filterMarkdown } from '../../../../lib/markdown/parser/filtered/filtered';
+import { emoji } from '../../emoji/lib';
+
+// Resolves against the client emoji registry so a custom emoji keeps precedence over a native one with the same shortname
+const transformCustomEmoji = (key: string): string | undefined => {
+	if (emoji.list[key]?.emojiPackage === 'emojiCustom') {
+		return key;
+	}
+};
 
 export const normalizeMessagePreview = (message: IMessage, t: TFunction): string | undefined => {
 	if (message.msg) {
-		return escapeHTML(filterMarkdown(emojione.shortnameToUnicode(message.msg)));
+		return filterMarkdown(shortnameToUnicode(message.msg, transformCustomEmoji));
 	}
 
 	if (message.attachments) {
-		const attachment = message.attachments.find((attachment) => attachment.title);
+		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
+
+		if (attachment?.description) {
+			return attachment.description;
+		}
 
 		if (attachment?.title) {
-			return escapeHTML(attachment.title);
+			return attachment.title;
 		}
 
 		return t('Sent_an_attachment');

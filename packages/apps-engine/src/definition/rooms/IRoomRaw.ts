@@ -1,7 +1,8 @@
 import type { IVisitor } from '../livechat';
+import type { RoomType } from './RoomType';
+import type { FederationLookup } from '../federation';
 import type { IOmnichannelSource, IVisitorChannelInfo } from '../livechat/ILivechatRoom';
 import type { IUserLookup } from '../users';
-import type { RoomType } from './RoomType';
 
 /**
  * A lightweight representation of a room without resolving relational data.
@@ -40,4 +41,6 @@ export interface IRoomRaw {
 	visitor?: Pick<IVisitor, 'id' | 'token' | 'username' | 'name' | 'status' | 'activity'> & IVisitorChannelInfo;
 	departmentId?: string;
 	contactId?: string;
+	isFederated?: boolean;
+	federation?: FederationLookup;
 }

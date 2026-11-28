@@ -1,10 +1,21 @@
 import { MockedServerContext, MockedUserContext } from '@rocket.chat/mock-providers';
-import { render } from '@testing-library/react';
-import { Meteor } from 'meteor/meteor';
+import { AuthenticationContext } from '@rocket.chat/ui-contexts';
+import { render as rtlRender } from '@testing-library/react';
+import type { ReactElement, ReactNode } from 'react';
+import { useContext } from 'react';
 
 import SAMLLoginRoute from './SAMLLoginRoute';
 import RouterContextMock from '../../../tests/mocks/client/RouterContextMock';
 import { useSamlInviteToken } from '../invite/hooks/useSamlInviteToken';
+
+const loginWithSamlToken = jest.fn(async (_token: string, callback?: (error?: unknown) => void) => callback?.());
+
+const WithSamlLogin = ({ children }: { children: ReactNode }) => {
+	const authentication = useContext(AuthenticationContext);
+	return <AuthenticationContext.Provider value={{ ...authentication, loginWithSamlToken }}>{children}</AuthenticationContext.Provider>;
+};
+
+const render = (ui: ReactElement) => rtlRender(ui, { wrapper: WithSamlLogin });
 
 jest.mock('../invite/hooks/useSamlInviteToken');
 const mockUseSamlInviteToken = jest.mocked(useSamlInviteToken);
@@ -17,7 +28,7 @@ beforeAll(() => {
 beforeEach(() => {
 	jest.clearAllMocks();
 	navigateStub.mockClear();
-	(Meteor.loginWithSamlToken as jest.Mock<any>).mockClear();
+	loginWithSamlToken.mockClear();
 });
 
 it('should redirect to /home', async () => {
@@ -73,8 +84,8 @@ it('should call loginWithSamlToken when component is mounted', async () => {
 		</MockedServerContext>,
 	);
 
-	expect(Meteor.loginWithSamlToken).toHaveBeenCalledTimes(1);
-	expect(Meteor.loginWithSamlToken).toHaveBeenLastCalledWith(undefined, expect.any(Function));
+	expect(loginWithSamlToken).toHaveBeenCalledTimes(1);
+	expect(loginWithSamlToken).toHaveBeenLastCalledWith(undefined, expect.any(Function));
 });
 
 it('should call loginWithSamlToken with the token when it is present', async () => {
@@ -86,6 +97,54 @@ it('should call loginWithSamlToken with the token when it is present', async () 
 		</MockedUserContext>,
 	);
 
-	expect(Meteor.loginWithSamlToken).toHaveBeenCalledTimes(1);
-	expect(Meteor.loginWithSamlToken).toHaveBeenLastCalledWith('testToken', expect.any(Function));
+	expect(loginWithSamlToken).toHaveBeenCalledTimes(1);
+	expect(loginWithSamlToken).toHaveBeenLastCalledWith('testToken', expect.any(Function));
+});
+
+jest.mock('../../lib/buildAuthDeeplinkURL', () => ({ buildSamlDeepLinkURL: jest.fn() }));
+
+describe('native client handoff', () => {
+	const { buildSamlDeepLinkURL } = jest.requireMock('../../lib/buildAuthDeeplinkURL') as { buildSamlDeepLinkURL: jest.Mock };
+
+	const navigableDeepLink = `${window.location.origin}/#deep-link`;
+
+	beforeEach(() => {
+		mockUseSamlInviteToken.mockReturnValue([null, () => ({})]);
+		buildSamlDeepLinkURL.mockReturnValue(navigableDeepLink);
+	});
+
+	afterEach(() => {
+		window.location.hash = '';
+	});
+
+	it.each(['mobile', 'desktop'])('should hand the credential token to the %s client without logging in', async (loginClient) => {
+		render(
+			<MockedServerContext>
+				<RouterContextMock routeParameters={{ token: 'testToken' }} searchParameters={{ loginClient }} navigate={navigateStub}>
+					<SAMLLoginRoute />
+				</RouterContextMock>
+			</MockedServerContext>,
+		);
+
+		// The browser must never authenticate: the app redeems the credential on its own connection.
+		expect(loginWithSamlToken).not.toHaveBeenCalled();
+		expect(navigateStub).not.toHaveBeenCalled();
+
+		expect(buildSamlDeepLinkURL).toHaveBeenCalledTimes(1);
+		expect(buildSamlDeepLinkURL).toHaveBeenLastCalledWith('testToken');
+		expect(window.location.href).toBe(navigableDeepLink);
+	});
+
+	it('should log in normally for an unrecognized loginClient', async () => {
+		render(
+			<MockedServerContext>
+				<RouterContextMock routeParameters={{ token: 'testToken' }} searchParameters={{ loginClient: 'web' }} navigate={navigateStub}>
+					<SAMLLoginRoute />
+				</RouterContextMock>
+			</MockedServerContext>,
+		);
+
+		expect(buildSamlDeepLinkURL).not.toHaveBeenCalled();
+		expect(loginWithSamlToken).toHaveBeenCalledTimes(1);
+	});
 });

@@ -1,21 +1,22 @@
-import { Skeleton, Box } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import { Skeleton, Stack } from '@rocket.chat/fuselage';
 
-const AppsPageContentSkeleton = (): ReactElement => {
-	const loadingRows = Array.from({ length: 3 }, (_, i) => <Skeleton key={i} height='x56' mbe={8} width='100%' variant='rect' />);
+const AppsPageContentSkeleton = () => {
+	const loadingSection = (
+		<Stack gap='x20'>
+			<Skeleton height='x28' width='x150' variant='rect' />
+			<Stack gap='x8'>
+				{Array.from({ length: 3 }, (_, i) => (
+					<Skeleton key={i} height='x56' width='100%' variant='rect' />
+				))}
+			</Stack>
+		</Stack>
+	);
 	return (
-		<Box pi={24}>
-			<Box mbe={36}>
-				<Skeleton height='x28' width='x150' mbe={20} variant='rect' />
-				{loadingRows}
-			</Box>
-			<Box mbe={36}>
-				<Skeleton height='x28' width='x150' mbe={20} variant='rect' />
-				{loadingRows}
-			</Box>
-			<Skeleton height='x28' width='x150' mbe={20} variant='rect' />
-			{loadingRows}
-		</Box>
+		<Stack gap='x32'>
+			{loadingSection}
+			{loadingSection}
+			{loadingSection}
+		</Stack>
 	);
 };
 

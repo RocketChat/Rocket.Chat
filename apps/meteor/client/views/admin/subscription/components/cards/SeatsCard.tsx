@@ -1,20 +1,19 @@
 import { Palette } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import FeatureUsageCardBody from '../../layout/FeatureUsageCardBody';
 import type { CardProps } from '../FeatureUsageCard';
 import FeatureUsageCard from '../FeatureUsageCard';
-import FeatureUsageCardBody from '../FeatureUsageCardBody';
 import UpgradeButton from '../UpgradeButton';
 import UsagePieGraph from '../UsagePieGraph';
 
-type SeatsCardProps = {
+export type SeatsCardProps = {
 	value: number;
 	max: number;
 	hideManageSubscription?: boolean;
 };
 
-const SeatsCard = ({ value, max, hideManageSubscription }: SeatsCardProps): ReactElement => {
+const SeatsCard = ({ value, max, hideManageSubscription }: SeatsCardProps) => {
 	const { t } = useTranslation();
 
 	const pieGraph = {
@@ -30,7 +29,7 @@ const SeatsCard = ({ value, max, hideManageSubscription }: SeatsCardProps): Reac
 		...(!hideManageSubscription &&
 			nearLimit && {
 				upgradeButton: (
-					<UpgradeButton target='seats-card' action='buy_more' small>
+					<UpgradeButton target='seats-card' action='buy_more' size='small'>
 						{t('Buy_more')}
 					</UpgradeButton>
 				),

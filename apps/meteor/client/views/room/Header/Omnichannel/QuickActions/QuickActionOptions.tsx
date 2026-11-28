@@ -1,34 +1,31 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Box, Dropdown, Option } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import { HeaderToolbarAction } from '@rocket.chat/ui-client';
-import { memo, useRef } from 'react';
+import { HeaderToolbarAction, useDropdownVisibility } from '@rocket.chat/ui-client';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useDropdownVisibility } from './hooks/useDropdownVisibility';
-import type { QuickActionsActionOptions } from '../../../lib/quickActions';
+import type { QuickActionsActionOptions, QuickActionsEnum } from '../../../lib/quickActions';
 
-type QuickActionOptionsProps = {
+export type QuickActionOptionsProps = {
 	options: QuickActionsActionOptions;
-	action: (id: string) => void;
+	action: (id: QuickActionsEnum) => void;
 	room: IOmnichannelRoom;
 	icon: IconName;
 };
 
 const QuickActionOptions = ({ options, room, action, icon, ...props }: QuickActionOptionsProps) => {
 	const { t } = useTranslation();
-	const reference = useRef(null);
-	const target = useRef(null);
-	const { isVisible, toggle } = useDropdownVisibility({ reference, target });
+	const { isVisible, toggle, reference, target } = useDropdownVisibility<HTMLButtonElement>();
 
-	const handleClick = (id: string) => (): void => {
+	const handleClick = (id: QuickActionsEnum) => (): void => {
 		toggle();
 		action(id);
 	};
 
 	return (
 		<>
-			<HeaderToolbarAction ref={reference} icon={icon} onClick={() => toggle()} secondary={isVisible} {...props} />
+			<HeaderToolbarAction ref={reference} icon={icon} onClick={() => toggle()} variant={isVisible ? 'secondary' : undefined} {...props} />
 			{isVisible && (
 				<Dropdown reference={reference} ref={target}>
 					{options.map(({ id, label, validate }) => {

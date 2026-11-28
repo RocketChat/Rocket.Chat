@@ -1,6 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
-import { differenceInSeconds } from 'date-fns';
+import { differenceInSeconds } from 'date-fns/differenceInSeconds';
 
 import { isMessageNewDay } from './isMessageNewDay';
 

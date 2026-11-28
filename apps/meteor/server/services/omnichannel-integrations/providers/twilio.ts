@@ -4,10 +4,10 @@ import { Users } from '@rocket.chat/models';
 import filesize from 'filesize';
 import twilio from 'twilio';
 
-import { settings } from '../../../../app/settings/server';
-import { fileUploadIsValidContentType } from '../../../../app/utils/server/restrictions';
 import { i18n } from '../../../lib/i18n';
 import { SystemLogger } from '../../../lib/logger/system';
+import { fileUploadIsValidContentType } from '../../../lib/utils/restrictions';
+import { settings } from '../../../settings';
 
 type TwilioData = {
 	From: string;
@@ -106,14 +106,14 @@ export class Twilio implements ISMSProvider {
 		const sid = settings.get<string>('SMS_Twilio_Account_SID');
 		const token = settings.get<string>('SMS_Twilio_authToken');
 		if (!sid || !token) {
-			await notifyAgent(userId, rid, i18n.t('SMS_Twilio_NotConfigured'));
+			notifyAgent(userId, rid, i18n.t('SMS_Twilio_NotConfigured'));
 			return;
 		}
 
 		try {
 			return twilio(sid, token);
 		} catch (error) {
-			await notifyAgent(userId, rid, i18n.t('SMS_Twilio_InvalidCredentials'));
+			notifyAgent(userId, rid, i18n.t('SMS_Twilio_InvalidCredentials'));
 			SystemLogger.error({ msg: '(Twilio) ->', err: error });
 		}
 	}
@@ -156,12 +156,12 @@ export class Twilio implements ISMSProvider {
 		}
 
 		if (reason) {
-			await notifyAgent(userId, rid, reason);
+			notifyAgent(userId, rid, reason);
 			SystemLogger.error({ msg: '(Twilio) ->', reason });
 			return '';
 		}
 
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 		return publicFilePath!;
 	}
 
@@ -218,7 +218,7 @@ export class Twilio implements ISMSProvider {
 			});
 
 			if (result.errorCode) {
-				await notifyAgent(userId, rid, result.errorMessage);
+				notifyAgent(userId, rid, result.errorMessage);
 				SystemLogger.error({ msg: '(Twilio) ->', errorCode: result.errorCode });
 			}
 
@@ -227,7 +227,7 @@ export class Twilio implements ISMSProvider {
 				resultMsg: result.status,
 			};
 		} catch (e: any) {
-			await notifyAgent(userId, rid, e.message);
+			notifyAgent(userId, rid, e.message);
 			return {
 				isSuccess: false,
 				resultMsg: e.message,
@@ -272,7 +272,7 @@ export class Twilio implements ISMSProvider {
 
 	async validateRequest(request: Request, requestBody: unknown): Promise<boolean> {
 		// We're not getting original twilio requests on CI :p
-		if (process.env.TEST_MODE === 'true') {
+		if (process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api') {
 			return true;
 		}
 		const twilioHeader = request.headers.get('x-twilio-signature') || '';

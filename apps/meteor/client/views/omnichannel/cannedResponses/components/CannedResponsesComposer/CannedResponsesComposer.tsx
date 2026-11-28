@@ -1,4 +1,4 @@
-import { Button, PositionAnimated, Tile } from '@rocket.chat/fuselage';
+import { Box, Button, PopoverSurface, PositionAnimated } from '@rocket.chat/fuselage';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
@@ -8,16 +8,51 @@ import {
 	MessageComposerActionsDivider,
 } from '@rocket.chat/ui-composer';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
+import { useEmojiPicker } from '@rocket.chat/ui-emoji-picker';
 import type { ComponentProps, ChangeEvent } from 'react';
 import { memo, useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import InsertPlaceholderDropdown from './InsertPlaceholderDropdown';
 import { Backdrop } from '../../../../../components/Backdrop';
-import { useEmojiPicker } from '../../../../../contexts/EmojiPickerContext';
+import { emoji } from '../../../../../lib/emoji';
 
-type CannedResponsesComposerProps = Omit<ComponentProps<typeof MessageComposerInput>, 'onChange'> & {
+export type CannedResponsesComposerProps = Omit<ComponentProps<typeof MessageComposerInput>, 'onChange'> & {
 	onChange: (value: string) => void;
+};
+
+const applyMarkdownSyntax = (
+	textArea: HTMLTextAreaElement | null,
+	char: '*' | '_' | '~' | '[]()',
+	onChange: (value: string) => void,
+): void => {
+	if (!textArea) {
+		return;
+	}
+	const text = textArea.value;
+	const startPos = textArea.selectionStart;
+	const endPos = textArea.selectionEnd;
+
+	if (char === '[]()') {
+		if (startPos !== endPos) {
+			textArea.value = `${text.slice(0, startPos)}[${text.slice(startPos, endPos)}]()${text.slice(endPos)}`;
+		}
+	} else {
+		textArea.value = `${text.slice(0, startPos)}${char}${text.slice(startPos, endPos)}${char}${text.slice(endPos)}`;
+	}
+	textArea.focus();
+
+	if (char === '[]()') {
+		if (startPos === endPos) {
+			textArea.setSelectionRange(startPos, endPos);
+		} else {
+			textArea.setSelectionRange(endPos + 3, endPos + 3);
+		}
+	} else {
+		textArea.setSelectionRange(startPos + 1, endPos + 1);
+	}
+
+	onChange(textArea.value);
 };
 
 const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposerProps) => {
@@ -31,41 +66,17 @@ const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposer
 
 	const { open: openEmojiPicker } = useEmojiPicker();
 
-	const useMarkdownSyntax = (char: '*' | '_' | '~' | '[]()'): (() => void) =>
-		useCallback(() => {
-			if (textAreaRef?.current) {
-				const text = textAreaRef.current.value;
-				const startPos = textAreaRef.current.selectionStart;
-				const endPos = textAreaRef.current.selectionEnd;
+	const handleBold = useCallback(() => applyMarkdownSyntax(textAreaRef.current, '*', onChange), [onChange]);
+	const handleItalic = useCallback(() => applyMarkdownSyntax(textAreaRef.current, '_', onChange), [onChange]);
+	const handleStrike = useCallback(() => applyMarkdownSyntax(textAreaRef.current, '~', onChange), [onChange]);
+	const handleLink = useCallback(() => applyMarkdownSyntax(textAreaRef.current, '[]()', onChange), [onChange]);
 
-				if (char === '[]()') {
-					if (startPos !== endPos) {
-						textAreaRef.current.value = `${text.slice(0, startPos)}[${text.slice(startPos, endPos)}]()${text.slice(endPos)}`;
-					}
-				} else {
-					textAreaRef.current.value = `${text.slice(0, startPos)}${char}${text.slice(startPos, endPos)}${char}${text.slice(endPos)}`;
-				}
-				textAreaRef.current.focus();
-
-				if (char === '[]()') {
-					if (startPos === endPos) {
-						textAreaRef.current.setSelectionRange(startPos, endPos);
-					} else {
-						textAreaRef.current.setSelectionRange(endPos + 3, endPos + 3);
-					}
-				} else {
-					textAreaRef.current.setSelectionRange(startPos + 1, endPos + 1);
-				}
-
-				onChange?.(textAreaRef.current.value);
-			}
-		}, [char]);
-
-	const onClickEmoji = (emoji: string): void => {
+	const onClickEmoji = (emojiName: string): void => {
 		if (textAreaRef?.current) {
 			const text = textAreaRef.current.value;
 			const startPos = textAreaRef.current.selectionStart;
-			const emojiValue = `:${emoji}: `;
+			const emojiEntry = emoji.list[`:${emojiName}:`];
+			const emojiValue = emojiEntry && 'unicode' in emojiEntry && emojiEntry.unicode ? `${emojiEntry.unicode} ` : `:${emojiName}: `;
 
 			textAreaRef.current.value = text.slice(0, startPos) + emojiValue + text.slice(startPos);
 
@@ -85,11 +96,11 @@ const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposer
 			throw new Error('Missing textAreaRef');
 		}
 
-		openEmojiPicker(textAreaRef.current, (emoji: string) => onClickEmoji(emoji));
+		openEmojiPicker(textAreaRef.current, (emojiName: string) => onClickEmoji(emojiName));
 	};
 
 	const openPlaceholderSelect = (): void => {
-		textAreaRef?.current && textAreaRef.current.focus();
+		textAreaRef?.current?.focus();
 		setVisible(!visible);
 	};
 
@@ -105,25 +116,30 @@ const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposer
 				<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 					<MessageComposerAction icon='emoji' disabled={!useEmojisPreference} onClick={handleOpenEmojiPicker} title={t('Emoji')} />
 					<MessageComposerActionsDivider />
-					<MessageComposerAction icon='bold' onClick={useMarkdownSyntax('*')} title={t('Bold')} />
-					<MessageComposerAction icon='italic' onClick={useMarkdownSyntax('_')} title={t('Italic')} />
-					<MessageComposerAction icon='strike' onClick={useMarkdownSyntax('~')} title={t('Strikethrough')} />
-					<MessageComposerAction icon='link' onClick={useMarkdownSyntax('[]()')} title={t('Link')} />
+					<MessageComposerAction icon='bold' onClick={handleBold} title={t('Bold')} />
+					<MessageComposerAction icon='italic' onClick={handleItalic} title={t('Italic')} />
+					<MessageComposerAction icon='strike' onClick={handleStrike} title={t('Strikethrough')} />
+					<MessageComposerAction icon='link' onClick={handleLink} title={t('Link')} />
 					<MessageComposerActionsDivider />
-					<Button ref={ref} small onClick={openPlaceholderSelect}>
+					<Button ref={ref} size='small' onClick={openPlaceholderSelect}>
 						{t('Insert_Placeholder')}
 					</Button>
-					<Backdrop
-						display={visible ? 'block' : 'none'}
-						onClick={(): void => {
-							textAreaRef?.current && textAreaRef.current.focus();
-							setVisible(false);
-						}}
-					/>
+					{visible && (
+						<Backdrop
+							onClick={(): void => {
+								textAreaRef?.current?.focus();
+								setVisible(false);
+							}}
+						/>
+					)}
 					<PositionAnimated visible={visible ? 'visible' : 'hidden'} anchor={ref}>
-						<Tile elevation='1' w='224px'>
-							<InsertPlaceholderDropdown onChange={onChange} textAreaRef={textAreaRef} setVisible={setVisible} />
-						</Tile>
+						<Box width='224px'>
+							<PopoverSurface elevation='1' flush>
+								<Box padding={16}>
+									<InsertPlaceholderDropdown onChange={onChange} textAreaRef={textAreaRef} setVisible={setVisible} />
+								</Box>
+							</PopoverSurface>
+						</Box>
 					</PositionAnimated>
 				</MessageComposerToolbarActions>
 			</MessageComposerToolbar>

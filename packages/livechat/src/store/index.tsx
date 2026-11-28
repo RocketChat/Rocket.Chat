@@ -55,6 +55,8 @@ export type StoreState = {
 			livechatLogo?: { url: string };
 			transcript?: boolean;
 			visitorsCanCloseChat?: boolean;
+			clearLocalStorageWhenChatEnded?: boolean;
+			agentHiddenInfo?: boolean;
 		};
 		online?: boolean;
 		departments: Department[];
@@ -107,18 +109,24 @@ export type StoreState = {
 	expanded?: boolean;
 	modal?: any;
 	agent?: any;
-	room?: { _id: string };
+	room?: { _id: string; servedBy?: unknown } | null;
 	noMoreMessages?: boolean;
 	loading?: boolean;
 	lastReadMessageId?: any;
 	triggerAgent?: any;
-	queueInfo?: any;
+	queueInfo?: {
+		spot?: number;
+		estimatedWaitTimeSeconds?: number;
+		message?: { text?: string; user?: unknown };
+	};
 	defaultAgent?: Agent;
 	parentUrl?: string;
 	connecting?: boolean;
 	messageListPosition?: 'top' | 'bottom' | 'free';
 	renderedTriggers: TriggerMessage[];
 	customFieldsQueue: Record<string, { value: string; overwrite: boolean }>;
+	parentMessages?: any[];
+	triggersRecords?: Record<string, { id: string; status: string; condition?: string; action?: string; error?: unknown }>;
 };
 
 export const initialState = (): StoreState => ({
@@ -190,8 +198,10 @@ window.addEventListener('visibilitychange', () => {
 		return;
 	}
 
-	!store.state.minimized && !store.state.triggered && parentCall('openWidget');
-	store.state.iframe.visible ? parentCall('showWidget') : parentCall('hideWidget');
+	if (!store.state.minimized && !store.state.triggered) {
+		parentCall('openWidget');
+	}
+	parentCall(store.state.iframe.visible ? 'showWidget' : 'hideWidget');
 });
 
 window.addEventListener('beforeunload', () => {

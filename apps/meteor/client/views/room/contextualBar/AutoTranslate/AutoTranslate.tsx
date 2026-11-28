@@ -5,15 +5,16 @@ import {
 	ContextualbarTitle,
 	ContextualbarHeader,
 	ContextualbarIcon,
-	ContextualbarContent,
+	ContextualbarScrollableContent,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import type { ReactElement, ChangeEvent } from 'react';
+import { useId } from 'react';
+import type { ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useRoom } from '../../contexts/RoomContext';
 
-type AutoTranslateProps = {
+export type AutoTranslateProps = {
 	language: string;
 	languages: SelectOption[];
 	handleSwitch: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -22,16 +23,11 @@ type AutoTranslateProps = {
 	handleClose?: () => void;
 };
 
-const AutoTranslate = ({
-	language,
-	languages,
-	handleSwitch,
-	translateEnable,
-	handleChangeLanguage,
-	handleClose,
-}: AutoTranslateProps): ReactElement => {
+const AutoTranslate = ({ language, languages, handleSwitch, translateEnable, handleChangeLanguage, handleClose }: AutoTranslateProps) => {
 	const { t } = useTranslation();
 	const room = useRoom();
+	const autoTranslateId = useId();
+	const translateToId = useId();
 
 	return (
 		<ContextualbarDialog>
@@ -40,7 +36,7 @@ const AutoTranslate = ({
 				<ContextualbarTitle>{t('Auto_Translate')}</ContextualbarTitle>
 				{handleClose && <ContextualbarClose onClick={handleClose} />}
 			</ContextualbarHeader>
-			<ContextualbarContent pbs={24}>
+			<ContextualbarScrollableContent padding='x24'>
 				<FieldGroup>
 					{room.encrypted && (
 						<Callout title={t('Automatic_translation_not_available')} type='warning'>
@@ -49,9 +45,9 @@ const AutoTranslate = ({
 					)}
 					<Field>
 						<FieldRow>
-							<FieldLabel htmlFor='automatic-translation'>{t('Automatic_Translation')}</FieldLabel>
+							<FieldLabel htmlFor={autoTranslateId}>{t('Automatic_Translation')}</FieldLabel>
 							<ToggleSwitch
-								id='automatic-translation'
+								id={autoTranslateId}
 								onChange={handleSwitch}
 								defaultChecked={translateEnable}
 								disabled={room.encrypted && !translateEnable}
@@ -59,10 +55,10 @@ const AutoTranslate = ({
 						</FieldRow>
 					</Field>
 					<Field>
-						<FieldLabel htmlFor='translate-to'>{t('Translate_to')}</FieldLabel>
-						<FieldRow verticalAlign='middle'>
+						<FieldLabel htmlFor={translateToId}>{t('Translate_to')}</FieldLabel>
+						<FieldRow>
 							<Select
-								id='language'
+								id={translateToId}
 								value={language}
 								disabled={!translateEnable}
 								onChange={(value) => handleChangeLanguage(String(value))}
@@ -71,7 +67,7 @@ const AutoTranslate = ({
 						</FieldRow>
 					</Field>
 				</FieldGroup>
-			</ContextualbarContent>
+			</ContextualbarScrollableContent>
 		</ContextualbarDialog>
 	);
 };

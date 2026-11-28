@@ -1,5 +1,4 @@
 import {
-	Box,
 	Button,
 	ButtonGroup,
 	Field,
@@ -14,24 +13,26 @@ import {
 	ModalClose,
 	ModalContent,
 	ModalFooter,
+	Stack,
+	Text,
 } from '@rocket.chat/fuselage';
-import { useMethod, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 
 import WorkspaceRegistrationModal from './RegisterWorkspaceModal';
 
-type RegisterWorkspaceTokenModalProps = {
+export type RegisterWorkspaceTokenModalProps = {
 	onClose: () => void;
-	onStatusChange?: () => void;
+	onStatusChange?: () => void | Promise<unknown>;
 };
 
 const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, ...props }: RegisterWorkspaceTokenModalProps) => {
 	const setModal = useSetModal();
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const connectWorkspace = useMethod('cloud:connectWorkspace');
+	const connectWorkspace = useEndpoint('POST', '/v1/cloud.connectWorkspace');
 
 	const [token, setToken] = useState('');
 	const [processing, setProcessing] = useState(false);
@@ -53,11 +54,7 @@ const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, ...props }: Regi
 		setError(false);
 
 		try {
-			const isConnected = await connectWorkspace(token);
-
-			if (!isConnected) {
-				throw Error(t('RegisterWorkspace_Connection_Error'));
-			}
+			await connectWorkspace({ token });
 
 			setModal(null);
 
@@ -80,32 +77,34 @@ const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, ...props }: Regi
 				<ModalClose onClick={onClose} />
 			</ModalHeader>
 			<ModalContent>
-				<Box is='p'>
+				<Text is='p' fontScale='p2'>
 					<Trans i18nKey='RegisterWorkspace_Token_Step_One'>
 						1. Go to:{' '}
-						<Box is='span' fontWeight={600}>
+						<Text is='strong' fontScale='p2b'>
 							cloud.rocket.chat {'>'} Workspaces
-						</Box>{' '}
+						</Text>{' '}
 						and click{' '}
-						<Box is='span' fontWeight={600}>
-							"Register self-managed"
-						</Box>
+						<Text is='strong' fontScale='p2b'>
+							&quot;Register self-managed&quot;
+						</Text>
 						.
 					</Trans>
-				</Box>
-				<Box is='p' fontSize='p2'>{`2. ${t('RegisterWorkspace_Token_Step_Two')}`}</Box>
-				<Field pbs={10}>
-					<FieldLabel>{t('Registration_Token')}</FieldLabel>
-					<FieldRow>
-						<TextInput onChange={handleTokenChange} value={token} />
-					</FieldRow>
-					{error && <FieldError>{t('Token_Not_Recognized')}</FieldError>}
-				</Field>
+				</Text>
+				<Stack gap='x8'>
+					<Text is='p' fontScale='p2'>{`2. ${t('RegisterWorkspace_Token_Step_Two')}`}</Text>
+					<Field>
+						<FieldLabel>{t('Registration_Token')}</FieldLabel>
+						<FieldRow>
+							<TextInput onChange={handleTokenChange} value={token} />
+						</FieldRow>
+						{error && <FieldError>{t('Token_Not_Recognized')}</FieldError>}
+					</Field>
+				</Stack>
 			</ModalContent>
 			<ModalFooter>
 				<ButtonGroup align='end'>
 					<Button onClick={handleBackAction}>{t('Back')}</Button>
-					<Button primary disabled={!isToken} loading={processing} onClick={handleConnectButtonClick}>
+					<Button variant='primary' disabled={!isToken} loading={processing} onClick={handleConnectButtonClick}>
 						{t('Next')}
 					</Button>
 				</ButtonGroup>

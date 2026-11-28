@@ -1,6 +1,6 @@
-import fs from 'fs';
-import { unlink } from 'fs/promises';
-import { isNativeError } from 'util/types';
+import fs from 'node:fs';
+import { unlink } from 'node:fs/promises';
+import { isNativeError } from 'node:util/types';
 
 import type { IUpload } from '@rocket.chat/core-typings';
 import mkdirp from 'mkdirp';
@@ -58,7 +58,9 @@ export class LocalStore extends Store {
 			} else {
 				// Set directory permissions
 				fs.chmod(path, mode, (err) => {
-					err && console.error(`LocalStore: cannot set store permissions ${mode} (${err.message})`);
+					if (err) {
+						console.error(`LocalStore: cannot set store permissions ${mode} (${err.message})`);
+					}
 				});
 			}
 		});

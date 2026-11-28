@@ -1,6 +1,6 @@
 import { isDirectMessageRoom, isDiscussion, isOmnichannelRoom, isPrivateRoom, isPublicRoom, isTeamRoom } from '@rocket.chat/core-typings';
 import type { ILivechatInquiryRecord, IRoom } from '@rocket.chat/core-typings';
-import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useUserPreference, useUserSubscriptions, useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
@@ -8,6 +8,7 @@ import { useEffect, useMemo } from 'react';
 
 import { useSortQueryOptions } from '../../../hooks/useSortQueryOptions';
 import { RoomManager } from '../../../lib/RoomManager';
+import { getSubscriptionDraft } from '../../../lib/utils/getSubscriptionDraft';
 import { Rooms } from '../../../stores';
 import { useOmnichannelEnabled } from '../../omnichannel/hooks/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../omnichannel/hooks/useQueuedInquiries';
@@ -70,7 +71,9 @@ const useRoomsGroups = (): [RoomsNavigationGroup, UnreadGroupDataMap] => {
 	return useDebouncedValue(
 		useMemo(() => {
 			const groups: RoomsNavigationGroup = new Map();
-			showOmnichannel && groups.set('queue', new Set(queue));
+			if (showOmnichannel) {
+				groups.set('queue', new Set(queue));
+			}
 
 			const unreadGroupData: UnreadGroupDataMap = new Map();
 
@@ -97,6 +100,10 @@ const useRoomsGroups = (): [RoomsNavigationGroup, UnreadGroupDataMap] => {
 			rooms.forEach((room) => {
 				if (room.archived) {
 					return;
+				}
+
+				if (getSubscriptionDraft(room)) {
+					setGroupRoom('drafts', room);
 				}
 
 				if (isOmnichannelRoom(room) && showOmnichannel) {
@@ -151,7 +158,9 @@ const useRoomsGroups = (): [RoomsNavigationGroup, UnreadGroupDataMap] => {
 	);
 };
 
-const RoomsNavigationContextProvider = ({ children }: { children: ReactNode }) => {
+export type RoomsNavigationContextProviderProps = { children: ReactNode };
+
+const RoomsNavigationContextProvider = ({ children }: RoomsNavigationContextProviderProps) => {
 	const {
 		sidePanel: { openSidePanel },
 	} = useLayout();
@@ -159,7 +168,7 @@ const RoomsNavigationContextProvider = ({ children }: { children: ReactNode }) =
 
 	const [currentFilter, unread, , setCurrentFilter] = useSidePanelFilter();
 
-	const setFilter = useEffectEvent((filter: AllGroupsKeys, unread: boolean, parentRid?: IRoom['_id']) => {
+	const setFilter = useStableCallback((filter: AllGroupsKeys, unread: boolean, parentRid?: IRoom['_id']) => {
 		openSidePanel();
 		setCurrentFilter(getFilterKey(filter, unread));
 		setParentRoom(filter, parentRid);
@@ -167,8 +176,8 @@ const RoomsNavigationContextProvider = ({ children }: { children: ReactNode }) =
 
 	const [groups, unreadGroupData] = useRoomsGroups();
 
-	const handleRoomOpened = useEffectEvent((rid: string) => {
-		const room = Rooms.use.getState().find((r) => r._id === rid);
+	const handleRoomOpened = useStableCallback((rid: string) => {
+		const room = Rooms.useStore.getState().find((r) => r._id === rid);
 
 		if (!room) {
 			return;
@@ -189,7 +198,7 @@ const RoomsNavigationContextProvider = ({ children }: { children: ReactNode }) =
 		}
 
 		if (room.teamId && currentFilter === 'teams') {
-			const teamRid = Rooms.use.getState().find((r) => Boolean(r.teamId === room.teamId && r.teamMain))?._id;
+			const teamRid = Rooms.useStore.getState().find((r) => Boolean(r.teamId === room.teamId && r.teamMain))?._id;
 
 			/**
 			 * if the room is the parent rid is still the same, don't change the filter
@@ -203,7 +212,7 @@ const RoomsNavigationContextProvider = ({ children }: { children: ReactNode }) =
 		}
 
 		if (room.prid) {
-			const parentRoom = Rooms.use.getState().find((r) => Boolean(r._id === room.prid));
+			const parentRoom = Rooms.useStore.getState().find((r) => Boolean(r._id === room.prid));
 			setFilter(parentRoom?.teamMain ? 'teams' : 'channels', unread, parentRoom?._id);
 			return;
 		}

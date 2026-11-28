@@ -1,21 +1,19 @@
-import type { ServerResponse } from 'http';
+import type { ServerResponse } from 'node:http';
 
 import { hashLoginToken } from '@rocket.chat/account-utils';
 import type { IIncomingMessage, IUpload } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import type { NextFunction } from 'connect';
-import { Cookies } from 'meteor/ostrio:cookies';
+import { parseCookie } from 'cookie';
 import sanitizeHtml from 'sanitize-html';
 import sharp from 'sharp';
 import { throttle } from 'underscore';
 
-import { FileUpload } from '../../../app/file-upload/server';
-import { settings } from '../../../app/settings/server';
-import { getAvatarColor } from '../../../app/utils/lib/getAvatarColor';
+import { FileUpload } from '../../lib/media/file-upload';
+import { getAvatarColor } from '../../lib/utils/lib/getAvatarColor';
+import { settings } from '../../settings';
 
 const FALLBACK_LAST_MODIFIED = 'Thu, 01 Jan 2015 00:00:00 GMT';
-
-const cookie = new Cookies();
 
 export const MAX_SVG_AVATAR_SIZE = 1024;
 export const MIN_SVG_AVATAR_SIZE = 16;
@@ -93,8 +91,7 @@ async function isUserAuthenticated({ headers, query }: Pick<IIncomingMessage, 'h
 	let { rc_uid, rc_token } = query;
 
 	if (!rc_uid && headers.cookie) {
-		rc_uid = cookie.get('rc_uid', headers.cookie);
-		rc_token = cookie.get('rc_token', headers.cookie);
+		({ rc_uid, rc_token } = parseCookie(headers.cookie));
 	}
 
 	if (rc_uid == null || rc_token == null) {
@@ -131,8 +128,8 @@ const getFirstLetter = (name: string) => {
 const getInitials = (name: string) => name.split(' ').slice(0, MAX_SVG_AVATAR_INITIALS).map(getFirstLetter).join('');
 
 export const renderSVGLetters = (name: string, viewSize = 200, useAllInitials = false) => {
-	let color = '';
-	let initials = '';
+	let color: string;
+	let initials: string;
 
 	if (name === '?') {
 		color = '#000';
@@ -145,13 +142,13 @@ export const renderSVGLetters = (name: string, viewSize = 200, useAllInitials = 
 	const reductionFactor = initials.length > 1 ? Math.pow(initials.length, 2) / 10 : 0;
 	const fontSize = viewSize / (1.6 + reductionFactor);
 
-	return `<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 ${viewSize} ${viewSize}\">\n<rect width=\"100%\" height=\"100%\" fill=\"${color}\"/>\n<text x=\"50%\" y=\"50%\" dy=\"0.36em\" text-anchor=\"middle\" pointer-events=\"none\" fill=\"#ffffff\" font-family=\"'Helvetica', 'Arial', 'Lucida Grande', 'sans-serif'\" font-size="${fontSize}">\n${initials}\n</text>\n</svg>`;
+	return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewSize} ${viewSize}">\n<rect width="100%" height="100%" fill="${color}"/>\n<text x="50%" y="50%" dy="0.36em" text-anchor="middle" pointer-events="none" fill="#ffffff" font-family="'Helvetica', 'Arial', 'Lucida Grande', 'sans-serif'" font-size="${fontSize}">\n${initials}\n</text>\n</svg>`;
 };
 
 const getCacheTime = (cacheTime: number) => cacheTime || settings.get('Accounts_AvatarCacheTime');
 
-export function setCacheAndDispositionHeaders(req: IIncomingMessage, res: ServerResponse) {
+export function setCacheAndDispositionHeaders(req: IIncomingMessage, res: ServerResponse, visibility: 'public' | 'private' = 'public') {
 	const cacheTime = getCacheTime(req.query.cacheTime);
-	res.setHeader('Cache-Control', `public, max-age=${cacheTime}`);
+	res.setHeader('Cache-Control', `${visibility}, max-age=${cacheTime}`);
 	res.setHeader('Content-Disposition', 'inline');
 }

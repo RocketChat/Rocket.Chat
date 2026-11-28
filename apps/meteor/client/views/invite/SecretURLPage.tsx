@@ -1,9 +1,8 @@
 import { useUserId, useRouter } from '@rocket.chat/ui-contexts';
-import RegistrationPageRouter from '@rocket.chat/web-ui-registration';
-import type { ReactElement } from 'react';
+import RegistrationPageRouter from '@rocket.chat/ui-registration';
 import { useEffect } from 'react';
 
-const SecretURLPage = (): ReactElement | null => {
+const SecretURLPage = () => {
 	const uid = useUserId();
 	const router = useRouter();
 

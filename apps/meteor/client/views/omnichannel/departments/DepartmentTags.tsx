@@ -1,9 +1,9 @@
-import { Button, Chip, FieldRow, TextInput } from '@rocket.chat/fuselage';
-import type { ComponentProps, FormEvent } from 'react';
+import { Box, Button, Chip, FieldRow, TextInput, Stack } from '@rocket.chat/fuselage';
+import type { ComponentProps, ChangeEvent } from 'react';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type DepartmentTagsProps = {
+export type DepartmentTagsProps = {
 	error: string;
 	value: string[];
 	onChange: (tags: string[]) => void;
@@ -29,24 +29,28 @@ const DepartmentTags = ({ error, value: tags, onChange, ...props }: DepartmentTa
 	return (
 		<>
 			<FieldRow>
-				<TextInput
-					error={error}
-					placeholder={t('Enter_a_tag')}
-					value={tagText}
-					onChange={(e: FormEvent<HTMLInputElement>) => setTagText(e.currentTarget.value)}
-					{...props}
-				/>
-				<Button disabled={Boolean(!tagText.trim()) || tags.includes(tagText)} mis={8} title={t('Add')} onClick={handleAddTag}>
-					{t('Add')}
-				</Button>
+				<Stack direction='row' align='center' justify='space-between' grow gap={8}>
+					<TextInput
+						error={error}
+						placeholder={t('Enter_a_tag')}
+						value={tagText}
+						onChange={(e: ChangeEvent<HTMLInputElement>) => setTagText(e.currentTarget.value)}
+						{...props}
+					/>
+					<Button disabled={Boolean(!tagText.trim()) || tags.includes(tagText)} title={t('Add')} onClick={handleAddTag}>
+						{t('Add')}
+					</Button>
+				</Stack>
 			</FieldRow>
 			{tags?.length > 0 && (
-				<FieldRow justifyContent='flex-start'>
-					{tags.map((tag, i) => (
-						<Chip key={i} onClick={handleTagChipClick(tag)} mie={8}>
-							{tag}
-						</Chip>
-					))}
+				<FieldRow>
+					<Box display='flex' alignItems='center' minWidth={0} gap={8} paddingInlineEnd={8}>
+						{tags.map((tag, i) => (
+							<Chip key={i} onClick={handleTagChipClick(tag)}>
+								{tag}
+							</Chip>
+						))}
+					</Box>
 				</FieldRow>
 			)}
 		</>

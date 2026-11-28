@@ -1,5 +1,6 @@
+import { after, before, describe, it } from 'node:test';
+
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, request } from '../../data/api-data';
 import { updateSetting } from '../../data/permissions.helper';
@@ -12,23 +13,26 @@ const getHash = () =>
 		.then((res) => {
 			const hashMatch = res.text.match(/meteor_runtime_config\.js\?hash=([^"']+)/);
 			expect(hashMatch).to.not.be.null;
-			const hash = hashMatch![1];
+			if (!hashMatch) {
+				throw new Error('meteor_runtime_config.js hash not found in page');
+			}
+			const hash = hashMatch[1];
 			return hash;
 		});
 
 describe('[CORS]', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 	after(async () => {
 		await updateSetting('Site_Url', 'http://localhost:3000');
 	});
 
 	describe('[/meteor_runtime_config.js]', () => {
-		it('should return 404 when hash is missing', (done) => {
-			void request.get('/meteor_runtime_config.js').expect(404).end(done);
+		it('should return 404 when hash is missing', async () => {
+			await request.get('/meteor_runtime_config.js').expect(404);
 		});
 
-		it('should return 404 when hash is invalid', (done) => {
-			void request.get('/meteor_runtime_config.js').query({ hash: 'invalid_hash' }).expect(404).end(done);
+		it('should return 404 when hash is invalid', async () => {
+			await request.get('/meteor_runtime_config.js').query({ hash: 'invalid_hash' }).expect(404);
 		});
 
 		it('should return runtime config when hash matches', async () => {
@@ -47,9 +51,9 @@ describe('[CORS]', () => {
 				});
 		});
 
-		it('should return 404 when hash does not match', (done) => {
+		it('should return 404 when hash does not match', async () => {
 			// First get the root page to extract the hash
-			void request.get('/meteor_runtime_config.js').query({ hash: 'invalidHash' }).expect(404).end(done);
+			await request.get('/meteor_runtime_config.js').query({ hash: 'invalidHash' }).expect(404);
 		});
 
 		it('should update hash when ROOT_URL changes', async () => {

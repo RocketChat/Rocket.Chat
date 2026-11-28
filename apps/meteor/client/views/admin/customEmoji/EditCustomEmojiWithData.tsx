@@ -1,13 +1,13 @@
 import { Callout } from '@rocket.chat/fuselage';
+import { FormSkeleton } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import EditCustomEmoji from './EditCustomEmoji';
-import { FormSkeleton } from '../../../components/Skeleton';
 
-type EditCustomEmojiWithDataProps = {
+export type EditCustomEmojiWithDataProps = {
 	_id: string;
 	close: () => void;
 	onChange: () => void;
@@ -29,10 +29,10 @@ const EditCustomEmojiWithData = ({ _id, onChange, close, ...props }: EditCustomE
 	});
 
 	if (isPending) {
-		return <FormSkeleton pi={20} />;
+		return <FormSkeleton paddingInline={20} />;
 	}
 
-	if (error || !data || !data.emojis || data.emojis.update.length < 1) {
+	if (error || !data?.emojis || data.emojis.update.length < 1) {
 		return <Callout title={t('Custom_Emoji_Error_Invalid_Emoji')} type='danger' />;
 	}
 

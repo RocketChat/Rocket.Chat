@@ -12,13 +12,13 @@ import {
 	ModalFooter,
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
-import { UiKitComponent, UiKitModal, modalParser } from '@rocket.chat/fuselage-ui-kit';
+import { UiKitComponent, UiKitContext, UiKitModal, modalParser } from '@rocket.chat/fuselage-ui-kit';
 import type * as UiKit from '@rocket.chat/ui-kit';
-import type { FormEvent, FormEventHandler, ReactElement } from 'react';
-import { useId, useCallback, useEffect, useMemo, useRef } from 'react';
+import type { FormEvent, FormEventHandler } from 'react';
+import { useContext, useId, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { getButtonStyle } from './getButtonStyle';
-import { getURL } from '../../../../app/utils/client/getURL';
+import { getURL } from '../../../lib/getURL';
 
 const focusableElementsString = `
 	a[href]:not([tabindex="-1"]),
@@ -64,9 +64,10 @@ const KeyboardCode = new Map<string, number>([
 	['TAB', 9],
 ]);
 
-const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockParams): ReactElement => {
+const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockParams) => {
 	const id = `modal_id_${useId()}`;
 	const ref = useRef<HTMLElement>(null);
+	const { uploading } = useContext(UiKitContext);
 
 	useEffect(() => {
 		if (!ref.current) {
@@ -109,7 +110,7 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 					event.preventDefault();
 					onClose();
 					return;
-				case KeyboardCode.get('TAB'):
+				case KeyboardCode.get('TAB'): {
 					if (!ref.current) {
 						return;
 					}
@@ -135,6 +136,7 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 						event.stopPropagation();
 						event.preventDefault();
 					}
+				}
 			}
 		},
 		[onClose],
@@ -173,8 +175,8 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 	}, [handleKeyDown, onClose]);
 
 	return (
-		<AnimatedVisibility visibility={AnimatedVisibility.UNHIDING}>
-			<FocusScope contain restoreFocus autoFocus>
+		<FocusScope contain restoreFocus autoFocus>
+			<AnimatedVisibility visibility={AnimatedVisibility.UNHIDING}>
 				<Modal aria-labelledby={`${id}-title`} open id={id} ref={ref}>
 					<ModalHeader>
 						{view.showIcon ? <ModalThumb url={getURL(`/api/apps/${view.appId}/icon`)} /> : null}
@@ -189,20 +191,20 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 					<ModalFooter>
 						<ModalFooterControllers>
 							{view.close && (
-								<Button danger={view.close.style === 'danger'} onClick={onCancel}>
+								<Button variant={view.close.style === 'danger' ? 'danger' : undefined} onClick={onCancel}>
 									{modalParser.renderTextObject(view.close.text, 0)}
 								</Button>
 							)}
 							{view.submit && (
-								<Button {...getButtonStyle(view.submit)} onClick={onSubmit}>
+								<Button {...getButtonStyle(view.submit)} disabled={view.submit_disabled || uploading} onClick={onSubmit}>
 									{modalParser.renderTextObject(view.submit.text, 1)}
 								</Button>
 							)}
 						</ModalFooterControllers>
 					</ModalFooter>
 				</Modal>
-			</FocusScope>
-		</AnimatedVisibility>
+			</AnimatedVisibility>
+		</FocusScope>
 	);
 };
 

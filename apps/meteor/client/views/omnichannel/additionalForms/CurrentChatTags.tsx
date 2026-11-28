@@ -1,9 +1,9 @@
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import AutoCompleteTagsMultiple from '../tags/AutoCompleteTagsMultiple';
 
-type CurrentChatTagsProps = Pick<ComponentProps<typeof AutoCompleteTagsMultiple>, 'id' | 'aria-labelledby'> & {
+export type CurrentChatTagsProps = Pick<ComponentProps<typeof AutoCompleteTagsMultiple>, 'id' | 'aria-labelledby'> & {
 	value: NonNullable<ComponentProps<typeof AutoCompleteTagsMultiple>['value']>;
 	handler: NonNullable<ComponentProps<typeof AutoCompleteTagsMultiple>['onChange']>;
 	department?: string;

@@ -1,7 +1,9 @@
-import { Box, Modal } from '@rocket.chat/fuselage';
+import { Modal } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import IframeModalFrame from './layout/IframeModalFrame';
 
 const iframeMsgListener = (confirm: (data: any) => void, cancel: () => void) => (e: MessageEvent<any>) => {
 	let data;
@@ -11,14 +13,18 @@ const iframeMsgListener = (confirm: (data: any) => void, cancel: () => void) => 
 		return;
 	}
 
-	data.result ? confirm(data) : cancel();
+	if (data.result) {
+		confirm(data);
+	} else {
+		cancel();
+	}
 };
 
-type IframeModalProps = {
+export type IframeModalProps = {
 	url: string;
 	confirm: (data: any) => void;
 	cancel: () => void;
-	wrapperHeight?: string;
+	wrapperHeight?: ComponentProps<typeof Modal>['height'];
 } & ComponentProps<typeof Modal>;
 
 const IframeModal = ({ url, confirm, cancel, wrapperHeight = 'x360', ...props }: IframeModalProps) => {
@@ -36,9 +42,9 @@ const IframeModal = ({ url, confirm, cancel, wrapperHeight = 'x360', ...props }:
 
 	return (
 		<Modal height={wrapperHeight} {...props}>
-			<Box padding='x12' w='full' h='full' flexGrow={1} bg='white' borderRadius='x8'>
+			<IframeModalFrame>
 				<iframe title={t('Marketplace_apps')} style={{ border: 'none', height: '100%', width: '100%' }} src={url} />
-			</Box>
+			</IframeModalFrame>
 		</Modal>
 	);
 };

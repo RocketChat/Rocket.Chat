@@ -1,4 +1,4 @@
-/* eslint-disable new-cap */
+/* oxlint-disable new-cap */
 import {
 	Message,
 	MessageLeftContainer,
@@ -16,20 +16,19 @@ import {
 	Avatar,
 } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
-import { action } from '@storybook/addon-actions';
+import type { Meta, StoryObj } from '@storybook/react';
+import { action } from 'storybook/actions';
 
 import { UiKitContext, UiKitMessage } from '..';
 import * as payloads from './payloads';
 
+type StoryArgs = { blocks: readonly UiKit.LayoutBlock[]; errors: Record<string, string> };
+
 export default {
-	title: 'Surfaces/Message',
 	argTypes: {
 		blocks: { control: 'object' },
 	},
-};
-
-const createStory = (blocks: readonly UiKit.LayoutBlock[]) => {
-	const story = ({ blocks, errors }: { blocks: readonly UiKit.LayoutBlock[]; errors: Record<string, string> }) => (
+	render: ({ blocks, errors }) => (
 		<Message clickable>
 			<MessageLeftContainer>
 				<Avatar
@@ -71,7 +70,7 @@ const createStory = (blocks: readonly UiKit.LayoutBlock[]) => {
 					</UiKitContext.Provider>
 				</MessageBody>
 			</MessageContainer>
-			<MessageToolbarWrapper>
+			<MessageToolbarWrapper visible>
 				<MessageToolbar>
 					<MessageToolbarItem icon='quote' />
 					<MessageToolbarItem icon='clock' />
@@ -79,15 +78,24 @@ const createStory = (blocks: readonly UiKit.LayoutBlock[]) => {
 				</MessageToolbar>
 			</MessageToolbarWrapper>
 		</Message>
-	);
-	story.args = {
-		blocks,
-	};
+	),
+} satisfies Meta<StoryArgs>;
 
-	return story;
-};
+const createStory = (blocks: readonly UiKit.LayoutBlock[]): StoryObj<StoryArgs> => ({
+	args: {
+		blocks,
+		errors: {},
+	},
+});
 
 export const Divider = createStory(payloads.divider);
+
+export const Header = createStory(payloads.header);
+
+export const Markdown = createStory(payloads.markdown);
+
+export const RichText = createStory(payloads.richText);
+export const RichTextElements = createStory(payloads.richTextElements);
 
 export const SectionWithPlainText = createStory(payloads.sectionWithPlainText);
 
@@ -102,6 +110,8 @@ export const SectionWithImageAccessory = createStory(payloads.sectionWithImageAc
 export const SectionWithOverflowMenuAccessory = createStory(payloads.sectionWithOverflowMenuAccessory);
 
 export const SectionWithDatePickerAccessory = createStory(payloads.sectionWithDatePickerAccessory);
+
+export const SectionWithRadioButtonAccessory = createStory(payloads.sectionWithRadioButtonAccessory);
 
 export const ImageWithTitle = createStory(payloads.imageWithTitle);
 
@@ -133,3 +143,43 @@ export const PreviewWithExternalUrl = createStory(payloads.previewWithExternalUr
 export const InfoCard = createStory(payloads.infoCard);
 export const InfoCardMultiple = createStory(payloads.infoCardMultiple);
 export const InfoCardMultipleIcons = createStory(payloads.infoCardMultipleIcons);
+
+export const Alert = createStory(payloads.alert);
+
+export const Card = createStory(payloads.card);
+
+export const Carousel = createStory(payloads.carousel);
+
+export const Container = createStory(payloads.container);
+
+export const ContainerCollapsed = createStory(payloads.containerCollapsed);
+
+export const ContainerWithHeaderDivider = createStory(payloads.containerWithHeaderDivider);
+
+export const LayoutThreeColumns = createStory(payloads.layoutThreeColumns);
+
+export const LayoutWithGridLines = createStory(payloads.layoutWithGridLines);
+
+export const DataTable = createStory(payloads.dataTable);
+
+export const DataVisualizationPie = createStory(payloads.dataVisualizationPie);
+
+export const DataVisualizationBar = createStory(payloads.dataVisualizationBar);
+
+export const DataVisualizationArea = createStory(payloads.dataVisualizationArea);
+
+export const DataVisualizationLine = createStory(payloads.dataVisualizationLine);
+
+export const File = createStory(payloads.file);
+
+export const Table = createStory(payloads.table);
+
+export const Video = createStory(payloads.video);
+
+export const ContextActions = createStory(payloads.contextActions);
+
+export const ContextActionsWithFeedback = createStory(payloads.contextActionsWithFeedback);
+
+export const TaskCard = createStory(payloads.taskCard);
+
+export const Plan = createStory(payloads.plan);

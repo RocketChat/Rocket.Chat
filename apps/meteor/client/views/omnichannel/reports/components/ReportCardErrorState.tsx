@@ -1,16 +1,15 @@
 import { States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type ReportCardErrorStateProps = {
+export type ReportCardErrorStateProps = {
 	onRetry?: () => void;
 };
 
-export const ReportCardErrorState = ({ onRetry }: ReportCardErrorStateProps): ReactElement => {
+export const ReportCardErrorState = ({ onRetry }: ReportCardErrorStateProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<States width='100%' height='100%'>
+		<States>
 			<StatesIcon name='circle-exclamation' />
 			<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
 			<StatesActions>

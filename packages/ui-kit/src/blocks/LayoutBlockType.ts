@@ -1,16 +1,32 @@
-import type { LayoutBlock } from './LayoutBlock';
+import type { LayoutBlock } from './LayoutBlock.js';
 
 export const LayoutBlockType = {
 	SECTION: 'section',
 	DIVIDER: 'divider',
+	HEADER: 'header',
 	IMAGE: 'image',
 	ACTIONS: 'actions',
 	CONTEXT: 'context',
 	INPUT: 'input',
+	MARKDOWN: 'markdown',
+	RICH_TEXT: 'rich_text',
 	CONDITIONAL: 'conditional',
 	PREVIEW: 'preview',
 	VIDEO_CONF: 'video_conf',
 	CALLOUT: 'callout',
 	TAB_NAVIGATION: 'tab_navigation',
 	INFO_CARD: 'info_card',
+	CONTEXT_ACTIONS: 'context_actions',
+	VIDEO: 'video',
+	TABLE: 'table',
+	FILE: 'file',
+	TASK_CARD: 'task_card',
+	PLAN: 'plan',
+	ALERT: 'alert',
+	CARD: 'card',
+	CAROUSEL: 'carousel',
+	DATA_TABLE: 'data_table',
+	DATA_VISUALIZATION: 'data_visualization',
+	CONTAINER: 'container',
+	LAYOUT: 'layout',
 } as const satisfies Record<Uppercase<LayoutBlock['type']>, LayoutBlock['type']>;

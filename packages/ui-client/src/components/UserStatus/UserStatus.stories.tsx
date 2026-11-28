@@ -1,11 +1,10 @@
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 import type { ComponentType } from 'react';
 
 import * as UserStatus from '.';
 import { useAutoSequence } from '../../hooks/useAutoSequence';
 
 export default {
-	title: 'Components/UserStatus',
 	component: UserStatus.UserStatus,
 	subcomponents: {
 		'UserStatus.Online': UserStatus.Online as ComponentType<any>,
@@ -19,14 +18,16 @@ export default {
 	},
 } satisfies Meta<typeof UserStatus.UserStatus>;
 
-export const Example: StoryFn<typeof UserStatus.UserStatus> = () => {
-	const status = useAutoSequence(['online', 'away', 'busy', 'offline'] as const);
+export const Example: StoryObj<typeof UserStatus.UserStatus> = {
+	render: () => {
+		const status = useAutoSequence(['online', 'away', 'busy', 'offline'] as const);
 
-	return <UserStatus.UserStatus status={status} />;
+		return <UserStatus.UserStatus status={status} />;
+	},
 };
 
-export const Loading: StoryFn<typeof UserStatus.Loading> = () => <UserStatus.Loading />;
-export const Online: StoryFn<typeof UserStatus.Online> = () => <UserStatus.Online />;
-export const Away: StoryFn<typeof UserStatus.Away> = () => <UserStatus.Away />;
-export const Busy: StoryFn<typeof UserStatus.Busy> = () => <UserStatus.Busy />;
-export const Offline: StoryFn<typeof UserStatus.Offline> = () => <UserStatus.Offline />;
+export const Loading: StoryObj<typeof UserStatus.Loading> = { render: () => <UserStatus.Loading /> };
+export const Online: StoryObj<typeof UserStatus.Online> = { render: () => <UserStatus.Online /> };
+export const Away: StoryObj<typeof UserStatus.Away> = { render: () => <UserStatus.Away /> };
+export const Busy: StoryObj<typeof UserStatus.Busy> = { render: () => <UserStatus.Busy /> };
+export const Offline: StoryObj<typeof UserStatus.Offline> = { render: () => <UserStatus.Offline /> };

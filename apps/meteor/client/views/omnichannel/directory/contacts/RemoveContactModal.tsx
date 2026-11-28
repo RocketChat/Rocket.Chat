@@ -1,20 +1,20 @@
 import { Box, Input } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { ReactElement, ChangeEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { useState, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type RemoveContactModalProps = {
+export type RemoveContactModalProps = {
 	_id: string;
 	name: string;
 	channelsCount: number;
 	onClose: () => void;
 };
 
-const RemoveContactModal = ({ _id, name, channelsCount, onClose }: RemoveContactModalProps): ReactElement => {
+const RemoveContactModal = ({ _id, name, channelsCount, onClose }: RemoveContactModalProps) => {
 	const { t } = useTranslation();
 	const [text, setText] = useState<string>('');
 
@@ -22,11 +22,6 @@ const RemoveContactModal = ({ _id, name, channelsCount, onClose }: RemoveContact
 	const removeContact = useEndpoint('POST', '/v1/omnichannel/contacts.delete');
 	const dispatchToast = useToastMessageDispatch();
 	const contactDeleteModalId = useId();
-
-	const handleSubmit = useEffectEvent((event: ChangeEvent<HTMLFormElement>): void => {
-		event.preventDefault();
-		removeContactMutation.mutate();
-	});
 
 	const confirmationText = t('Delete').toLowerCase();
 
@@ -50,9 +45,13 @@ const RemoveContactModal = ({ _id, name, channelsCount, onClose }: RemoveContact
 		},
 	});
 
+	const handleSubmit = useStableCallback((): void => {
+		removeContactMutation.mutate();
+	});
+
 	return (
 		<GenericModal
-			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit} {...props} />}
+			onSubmit={handleSubmit}
 			onCancel={onClose}
 			confirmText={t('Delete')}
 			title={t('Delete_Contact')}
@@ -60,10 +59,10 @@ const RemoveContactModal = ({ _id, name, channelsCount, onClose }: RemoveContact
 			variant='danger'
 			confirmDisabled={text !== confirmationText}
 		>
-			<Box is='p' id={`${contactDeleteModalId}-description`} mbe={16}>
+			<Box is='p' id={`${contactDeleteModalId}-description`} marginBlockEnd={16}>
 				{t('Are_you_sure_delete_contact', { contactName: name, channelsCount, confirmationText })}
 			</Box>
-			<Box mbe={16} display='flex' justifyContent='stretch'>
+			<Box marginBlockEnd={16} display='flex' justifyContent='stretch'>
 				<Input
 					value={text}
 					name='confirmContactRemoval'

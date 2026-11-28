@@ -4,22 +4,23 @@ import { useTranslation } from 'react-i18next';
 
 import ImageBox from './ImageBox';
 
-type RetryProps = { retry: () => void };
+export type RetryProps = { retry: () => void };
+
+const clickable = css`
+	cursor: pointer;
+	background: ${Palette.surface['surface-tint']};
+
+	&:hover,
+	&:focus {
+		background: ${Palette.surface['surface-hover']};
+	}
+`;
 
 const Retry = ({ retry }: RetryProps) => {
 	const { t } = useTranslation();
-	const clickable = css`
-		cursor: pointer;
-		background: ${Palette.surface['surface-tint']};
-
-		&:hover,
-		&:focus {
-			background: ${Palette.surface['surface-hover']};
-		}
-	`;
 	return (
-		<ImageBox className={clickable} onClick={retry} size='x160'>
-			<Icon name='refresh' color='hint' size='x64' />
+		<ImageBox className={clickable} onClick={retry} size='x160' color='hint'>
+			<Icon name='refresh' size='x64' />
 			<Box fontScale='h3' color='default' textAlign='center'>
 				{t('Retry')}
 			</Box>

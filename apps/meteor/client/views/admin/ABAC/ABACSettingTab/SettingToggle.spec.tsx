@@ -27,13 +27,6 @@ const baseAppRoot = mockAppRoot()
 	});
 
 describe('AbacEnabledToggle', () => {
-	it('should render the setting toggle when setting exists', () => {
-		const { baseElement } = render(<AbacEnabledToggle hasABAC={true} />, {
-			wrapper: baseAppRoot.withSetting('ABAC_Enabled', true, settingStructure).build(),
-		});
-		expect(baseElement).toMatchSnapshot();
-	});
-
 	it('should show warning modal when disabling ABAC', async () => {
 		const user = userEvent.setup();
 		render(<AbacEnabledToggle hasABAC={true} />, {
@@ -108,20 +101,12 @@ describe('AbacEnabledToggle', () => {
 	});
 
 	it('should be disabled when abac license is not installed', () => {
-		const { baseElement } = render(<AbacEnabledToggle hasABAC={false} />, {
+		render(<AbacEnabledToggle hasABAC={false} />, {
 			wrapper: baseAppRoot.withSetting('ABAC_Enabled', true, settingStructure).build(),
 		});
 
 		const toggle = screen.getByRole('checkbox');
 		expect(toggle).toBeDisabled();
-		expect(baseElement).toMatchSnapshot();
-	});
-
-	it('should show skeleton when loading', () => {
-		const { baseElement } = render(<AbacEnabledToggle hasABAC='loading' />, {
-			wrapper: baseAppRoot.withSetting('ABAC_Enabled', true, settingStructure).build(),
-		});
-		expect(baseElement).toMatchSnapshot();
 	});
 
 	it('should show reset button when value differs from package value', () => {

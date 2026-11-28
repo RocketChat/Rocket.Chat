@@ -1,10 +1,10 @@
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import { Roles, Users } from '@rocket.chat/models';
 
-import { notifyOnUserChangeAsync } from '../../app/lib/server/lib/notifyListener';
-import { executeSendMessage } from '../../app/lib/server/methods/sendMessage';
-import { createDirectMessage } from '../methods/createDirectMessage';
 import { SystemLogger } from './logger/system';
+import { notifyOnUserChangeAsync } from './notifyListener';
+import { createDirectMessage } from '../meteor-methods/messages/createDirectMessage';
+import { executeSendMessage } from '../meteor-methods/messages/sendMessage';
 
 type Banner = {
 	id: string;
@@ -43,7 +43,7 @@ export async function sendMessagesToAdmins({
 
 	const notifyAdmins: string[] = [];
 
-	for await (const adminUser of users) {
+	for (const adminUser of users) {
 		if (fromUser) {
 			try {
 				const { rid } = await createDirectMessage([adminUser.username], fromId);

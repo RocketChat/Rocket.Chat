@@ -71,7 +71,7 @@ export class UserChangedAuditStore {
 		}
 
 		// extract keys from updateFilter (keys are nested in $set, $unset, $inc, etc)
-		const updateFilterKeys: string[] = Object.values(updateFilter).reduce((acc, current) => {
+		const updateFilterKeys: string[] = Object.values(updateFilter).reduce<string[]>((acc, current) => {
 			const keys = Object.keys(current);
 			if (keys.length === 0) {
 				return acc;
@@ -152,7 +152,7 @@ export class UserChangedAuditStore {
 
 		const eventData = this.getEventData(this.originalUser, this.updateFilter);
 
-		if (Object.keys(eventData.user_data).length === 0 || Object.keys(eventData.operation).length === 0) {
+		if (Object.keys(eventData.operation).length === 0) {
 			// UpdaterImpl throws an error when trying to build the filter if no changes are detected
 			// so we should never get here
 			throw new Error('UserChangedAuditStore - No changes detected');

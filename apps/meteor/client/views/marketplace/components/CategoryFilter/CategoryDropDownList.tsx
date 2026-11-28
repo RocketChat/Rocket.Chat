@@ -1,19 +1,14 @@
-import { Box, CheckBox, Option, Tile } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import { CheckBox, Option, OptionTitle, PopoverSurface } from '@rocket.chat/fuselage';
 import { Fragment } from 'react';
 
 import type { CategoryDropDownListProps } from '../../definitions/CategoryDropdownDefinitions';
 
-const CategoryDropDownList = ({ categories, onSelected }: CategoryDropDownListProps): ReactElement => {
+const CategoryDropDownList = ({ categories, onSelected }: CategoryDropDownListProps) => {
 	return (
-		<Tile overflow='auto' pb={12} pi={0} elevation='2' w='full' bg='light' borderRadius={2}>
+		<PopoverSurface>
 			{categories.map((category, index) => (
 				<Fragment key={index}>
-					{category.label && (
-						<Box pi={16} pbs={8} pbe={4} fontScale='micro' textTransform='uppercase' color='default'>
-							{category.label}
-						</Box>
-					)}
+					{category.label && <OptionTitle>{category.label}</OptionTitle>}
 					{category.items.map((item) => (
 						<Option key={item.id} {...({ label: item.label } as any)} onClick={(): void => onSelected(item)}>
 							<CheckBox checked={item.checked} onChange={(): void => onSelected(item)} />
@@ -21,7 +16,7 @@ const CategoryDropDownList = ({ categories, onSelected }: CategoryDropDownListPr
 					))}
 				</Fragment>
 			))}
-		</Tile>
+		</PopoverSurface>
 	);
 };
 

@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { useShallow } from 'zustand/shallow';
 
 import { useFilteredPermissions } from './useFilteredPermissions';
-import { CONSTANTS } from '../../../../../app/authorization/lib';
+import { CONSTANTS } from '../../../../../lib/authorization';
 import { pipe } from '../../../../lib/cachedStores/pipe';
 import { Permissions, Roles } from '../../../../stores';
 
@@ -26,10 +26,10 @@ export const usePermissionsAndRoles = (
 	);
 
 	const { apply: transform } = pipe<IPermission>().sortByField('_id', 1).slice(skip, limit);
-	const permissions = Permissions.use(useShallow((state) => transform(state.filter(predicate))));
-	const permissionsTotal = Permissions.use(useShallow((state) => state.count(predicate)));
+	const permissions = Permissions.useStore(useShallow((state) => transform(state.filter(predicate))));
+	const permissionsTotal = Permissions.useStore(useShallow((state) => state.count(predicate)));
 
-	const roleList = Roles.use(useShallow((state) => Array.from(state.records.values())));
+	const roleList = Roles.useStore(useShallow((state) => Array.from(state.records.values())));
 
 	return { permissions, total: permissionsTotal, roleList };
 };

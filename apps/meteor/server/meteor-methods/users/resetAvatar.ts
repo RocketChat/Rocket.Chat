@@ -1,0 +1,51 @@
+import { Upload, ClientSafeError } from '@rocket.chat/core-services';
+import type { IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+
+import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { settings } from '../../settings';
+
+export const resetAvatar = async (fromUserId: IUser['_id'], userId: IUser['_id']): Promise<void> => {
+	const canEditOtherUserAvatar = await hasPermissionAsync(fromUserId, 'edit-other-user-avatar');
+
+	if (!settings.get('Accounts_AllowUserAvatarChange') && !canEditOtherUserAvatar) {
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', {
+			method: 'resetAvatar',
+		});
+	}
+
+	let user;
+
+	if (userId !== fromUserId) {
+		if (!canEditOtherUserAvatar) {
+			throw new ClientSafeError('error-unauthorized', 'Unauthorized', {
+				method: 'resetAvatar',
+			});
+		}
+
+		user = await Users.findOneById(userId, { projection: { _id: 1, username: 1 } });
+	} else {
+		user = await Users.findOneById(fromUserId, { projection: { _id: 1, username: 1 } });
+	}
+
+	if (!user?.username) {
+		throw new ClientSafeError('error-invalid-desired-user', 'Invalid desired user', {
+			method: 'resetAvatar',
+		});
+	}
+
+	await Upload.resetUserAvatar(user);
+};
+
+DDPRateLimiter.addRule(
+	{
+		type: 'method',
+		name: 'resetAvatar',
+		userId() {
+			return true;
+		},
+	},
+	1,
+	60000,
+);

@@ -19,8 +19,10 @@ export function getDefaultSettings(): IMediaCallServerSettings {
 			},
 		},
 		mobileRinging: false,
+		iceServers: [],
 
 		permissionCheck: async () => false,
 		isFeatureAvailableForUser: () => false,
+		resolveCallerName: async () => undefined,
 	};
 }

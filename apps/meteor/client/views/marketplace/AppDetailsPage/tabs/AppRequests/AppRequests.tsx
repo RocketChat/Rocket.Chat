@@ -1,19 +1,23 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box, Pagination, States, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
+import { Pagination, Stack, States, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { ReactElement, SetStateAction } from 'react';
+import type { SetStateAction } from 'react';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppRequestItem from './AppRequestItem';
 import AppRequestsLoading from './AppRequestsLoading';
+import ContentColumn from '../../../../../components/ContentColumn';
 import { useAppRequests } from '../../../hooks/useAppRequests';
 import { useAppsReload } from '../../../hooks/useAppsReload';
+import AppDetailsTabContent from '../../layout/AppDetailsTabContent';
 
 type itemsPerPage = 25 | 50 | 100;
 
-const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean }): ReactElement => {
+export type AppRequestsProps = { id: App['id']; isAdminUser: boolean };
+
+const AppRequests = ({ id, isAdminUser }: AppRequestsProps) => {
 	const [limit, setLimit] = useState<itemsPerPage>(25);
 	const [offset, setOffset] = useState<number>(0);
 
@@ -50,38 +54,42 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 				}
 			}
 		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, [isAdminUser, isSuccess, paginatedAppRequests?.data, reloadApps]);
 
 	if (isLoading) {
 		return (
-			<Box w='full' maxWidth='x608' marginInline='auto' pbs={36}>
-				<AppRequestsLoading />
-			</Box>
+			<AppDetailsTabContent>
+				<ContentColumn>
+					<AppRequestsLoading />
+				</ContentColumn>
+			</AppDetailsTabContent>
 		);
 	}
 
 	return (
-		<Box h='full' display='flex' flexDirection='column'>
-			<Box w='full' maxWidth='x608' marginInline='auto' pbs={36} flexGrow='1'>
-				{isSuccess && paginatedAppRequests.data?.length ? (
-					paginatedAppRequests.data.map((request) => (
-						<AppRequestItem
-							key={request.id}
-							seen={request.seen}
-							name={request.requester.name}
-							createdDate={request.createdDate}
-							message={request.message}
-							username={request.requester.username}
-						/>
-					))
-				) : (
-					<States>
-						<StatesTitle>{t('No_requests')}</StatesTitle>
-						<StatesSubtitle>{t('App_requests_by_workspace')}</StatesSubtitle>
-					</States>
-				)}
-			</Box>
+		<Stack grow justify='space-between'>
+			<AppDetailsTabContent>
+				<ContentColumn>
+					{isSuccess && paginatedAppRequests.data?.length ? (
+						paginatedAppRequests.data.map((request) => (
+							<AppRequestItem
+								key={request.id}
+								seen={request.seen}
+								name={request.requester.name}
+								createdDate={request.createdDate}
+								message={request.message}
+								username={request.requester.username}
+							/>
+						))
+					) : (
+						<States>
+							<StatesTitle>{t('No_requests')}</StatesTitle>
+							<StatesSubtitle>{t('App_requests_by_workspace')}</StatesSubtitle>
+						</States>
+					)}
+				</ContentColumn>
+			</AppDetailsTabContent>
 			{isSuccess && paginatedAppRequests.data?.length && (
 				<Pagination
 					divider
@@ -92,7 +100,7 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 					onSetCurrent={onSetCurrent}
 				/>
 			)}
-		</Box>
+		</Stack>
 	);
 };
 

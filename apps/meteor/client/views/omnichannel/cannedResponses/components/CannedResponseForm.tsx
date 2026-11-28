@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Field, FieldLabel, FieldRow, FieldError, TextInput, FieldGroup, RadioButton, FieldHint, Option } from '@rocket.chat/fuselage';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { useId, useState } from 'react';
-import { useFormContext, Controller } from 'react-hook-form';
+import { useFormContext, Controller, useWatch, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import CannedResponsesComposer from './CannedResponsesComposer/CannedResponsesComposer';
@@ -17,17 +17,16 @@ const CannedResponseForm = () => {
 	const hasManagerPermission = usePermission('view-all-canned-responses');
 	const hasMonitorPermission = usePermission('save-department-canned-responses');
 
-	const {
-		control,
-		formState: { errors },
-		watch,
-	} = useFormContext<CannedResponseEditFormData>();
+	const { control } = useFormContext<CannedResponseEditFormData>();
+	const { errors } = useFormState({ control });
 
 	const clickable = css`
 		cursor: pointer;
 	`;
 
-	const { text, scope } = watch();
+	const watched = useWatch({ control });
+	const text = watched.text ?? '';
+	const { scope } = watched;
 	const [preview, setPreview] = useState(false);
 
 	const shortcutField = useId();
@@ -63,14 +62,14 @@ const CannedResponseForm = () => {
 				)}
 			</Field>
 			<Field>
-				<FieldLabel htmlFor={messageField} w='full' display='flex' flexDirection='row' justifyContent='space-between'>
-					{t('Message')}
+				<FieldRow>
+					<FieldLabel htmlFor={messageField}>{t('Message')}</FieldLabel>
 					{text !== '' && (
 						<Box className={clickable} color='info' onClick={() => setPreview(!preview)}>
 							{preview ? t('Editor') : t('Preview')}
 						</Box>
 					)}
-				</FieldLabel>
+				</FieldRow>
 				{preview ? (
 					<CannedResponsesComposerPreview text={text} />
 				) : (

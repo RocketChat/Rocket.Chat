@@ -3,15 +3,27 @@ import fs from 'fs/promises';
 import type { Page, Locator, APIResponse } from '@playwright/test';
 
 import { expect } from '../../utils/test';
+import { RoutedPage } from '../routed-page';
 
-export class OmnichannelLiveChat {
-	readonly page: Page;
+export class OmnichannelLiveChat extends RoutedPage {
+	protected readonly route = '/livechat';
 
 	constructor(
 		page: Page,
 		private readonly api: { get(url: string): Promise<APIResponse> },
 	) {
-		this.page = page;
+		super(page);
+	}
+
+	async waitForReady(): Promise<void> {
+		await this.btnOpenLiveChat.waitFor({ state: 'visible' });
+	}
+
+	async gotoRegistration(): Promise<void> {
+		await this.navigateTo(this.route, async () => {
+			await this.waitForReady();
+			await this.inputName.waitFor({ state: 'attached' });
+		});
 	}
 
 	btnOpenOnlineLiveChat(label: string): Locator {
@@ -78,6 +90,7 @@ export class OmnichannelLiveChat {
 		await this.btnOptions.click();
 		await this.btnCloseChat.click();
 		await this.btnCloseChatConfirm.click();
+		await expect(this.livechatModal).not.toBeVisible();
 	}
 
 	async openLiveChat(): Promise<void> {

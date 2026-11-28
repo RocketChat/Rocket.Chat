@@ -1,5 +1,5 @@
 import { Tile, OptionTitle, Box } from '@rocket.chat/fuselage';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { StoryObj, Meta, StoryFn } from '@storybook/react';
 
 import ListItem from './Sidebar/ListItem';
 
@@ -16,69 +16,93 @@ export default {
 
 export const ListWithIcon: StoryFn<typeof Tile> = () => {
 	return (
-		<Tile elevation='2' p='0' display='flex' flexDirection='column' overflow='auto' w='x240'>
-			<Box flexShrink={1} pb={12}>
-				<OptionTitle>Title</OptionTitle>
-				<ListItem text='Item 1' icon='info' />
-				<ListItem text='Item 2' icon='star' />
-				<ListItem text='Item 3' icon='hashtag' />
-				<ListItem text='Item 4' icon='team' />
-			</Box>
-		</Tile>
-	);
-};
-export const NoIcon: StoryFn<typeof Tile> = () => {
-	return (
-		<Tile elevation='2' p='0' display='flex' flexDirection='column' overflow='auto' w='x240'>
-			<Box flexShrink={1} pb={12}>
-				<OptionTitle>Title</OptionTitle>
-				<ListItem text='Item 1' />
-				<ListItem text='Item 2' />
-				<ListItem text='Item 3' />
-				<ListItem text='Item 4' />
-			</Box>
-		</Tile>
+		<Box width='x240'>
+			<Tile elevation='2' flush>
+				<Box display='flex' flexDirection='column' overflow='auto'>
+					<Box flexShrink={1} paddingBlock={12}>
+						<OptionTitle>Title</OptionTitle>
+						<ListItem text='Item 1' icon='info' />
+						<ListItem text='Item 2' icon='star' />
+						<ListItem text='Item 3' icon='hashtag' />
+						<ListItem text='Item 4' icon='team' />
+					</Box>
+				</Box>
+			</Tile>
+		</Box>
 	);
 };
 
-export const MixedWithGap: StoryFn<typeof Tile> = () => {
+export const NoIcon: StoryFn<typeof Tile> = () => {
 	return (
-		<Tile elevation='2' p='0' display='flex' flexDirection='column' overflow='auto' w='x240'>
-			<Box flexShrink={1} pb={12}>
-				<OptionTitle>Title</OptionTitle>
-				<ListItem text='Item 1' icon='hashtag' />
-				<ListItem text='Item 2' icon='team' />
-				<ListItem text='Item 3' gap />
-				<ListItem text='Item 4' icon='airplane' />
-			</Box>
-		</Tile>
+		<Box width='x240'>
+			<Tile elevation='2' flush>
+				<Box display='flex' flexDirection='column' overflow='auto'>
+					<Box flexShrink={1} paddingBlock={12}>
+						<OptionTitle>Title</OptionTitle>
+						<ListItem text='Item 1' />
+						<ListItem text='Item 2' />
+						<ListItem text='Item 3' />
+						<ListItem text='Item 4' />
+					</Box>
+				</Box>
+			</Tile>
+		</Box>
 	);
 };
-MixedWithGap.parameters = {
-	docs: {
-		description: {
-			story:
-				" When using `ListItem`, you can also use the `gap` prop to add spacing to the left. If the list is mixed with items **with and without** icons, it's recommended to add the gap.",
+
+export const MixedWithGap: StoryObj<typeof Tile> = {
+	render: () => {
+		return (
+			<Box width='x240'>
+				<Tile elevation='2' flush>
+					<Box display='flex' flexDirection='column' overflow='auto'>
+						<Box flexShrink={1} paddingBlock={12}>
+							<OptionTitle>Title</OptionTitle>
+							<ListItem text='Item 1' icon='hashtag' />
+							<ListItem text='Item 2' icon='team' />
+							<ListItem text='Item 3' gap />
+							<ListItem text='Item 4' icon='airplane' />
+						</Box>
+					</Box>
+				</Tile>
+			</Box>
+		);
+	},
+
+	parameters: {
+		docs: {
+			description: {
+				story:
+					" When using `ListItem`, you can also use the `gap` prop to add spacing to the left. If the list is mixed with items **with and without** icons, it's recommended to add the gap.",
+			},
 		},
 	},
 };
-export const MixedWithoutGap: StoryFn<typeof Tile> = () => {
-	return (
-		<Tile elevation='2' p='0' display='flex' flexDirection='column' overflow='auto' w='x240'>
-			<Box flexShrink={1} pb={12}>
-				<OptionTitle>Title</OptionTitle>
-				<ListItem text='Item 1' icon='hashtag' />
-				<ListItem text='Item 2' icon='team' />
-				<ListItem text='Item 3' />
-				<ListItem text='Item 4' icon='airplane' />
+
+export const MixedWithoutGap: StoryObj<typeof Tile> = {
+	render: () => {
+		return (
+			<Box width='x240'>
+				<Tile elevation='2' flush>
+					<Box display='flex' flexDirection='column' overflow='auto'>
+						<Box flexShrink={1} paddingBlock={12}>
+							<OptionTitle>Title</OptionTitle>
+							<ListItem text='Item 1' icon='hashtag' />
+							<ListItem text='Item 2' icon='team' />
+							<ListItem text='Item 3' />
+							<ListItem text='Item 4' icon='airplane' />
+						</Box>
+					</Box>
+				</Tile>
 			</Box>
-		</Tile>
-	);
-};
-MixedWithoutGap.parameters = {
-	docs: {
-		description: {
-			story: 'Not recommended. Prefer adding the `gap` prop to the items without icons.',
+		);
+	},
+
+	parameters: {
+		docs: {
+			description: {
+				story: 'Not recommended. Prefer adding the `gap` prop to the items without icons.',
+			},
 		},
 	},
 };

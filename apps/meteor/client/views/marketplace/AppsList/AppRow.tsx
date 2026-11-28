@@ -2,17 +2,18 @@ import type { App } from '@rocket.chat/core-typings';
 import { Badge, Card, CardBody, CardCol, CardControls, CardHeader, CardRow, CardTitle } from '@rocket.chat/fuselage';
 import { AppAvatar } from '@rocket.chat/ui-avatar';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
-import type { KeyboardEvent, MouseEvent, ReactElement } from 'react';
+import type { KeyboardEvent, MouseEvent } from 'react';
 import { memo } from 'react';
 import semver from 'semver';
 
+import ListRow from '../../../components/ListRow';
 import AppStatus from '../AppDetailsPage/tabs/AppStatus/AppStatus';
 import AppMenu from '../AppMenu';
 import BundleChips from '../BundleChips';
 import AddonChip from './AddonChip';
 
 // TODO: org props
-const AppRow = ({ className, ...props }: App & { className?: string }): ReactElement => {
+const AppRow = ({ className, ...props }: App & { className?: string }) => {
 	const { name, id, shortDescription, iconFileData, marketplaceVersion, iconFileContent, installed, bundledIn, version } = props;
 
 	const router = useRouter();
@@ -49,7 +50,7 @@ const AppRow = ({ className, ...props }: App & { className?: string }): ReactEle
 	const canUpdate = installed && version && marketplaceVersion && semver.lt(version, marketplaceVersion);
 
 	return (
-		<div role='listitem' className={className} key={id}>
+		<ListRow className={className} key={id}>
 			<Card
 				data-qa-type='app-row'
 				horizontal
@@ -80,7 +81,7 @@ const AppRow = ({ className, ...props }: App & { className?: string }): ReactEle
 					<AppMenu app={props} isAppDetailsPage={false} />
 				</CardControls>
 			</Card>
-		</div>
+		</ListRow>
 	);
 };
 

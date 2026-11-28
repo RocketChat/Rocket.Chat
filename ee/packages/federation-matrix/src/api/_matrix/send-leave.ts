@@ -1,8 +1,8 @@
 import { NotAllowedError, federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
-import { Logger } from '@rocket.chat/logger';
 import { ajv } from '@rocket.chat/rest-typings';
 
+import { logger } from '../logger';
 import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
 
 const isSendLeaveParamsProps = ajv.compile({
@@ -42,7 +42,7 @@ const isSendLeaveBodyProps = ajv.compile({
 			const: 'm.room.member',
 		},
 	},
-	required: ['content', 'depth', 'origin', 'origin_server_ts', 'sender', 'state_key', 'type'],
+	required: ['content', 'depth', 'origin_server_ts', 'sender', 'state_key', 'type'],
 });
 const isSendLeaveSuccessResponseProps = ajv.compile({
 	type: 'object',
@@ -58,8 +58,8 @@ const isSendLeaveErrorResponseProps = ajv.compile({
 });
 
 export const getMatrixSendLeaveRoutes = () => {
-	const logger = new Logger('matrix-send-leave');
-
+	// PUT /_matrix/federation/v2/send_leave/{roomId}/{eventId}
+	// https://spec.matrix.org/v1.19/server-server-api/#put_matrixfederationv2send_leaveroomideventid
 	return new Router('/federation').put(
 		'/v2/send_leave/:roomId/:eventId',
 		{
@@ -78,7 +78,7 @@ export const getMatrixSendLeaveRoutes = () => {
 			const { roomId, eventId } = c.req.param();
 			const body = await c.req.json();
 			try {
-				await federationSDK.sendLeave(roomId, eventId, body);
+				await federationSDK.sendLeave(roomId, eventId, body, c.get('authenticatedServer'));
 				return {
 					body: {},
 					statusCode: 200,
@@ -94,7 +94,17 @@ export const getMatrixSendLeaveRoutes = () => {
 					};
 				}
 
-				logger.error({ msg: 'Error making leave', err: error });
+				if (error instanceof Error && 'errcode' in error && error.errcode === 'M_FORBIDDEN') {
+					return {
+						body: {
+							errcode: 'M_FORBIDDEN',
+							error: error.message,
+						},
+						statusCode: 403,
+					};
+				}
+
+				logger.error({ msg: 'Error sending leave', err: error });
 
 				return {
 					body: {

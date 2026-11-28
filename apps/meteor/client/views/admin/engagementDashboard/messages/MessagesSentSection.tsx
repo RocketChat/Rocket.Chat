@@ -1,25 +1,27 @@
 import { ResponsiveBar } from '@nivo/bar';
-import { Box, Flex, Skeleton, Palette, Tooltip } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import { differenceInDays, addDays, format } from 'date-fns';
-import type { ReactElement } from 'react';
+import { Skeleton, Palette, Stack, Tooltip } from '@rocket.chat/fuselage';
+import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
+import { addDays } from 'date-fns/addDays';
+import { differenceInDays } from 'date-fns/differenceInDays';
+import { format } from 'date-fns/format';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useMessagesSent } from './useMessagesSent';
 import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
 import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
 import { usePeriodLabel } from '../../../../components/dashboards/usePeriodLabel';
 import { usePeriodSelectorState } from '../../../../components/dashboards/usePeriodSelectorState';
 import CounterSet from '../../../../components/dataView/CounterSet';
-import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
-import { useMessagesSent } from './useMessagesSent';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
+import ChartFrame from '../layout/ChartFrame';
+import EngagementDashboardCardFilter from '../layout/EngagementDashboardCardFilter';
 
-type MessagesSentSectionProps = {
+export type MessagesSentSectionProps = {
 	timezone: 'utc' | 'local';
 };
 
-const MessagesSentSection = ({ timezone }: MessagesSentSectionProps): ReactElement => {
+const MessagesSentSection = ({ timezone }: MessagesSentSectionProps) => {
 	const [period, periodSelectorProps] = usePeriodSelectorState('last 7 days', 'last 30 days', 'last 90 days');
 	const periodLabel = usePeriodLabel(period);
 
@@ -57,7 +59,7 @@ const MessagesSentSection = ({ timezone }: MessagesSentSectionProps): ReactEleme
 			<EngagementDashboardCardFilter>
 				<PeriodSelector {...periodSelectorProps} />
 				<DownloadDataButton
-					attachmentName={`MessagesSentSection_start_${data?.start}_end_${data?.end}`}
+					attachmentName={data ? `MessagesSentSection_start_${data.start.toISOString()}_end_${data.end.toISOString()}` : ''}
 					headers={['Date', 'Messages']}
 					dataAvailable={!!data}
 					dataExtractor={(): unknown[][] | undefined => values?.map(({ date, newMessages }) => [date, newMessages])}
@@ -78,88 +80,74 @@ const MessagesSentSection = ({ timezone }: MessagesSentSectionProps): ReactEleme
 					},
 				]}
 			/>
-			<Flex.Container>
-				{values ? (
-					<Box style={{ height: 300 }}>
-						<Flex.Item align='stretch' grow={1} shrink={0}>
-							<Box style={{ position: 'relative' }}>
-								<Box
-									style={{
-										position: 'absolute',
-										width: '100%',
-										height: '100%',
-									}}
-								>
-									<ResponsiveBar
-										data={values}
-										indexBy='date'
-										keys={['newMessages']}
-										groupMode='grouped'
-										padding={0.25}
-										margin={{
-											// TODO: Get it from theme
-											bottom: 50,
-											left: 20,
-											top: 20,
-										}}
-										colors={[
-											// TODO: Get it from theme
-											Palette.statusColor['status-font-on-info'].toString(),
-										]}
-										enableLabel={false}
-										enableGridY={false}
-										axisTop={null}
-										axisRight={null}
-										valueScale={{ type: 'linear' }}
-										axisBottom={{
-											tickSize: values.length > 31 ? 4 : 0,
-											// TODO: Get it from theme
-											tickPadding: 8,
-											tickRotation: values.length > 31 ? 90 : 0,
-											truncateTickAt: 0,
-											format: (date): string => format(new Date(date), 'dd/MM'),
-										}}
-										axisLeft={{
-											tickSize: 0,
-											// TODO: Get it from theme
-											tickPadding: 4,
-											tickRotation: 0,
-										}}
-										animate={true}
-										motionConfig='stiff'
-										theme={{
-											// TODO: Get it from theme
-											axis: {
-												ticks: {
-													text: {
-														fill: colors.n600,
-														fontFamily:
-															'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
-														fontSize: '10px',
-														fontStyle: 'normal',
-														fontWeight: 600,
-														letterSpacing: '0.2px',
-														lineHeight: '12px',
-													},
-												},
-											},
-										}}
-										tooltip={({ value, indexValue }) => (
-											<Tooltip>
-												{t('Value_messages', { value })}, {formatDate(indexValue)}
-											</Tooltip>
-										)}
-									/>
-								</Box>
-							</Box>
-						</Flex.Item>
-					</Box>
-				) : (
-					<Box>
-						<Skeleton variant='rect' height={240} />
-					</Box>
-				)}
-			</Flex.Container>
+			{values ? (
+				<ChartFrame height={300}>
+					<ResponsiveBar
+						data={values}
+						indexBy='date'
+						keys={['newMessages']}
+						groupMode='grouped'
+						padding={0.25}
+						margin={{
+							// TODO: Get it from theme
+							bottom: 50,
+							left: 20,
+							top: 20,
+						}}
+						colors={[
+							// TODO: Get it from theme
+							Palette.statusColor['status-font-on-info'].toString(),
+						]}
+						enableLabel={false}
+						enableGridY={false}
+						axisTop={null}
+						axisRight={null}
+						valueScale={{ type: 'linear' }}
+						axisBottom={{
+							tickSize: values.length > 31 ? 4 : 0,
+							// TODO: Get it from theme
+							tickPadding: 8,
+							tickRotation: values.length > 31 ? 90 : 0,
+							truncateTickAt: 0,
+							format: (date): string => format(new Date(date), 'dd/MM'),
+						}}
+						axisLeft={{
+							tickSize: 0,
+							// TODO: Get it from theme
+							tickPadding: 4,
+							tickRotation: 0,
+						}}
+						animate={true}
+						motionConfig='stiff'
+						theme={{
+							// TODO: Get it from theme
+							axis: {
+								ticks: {
+									text: {
+										fill: colors.n600,
+										fontFamily:
+											'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
+										fontSize: '10px',
+										fontStyle: 'normal',
+										fontWeight: 600,
+										letterSpacing: '0.2px',
+										lineHeight: '12px',
+									},
+								},
+							},
+						}}
+						tooltip={({ value, indexValue }) => (
+							<Tooltip>
+								{t('Value_messages', { value })}, {formatDate(indexValue)}
+							</Tooltip>
+						)}
+					/>
+				</ChartFrame>
+			) : (
+				<Stack direction='row'>
+					<Skeleton variant='rect' height={240} />
+				</Stack>
+			)}
 		</>
 	);
 };

@@ -1,5 +1,5 @@
-import { Avatar, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { Avatar, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	UiKitComponent,
 	UiKitContextualBar as UiKitContextualBarSurfaceRender,
@@ -19,27 +19,32 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 import type { FormEvent, UIEvent } from 'react';
 import { memo } from 'react';
 
-import { getURL } from '../../../../../app/utils/client';
+import { useContextualBarContextValue } from './useContextualBarContextValue';
+import { useUiKitActionManager } from '../../../../hooks/uikit/useUiKitActionManager';
+import { useUiKitView } from '../../../../hooks/uikit/useUiKitView';
+import { getURL } from '../../../../lib/getURL';
 import { preventSyntheticEvent } from '../../../../lib/utils/preventSyntheticEvent';
-import { useContextualBarContextValue } from '../../../../uikit/hooks/useContextualBarContextValue';
-import { useUiKitActionManager } from '../../../../uikit/hooks/useUiKitActionManager';
-import { useUiKitView } from '../../../../uikit/hooks/useUiKitView';
 import { getButtonStyle } from '../../../modal/uikit/getButtonStyle';
+import { useRoom } from '../../contexts/RoomContext';
 
-type UiKitContextualBarProps = {
+export type UiKitContextualBarProps = {
 	key: UiKit.ContextualBarView['id']; // force re-mount when viewId changes
 	initialView: UiKit.ContextualBarView;
 };
 
-const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps): JSX.Element => {
+const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps) => {
 	const actionManager = useUiKitActionManager();
 	const { view, values, updateValues, state } = useUiKitView(initialView);
-	const contextValue = useContextualBarContextValue({ view, values, updateValues });
+	const room = useRoom();
+	const contextValue = useContextualBarContextValue({ view, values, updateValues, rid: room._id });
 
 	const { closeTab } = useRoomToolbox();
 
-	const handleSubmit = useEffectEvent((e: FormEvent) => {
+	const handleSubmit = useStableCallback((e: FormEvent) => {
 		preventSyntheticEvent(e);
+		if (view.submit_disabled || contextValue.uploading) {
+			return;
+		}
 		closeTab();
 		void actionManager.emitInteraction(view.appId, {
 			type: 'viewSubmit',
@@ -50,12 +55,20 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps): JSX.Eleme
 				},
 			},
 			viewId: view.id,
+			rid: room._id,
 		});
 	});
 
-	const handleCancel = useEffectEvent((e: UIEvent) => {
+	const handleCancel = useStableCallback((e: UIEvent) => {
 		preventSyntheticEvent(e);
 		closeTab();
+		if (view.clearOnClose) {
+			actionManager.clearModals(view.appId);
+		}
+		if (view.notifyOnClose === false) {
+			actionManager.disposeView(view.id);
+			return;
+		}
 		void actionManager.emitInteraction(view.appId, {
 			type: 'viewClosed',
 			payload: {
@@ -66,12 +79,20 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps): JSX.Eleme
 				},
 				isCleared: false,
 			},
+			rid: room._id,
 		});
 	});
 
-	const handleClose = useEffectEvent((e: UIEvent) => {
+	const handleClose = useStableCallback((e: UIEvent) => {
 		preventSyntheticEvent(e);
 		closeTab();
+		if (view.clearOnClose) {
+			actionManager.clearModals(view.appId);
+		}
+		if (view.notifyOnClose === false) {
+			actionManager.disposeView(view.id);
+			return;
+		}
 		void actionManager.emitInteraction(view.appId, {
 			type: 'viewClosed',
 			payload: {
@@ -82,6 +103,7 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps): JSX.Eleme
 				},
 				isCleared: true,
 			},
+			rid: room._id,
 		});
 	});
 
@@ -94,20 +116,20 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps): JSX.Eleme
 					{handleClose && <ContextualbarClose onClick={handleClose} />}
 				</ContextualbarHeader>
 				<ContextualbarScrollableContent>
-					<Box is='form' method='post' action='#' onSubmit={handleSubmit}>
+					<form method='post' action='#' onSubmit={handleSubmit}>
 						<UiKitComponent render={UiKitContextualBarSurfaceRender} blocks={view.blocks} />
-					</Box>
+					</form>
 				</ContextualbarScrollableContent>
 				<ContextualbarFooter>
 					<ButtonGroup stretch>
 						{view.close && (
-							<Button danger={view.close.style === 'danger'} onClick={handleCancel}>
+							<Button variant={view.close.style === 'danger' ? 'danger' : undefined} onClick={handleCancel}>
 								{contextualBarParser.renderTextObject(view.close.text, 0)}
 							</Button>
 						)}
 
 						{view.submit && (
-							<Button {...getButtonStyle(view.submit)} onClick={handleSubmit}>
+							<Button {...getButtonStyle(view.submit)} disabled={view.submit_disabled || contextValue.uploading} onClick={handleSubmit}>
 								{contextualBarParser.renderTextObject(view.submit.text, 1)}
 							</Button>
 						)}

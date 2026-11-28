@@ -1,0 +1,42 @@
+import type { Keys as IconName } from '@rocket.chat/icons';
+import type { AllHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'react';
+
+import { BubbleButton } from './BubbleButton';
+import { BubbleItem } from './BubbleItem';
+
+export type BubbleProps = {
+	secondary?: boolean;
+	children: ReactNode;
+	small?: boolean;
+	onClick?: () => void;
+	icon?: IconName;
+	onDismiss?: () => void;
+	contentProps?: Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'>;
+	dismissProps?: Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'>;
+} & Omit<AllHTMLAttributes<HTMLDivElement>, 'onClick'>;
+
+const Bubble = ({ secondary, children, onClick, icon, onDismiss, small, contentProps, dismissProps, className, ...props }: BubbleProps) => (
+	<div
+		className={['rcx-bubble', 'rcx-box', 'rcx-box--full', onDismiss && 'rcx-bubble__group', small && 'rcx-bubble--small', className]
+			.filter(Boolean)
+			.join(' ')}
+		{...props}
+	>
+		{onClick ? (
+			<BubbleButton onClick={onClick} secondary={secondary} icon={icon} label={children} {...contentProps} />
+		) : (
+			<BubbleItem secondary={secondary} icon={icon} label={children} {...contentProps} />
+		)}
+		{onDismiss && (
+			<BubbleButton
+				onClick={onDismiss}
+				secondary={secondary}
+				icon='cross-small'
+				// oxlint-disable-next-line typescript/no-base-to-string -- children is a string label in practice; labelling other node types differently is a behavior change
+				{...{ 'aria-label': `Dismiss ${String(children)}`, ...dismissProps }}
+			/>
+		)}
+	</div>
+);
+
+export default Bubble;

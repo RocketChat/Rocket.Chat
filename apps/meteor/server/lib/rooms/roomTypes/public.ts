@@ -1,12 +1,10 @@
 import { Team } from '@rocket.chat/core-services';
-import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
-import { isRoomFederated, isRoomNativeFederated, TeamType } from '@rocket.chat/core-typings';
+import { isRoomFederated, isRoomNativeFederated, isRoomXMPPFederated, TeamType } from '@rocket.chat/core-typings';
 
-import { settings } from '../../../../app/settings/server';
-import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { getPublicRoomType } from '../../../../lib/rooms/roomTypes/public';
 import { isFederationEnabled } from '../../../services/federation/utils';
+import { settings } from '../../../settings';
 import { roomCoordinator } from '../roomCoordinator';
 
 const PublicRoomType = getPublicRoomType(roomCoordinator);
@@ -35,7 +33,7 @@ roomCoordinator.add(PublicRoomType, {
 	},
 
 	async allowMemberAction(_room, action, _userId) {
-		if (isRoomFederated(_room as IRoom)) {
+		if (isRoomFederated(_room)) {
 			if (isRoomNativeFederated(_room) && isFederationEnabled()) {
 				return true;
 			}
@@ -50,7 +48,7 @@ roomCoordinator.add(PublicRoomType, {
 	},
 
 	async roomName(room, _userId?) {
-		if (room.prid || isRoomFederated(room)) {
+		if (room.prid || isRoomFederated(room) || isRoomXMPPFederated(room)) {
 			return room.fname;
 		}
 		if (settings.get('UI_Allow_room_names_with_special_chars')) {
@@ -80,4 +78,4 @@ roomCoordinator.add(PublicRoomType, {
 	includeInRoomSearch() {
 		return true;
 	},
-} as AtLeast<IRoomTypeServerDirectives, 'isGroupChat' | 'roomName'>);
+});

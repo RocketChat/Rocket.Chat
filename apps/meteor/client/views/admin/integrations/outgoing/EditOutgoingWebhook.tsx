@@ -1,9 +1,10 @@
 import type { IOutgoingIntegration, OutgoingIntegrationEvent, Serialized } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { GenericModal, Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
-import { useSetModal, useTranslation, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useSetModal, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
 import { useId, useCallback } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm, useWatch, useFormState } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import OutgoingWebhookForm from './OutgoingWebhookForm';
 import { triggerWordsToArray, triggerWordsToString } from '../helpers/triggerWords';
@@ -35,7 +36,13 @@ type EditOutgoingWebhookFormData = {
 	runOnEdits: boolean;
 };
 
-const getInitialValue = (webhookData: Serialized<IOutgoingIntegration> | undefined, defaultToken: string): EditOutgoingWebhookFormData => ({
+type TriggerFormFields =
+	'enabled' | 'impersonateUser' | 'event' | 'urls' | 'token' | 'triggerWords' | 'targetRoom' | 'channel' | 'username';
+
+const getInitialTriggerValue = (
+	webhookData: Serialized<IOutgoingIntegration> | undefined,
+	defaultToken: string,
+): Pick<EditOutgoingWebhookFormData, TriggerFormFields> => ({
 	enabled: webhookData?.enabled ?? true,
 	impersonateUser: webhookData?.impersonateUser ?? false,
 	event: webhookData?.event ?? 'sendMessage',
@@ -45,6 +52,10 @@ const getInitialValue = (webhookData: Serialized<IOutgoingIntegration> | undefin
 	targetRoom: webhookData?.targetRoom ?? '',
 	channel: webhookData?.channel.join(', ') ?? '',
 	username: webhookData?.username ?? '',
+});
+
+const getInitialValue = (webhookData: Serialized<IOutgoingIntegration> | undefined, defaultToken: string): EditOutgoingWebhookFormData => ({
+	...getInitialTriggerValue(webhookData, defaultToken),
 	name: webhookData?.name ?? '',
 	alias: webhookData?.alias ?? '',
 	avatar: webhookData?.avatar ?? '',
@@ -61,12 +72,12 @@ const getInitialValue = (webhookData: Serialized<IOutgoingIntegration> | undefin
 
 const OUTGOING_TYPE = 'webhook-outgoing';
 
-type EditOutgoingWebhookProps = {
+export type EditOutgoingWebhookProps = {
 	webhookData?: Serialized<IOutgoingIntegration>;
 };
 
 const EditOutgoingWebhook = ({ webhookData }: EditOutgoingWebhookProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const router = useRouter();
 
@@ -75,12 +86,8 @@ const EditOutgoingWebhook = ({ webhookData }: EditOutgoingWebhookProps) => {
 	const defaultToken = useId();
 
 	const methods = useForm<EditOutgoingWebhookFormData>({ mode: 'onBlur', values: getInitialValue(webhookData, defaultToken) });
-	const {
-		reset,
-		handleSubmit,
-		formState: { isDirty },
-		watch,
-	} = methods;
+	const { reset, handleSubmit, control } = methods;
+	const { isDirty } = useFormState({ control });
 
 	const deleteIntegration = useDeleteIntegration(OUTGOING_TYPE);
 	const createIntegration = useCreateIntegration(OUTGOING_TYPE);
@@ -98,7 +105,9 @@ const EditOutgoingWebhook = ({ webhookData }: EditOutgoingWebhookProps) => {
 		);
 	}, [webhookData?._id, deleteIntegration, setModal, t]);
 
-	const { urls, triggerWords } = watch();
+	const watched = useWatch({ control });
+	const urls = watched.urls ?? '';
+	const triggerWords = watched.triggerWords ?? '';
 
 	const handleSave = useCallback(
 		async (formValues: EditOutgoingWebhookFormData) => {
@@ -132,7 +141,7 @@ const EditOutgoingWebhook = ({ webhookData }: EditOutgoingWebhookProps) => {
 						<Button onClick={() => router.navigate(`/admin/integrations/history/outgoing/${webhookData._id}`)}>{t('History')}</Button>
 					)}
 					{webhookData?._id && (
-						<Button danger onClick={handleDeleteIntegration}>
+						<Button variant='danger' onClick={handleDeleteIntegration}>
 							{t('Delete')}
 						</Button>
 					)}
@@ -158,7 +167,7 @@ const EditOutgoingWebhook = ({ webhookData }: EditOutgoingWebhookProps) => {
 					<Button type='reset' onClick={() => reset()}>
 						{t('Cancel')}
 					</Button>
-					<Button form={formId} primary type='submit'>
+					<Button form={formId} variant='primary' type='submit'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

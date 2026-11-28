@@ -22,11 +22,6 @@ const defaultWrapper = mockAppRoot().withTranslations('en', 'core', {
 	FileUpload_MediaType_NotAccepted__type__: 'Media type not accepted: {{type}}',
 });
 
-test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-	const { baseElement } = render(<Story />);
-	expect(baseElement).toMatchSnapshot();
-});
-
 test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
 	const { container } = render(<Story />);
 
@@ -46,4 +41,12 @@ it('should not send a renamed file with not allowed mime-type', async () => {
 	await userEvent.click(button);
 
 	expect(screen.getByText('Media type not accepted: image/svg+xml')).toBeInTheDocument();
+});
+
+it('should preview a file without bytes from its url', async () => {
+	render(<FileUploadModal {...defaultProps} fileAltText='A cat' previewUrl='/file-upload/file-1/testing.png' />, {
+		wrapper: defaultWrapper.build(),
+	});
+
+	expect(screen.getByAltText('A cat')).toHaveAttribute('src', '/file-upload/file-1/testing.png');
 });

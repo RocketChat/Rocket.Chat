@@ -1,14 +1,14 @@
 import type { Card } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactElement } from 'react';
+import { links } from '@rocket.chat/ui-client';
+import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
 import { useExternalLink } from '../../../hooks/useExternalLink';
-import { links } from '../../../lib/links';
 
 const DOCS_URL = links.go.documentation;
 
-const DocumentationCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactElement => {
+const DocumentationCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => {
 	const { t } = useTranslation();
 	const handleOpenLink = useExternalLink();
 

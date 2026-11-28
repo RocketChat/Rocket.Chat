@@ -1,10 +1,7 @@
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@rocket.chat/fuselage';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMemo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-const style = { width: '100%' };
 
 const AgentOverview = ({
 	type,
@@ -47,9 +44,13 @@ const AgentOverview = ({
 	}, [start, end, loadData, params]);
 
 	return (
-		<Table style={style} fixed>
+		<Table fixed>
 			<TableHead>
-				<TableRow>{displayData.head?.map(({ name }, i) => <TableCell key={i}>{t(name as TranslationKey)}</TableCell>)}</TableRow>
+				<TableRow>
+					{displayData.head?.map(({ name }, i) => (
+						<TableCell key={i}>{t(name)}</TableCell>
+					))}
+				</TableRow>
 			</TableHead>
 			<TableBody>
 				{displayData.data?.map(({ name, value }, i) => (

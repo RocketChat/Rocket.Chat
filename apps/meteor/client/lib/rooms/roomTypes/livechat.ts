@@ -1,10 +1,10 @@
 import type { AtLeast, ValueOf } from '@rocket.chat/core-typings';
 
-import { getAvatarURL } from '../../../../app/utils/client/getAvatarURL';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
 import { getLivechatRoomType } from '../../../../lib/rooms/roomTypes/livechat';
 import { Rooms, Subscriptions } from '../../../stores';
+import { getAvatarURL } from '../../getAvatarURL';
 import { roomCoordinator } from '../roomCoordinator';
 
 export const LivechatRoomType = getLivechatRoomType(roomCoordinator);
@@ -29,7 +29,7 @@ roomCoordinator.add(
 		},
 
 		roomName(room) {
-			return room.name || room.fname || (room as any).label;
+			return room.name || room.fname || (room as { label?: string }).label;
 		},
 
 		getUiText(context) {

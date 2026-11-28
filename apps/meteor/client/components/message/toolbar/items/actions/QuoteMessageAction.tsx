@@ -12,7 +12,7 @@ import { useRoom } from '../../../../../views/room/contexts/RoomContext';
 import { useMessageListAutoTranslate } from '../../../list/MessageListContext';
 import MessageToolbarItem from '../../MessageToolbarItem';
 
-type QuoteMessageActionProps = {
+export type QuoteMessageActionProps = {
 	message: IMessage & Partial<ITranslatedMessage>;
 	subscription: ISubscription | undefined;
 };

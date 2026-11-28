@@ -1,25 +1,27 @@
-/* eslint-disable react-hooks/rules-of-hooks */
+/* oxlint-disable react-hooks/rules-of-hooks */
 import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 import type { AutoUpdateRecord, IMeteor } from '@rocket.chat/core-services';
-import type { ILivechatAgent, LoginServiceConfiguration, UserStatus } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, LoginServiceConfiguration } from '@rocket.chat/core-typings';
+import { ILivechatAgentStatus, UserStatus } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration as LoginServiceConfigurationModel, Users } from '@rocket.chat/models';
-import { wrapExceptions } from '@rocket.chat/tools';
+import { ListenersModule, invalidatePublicationUserCache } from '@rocket.chat/streamer';
+import { DDP } from 'meteor/ddp';
+import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 
-import { processOnChange, serviceConfigCallbacks } from './userReactivity';
-import { isOutgoingIntegration } from '../../../app/integrations/server/lib/definition';
-import { triggerHandler } from '../../../app/integrations/server/lib/triggerHandler';
-import { notifyGuestStatusChanged } from '../../../app/livechat/server/lib/guests';
-import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';
-import { metrics } from '../../../app/metrics/server';
-import notifications from '../../../app/notifications/server/lib/Notifications';
-import { settings } from '../../../app/settings/server';
-import { use } from '../../../app/settings/server/Middleware';
-import { setValue, updateValue } from '../../../app/settings/server/raw';
-import { getURL } from '../../../app/utils/server/getURL';
+import { processOnChange } from './userReactivity';
 import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
+import { isOutgoingIntegration } from '../../lib/integrations/lib/definition';
+import { triggerHandler } from '../../lib/integrations/lib/triggerHandler';
+import { metrics } from '../../lib/metrics';
+import notifications from '../../lib/notifications/core/lib/Notifications';
+import { notifyGuestStatusChanged } from '../../lib/omnichannel/guests';
+import { onlineAgents, monitorAgents } from '../../lib/omnichannel/stream/agentStatus';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
-import { ListenersModule } from '../../modules/listeners/listeners.module';
+import { getURL } from '../../lib/utils/getURL';
+import { settings } from '../../settings';
+import { use } from '../../settings/Middleware';
+import { setValue, updateValue } from '../../settings/raw';
 
 const disableMsgRoundtripTracking = ['yes', 'true'].includes(String(process.env.DISABLE_MESSAGE_ROUNDTRIP_TRACKING).toLowerCase());
 
@@ -37,7 +39,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 	constructor() {
 		super();
 
-		new ListenersModule(this, notifications);
+		new ListenersModule(this, notifications, settings);
 
 		this.onEvent('user.forceLogout', (uid: string, sessionId?: string) => {
 			if (sessionId) {
@@ -62,22 +64,9 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 			setValue(setting._id, undefined);
 		});
 
-		this.onEvent('watch.loginServiceConfiguration', ({ clientAction, id, data }) => {
-			if (clientAction === 'removed') {
-				serviceConfigCallbacks.forEach((callbacks) => {
-					wrapExceptions(() => callbacks.removed?.(id)).suppress();
-				});
-				return;
-			}
-
-			if (data) {
-				serviceConfigCallbacks.forEach((callbacks) => {
-					wrapExceptions(() => callbacks[clientAction === 'inserted' ? 'added' : 'changed']?.(id, data)).suppress();
-				});
-			}
-		});
-
 		this.onEvent('watch.users', async (data) => {
+			invalidatePublicationUserCache(data.id);
+
 			if (data.clientAction === 'updated' && data.diff) {
 				processOnChange(data.diff, data.id);
 			}
@@ -92,14 +81,14 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 
 			switch (data.clientAction) {
 				case 'updated':
-				case 'inserted':
+				case 'inserted': {
 					const agent = await Users.findOneAgentById<Pick<ILivechatAgent, 'status' | 'statusLivechat'>>(data.id, {
 						projection: {
 							status: 1,
 							statusLivechat: 1,
 						},
 					});
-					const serviceOnline = agent && agent.status !== 'offline' && agent.statusLivechat === 'available';
+					const serviceOnline = agent && agent.status !== UserStatus.OFFLINE && agent.statusLivechat === ILivechatAgentStatus.AVAILABLE;
 
 					if (serviceOnline) {
 						return onlineAgents.add(data.id);
@@ -108,6 +97,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 					onlineAgents.remove(data.id);
 
 					break;
+				}
 				case 'removed':
 					onlineAgents.remove(data.id);
 					break;
@@ -140,7 +130,9 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		if (!disableMsgRoundtripTracking) {
 			this.onEvent('watch.messages', async ({ message }) => {
 				if (message?._updatedAt instanceof Date) {
-					metrics.messageRoundtripTime.observe(Date.now() - message._updatedAt.getTime());
+					const elapsedMs = Date.now() - message._updatedAt.getTime();
+					metrics.messageRoundtripTime.observe(elapsedMs);
+					metrics.messageRoundtripTimeSeconds.observe(elapsedMs / 1000);
 				}
 			});
 		}
@@ -194,8 +186,9 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 			};
 		}
 
+		const invocation = new DDPCommon.MethodInvocation({ connection: null, isSimulation: false, userId });
 		return {
-			result: await Meteor.runAsUser(userId, () => Meteor.callAsync(method, ...args)),
+			result: await DDP._CurrentInvocation.withValue(invocation as any, () => Meteor.callAsync(method, ...args)),
 		};
 	}
 

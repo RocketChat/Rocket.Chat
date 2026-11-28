@@ -1,11 +1,11 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import type * as chartjs from 'chart.js';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { drawLineChart } from '../../../../app/livechat/client/lib/chartHandler';
 import { secondsToHHMMSS } from '../../../../lib/utils/secondsToHHMMSS';
+import { drawLineChart } from '../chartHandler';
 import Chart from '../realTimeMonitoring/charts/Chart';
 
 const getChartTooltips = (chartName: string) => {
@@ -43,21 +43,21 @@ const InterchangeableChart = ({
 	dateRange: { start: string; end: string };
 	chartName: string;
 	flexShrink: number;
-	h: string;
-	w: string;
+	height: string;
+	width: string;
 	alignSelf: string;
 }) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const canvas = useRef<HTMLCanvasElement | null>(null);
-	const context = useRef<chartjs.Chart<'line', number[], string>>();
+	const context = useRef<chartjs.Chart<'line', number[], string>>(undefined);
 
 	const { start, end } = dateRange;
 
 	const loadData = useEndpoint('GET', '/v1/livechat/analytics/dashboards/charts-data');
 
-	const draw = useEffectEvent(
+	const draw = useStableCallback(
 		async (params: {
 			daterange: {
 				from: string;
@@ -84,9 +84,8 @@ const InterchangeableChart = ({
 				if (!result?.dataLabels || !result?.dataPoints) {
 					throw new Error('Error! fetching chart data.');
 				}
-				(context.current || typeof context.current === 'undefined') &&
-					canvas.current &&
-					(context.current = await drawLineChart(
+				if ((context.current || typeof context.current === 'undefined') && canvas.current) {
+					context.current = await drawLineChart(
 						canvas.current,
 						context.current,
 						[result.chartLabel],
@@ -95,7 +94,8 @@ const InterchangeableChart = ({
 						{
 							tooltipCallbacks,
 						},
-					));
+					);
+				}
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}

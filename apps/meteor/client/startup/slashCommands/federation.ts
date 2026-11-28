@@ -1,20 +1,10 @@
-import { slashCommands } from '../../../app/utils/client/slashCommand';
-
-const callback = undefined;
-const result = undefined;
-const providesPreview = false;
-const previewer = undefined;
-const previewCallback = undefined;
+import { slashCommands } from '../../lib/slashCommand';
 
 slashCommands.add({
-	command: 'federation',
-	callback,
+	command: 'xmpp-join',
 	options: {
-		description: 'Federation_slash_commands',
-		params: '#command (dm) #user',
+		description: 'Join xmpp rooms',
+		params: '#channel',
 	},
-	result,
-	providesPreview,
-	previewer,
-	previewCallback,
+	providesPreview: false,
 });

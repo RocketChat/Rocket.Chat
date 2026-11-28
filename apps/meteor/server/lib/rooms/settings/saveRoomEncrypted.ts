@@ -1,0 +1,30 @@
+import { Message, ClientSafeError } from '@rocket.chat/core-services';
+import type { IUser } from '@rocket.chat/core-typings';
+import { isRegisterUser } from '@rocket.chat/core-typings';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
+import type { UpdateResult } from 'mongodb';
+
+import { notifyOnSubscriptionChangedByRoomId } from '../../notifyListener';
+
+export const saveRoomEncrypted = async function (rid: string, encrypted: boolean, user: IUser, sendMessage = true): Promise<UpdateResult> {
+	if (!isRegisterUser(user)) {
+		throw new ClientSafeError('invalid-user', 'Invalid user', {
+			function: 'RocketChat.saveRoomEncrypted',
+		});
+	}
+
+	const update = await Rooms.saveEncryptedById(rid, encrypted);
+	if (update && sendMessage) {
+		const type = encrypted ? 'room_e2e_enabled' : 'room_e2e_disabled';
+
+		await Message.saveSystemMessage(type, rid, user.username, user);
+	}
+
+	if (encrypted) {
+		const { modifiedCount } = await Subscriptions.disableAutoTranslateByRoomId(rid);
+		if (modifiedCount) {
+			void notifyOnSubscriptionChangedByRoomId(rid);
+		}
+	}
+	return update;
+};

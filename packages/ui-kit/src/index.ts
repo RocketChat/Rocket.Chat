@@ -1,74 +1,123 @@
-export type { ConfirmationDialog } from './blocks/ConfirmationDialog';
-export type { Option } from './blocks/Option';
-export type { OptionGroup } from './blocks/OptionGroup';
+export type { ConfirmationDialog } from './blocks/ConfirmationDialog.js';
+export type { Option } from './blocks/Option.js';
+export type { OptionGroup } from './blocks/OptionGroup.js';
 
-export type { PlainText } from './blocks/text/PlainText';
-export type { Markdown } from './blocks/text/Markdown';
-export type { TextObject } from './blocks/TextObject';
+export type { PlainText } from './blocks/text/PlainText.js';
+export type { Markdown } from './blocks/text/Markdown.js';
+export type { TextObject } from './blocks/TextObject.js';
 
-export type { Conditions } from './rendering/Conditions';
+export type { Conditions } from './rendering/Conditions.js';
 
-export type { ButtonElement } from './blocks/elements/ButtonElement';
-export type { ChannelsSelectElement } from './blocks/elements/ChannelsSelectElement';
-export type { ConversationsSelectElement } from './blocks/elements/ConversationsSelectElement';
-export type { DatePickerElement } from './blocks/elements/DatePickerElement';
-export type { ImageElement } from './blocks/elements/ImageElement';
-export type { LinearScaleElement } from './blocks/elements/LinearScaleElement';
-export type { MultiStaticSelectElement } from './blocks/elements/MultiStaticSelectElement';
-export type { MultiChannelsSelectElement } from './blocks/elements/MultiChannelsSelectElement';
-export type { MultiConversationsSelectElement } from './blocks/elements/MultiConversationsSelectElement';
-export type { MultiUsersSelectElement } from './blocks/elements/MultiUsersSelectElement';
-export type { OverflowElement } from './blocks/elements/OverflowElement';
-export type { PlainTextInputElement } from './blocks/elements/PlainTextInputElement';
-export type { StaticSelectElement } from './blocks/elements/StaticSelectElement';
-export type { UsersSelectElement } from './blocks/elements/UsersSelectElement';
-export type { ToggleSwitchElement } from './blocks/elements/ToggleSwitchElement';
-export type { CheckboxElement } from './blocks/elements/CheckboxElement';
-export type { RadioButtonElement } from './blocks/elements/RadioButtonElement';
-export type { TimePickerElement } from './blocks/elements/TimePickerElement';
-export type { BlockElement } from './blocks/BlockElement';
-export type { ExperimentalTabElement } from './blocks/elements/ExperimentalTabElement';
-export type { IconElement, FrameableIconElement } from './blocks/elements/IconElement';
-export type { IconButtonElement } from './blocks/elements/IconButtonElement';
+export type { ButtonElement } from './blocks/elements/ButtonElement.js';
+export type { ChannelsSelectElement } from './blocks/elements/ChannelsSelectElement.js';
+export type { ConversationsSelectElement } from './blocks/elements/ConversationsSelectElement.js';
+export type { ConversationsSelectFilter } from './blocks/elements/ConversationsSelectFilter.js';
+export type { DatePickerElement } from './blocks/elements/DatePickerElement.js';
+export type { DateTimePickerElement } from './blocks/elements/DateTimePickerElement.js';
+export type { FeedbackButton, FeedbackButtonsElement } from './blocks/elements/FeedbackButtonsElement.js';
+export type { ExternalSelectElement } from './blocks/elements/ExternalSelectElement.js';
+export type { ImageElement } from './blocks/elements/ImageElement.js';
+export type { FileInputElement } from './blocks/elements/FileInputElement.js';
+export type { LinearScaleElement } from './blocks/elements/LinearScaleElement.js';
+export type { MultiExternalSelectElement } from './blocks/elements/MultiExternalSelectElement.js';
+export type { MultiStaticSelectElement } from './blocks/elements/MultiStaticSelectElement.js';
+export type { MultiChannelsSelectElement } from './blocks/elements/MultiChannelsSelectElement.js';
+export type { MultiConversationsSelectElement } from './blocks/elements/MultiConversationsSelectElement.js';
+export type { MultiUsersSelectElement } from './blocks/elements/MultiUsersSelectElement.js';
+export type { OverflowElement } from './blocks/elements/OverflowElement.js';
+export type { PlainTextInputElement } from './blocks/elements/PlainTextInputElement.js';
+export type { NumberInputElement } from './blocks/elements/NumberInputElement.js';
+export type { EmailTextInputElement } from './blocks/elements/EmailTextInputElement.js';
+export type { UrlTextInputElement } from './blocks/elements/UrlTextInputElement.js';
+export type { StaticSelectElement } from './blocks/elements/StaticSelectElement.js';
+export type { UsersSelectElement } from './blocks/elements/UsersSelectElement.js';
+export type { ToggleSwitchElement } from './blocks/elements/ToggleSwitchElement.js';
+export type { CheckboxElement } from './blocks/elements/CheckboxElement.js';
+export type { RadioButtonElement } from './blocks/elements/RadioButtonElement.js';
+export type { RichTextInputElement } from './blocks/elements/RichTextInputElement.js';
+export type { TimePickerElement } from './blocks/elements/TimePickerElement.js';
+export type { BlockElement } from './blocks/BlockElement.js';
+export type { ExperimentalTabElement } from './blocks/elements/ExperimentalTabElement.js';
+export type { IconElement, FrameableIconElement } from './blocks/elements/IconElement.js';
+export type { IconButtonElement } from './blocks/elements/IconButtonElement.js';
 
-export type { ActionsBlock } from './blocks/layout/ActionsBlock';
-export type { ConditionalBlock } from './blocks/layout/ConditionalBlock';
-export type { ContextBlock } from './blocks/layout/ContextBlock';
-export * from './blocks/layout/PreviewBlock';
-export type { DividerBlock } from './blocks/layout/DividerBlock';
-export type { ImageBlock } from './blocks/layout/ImageBlock';
-export type { InputBlock } from './blocks/layout/InputBlock';
-export type { SectionBlock } from './blocks/layout/SectionBlock';
-export type { VideoConferenceBlock } from './blocks/layout/VideoConferenceBlock';
-export type { LayoutBlock } from './blocks/LayoutBlock';
-export type { CalloutBlock } from './blocks/layout/CalloutBlock';
-export type { ExperimentalTabNavigationBlock } from './blocks/layout/ExperimentalTabNavigationBlock';
-export type { InfoCardBlock } from './blocks/layout/InfoCardBlock';
+export type { ActionsBlock } from './blocks/layout/ActionsBlock.js';
+export type { ConditionalBlock } from './blocks/layout/ConditionalBlock.js';
+export type { ContextBlock } from './blocks/layout/ContextBlock.js';
+export * from './blocks/layout/PreviewBlock.js';
+export type { DividerBlock } from './blocks/layout/DividerBlock.js';
+export type { HeaderBlock } from './blocks/layout/HeaderBlock.js';
+export type { ImageBlock } from './blocks/layout/ImageBlock.js';
+export type { InputBlock } from './blocks/layout/InputBlock.js';
+export type { MarkdownBlock } from './blocks/layout/MarkdownBlock.js';
+export type * from './blocks/layout/RichTextBlock.js';
+export type { SectionBlock } from './blocks/layout/SectionBlock.js';
+export type { ContextActionsBlock } from './blocks/layout/ContextActionsBlock.js';
+export type { TaskCardBlock, TaskCard, TaskStatus } from './blocks/layout/TaskCardBlock.js';
+export type { PlanBlock } from './blocks/layout/PlanBlock.js';
+export type { UrlSourceElement } from './blocks/elements/UrlSourceElement.js';
+export type { VideoBlock } from './blocks/layout/VideoBlock.js';
+export type { TableBlock, TableCell, RawTextTableCell, TableColumnSetting } from './blocks/layout/TableBlock.js';
+export type { VideoConferenceBlock } from './blocks/layout/VideoConferenceBlock.js';
+export type { LayoutBlock } from './blocks/LayoutBlock.js';
+export type { CalloutBlock } from './blocks/layout/CalloutBlock.js';
+export type { AlertBlock } from './blocks/layout/AlertBlock.js';
+export type { CardBlock, CardImage } from './blocks/layout/CardBlock.js';
+export type { CarouselBlock } from './blocks/layout/CarouselBlock.js';
+export type {
+	DataTableBlock,
+	DataTableCell,
+	RawNumberTableCell,
+	RichTextTableCell,
+	ActionTableCell,
+} from './blocks/layout/DataTableBlock.js';
+export type {
+	DataVisualizationBlock,
+	DataVisualizationChart,
+	PieChart,
+	SeriesChart,
+	PieSegment,
+	DataSeries,
+	DataPoint,
+	AxisConfig,
+} from './blocks/layout/DataVisualizationBlock.js';
+export { containerChildBlockTypes } from './blocks/layout/ContainerBlock.js';
+export type { ContainerBlock, ContainerChildBlock } from './blocks/layout/ContainerBlock.js';
+export { layoutItemBlockTypes } from './blocks/layout/LayoutGridBlock.js';
+export type { LayoutGridBlock, LayoutItem, LayoutItemBlock, LayoutRow, LayoutFallbackBlock } from './blocks/layout/LayoutGridBlock.js';
+export type { ExperimentalTabNavigationBlock } from './blocks/layout/ExperimentalTabNavigationBlock.js';
+export type { InfoCardBlock } from './blocks/layout/InfoCardBlock.js';
+export type { FileBlock } from './blocks/layout/FileBlock.js';
 
-export type { InputElementDispatchAction } from './blocks/InputElementDispatchAction';
+export type { InputElementDispatchAction } from './blocks/InputElementDispatchAction.js';
 
-export type { Block } from './blocks/Block';
-export type { RenderableBlock } from './blocks/RenderableBlock';
+export type { Block } from './blocks/Block.js';
+export type { RenderableBlock } from './blocks/RenderableBlock.js';
 
-export { LayoutBlockType } from './blocks/LayoutBlockType';
-export { BlockElementType } from './blocks/BlockElementType';
-export { TextObjectType } from './blocks/TextObjectType';
-export { BlockContext } from './rendering/BlockContext';
+export { LayoutBlockType } from './blocks/LayoutBlockType.js';
+export { BlockElementType } from './blocks/BlockElementType.js';
+export { TextObjectType } from './blocks/TextObjectType.js';
+export { BlockContext } from './rendering/BlockContext.js';
 
-export type { BlockRenderers } from './rendering/BlockRenderers';
-export type { RenderableLayoutBlock } from './blocks/RenderableLayoutBlock';
+export type { BlockRenderers } from './rendering/BlockRenderers.js';
+export type { RenderableLayoutBlock } from './blocks/RenderableLayoutBlock.js';
 
-export { SurfaceRenderer } from './rendering/SurfaceRenderer';
-export type { ActionableElement } from './blocks/ActionableElement';
-export type { ActionOf } from './rendering/ActionOf';
+export { SurfaceRenderer } from './rendering/SurfaceRenderer.js';
+export { isSafeUrl } from './rendering/isSafeUrl.js';
+export { isValidAppId } from './rendering/isValidAppId.js';
+export type { ActionableElement } from './blocks/ActionableElement.js';
+export type { ActionOf } from './rendering/ActionOf.js';
 
-export * from './surfaces/View';
+export * from './surfaces/View.js';
 
-export * from './surfaces/attachment';
-export * from './surfaces/banner';
-export * from './surfaces/contextualBar';
-export * from './surfaces/message';
-export * from './surfaces/modal';
+export * from './surfaces/attachment/index.js';
+export * from './surfaces/banner/index.js';
+export * from './surfaces/contextualBar/index.js';
+export * from './surfaces/message/index.js';
+export * from './surfaces/modal/index.js';
 
-export * from './interactions/UserInteraction';
-export * from './interactions/ServerInteraction';
+export * from './interactions/UserInteraction.js';
+export * from './interactions/ServerInteraction.js';
+export type { CanonicalElementType, ElementTypeAlias } from './blocks/elementTypeAliases.js';
+export { toCanonicalElement, toCanonicalElementType } from './blocks/elementTypeAliases.js';
+export { flattenBlocks, nestedBlocks } from './blocks/nestedBlocks.js';

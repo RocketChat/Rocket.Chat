@@ -3,7 +3,7 @@ import type { ComponentChildren } from 'preact';
 import { Component } from 'preact';
 import type { CSSProperties } from 'preact/compat';
 
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { createClassName } from '../../helpers/createClassName';
 import { parse } from '../../helpers/parse';
 
@@ -270,7 +270,9 @@ export class Composer extends Component<ComposerProps, ComposerState> {
 			{pre}
 			<div
 				ref={this.handleRef}
+				role='textbox'
 				contentEditable
+				tabIndex={0}
 				data-placeholder={placeholder}
 				data-qa='livechat-composer'
 				onInput={this.handleInput(onChange)}

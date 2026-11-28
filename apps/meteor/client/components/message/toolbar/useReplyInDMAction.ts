@@ -5,7 +5,7 @@ import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/shallow';
 
-import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
+import type { MessageActionConfig } from '../../../lib/MessageAction';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { Rooms, Subscriptions } from '../../../stores';
 
@@ -30,13 +30,13 @@ export const useReplyInDMAction = (
 	);
 
 	const shouldFindRoom = useMemo(() => !!user && !canCreateDM && user._id !== message.u._id, [canCreateDM, message.u._id, user]);
-	const dmRoom = Rooms.use(useShallow((state) => (shouldFindRoom ? state.find(roomPredicate) : undefined)));
+	const dmRoom = Rooms.useStore(useShallow((state) => (shouldFindRoom ? state.find(roomPredicate) : undefined)));
 
 	const subsPredicate = useCallback(
 		(record: ISubscription) => record.rid === dmRoom?._id || record.u._id === user?._id,
 		[dmRoom, user?._id],
 	);
-	const dmSubs = Subscriptions.use(useShallow((state) => state.find(subsPredicate)));
+	const dmSubs = Subscriptions.useStore(useShallow((state) => state.find(subsPredicate)));
 
 	const tooltip = useMemo(() => {
 		if (encrypted) {
@@ -71,11 +71,12 @@ export const useReplyInDMAction = (
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		type: 'communication',
 		action() {
+			const { msg: _, ...searchParameters } = router.getSearchParameters();
 			roomCoordinator.openRouteLink(
 				'd',
 				{ name: message.u.username },
 				{
-					...router.getSearchParameters(),
+					...searchParameters,
 					reply: message._id,
 				},
 			);

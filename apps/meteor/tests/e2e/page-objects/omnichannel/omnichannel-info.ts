@@ -11,8 +11,12 @@ export class OmnichannelContactInfo extends FlexTab {
 		this.contactReviewModal = new OmnichannelContactReviewModal(page);
 	}
 
+	get textContactEmails(): Locator {
+		return this.root.getByRole('list', { name: 'Email' });
+	}
+
 	get infoContactEmail(): Locator {
-		return this.root.getByRole('list', { name: 'Email' }).getByRole('listitem').first().locator('p');
+		return this.textContactEmails.getByRole('listitem').first().locator('p');
 	}
 
 	get btnEdit(): Locator {
@@ -40,7 +44,7 @@ export class OmnichannelContactInfo extends FlexTab {
 	}
 
 	private get customFieldsGroup() {
-		return this.root.getByRole('group', { name: 'Custom Fields' });
+		return this.root.getByRole('group', { name: 'Custom fields' });
 	}
 
 	getInfoByValue(value: string): Locator {

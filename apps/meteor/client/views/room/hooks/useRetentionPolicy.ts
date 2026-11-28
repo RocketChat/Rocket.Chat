@@ -6,7 +6,7 @@ import { TIMEUNIT, isValidTimespan, timeUnitToMs } from '../../../lib/convertTim
 const hasRetentionPolicy = (room: IRoom & { retention?: any }): room is IRoomWithRetentionPolicy =>
 	'retention' in room && room.retention !== undefined;
 
-const isRetentionOverridden = (room: IRoom & { retention?: any }) => 'overrideGlobal' in room.retention && room.retention.overrideGlobal;
+const isRetentionOverridden = (room: IRoomWithRetentionPolicy) => 'overrideGlobal' in room.retention && room.retention.overrideGlobal;
 
 type RetentionPolicySettings = {
 	enabled: boolean;
@@ -84,18 +84,16 @@ const getMaxAge = (room: IRoom, { maxAgeChannels, maxAgeGroups, maxAgeDMs }: Ret
 	return -Infinity;
 };
 
-export const useRetentionPolicy = (
-	room: IRoom | undefined,
-):
-	| {
-			enabled: boolean;
-			isActive: boolean;
-			filesOnly: boolean;
-			excludePinned: boolean;
-			ignoreThreads: boolean;
-			maxAge: number;
-	  }
-	| undefined => {
+export type RetentionPolicy = {
+	enabled: boolean;
+	isActive: boolean;
+	filesOnly: boolean;
+	excludePinned: boolean;
+	ignoreThreads: boolean;
+	maxAge: number;
+};
+
+export const useRetentionPolicy = (room: IRoom | undefined): RetentionPolicy | undefined => {
 	const settings = {
 		enabled: useSetting('RetentionPolicy_Enabled', false),
 		filesOnly: useSetting('RetentionPolicy_FilesOnly', false),

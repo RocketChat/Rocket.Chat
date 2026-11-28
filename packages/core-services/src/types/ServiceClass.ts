@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 
 import type { ISetting } from '@rocket.chat/core-typings';
 
@@ -24,7 +24,7 @@ export interface IServiceContext {
 	// locals: any; // Local data.
 	// level: Number; // Request level (in nested-calls). The first level is 1.
 	// span: Span; // Current active span.
-	ctx?: any;
+	ctx?: { call(method: string, params: unknown, options?: object): Promise<unknown> };
 }
 
 export interface IServiceClass {

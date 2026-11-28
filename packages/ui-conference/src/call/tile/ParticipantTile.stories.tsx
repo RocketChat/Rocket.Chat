@@ -1,0 +1,120 @@
+import type { Decorator, Meta, StoryObj } from '@storybook/react';
+
+import ParticipantThumbnail from './ParticipantThumbnail.js';
+import ParticipantTile from './ParticipantTile.js';
+import SelfThumbnail from './SelfThumbnail.js';
+import SelfTile from './SelfTile.js';
+import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../../fixtures/storyFixtures.js';
+import { CallPinsProvider } from '../context.js';
+import { COLUMN_THUMB_WIDTH } from '../lib/stageTiles.js';
+
+/**
+ * One person's tile: their camera or, without one, their avatar; their name; and the corner that says what their
+ * microphone is doing. The same frame at two sizes — a grid cell or the stage, and a thumbnail. The reader's own
+ * tile is mirrored and says what it sends; see `Self`.
+ */
+const meta = {
+	component: ParticipantTile,
+	parameters: { layout: 'centered' },
+	args: { displayName: 'Ada Lovelace', muted: false, held: false },
+	decorators: [
+		(Story) => (
+			<CallSurface>
+				<div style={{ width: '20rem', aspectRatio: '16 / 9' }}>
+					<Story />
+				</div>
+			</CallSurface>
+		),
+		withConferenceWindow(conferenceAppRoot()),
+	],
+} satisfies Meta<typeof ParticipantTile>;
+
+export default meta;
+
+type Story = StoryObj<typeof meta>;
+
+/** At the size the stage's sidebar draws it, not the tile's. */
+const withThumbnailSize: Decorator = (Story) => (
+	<div style={{ width: COLUMN_THUMB_WIDTH, aspectRatio: '16 / 9' }}>
+		<Story />
+	</div>
+);
+
+export const Default: Story = {};
+
+export const Muted: Story = {
+	args: { muted: true },
+};
+
+/** On hold: the corner says so beside the microphone. */
+export const Held: Story = {
+	args: { held: true },
+};
+
+/** Third in the queue: the name gets a plate, and the plate the position. */
+export const HandRaised: Story = {
+	args: { handPosition: 3 },
+};
+
+/** First in the queue, whose turn is next: the one plate drawn green. */
+export const HandRaisedNext: Story = {
+	args: { handPosition: 1 },
+};
+
+/** Their latest reaction, in the corner opposite the microphone, for as long as it rises over the call. */
+export const Reacting: Story = {
+	args: { reaction: { id: '1', emoji: '🎉' } },
+};
+
+/** The reader's own tile, which alone says what its encoder is sending. */
+export const Self: Story = {
+	render: () => <SelfTile displayName='John Doe' muted={false} held={false} sendHeight={720} />,
+};
+
+/** The reader's own reaction, beside what their tile says it is sending. */
+export const SelfReacting: Story = {
+	render: () => <SelfTile displayName='John Doe' muted={false} held={false} sendHeight={720} reaction={{ id: '1', emoji: '👍' }} />,
+};
+
+export const Thumbnail: Story = {
+	decorators: [withThumbnailSize],
+	render: () => <ParticipantThumbnail displayName='Ada Lovelace' muted={false} held={false} />,
+};
+
+export const SelfThumbnailMuted: Story = {
+	name: 'Self thumbnail, muted',
+	decorators: [withThumbnailSize],
+	render: () => <SelfThumbnail displayName='John Doe' muted held={false} />,
+};
+
+const withPins =
+	(pinnedId: string | null): Decorator =>
+	(Story) => (
+		<CallPinsProvider value={{ pinnedId, shares: [], screenOnStage: null, togglePin: () => undefined, toggleScreenPin: () => undefined }}>
+			<Story />
+		</CallPinsProvider>
+	);
+
+/** Offers to pin them on hover or focus. */
+export const Pinnable: Story = {
+	args: { participantId: 'ada' },
+	decorators: [withPins(null)],
+};
+
+export const Pinned: Story = {
+	args: { participantId: 'ada' },
+	decorators: [withPins('ada')],
+};
+
+/** Narrower than a strip thumbnail: only the mark. */
+export const PinnedNarrow: Story = {
+	args: { participantId: 'ada' },
+	decorators: [
+		(Story) => (
+			<div style={{ width: 120, aspectRatio: '4 / 3' }}>
+				<Story />
+			</div>
+		),
+		withPins('ada'),
+	],
+};

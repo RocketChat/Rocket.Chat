@@ -1,6 +1,7 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { App, AppPermission } from '@rocket.chat/core-typings';
-import { Box, Icon } from '@rocket.chat/fuselage';
+import type { Keys as IconName } from '@rocket.chat/icons';
+import { useHasLicenseModule, useIsEnterprise } from '@rocket.chat/ui-client';
 import {
 	useSetModal,
 	useEndpoint,
@@ -21,8 +22,6 @@ import { useMarketplaceActions } from './useMarketplaceActions';
 import { useOpenAppPermissionsReviewModal } from './useOpenAppPermissionsReviewModal';
 import { useOpenIncompatibleModal } from './useOpenIncompatibleModal';
 import WarningModal from '../../../components/WarningModal';
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import type { AddonActionType } from '../AppsList/AddonRequiredModal';
 import AddonRequiredModal from '../AppsList/AddonRequiredModal';
 import IframeModal from '../IframeModal';
@@ -35,6 +34,8 @@ import { warnEnableDisableApp } from '../helpers/warnEnableDisableApp';
 export type AppMenuOption = {
 	id: string;
 	section: number;
+	icon?: IconName;
+	color?: 'status-font-on-warning' | 'status-font-on-danger';
 	content: ReactNode;
 	disabled?: boolean;
 	onClick?: (e?: MouseEvent<HTMLElement>) => void;
@@ -68,14 +69,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 
 	const button = appButtonProps({ ...app, isAdminUser, endUserRequested: false });
 	const buttonLabel = button?.label.replace(' ', '_') as
-		| 'Update'
-		| 'Install'
-		| 'Subscribe'
-		| 'See_Pricing'
-		| 'Try_now'
-		| 'Buy'
-		| 'Request'
-		| 'Requested';
+		'Update' | 'Install' | 'Subscribe' | 'See_Pricing' | 'Try_now' | 'Buy' | 'Request' | 'Requested';
 	const action = button?.action || '';
 
 	const setAppStatus = useEndpoint<'POST', '/apps/:id/status'>('POST', '/apps/:id/status', { id: app.id });
@@ -112,7 +106,9 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const openPermissionModal = useOpenAppPermissionsReviewModal({
 		app,
 		onCancel: closeModal,
-		onConfirm: (permissionsGranted) => installationSuccess(action, permissionsGranted),
+		onConfirm: (permissionsGranted) => {
+			void installationSuccess(action, permissionsGranted);
+		},
 	});
 
 	const appInstallationHandler = useAppInstallationHandler({
@@ -120,7 +116,9 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		isAppPurchased,
 		action,
 		onDismiss: closeModal,
-		onSuccess: installationSuccess,
+		onSuccess: (action, permissionsGranted) => {
+			void installationSuccess(action, permissionsGranted);
+		},
 		setIsPurchased: setPurchased,
 	});
 
@@ -297,7 +295,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	]);
 
 	const incompatibleIconName = useCallback(
-		(app: App, action: 'subscribe' | 'install' | 'update') => {
+		(app: App, action: 'subscribe' | 'install' | 'update'): IconName => {
 			if (!app.versionIncompatible) {
 				if (action === 'update') {
 					return 'refresh';
@@ -340,12 +338,8 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 				isAdminUser && {
 					id: 'subscribe',
 					section: 0,
-					content: (
-						<>
-							<Icon name={incompatibleIconName(app, 'subscribe')} size='x16' mie={4} />
-							{t('Subscription')}
-						</>
-					),
+					icon: incompatibleIconName(app, 'subscribe'),
+					content: t('Subscription'),
 					onClick: handleSubscription,
 				},
 		];
@@ -356,12 +350,8 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 					id: 'acquire',
 					section: 0,
 					disabled: requestedEndUser,
-					content: (
-						<>
-							{isAdminUser && <Icon name={incompatibleIconName(app, 'install')} size='x16' mie={4} />}
-							{t(buttonLabel)}
-						</>
-					),
+					icon: isAdminUser ? incompatibleIconName(app, 'install') : undefined,
+					content: t(buttonLabel),
 					onClick: handleAcquireApp,
 				},
 		];
@@ -376,9 +366,9 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 
 		const doesItReachedTheLimit =
 			!app.migrated &&
-			!appCountQuery?.data?.hasUnlimitedApps &&
-			appCountQuery?.data?.enabled !== undefined &&
-			appCountQuery?.data?.enabled >= appCountQuery?.data?.limit;
+			!appCountQuery.data?.hasUnlimitedApps &&
+			appCountQuery.data?.enabled !== undefined &&
+			appCountQuery.data.enabled >= appCountQuery.data.limit;
 
 		const installedAppOptions = [
 			context !== 'details' &&
@@ -386,12 +376,8 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 				app.installed && {
 					id: 'viewLogs',
 					section: 0,
-					content: (
-						<>
-							<Icon name='desktop-text' size='x16' mie={4} />
-							{t('View_Logs')}
-						</>
-					),
+					icon: 'desktop-text' as const,
+					content: t('View_Logs'),
 					onClick: handleViewLogs,
 				},
 			isAdminUser &&
@@ -399,12 +385,8 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 				!isAppDetailsPage && {
 					id: 'update',
 					section: 0,
-					content: (
-						<>
-							<Icon name={incompatibleIconName(app, 'update')} size='x16' mie={4} />
-							{t('Update')}
-						</>
-					),
+					icon: incompatibleIconName(app, 'update'),
+					content: t('Update'),
 					onClick: handleUpdate,
 				},
 			app.installed &&
@@ -412,36 +394,26 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 				isAppEnabled && {
 					id: 'disable',
 					section: 0,
-					content: (
-						<Box color='status-font-on-warning'>
-							<Icon name='ban' size='x16' mie={4} />
-							{t('Disable')}
-						</Box>
-					),
+					icon: 'ban' as const,
+					color: 'status-font-on-warning' as const,
+					content: t('Disable'),
 					onClick: handleDisable,
 				},
 			isPossibleToEnableApp && {
 				id: 'enable',
 				section: 0,
 				disabled: doesItReachedTheLimit,
-				content: (
-					<>
-						<Icon name='check' size='x16' marginInlineEnd='x4' />
-						{t('Enable')}
-					</>
-				),
+				icon: 'check' as const,
+				content: t('Enable'),
 				onClick: handleEnable,
 			},
 			app.installed &&
 				isAdminUser && {
 					id: 'uninstall',
 					section: 1,
-					content: (
-						<Box color='status-font-on-danger'>
-							<Icon name='trash' size='x16' mie={4} />
-							{t('Uninstall')}
-						</Box>
-					),
+					icon: 'trash' as const,
+					color: 'status-font-on-danger' as const,
+					content: t('Uninstall'),
 					onClick: handleUninstall,
 				},
 		];
@@ -475,9 +447,9 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		handleAcquireApp,
 		isEnterpriseLicense,
 		isAppEnabled,
-		appCountQuery?.data?.hasUnlimitedApps,
-		appCountQuery?.data?.enabled,
-		appCountQuery?.data?.limit,
+		appCountQuery.data?.hasUnlimitedApps,
+		appCountQuery.data?.enabled,
+		appCountQuery.data?.limit,
 		context,
 		handleViewLogs,
 		canUpdate,

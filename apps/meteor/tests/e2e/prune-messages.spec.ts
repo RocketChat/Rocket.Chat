@@ -22,7 +22,7 @@ test.describe('prune-messages', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await page.goto(`/channel/${targetChannel.fname}/clean-history`);
+		await poHomeChannel.gotoChannelCleanHistory(targetChannel.fname as string);
 	});
 
 	test(
@@ -78,7 +78,7 @@ test.describe('prune-messages', () => {
 			await test.step('uncheck files only', async () => {
 				await pruneMessages.labelFilesOnly.click();
 				await pruneMessages.prune();
-				await toastMessage.waitForDisplay({ type: 'success', message: '2 messages pruned' });
+				await toastMessage.waitForDisplay({ type: 'success', message: '3 messages pruned' });
 				await toastMessage.dismissToast();
 				await expect(pruneMessages.labelFilesOnly, 'Checkbox is reset after success').not.toBeChecked();
 			});
@@ -123,9 +123,7 @@ test.describe('prune-messages', () => {
 
 			await test.step('check message list for prune message-attachment', async () => {
 				await expect(content.getLastMessageByFileName('any_file.txt')).not.toBeVisible();
-				await expect(content.lastMessageTextAttachment, 'Prune message attachment replaces file attachment').toHaveText(
-					'File removed by prune',
-				);
+				await expect(content.lastMessageTextAttachment, 'Prune message attachment replaces file attachment').toHaveText('File deleted');
 			});
 		},
 	);
@@ -161,7 +159,7 @@ test.describe('prune-messages', () => {
 			await test.step('check main thread message for prune message-attachment', async () => {
 				await expect(content.getLastThreadMessageByFileName('any_file.txt')).not.toBeVisible();
 				await expect(content.lastThreadMessageTextAttachment, 'Prune message attachment replaces file attachment').toHaveText(
-					'File removed by prune',
+					'File deleted',
 				);
 			});
 		},

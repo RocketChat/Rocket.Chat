@@ -1,5 +1,4 @@
-import type { VideoConference } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
+import { hasJoinedVideoConference, type VideoConference } from '@rocket.chat/core-typings';
 import {
 	Button,
 	Message,
@@ -10,34 +9,23 @@ import {
 	MessageTimestamp,
 	MessageBody,
 	MessageBlock,
-	Box,
-	Palette,
 	IconButton,
 	ButtonGroup,
 	AvatarStack,
+	Stack,
+	Text,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useUserDisplayName } from '@rocket.chat/ui-client';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useTimeAgo, useUserDisplayName } from '@rocket.chat/ui-client';
 import { useVideoConfJoinCall } from '@rocket.chat/ui-video-conf';
-import type { ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
 import { VIDEOCONF_STACK_MAX_USERS } from '../../../../../lib/constants';
 import { useGoToRoom } from '../../../hooks/useGoToRoom';
 
-const VideoConfListItem = ({
-	videoConfData,
-	className = [],
-	reload,
-	...props
-}: {
-	videoConfData: VideoConference;
-	className?: string[];
-	reload: () => void;
-}): ReactElement => {
-	const t = useTranslation();
+const VideoConfListItem = ({ videoConfData, reload }: { videoConfData: VideoConference; reload: () => void }) => {
+	const { t } = useTranslation();
 	const formatDate = useTimeAgo();
 	const joinCall = useVideoConfJoinCall();
 
@@ -51,19 +39,13 @@ const VideoConfListItem = ({
 	} = videoConfData;
 
 	const displayName = useUserDisplayName({ name, username });
-	const joinedUsers = users.filter((user) => user._id !== _id);
+	// Excludes the creator, and also members who never joined: `users` is the conference's membership list, so
+	// someone added to the call is in it whether or not they ever answered. A member with no username is left out
+	// too — the avatar stack has nothing to draw for them, so they took a place in the row and left a gap in it
+	// while still counting towards the total underneath.
+	const joinedUsers = users.filter((user) => user._id !== _id && !!user.username && hasJoinedVideoConference(user));
 
-	const hovered = css`
-		&:hover,
-		&:focus {
-			background: ${Palette.surface['surface-tint']};
-			.rcx-message {
-				background: ${Palette.surface['surface-tint']};
-			}
-		}
-	`;
-
-	const handleJoinConference = useEffectEvent((): void => {
+	const handleJoinConference = useStableCallback((): void => {
 		joinCall(callId);
 		return reload();
 	});
@@ -71,31 +53,23 @@ const VideoConfListItem = ({
 	const goToRoom = useGoToRoom();
 
 	return (
-		<Box
-			color='default'
-			borderBlockEndWidth={1}
-			borderBlockEndColor='stroke-extra-light'
-			borderBlockEndStyle='solid'
-			className={[...className, hovered].filter(Boolean)}
-			pb={8}
-		>
-			<Message {...props}>
-				<MessageLeftContainer>{username && <UserAvatar username={username} size='x36' />}</MessageLeftContainer>
-				<MessageContainer>
-					<MessageHeader>
-						<MessageName title={username}>{displayName}</MessageName>
-						<MessageTimestamp>{formatDate(createdAt)}</MessageTimestamp>
-					</MessageHeader>
-					<MessageBody clamp={2} />
-					<Box display='flex'></Box>
-					<MessageBlock flexDirection='row' alignItems='center'>
+		<Message hoverable={false} insetBlock='md' divided>
+			<MessageLeftContainer>{username && <UserAvatar username={username} size='x36' />}</MessageLeftContainer>
+			<MessageContainer>
+				<MessageHeader>
+					<MessageName title={username}>{displayName}</MessageName>
+					<MessageTimestamp>{formatDate(createdAt)}</MessageTimestamp>
+				</MessageHeader>
+				<MessageBody clamp={2} />
+				<MessageBlock>
+					<Stack direction='row' align='center' gap='x8'>
 						<ButtonGroup>
-							<Button disabled={Boolean(endedAt)} small alignItems='center' display='flex' onClick={handleJoinConference}>
+							<Button disabled={Boolean(endedAt)} size='small' onClick={handleJoinConference}>
 								{endedAt ? t('Call_ended') : t('Join_call')}
 							</Button>
 							{discussionRid && (
 								<IconButton
-									small
+									size='small'
 									icon='discussion'
 									data-drid={discussionRid}
 									title={t('Join_discussion')}
@@ -104,7 +78,7 @@ const VideoConfListItem = ({
 							)}
 						</ButtonGroup>
 						{joinedUsers.length > 0 && (
-							<Box mis={8} fontScale='c1' display='flex' alignItems='center'>
+							<Stack direction='row' align='center' gap='x4'>
 								<AvatarStack>
 									{joinedUsers.map(
 										(user, index) =>
@@ -120,22 +94,18 @@ const VideoConfListItem = ({
 											),
 									)}
 								</AvatarStack>
-								<Box mis={4}>
+								<Text fontScale='c1'>
 									{joinedUsers.length > VIDEOCONF_STACK_MAX_USERS
 										? t('__usersCount__joined', { count: joinedUsers.length - VIDEOCONF_STACK_MAX_USERS })
 										: t('joined')}
-								</Box>
-							</Box>
+								</Text>
+							</Stack>
 						)}
-						{joinedUsers.length === 0 && !endedAt && (
-							<Box mis={8} fontScale='c1'>
-								{t('Be_the_first_to_join')}
-							</Box>
-						)}
-					</MessageBlock>
-				</MessageContainer>
-			</Message>
-		</Box>
+						{joinedUsers.length === 0 && !endedAt && <Text fontScale='c1'>{t('Be_the_first_to_join')}</Text>}
+					</Stack>
+				</MessageBlock>
+			</MessageContainer>
+		</Message>
 	);
 };
 

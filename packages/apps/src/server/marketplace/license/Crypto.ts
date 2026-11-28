@@ -1,0 +1,30 @@
+import { publicDecrypt } from 'node:crypto';
+
+import type { IInternalBridge } from '../../bridges';
+
+export class Crypto {
+	constructor(private readonly internalBridge: IInternalBridge) {}
+
+	public async decryptLicense(content: string): Promise<object> {
+		const publicKeySetting = await this.internalBridge.doGetWorkspacePublicKey();
+
+		if (!publicKeySetting?.value) {
+			throw new Error('Public key not available, cannot decrypt'); // TODO: add custom error?
+		}
+
+		const decoded = publicDecrypt(publicKeySetting.value, Buffer.from(content, 'base64'));
+
+		let license: unknown;
+		try {
+			license = JSON.parse(decoded.toString());
+		} catch {
+			throw new Error('Invalid license provided');
+		}
+
+		if (typeof license !== 'object' || license === null || Array.isArray(license)) {
+			throw new Error('Invalid license provided');
+		}
+
+		return license;
+	}
+}

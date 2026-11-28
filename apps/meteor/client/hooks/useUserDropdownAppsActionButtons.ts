@@ -4,11 +4,11 @@ import type { UseQueryResult } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useUiKitActionManager } from './uikit/useUiKitActionManager';
 import { useAppActionButtons } from './useAppActionButtons';
 import { useApplyButtonAuthFilter } from './useApplyButtonFilters';
-import { UiKitTriggerTimeoutError } from '../../app/ui-message/client/UiKitTriggerTimeoutError';
 import { Utilities } from '../../ee/lib/misc/Utilities';
-import { useUiKitActionManager } from '../uikit/hooks/useUiKitActionManager';
+import { UiKitTriggerTimeoutError } from '../lib/errors/UiKitTriggerTimeoutError';
 
 export const useUserDropdownAppsActionButtons = () => {
 	const result = useAppActionButtons('userDropdownAction');
@@ -34,7 +34,7 @@ export const useUserDropdownAppsActionButtons = () => {
 									actionId: action.actionId,
 									payload: { context: action.context },
 								})
-								.catch(async (reason) => {
+								.catch(async (reason: unknown) => {
 									if (reason instanceof UiKitTriggerTimeoutError) {
 										dispatchToastMessage({
 											type: 'error',

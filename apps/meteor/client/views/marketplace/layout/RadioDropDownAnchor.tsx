@@ -1,0 +1,51 @@
+import type { Button } from '@rocket.chat/fuselage';
+import { Box, Icon } from '@rocket.chat/fuselage';
+import type { ComponentProps, MouseEvent } from 'react';
+import { forwardRef } from 'react';
+
+import type { RadioDropDownGroup } from '../definitions/RadioDropDownDefinitions';
+
+type RadioDropdownAnchorProps = {
+	onClick: (event: MouseEvent<HTMLElement>) => void;
+	group: RadioDropDownGroup;
+} & Omit<ComponentProps<typeof Button>, 'onClick'>;
+
+/**
+ * The button that opens a marketplace radio filter, showing the option it has selected.
+ */
+const RadioDropDownAnchor = forwardRef<HTMLElement, RadioDropdownAnchorProps>(function RadioDropDownAnchor(
+	{ onClick, group, ...props },
+	ref,
+) {
+	const selected = group?.items.find((item) => item.checked)?.label;
+
+	return (
+		<Box
+			is='button'
+			ref={ref}
+			onClick={onClick}
+			alignItems='center'
+			backgroundColor='light'
+			borderColor='light'
+			borderRadius='medium'
+			borderWidth='default'
+			color='secondary-info'
+			display='flex'
+			flexGrow={1}
+			flexShrink={1}
+			fontScale='p2'
+			height='x40'
+			justifyContent='space-between'
+			minWidth='x144'
+			paddingInlineEnd='x8'
+			paddingInlineStart='x12'
+			rcx-input-box
+			{...props}
+		>
+			{selected}
+			<Icon name='chevron-down' size='x20' />
+		</Box>
+	);
+});
+
+export default RadioDropDownAnchor;

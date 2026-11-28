@@ -1,14 +1,13 @@
-import type { IncomingMessage, ServerResponse } from 'http';
+import type { IncomingMessage, ServerResponse } from 'node:http';
 
 import type { IIncomingMessage, IRoom, IUpload } from '@rocket.chat/core-typings';
 import { Avatars, Rooms } from '@rocket.chat/models';
 import type { NextFunction } from 'connect';
-import { Cookies } from 'meteor/ostrio:cookies';
+import { parseCookie } from 'cookie';
 
 import { serveSvgAvatarInRequestedFormat, wasFallbackModified, setCacheAndDispositionHeaders, serveAvatarFile } from './utils';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
-const cookie = new Cookies();
 const getRoomAndAvatarFile = async (roomId: IRoom['_id']): Promise<{ room: IRoom; file: IUpload | null } | void> => {
 	const room = await Rooms.findOneById(roomId);
 	if (!room) {
@@ -54,7 +53,7 @@ export const roomAvatar = async function (request: IncomingMessage, res: ServerR
 		return;
 	}
 
-	const uid = req.headers.cookie && cookie.get('rc_uid', req.headers.cookie);
+	const { rc_uid: uid } = parseCookie(req.headers.cookie ?? '');
 	const roomName = await roomCoordinator.getRoomName(room.t, room, uid);
 
 	serveSvgAvatarInRequestedFormat({ nameOrUsername: roomName, req, res });

@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useFormState, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import DatePicker from './DatePicker';
@@ -25,12 +25,7 @@ type TimestampPickerProps = {
 
 export const TimestampPickerModal = ({ onClose, composer }: TimestampPickerProps) => {
 	const { t } = useTranslation();
-	const {
-		control,
-		handleSubmit,
-		watch,
-		formState: { isValid },
-	} = useForm<TimestampForm>({
+	const { control, handleSubmit } = useForm<TimestampForm>({
 		defaultValues: {
 			date: new Date(),
 			format: 'f',
@@ -38,10 +33,11 @@ export const TimestampPickerModal = ({ onClose, composer }: TimestampPickerProps
 		},
 		mode: 'onChange',
 	});
+	const { isValid } = useFormState({ control });
 
-	const currentDate = watch('date');
-	const currentFormat = watch('format');
-	const currentTimezone = watch('timezone');
+	const currentDate = useWatch({ control, name: 'date' });
+	const currentFormat = useWatch({ control, name: 'format' });
+	const currentTimezone = useWatch({ control, name: 'timezone' });
 
 	const onSubmit = (data: TimestampForm) => {
 		const timestamp = dateToISOString(data.date, data.timezone);
@@ -64,11 +60,11 @@ export const TimestampPickerModal = ({ onClose, composer }: TimestampPickerProps
 			confirmDisabled={!isValid}
 		>
 			<Box display='flex' flexDirection='column'>
+				<Preview date={currentDate} format={currentFormat} timezone={currentTimezone} />
 				<Controller name='date' control={control} render={({ field }) => <DatePicker {...field} />} />
 				<Controller name='date' control={control} render={({ field }) => <TimePicker {...field} />} />
 				<Controller name='format' control={control} render={({ field }) => <FormatSelector {...field} />} />
 				<Controller name='timezone' control={control} render={({ field }) => <TimezoneSelector {...field} />} />
-				<Preview date={currentDate} format={currentFormat} timezone={currentTimezone} />
 			</Box>
 		</GenericModal>
 	);

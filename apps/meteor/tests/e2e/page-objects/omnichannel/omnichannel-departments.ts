@@ -1,27 +1,18 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelAdmin } from './omnichannel-admin';
+import { OmnichannelAdmin, OmnichannelSectionsHref } from './omnichannel-admin';
+import { expect } from '../../utils/test';
 import { MenuOptions } from '../fragments';
 import { Listbox } from '../fragments/listbox';
 import { OmnichannelUpsellDepartmentsModal, ConfirmDeleteDepartmentModal } from '../fragments/modals';
 import { Table } from '../fragments/table';
 
-class OmnichannelDepartmentsTable extends Table {
-	constructor(page: Page) {
-		super(page.getByRole('table', { name: 'Departments' }));
-	}
-}
-
-class OmnichannelDepartmentAgentsTable extends Table {
-	constructor(page: Page) {
-		super(page.getByRole('table', { name: 'Agents' }));
-	}
-}
-
 export class OmnichannelDepartments extends OmnichannelAdmin {
-	readonly departmentsTable: OmnichannelDepartmentsTable;
+	protected readonly route = OmnichannelSectionsHref.departments;
 
-	readonly agentsTable: OmnichannelDepartmentAgentsTable;
+	protected readonly title = 'Departments';
+
+	readonly agentsTable: Table;
 
 	readonly upsellDepartmentsModal: OmnichannelUpsellDepartmentsModal;
 
@@ -33,12 +24,16 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 
 	constructor(page: Page) {
 		super(page);
-		this.departmentsTable = new OmnichannelDepartmentsTable(page);
-		this.agentsTable = new OmnichannelDepartmentAgentsTable(page);
+		this.agentsTable = new Table(page.getByRole('table', { name: 'Agents' }));
 		this.upsellDepartmentsModal = new OmnichannelUpsellDepartmentsModal(page);
 		this.listbox = new Listbox(page);
 		this.menOptions = new MenuOptions(page);
 		this.deleteModal = new ConfirmDeleteDepartmentModal(page);
+	}
+
+	override async search(text: string) {
+		await super.search(text);
+		await this.table.waitForSettled(this.emptyState);
 	}
 
 	async createNew() {
@@ -73,8 +68,14 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 		return this.page.getByRole('tab', { name: 'Archived' });
 	}
 
+	async openArchivedTab() {
+		await this.tabArchivedDepartments.click();
+		await expect(this.tabArchivedDepartments).toHaveAttribute('aria-selected', 'true');
+		await this.table.waitForSettled(this.emptyState);
+	}
+
 	getDepartmentMenuByName(name: string) {
-		return this.departmentsTable.findRowByName(name).getByRole('button', { name: 'Options' });
+		return this.table.findRowByName(name).getByRole('button', { name: 'Options' });
 	}
 
 	get menuEditOption() {
@@ -100,7 +101,7 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 	}
 
 	get inputUnit(): Locator {
-		return this.page.getByLabel('Unit').getByRole('textbox', { name: 'Select an option' });
+		return this.page.getByRole('textbox', { name: 'Unit' });
 	}
 
 	btnTag(tagName: string) {
@@ -113,11 +114,6 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 
 	findOption(optionText: string) {
 		return this.listbox.getOption(optionText);
-	}
-
-	async selectUnit(unitName: string) {
-		await this.inputUnit.click();
-		await this.listbox.selectOption(unitName);
 	}
 
 	get inputAgents() {

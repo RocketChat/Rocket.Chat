@@ -1,10 +1,15 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import dompurify from 'dompurify';
 
 import MarkdownText, { supportedURISchemes } from './MarkdownText';
-
 import '@testing-library/jest-dom';
+import { emoji } from '../lib/emoji/lib';
+import { getMarkdownParserLimit } from '../lib/getMarkdownParserLimit';
+
+jest.mock('../lib/getMarkdownParserLimit');
+
+const getMarkdownParserLimitMock = jest.mocked(getMarkdownParserLimit);
 
 const MOCKED_BASE_URI = 'http://localhost/';
 
@@ -323,17 +328,10 @@ describe('links handling', () => {
 		expect(anchorElement.tagName).toBe('A');
 		expect(anchorElement).toHaveTextContent('Test Link');
 
-		if (expectedHref !== undefined) expect(anchorElement).toHaveAttribute('href', expectedHref);
-		else expect(anchorElement).not.toHaveAttribute('href');
-
-		if (expectedRel !== undefined) expect(anchorElement).toHaveAttribute('rel', expectedRel);
-		else expect(anchorElement).not.toHaveAttribute('rel');
-
-		if (expectedTarget !== undefined) expect(anchorElement).toHaveAttribute('target', expectedTarget);
-		else expect(anchorElement).not.toHaveAttribute('target');
-
-		if (expectedTitleAttribute !== undefined) expect(anchorElement).toHaveAttribute('title', expectedTitleAttribute);
-		else expect(anchorElement).not.toHaveAttribute('title');
+		expect(anchorElement.getAttribute('href') ?? undefined).toBe(expectedHref);
+		expect(anchorElement.getAttribute('rel') ?? undefined).toBe(expectedRel);
+		expect(anchorElement.getAttribute('target') ?? undefined).toBe(expectedTarget);
+		expect(anchorElement.getAttribute('title') ?? undefined).toBe(expectedTitleAttribute);
 	});
 
 	describe('multiple links', () => {
@@ -355,22 +353,14 @@ describe('links handling', () => {
 				expect(anchorElement).toHaveTextContent(text);
 				expect(anchorElement).toHaveAttribute('href', link);
 
-				if (scheme === 'mailto') {
-					expect(anchorElement).toHaveAttribute('rel', 'nofollow noopener noreferrer');
-					expect(anchorElement).toHaveAttribute('target', '_blank');
-					expect(anchorElement).toHaveAttribute('href', link);
-					expect(anchorElement).toHaveAttribute('title', link);
-					return;
-				}
+				const isMailto = scheme === 'mailto';
+				const external = isMailto || isExternal(link);
+				const externalTitle = isMailto ? link : '';
+				const expectedTitle = external ? externalTitle : title;
 
-				if (isExternal(link)) {
-					expect(anchorElement).toHaveAttribute('rel', 'nofollow noopener noreferrer');
-					expect(anchorElement).toHaveAttribute('target', '_blank');
-					expect(anchorElement).toHaveAttribute('title', '');
-					return;
-				}
-
-				expect(anchorElement).toHaveAttribute('title', title);
+				expect(anchorElement.getAttribute('rel') ?? undefined).toBe(external ? 'nofollow noopener noreferrer' : undefined);
+				expect(anchorElement.getAttribute('target') ?? undefined).toBe(external ? '_blank' : undefined);
+				expect(anchorElement).toHaveAttribute('title', expectedTitle);
 			});
 		});
 
@@ -497,5 +487,113 @@ describe('DOMPurify hook registration', () => {
 		expect(addHookSpy).toHaveBeenCalledTimes(0);
 
 		addHookSpy.mockRestore();
+	});
+});
+
+describe('parser limit handling', () => {
+	beforeEach(() => {
+		getMarkdownParserLimitMock.mockClear();
+	});
+
+	it('should render plain text without parsing when content exceeds the limit', () => {
+		getMarkdownParserLimitMock.mockReturnValue(5);
+
+		const longContent = '**this should not be bold** because it exceeds the limit';
+		render(<MarkdownText content={longContent} variant='document' />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		const element = screen.getByText(longContent);
+		expect(element).toBeInTheDocument();
+		expect(element.tagName).not.toBe('STRONG');
+	});
+
+	it('should render parsed markdown when content is within the limit', () => {
+		getMarkdownParserLimitMock.mockReturnValue(Infinity);
+
+		const content = '**bold text**';
+		render(<MarkdownText content={content} variant='document' />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		const boldText = screen.getByText('bold text');
+		expect(boldText).toBeInTheDocument();
+		expect(boldText.tagName).toBe('STRONG');
+	});
+
+	it('should render parsed markdown when content length equals the limit', () => {
+		const content = '**hi**';
+
+		getMarkdownParserLimitMock.mockReturnValue(content.length);
+
+		render(<MarkdownText content={content} variant='document' />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		const parsedText = screen.getByText('hi');
+		expect(parsedText).toBeInTheDocument();
+		expect(parsedText.tagName).toBe('STRONG');
+	});
+});
+
+describe('emoji parsing', () => {
+	// Minimal stand-in for the native emoji package that turns the `:smile:`
+	// shortcode into the same markup the real renderer produces.
+	const renderSmile = (text: string): string => text.replace(/:smile:/g, '<span class="emoji" title=":smile:">😄</span>');
+
+	beforeAll(() => {
+		emoji.packages.native = {
+			emojiCategories: [],
+			emojisByCategory: {},
+			toneList: {},
+			render: renderSmile,
+			renderPicker: () => undefined,
+		};
+	});
+
+	afterAll(() => {
+		delete emoji.packages.native;
+	});
+
+	beforeEach(() => {
+		getMarkdownParserLimitMock.mockReturnValue(Infinity);
+	});
+
+	it('should render emoji shortcodes that appear in visible text', () => {
+		const { container } = render(<MarkdownText content='hello :smile:' variant='document' parseEmoji />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		const emojiElement = screen.getByTitle(':smile:');
+		expect(emojiElement).toBeInTheDocument();
+		expect(emojiElement).toHaveAttribute('title', ':smile:');
+		expect(emojiElement).toHaveTextContent('😄');
+		expect(container).not.toHaveTextContent(':smile:');
+	});
+
+	it('should not corrupt a link whose href contains an emoji shortcode', () => {
+		render(<MarkdownText content='[docs](https://example.test/:smile:)' variant='document' parseEmoji />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		const anchorElement = screen.getByText('docs');
+		expect(anchorElement.tagName).toBe('A');
+		// The shortcode inside the href must stay untouched instead of being replaced by an emoji span
+		expect(anchorElement).toHaveAttribute('href', 'https://example.test/:smile:');
+		expect(within(anchorElement).queryByTitle(':smile:')).not.toBeInTheDocument();
+	});
+
+	it('should render emoji in text while keeping a shortcode inside an href intact', () => {
+		render(<MarkdownText content=':smile: [docs](https://example.test/:smile:)' variant='document' parseEmoji />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		const anchorElement = screen.getByText('docs');
+		expect(anchorElement).toHaveAttribute('href', 'https://example.test/:smile:');
+		expect(within(anchorElement).queryByTitle(':smile:')).not.toBeInTheDocument();
+
+		const emojiElement = screen.getByTitle(':smile:');
+		expect(emojiElement).toBeInTheDocument();
+		expect(emojiElement).toHaveTextContent('😄');
 	});
 });

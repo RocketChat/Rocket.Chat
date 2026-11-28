@@ -1,28 +1,48 @@
-import { SidebarV2 } from '@rocket.chat/fuselage';
-import { useUserPreference } from '@rocket.chat/ui-contexts';
+import { Sidebar as FuselageSidebar } from '@rocket.chat/fuselage';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
+import { useLayout, useUserPreference } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import Inbox from './Inbox';
 import SidebarRoomList from './RoomList';
 import SidebarFooter from './footer';
 import BannerSection from './sections/BannerSection';
+import NowPlayingSection from './sections/NowPlayingSection';
 
 const Sidebar = () => {
 	const { t } = useTranslation();
-	const sidebarViewMode = useUserPreference('sidebarViewMode');
+	const sidebarViewMode = useUserPreference<string>('sidebarViewMode');
 	const sidebarHideAvatar = !useUserPreference('sidebarDisplayAvatar');
+	const {
+		isEmbedded,
+		sidebar: { shouldToggle },
+	} = useLayout();
 
 	return (
-		<SidebarV2
+		<FuselageSidebar
 			aria-label={t('Sidebar')}
-			className={['rcx-sidebar--main', `rcx-sidebar rcx-sidebar--${sidebarViewMode}`, sidebarHideAvatar && 'rcx-sidebar--hide-avatar']
+			className={[
+				'rcx-sidebar--main',
+				'sidebar-region-item',
+				sidebarViewMode && `rcx-sidebar--${sidebarViewMode}`,
+				sidebarHideAvatar && 'rcx-sidebar--hide-avatar',
+			]
 				.filter(Boolean)
 				.join(' ')}
 		>
 			<BannerSection />
-			<SidebarRoomList />
+			<FeaturePreview feature='sidebarRail' disabled={shouldToggle || isEmbedded}>
+				<FeaturePreviewOn>
+					<Inbox />
+				</FeaturePreviewOn>
+				<FeaturePreviewOff>
+					<SidebarRoomList />
+				</FeaturePreviewOff>
+			</FeaturePreview>
+			<NowPlayingSection />
 			<SidebarFooter />
-		</SidebarV2>
+		</FuselageSidebar>
 	);
 };
 

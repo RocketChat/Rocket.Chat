@@ -1,0 +1,29 @@
+@use '../../styles/colors.scss';
+@use '../../styles/primitives/link.scss';
+
+.rcx-link-button {
+	@extend %link;
+
+	display: inline;
+
+	margin: 0;
+	padding: 0;
+
+	cursor: pointer;
+	text-decoration: underline;
+
+	letter-spacing: inherit;
+
+	border: 0;
+	background: none;
+
+	font: inherit;
+	appearance: none;
+
+	&:disabled {
+		cursor: default;
+		text-decoration: none;
+
+		color: colors.font(disabled);
+	}
+}

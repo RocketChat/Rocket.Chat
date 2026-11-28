@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useGetMessageByID } from '../../../../views/room/contextualBar/Threads/hooks/useGetMessageByID';
 import MarkdownText from '../../../MarkdownText';
 
-type ReactionTooltipProps = {
+export type ReactionTooltipProps = {
 	emojiName: string;
 	usernames: string[];
 	username: string | undefined;
@@ -65,7 +65,9 @@ const ReactionTooltip = ({ emojiName, usernames, mine, messageId, showRealName, 
 
 			if (username) {
 				const index = reactions[emojiName].usernames.indexOf(username);
-				index >= 0 && reactions[emojiName].names?.splice(index, 1);
+				if (index >= 0) {
+					reactions[emojiName].names?.splice(index, 1);
+				}
 				return (reactions[emojiName].names || usernames).filter(Boolean);
 			}
 
@@ -78,10 +80,10 @@ const ReactionTooltip = ({ emojiName, usernames, mine, messageId, showRealName, 
 	if (isLoading) {
 		return (
 			<>
-				<Skeleton width='x200' variant='text' backgroundColor='surface-light' />
-				<Skeleton width='x200' variant='text' backgroundColor='surface-light' />
-				{usernames.length > 5 && <Skeleton width='x200' variant='text' backgroundColor='surface-light' />}
-				{usernames.length > 8 && <Skeleton width='x200' variant='text' backgroundColor='surface-light' />}
+				<Skeleton width='x200' variant='text' inverted />
+				<Skeleton width='x200' variant='text' inverted />
+				{usernames.length > 5 && <Skeleton width='x200' variant='text' inverted />}
+				{usernames.length > 8 && <Skeleton width='x200' variant='text' inverted />}
 			</>
 		);
 	}

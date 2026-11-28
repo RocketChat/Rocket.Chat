@@ -1,0 +1,75 @@
+import { createContext, useContext } from 'react';
+
+/**
+ * Describes a single audio track owned by the shared player.
+ * The descriptor is self-contained so the player keeps working after the message
+ * (and the room) that originated it has been unmounted — the underlying `<audio>`
+ * element lives in the provider and is never recreated on navigation.
+ */
+export type PersistentAudioTrack = {
+	/** Stable identity of the track, e.g. `${mid}:${url}`. */
+	id: string;
+	/** Resolved, ready-to-play media URL. */
+	url: string;
+	/** MIME type of the media, when known. */
+	mediaType?: string;
+	/** File name shown in the player. */
+	title: string;
+	/** File size in bytes, when known. */
+	size?: number;
+	/** Room the audio was sent in (enables "jump back to conversation"). */
+	rid?: string;
+	/** Message the audio belongs to (enables jump-to-message). */
+	mid?: string;
+	/** Username of the sender (drives the avatar). */
+	username?: string;
+	/** Display name of the sender. */
+	name?: string;
+};
+
+export type MediaPlayerContextValue = {
+	track: PersistentAudioTrack | null;
+	playing: boolean;
+	currentTime: number;
+	duration: number;
+	playbackRate: number;
+	/** The active track is fetching data and can't play yet. */
+	loading: boolean;
+	/** The active track failed to load. */
+	error: boolean;
+	/** Reloads the active track after an error and plays it. */
+	retry: () => void;
+	/** Loads (only if a different track, starting at `startTime` seconds) and plays the given track in the shared element. */
+	play: (track: PersistentAudioTrack, startTime?: number) => void;
+	/** Toggles play/pause for the active track. No-op when no track is active. */
+	toggle: () => void;
+	/** Seeks the active track to `time` seconds. */
+	seek: (time: number) => void;
+	/** Cycles the playback rate 1x → 1.5x → 2x → 1x. */
+	cyclePlaybackRate: () => void;
+	/** Stops playback and clears the active track. */
+	close: () => void;
+	/** The id of the track currently owned by the shared element, or null. */
+	activeTrackId: string | null;
+};
+
+const noop = () => undefined;
+
+export const MediaPlayerContext = createContext<MediaPlayerContextValue>({
+	track: null,
+	playing: false,
+	currentTime: 0,
+	duration: 0,
+	playbackRate: 1,
+	loading: false,
+	error: false,
+	retry: noop,
+	play: noop,
+	toggle: noop,
+	seek: noop,
+	cyclePlaybackRate: noop,
+	close: noop,
+	activeTrackId: null,
+});
+
+export const useMediaPlayer = (): MediaPlayerContextValue => useContext(MediaPlayerContext);

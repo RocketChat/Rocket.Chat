@@ -1,29 +1,28 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box, CardGroup } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import { CardGroup, Stack, Text } from '@rocket.chat/fuselage';
 
 import AppRow from './AppRow';
 
-type AppsListProps = {
+export type AppsListProps = {
 	apps: App[];
 	title?: string;
 	appsListId: string;
 };
 
-const AppsList = ({ apps, title, appsListId }: AppsListProps): ReactElement => {
+const AppsList = ({ apps, title, appsListId }: AppsListProps) => {
 	return (
-		<Box mbe={16}>
+		<Stack gap='x20'>
 			{title && (
-				<Box is='h2' id={appsListId} fontScale='h3' color='default' mbe={20}>
+				<Text is='h2' id={appsListId} fontScale='h3' color='default'>
 					{title}
-				</Box>
+				</Text>
 			)}
 			<CardGroup vertical stretch aria-labelledby={appsListId} role='list'>
 				{apps.map((app) => (
 					<AppRow key={app.id} {...app} />
 				))}
 			</CardGroup>
-		</Box>
+		</Stack>
 	);
 };
 

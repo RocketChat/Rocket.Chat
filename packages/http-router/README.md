@@ -1,11 +1,11 @@
 # Rocket.Chat HTTP Router
 
-This package provides a flexible HTTP routing solution for Rocket.Chat services, built on top of Hono and Express.
+This package provides a flexible HTTP routing solution for Rocket.Chat services, built on top of Hono.
 
 ## Features
 
 - Type-safe route definitions with TypeScript
-- Express compatibility
+- Express and connect apps as middlewares
 - Request validation via JSON Schema
 - Response validation
 - Middleware support
@@ -21,8 +21,7 @@ yarn add @rocket.chat/http-router
 ## Usage
 
 ```typescript
-import { Router } from '@rocket.chat/http-router';
-import express from 'express';
+import { Router, createRootApp, mountRouter } from '@rocket.chat/http-router';
 
 // Create a new router
 const api = new Router('api');
@@ -73,9 +72,9 @@ api.get(
   }
 );
 
-// Create an Express app and use the router
-const app = express();
-app.use(api.router);
+// Mount the router on a root app
+const app = createRootApp();
+mountRouter(app, api);
 ```
 
 ## Middleware
@@ -106,23 +105,23 @@ api.get('protected-route', {}, authMiddleware, async (c) => {
 });
 ```
 
-## Express Integration
+## Serving
 
-This router is designed to work seamlessly with Express applications:
+A root app answers requests on a Node HTTP server. Mount routers on it, and run Express or connect apps as middlewares with `nodeHandler`:
 
 ```typescript
 import express from 'express';
-import { Router } from '@rocket.chat/http-router';
+import { Router, createNodeServer, createRootApp, mountRouter, nodeHandler } from '@rocket.chat/http-router';
 
-const app = express();
-const api = new Router('api');
+const app = createRootApp();
+const api = new Router('/api');
 
 // Define routes...
 
-// Use the router with Express
-app.use(api.router);
+mountRouter(app, api);
+app.use('/legacy/*', nodeHandler(express().get('/legacy/ping', (_req, res) => res.send('pong'))));
 
-app.listen(3000, () => {
+createNodeServer(app).listen(3000, () => {
   console.log('Server running on port 3000');
 });
 ```

@@ -1,0 +1,75 @@
+import type { IUserPhoneNumber } from '@rocket.chat/core-typings';
+import { MAX_USER_PHONES } from '@rocket.chat/core-typings';
+import { Box, Button, Callout } from '@rocket.chat/fuselage';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffect, useId, useRef } from 'react';
+import { useVisuallyHidden } from 'react-aria';
+import type { Control } from 'react-hook-form';
+import { useFieldArray } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+
+import PhoneNumberFieldRow from './PhoneNumberFieldRow';
+import type { PhoneNumbersFormValues } from './phoneNumbers';
+import { EMPTY_PHONE } from './phoneNumbers';
+
+type PhoneNumberFieldListProps<T extends { phones?: IUserPhoneNumber[] }> = {
+	control: Control<T>;
+	className?: string;
+};
+
+// Edits the form's `phones` array, always keeping at least one (possibly blank) row on screen.
+const PhoneNumberFieldList = <T extends { phones?: IUserPhoneNumber[] }>({ control, className }: PhoneNumberFieldListProps<T>) => {
+	const { t } = useTranslation();
+	const { visuallyHiddenProps } = useVisuallyHidden();
+	const listId = useId();
+
+	const phonesControl = control as unknown as Control<PhoneNumbersFormValues>;
+	const { fields, append, remove, update } = useFieldArray({ control: phonesControl, name: 'phones' });
+
+	const listRef = useRef<HTMLUListElement>(null);
+	const focusIndexAfterRemove = useRef<number | null>(null);
+
+	useEffect(() => {
+		const index = focusIndexAfterRemove.current;
+		if (index === null) {
+			return;
+		}
+
+		focusIndexAfterRemove.current = null;
+		listRef.current?.querySelector<HTMLInputElement>(`input[name="phones.${index}.number"]`)?.focus();
+	}, [fields]);
+
+	const isAtPhonesLimit = fields.length >= MAX_USER_PHONES;
+
+	const handleAdd = useStableCallback(() => append({ ...EMPTY_PHONE }));
+
+	const handleRemove = useStableCallback((index: number) => {
+		if (fields.length > 1) {
+			focusIndexAfterRemove.current = Math.min(index, fields.length - 2);
+			remove(index);
+			return;
+		}
+
+		focusIndexAfterRemove.current = index;
+		update(index, { ...EMPTY_PHONE });
+	});
+
+	return (
+		<Box is='fieldset' className={className} display='flex' flexDirection='column' gap={16} width='100%'>
+			<legend {...visuallyHiddenProps}>{t('Phone_Numbers')}</legend>
+			<Box is='ul' ref={listRef} id={listId} display='flex' flexDirection='column' gap={16}>
+				{fields.map((field, index) => (
+					<PhoneNumberFieldRow key={field.id} control={phonesControl} index={index} onRemove={handleRemove} className={className} />
+				))}
+			</Box>
+			{isAtPhonesLimit && <Callout type='info'>{t('Phone_numbers_limit', { count: MAX_USER_PHONES })}</Callout>}
+			<Box>
+				<Button icon='plus' aria-controls={listId} onClick={handleAdd} disabled={isAtPhonesLimit}>
+					{t('Add_number')}
+				</Button>
+			</Box>
+		</Box>
+	);
+};
+
+export default PhoneNumberFieldList;

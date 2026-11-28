@@ -1,15 +1,14 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box, Button, Tag, Margins, Icon } from '@rocket.chat/fuselage';
+import { Button, Icon, Tag, Stack } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
+import { useHasLicenseModule, useIsEnterprise } from '@rocket.chat/ui-client';
 import { useRouteParameter, usePermission, useSetModal } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useCallback, useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import semver from 'semver';
 
 import AppStatusPriceDisplay from './AppStatusPriceDisplay';
-import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
-import { useIsEnterprise } from '../../../../../hooks/useIsEnterprise';
+import AppAcquireAction from './layout/AppAcquireAction';
 import AddonRequiredModal from '../../../AppsList/AddonRequiredModal';
 import type { appStatusSpanResponseProps } from '../../../helpers';
 import { appButtonProps, appMultiStatusProps } from '../../../helpers';
@@ -17,18 +16,18 @@ import type { AppInstallationHandlerParams } from '../../../hooks/useAppInstalla
 import { useAppInstallationHandler } from '../../../hooks/useAppInstallationHandler';
 import { useMarketplaceActions } from '../../../hooks/useMarketplaceActions';
 
-type AppStatusProps = {
+export type AppStatusProps = {
 	app: App;
 	showStatus?: boolean;
 	isAppDetailsPage: boolean;
 	installed?: boolean;
 };
 
-const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...props }: AppStatusProps): ReactElement => {
+const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed }: AppStatusProps) => {
 	const { t } = useTranslation();
 	const [endUserRequested, setEndUserRequested] = useState(false);
 	const [loading, setLoading] = useSafely(useState(false));
-	const [isAppPurchased, setPurchased] = useSafely(useState(!!app?.isPurchased));
+	const [isAppPurchased, setPurchased] = useSafely(useState(!!app.isPurchased));
 	const setModal = useSetModal();
 	const isAdminUser = usePermission('manage-apps');
 	const context = useRouteParameter('context');
@@ -36,8 +35,8 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const button = appButtonProps({ ...app, isAdminUser, endUserRequested });
 	const isAppRequestsPage = context === 'requested';
-	const shouldShowPriceDisplay = isAppDetailsPage && button && !app.isEnterpriseOnly;
-	const canUpdate = installed && app?.version && app?.marketplaceVersion && semver.lt(app?.version, app?.marketplaceVersion);
+	const shouldShowPriceDisplay = isAppDetailsPage && button && !app.isEnterpriseOnly && !installed;
+	const canUpdate = installed && app.version && app.marketplaceVersion && semver.lt(app.version, app.marketplaceVersion);
 
 	const { data } = useIsEnterprise();
 	const isEnterprise = data?.isEnterprise ?? false;
@@ -47,8 +46,8 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const statuses = appMultiStatusProps(app, isAppDetailsPage, context || '', isEnterprise);
 
-	const totalSeenRequests = app?.appRequestStats?.totalSeen;
-	const totalUnseenRequests = app?.appRequestStats?.totalUnseen;
+	const totalSeenRequests = app.appRequestStats?.totalSeen;
+	const totalUnseenRequests = app.appRequestStats?.totalUnseen;
 
 	const action = button?.action;
 
@@ -103,19 +102,11 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 			return 'secondary-danger';
 		}
 
-		return undefined;
-	};
-
-	const getStatusFontColor = (status: appStatusSpanResponseProps) => {
 		if (status.type === 'warning') {
-			return 'status-font-on-warning';
+			return 'secondary-warning';
 		}
 
-		if (status.type === 'danger') {
-			return 'status-font-on-danger';
-		}
-
-		return 'font-default';
+		return undefined;
 	};
 
 	const handleAppRequestsNumber = (status: appStatusSpanResponseProps) => {
@@ -137,45 +128,40 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	};
 
 	return (
-		<Box {...props} display='flex' alignItems='center' mie={8}>
+		<Stack direction='row' align='center'>
 			{button && isAppDetailsPage && (!installed || canUpdate) && (
-				<Box
-					display='flex'
-					flexDirection='row'
-					alignItems='center'
-					justifyContent='center'
-					borderRadius='x4'
-					invisible={!showStatus && !loading}
-				>
+				<AppAcquireAction withPrice={!!shouldShowPriceDisplay} hidden={!showStatus && !loading}>
 					<Button
 						icon={button.icon}
-						primary
-						small
+						variant='primary'
+						size='small'
 						loading={loading}
-						disabled={action === 'request' && (app?.requestedEndUser || endUserRequested)}
+						disabled={action === 'request' && (app.requestedEndUser || endUserRequested)}
 						onClick={handleAcquireApp}
-						mie={8}
 					>
 						{t(button.label)}
 					</Button>
 
-					{shouldShowPriceDisplay && !installed && (
+					{shouldShowPriceDisplay && (
 						<AppStatusPriceDisplay purchaseType={purchaseType} pricingPlans={pricingPlans} price={price} showType={false} />
 					)}
-				</Box>
+				</AppAcquireAction>
 			)}
 
-			{statuses?.map((status, index) => (
-				<Margins inlineEnd={index !== statuses.length - 1 ? 8 : undefined} key={index}>
-					<Tag data-qa-type='app-status-tag' variant={getStatusVariant(status)} title={status.tooltipText ? status.tooltipText : ''}>
-						<Box display='flex' color={getStatusFontColor(status)} alignItems='center'>
-							{status.icon && <Icon name={status.icon} size={16} mie={2} />}
-							{handleAppRequestsNumber(status)} {t(status.label)}
-						</Box>
+			<Stack direction='row' align='center' gap='x8'>
+				{statuses?.map((status, index) => (
+					<Tag
+						key={index}
+						data-qa-type='app-status-tag'
+						variant={getStatusVariant(status)}
+						title={status.tooltipText ? status.tooltipText : ''}
+						icon={status.icon && <Icon name={status.icon} size='x16' />}
+					>
+						{handleAppRequestsNumber(status)} {t(status.label)}
 					</Tag>
-				</Margins>
-			))}
-		</Box>
+				))}
+			</Stack>
+		</Stack>
 	);
 };
 

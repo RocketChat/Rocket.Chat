@@ -1,18 +1,19 @@
 import { Button, ButtonGroup, Table, TableHead, TableCell, TableRow, TableBody } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import ImportOperationSummary from './ImportOperationSummary';
 import ImportOperationSummarySkeleton from './ImportOperationSummarySkeleton';
-import { ProgressStep } from '../../../../app/importer/lib/ImporterProgressStep';
+import { ProgressStep } from '../../../../lib/importer/ImporterProgressStep';
 
 // TODO: review inner logic
 function ImportHistoryPage() {
 	const queryClient = useQueryClient();
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const downloadPendingFiles = useEndpoint('POST', '/v1/downloadPendingFiles');
@@ -107,7 +108,7 @@ function ImportHistoryPage() {
 		<Page>
 			<PageHeader title={t('Import')}>
 				<ButtonGroup>
-					<Button primary disabled={isLoading} onClick={handleNewImportClick}>
+					<Button variant='primary' disabled={isLoading} onClick={handleNewImportClick}>
 						{t('Import_New_File')}
 					</Button>
 					{hasAnySuccessfulImport && (
@@ -131,24 +132,20 @@ function ImportHistoryPage() {
 				</ButtonGroup>
 			</PageHeader>
 			<PageScrollableContentWithShadow>
-				<Table fixed data-qa-id='ImportTable'>
+				<Table
+					fixed
+					columns={small ? ['x140', 'auto'] : ['x140', 'auto', 'auto', 'auto', 'x80', 'x80', 'x80', 'x80', 'x80']}
+					data-qa-id='ImportTable'
+				>
 					<TableHead>
 						<TableRow>
-							<TableCell is='th' rowSpan={2} width='x140'>
-								{t('Import_Type')}
-							</TableCell>
-							<TableCell is='th' rowSpan={2}>
-								{t('Last_Updated')}
-							</TableCell>
+							<TableCell rowSpan={2}>{t('Import_Type')}</TableCell>
+							<TableCell rowSpan={2}>{t('Last_Updated')}</TableCell>
 							{!small && (
 								<>
-									<TableCell is='th' rowSpan={2}>
-										{t('Last_Status')}
-									</TableCell>
-									<TableCell is='th' rowSpan={2}>
-										{t('File')}
-									</TableCell>
-									<TableCell is='th' align='center' colSpan={4} width='x320'>
+									<TableCell rowSpan={2}>{t('Last_Status')}</TableCell>
+									<TableCell rowSpan={2}>{t('File')}</TableCell>
+									<TableCell align='center' colSpan={5}>
 										{t('Counters')}
 									</TableCell>
 								</>
@@ -156,21 +153,11 @@ function ImportHistoryPage() {
 						</TableRow>
 						{!small && (
 							<TableRow>
-								<TableCell is='th' align='center'>
-									{t('Users')}
-								</TableCell>
-								<TableCell is='th' align='center'>
-									{t('Contacts')}
-								</TableCell>
-								<TableCell is='th' align='center'>
-									{t('Channels')}
-								</TableCell>
-								<TableCell is='th' align='center'>
-									{t('Messages')}
-								</TableCell>
-								<TableCell is='th' align='center'>
-									{t('Total')}
-								</TableCell>
+								<TableCell align='center'>{t('Users')}</TableCell>
+								<TableCell align='center'>{t('Contacts')}</TableCell>
+								<TableCell align='center'>{t('Channels')}</TableCell>
+								<TableCell align='center'>{t('Messages')}</TableCell>
+								<TableCell align='center'>{t('Total')}</TableCell>
 							</TableRow>
 						)}
 					</TableHead>
@@ -191,7 +178,9 @@ function ImportHistoryPage() {
 								{latestOperations.data
 									.filter(({ _id }) => !currentOperation.data.valid || currentOperation.data._id !== _id)
 									// Forcing valid=false as the current API only accept preparation/progress over currentOperation
-									?.map((operation) => <ImportOperationSummary key={operation._id} {...operation} valid={false} small={small} />)}
+									?.map((operation) => (
+										<ImportOperationSummary key={operation._id} {...operation} valid={false} small={small} />
+									))}
 							</>
 						)}
 					</TableBody>

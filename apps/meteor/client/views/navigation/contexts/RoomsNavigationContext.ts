@@ -1,5 +1,5 @@
 import { type ISubscription, type ILivechatInquiryRecord, type IRoom, isTeamRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
-import { useEffectEvent, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { isTruthy } from '@rocket.chat/tools';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
@@ -23,6 +23,10 @@ export const sidePanelFiltersConfig: { [Key in AllGroupsKeys]: { title: Translat
 	discussions: {
 		title: 'Discussions',
 		icon: 'balloons',
+	},
+	drafts: {
+		title: 'Drafts',
+		icon: 'pencil',
 	},
 	inProgress: {
 		title: 'In_progress',
@@ -58,7 +62,7 @@ export const sidePanelFiltersConfig: { [Key in AllGroupsKeys]: { title: Translat
 	},
 };
 
-export type SidePanelFiltersKeys = 'all' | 'mentions' | 'favorites' | 'discussions' | 'inProgress' | 'queue' | 'onHold';
+export type SidePanelFiltersKeys = 'all' | 'mentions' | 'favorites' | 'discussions' | 'drafts' | 'inProgress' | 'queue' | 'onHold';
 
 export const collapsibleFilters: SideBarFiltersKeys[] = ['unread', 'conversations', 'teams', 'channels', 'directMessages'];
 export type SidePanelFiltersUnreadKeys = `${SidePanelFiltersKeys}_unread`;
@@ -74,7 +78,6 @@ export type AllGroupsKeysWithUnread = SidePanelFilters | SideBarFiltersKeys | Si
 
 export type RecordTypeBySidebarKey<K extends AllGroupsKeysWithUnread> = K extends 'queue' ? ILivechatInquiryRecord : SubscriptionWithRoom;
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface RoomsNavigationGroup extends Map<AllGroupsKeysWithUnread, Set<RecordTypeBySidebarKey<AllGroupsKeysWithUnread>>> {
 	get<K extends AllGroupsKeysWithUnread>(key: K): Set<RecordTypeBySidebarKey<K>> | undefined;
 }
@@ -137,7 +140,7 @@ export const useSideBarRoomsList = (): {
 	groupCounts: number[];
 	totalCount: number;
 } & ReturnType<typeof useCollapsedGroups> => {
-	const { collapsedGroups, handleClick, handleKeyDown } = useCollapsedGroups();
+	const { collapsedGroups, handleClick } = useCollapsedGroups();
 	const { groups, unreadGroupData } = useRoomsListContext();
 
 	const roomListGroups = collapsibleFilters
@@ -164,7 +167,6 @@ export const useSideBarRoomsList = (): {
 	return {
 		collapsedGroups,
 		handleClick,
-		handleKeyDown,
 		roomListGroups,
 		groupCounts,
 		totalCount: groupCounts.reduce((acc, count) => acc + count, 0),
@@ -178,11 +180,11 @@ export const isUnreadSubscription = (subscription: Partial<ISubscription>): bool
 
 	return Boolean(
 		subscription.userMentions ||
-			subscription.groupMentions ||
-			subscription.tunread?.length ||
-			subscription.tunreadUser?.length ||
-			subscription.unread ||
-			subscription.alert,
+		subscription.groupMentions ||
+		subscription.tunread?.length ||
+		subscription.tunreadUser?.length ||
+		subscription.unread ||
+		subscription.alert,
 	);
 };
 
@@ -230,7 +232,7 @@ export const useUnreadOnlyToggle = (): [boolean, () => void] => {
 	const { setFilter, parentRid } = useRoomsListContext();
 	const [currentTab, unread] = useSidePanelFilter();
 
-	return [unread, useEffectEvent(() => setFilter(currentTab, !unread, parentRid))];
+	return [unread, useStableCallback(() => setFilter(currentTab, !unread, parentRid))];
 };
 
 export const useSwitchSidePanelTab = () => {

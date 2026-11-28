@@ -1,6 +1,6 @@
 import type { ISetting, Serialized } from '@rocket.chat/core-typings';
-import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
@@ -8,6 +8,7 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import AppearanceForm from './AppearanceForm';
+import ContentColumn from '../../../components/ContentColumn';
 
 type LivechatAppearanceSettings = {
 	Livechat_title: string;
@@ -40,7 +41,9 @@ const reduceAppearance = (settings: Serialized<ISetting>[]): AppearanceSettings 
 		return acc;
 	}, {});
 
-const AppearancePage = ({ settings }: { settings: Serialized<ISetting>[] }) => {
+export type AppearancePageProps = { settings: Serialized<ISetting>[] };
+
+const AppearancePage = ({ settings }: AppearancePageProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -56,7 +59,7 @@ const AppearancePage = ({ settings }: { settings: Serialized<ISetting>[] }) => {
 
 	const currentData = watch();
 
-	const handleSave = useEffectEvent(async (data: LivechatAppearanceSettings) => {
+	const handleSave = useStableCallback(async (data: LivechatAppearanceSettings) => {
 		const mappedAppearance = Object.entries(data)
 			.map(([_id, value]) => ({ _id, value }))
 			.filter((item) => item.value !== undefined) as {
@@ -80,18 +83,18 @@ const AppearancePage = ({ settings }: { settings: Serialized<ISetting>[] }) => {
 		<Page>
 			<PageHeader title={t('Appearance')} />
 			<PageScrollableContentWithShadow>
-				<Box maxWidth='x600' w='full' alignSelf='center'>
+				<ContentColumn>
 					<FormProvider {...methods}>
 						<form id={formId} onSubmit={handleSubmit(handleSave)}>
 							<AppearanceForm />
 						</form>
 					</FormProvider>
-				</Box>
+				</ContentColumn>
 			</PageScrollableContentWithShadow>
 			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset()}>{t('Cancel')}</Button>
-					<Button form={formId} type='submit' primary>
+					<Button form={formId} type='submit' variant='primary'>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

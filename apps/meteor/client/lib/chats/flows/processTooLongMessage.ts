@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { GenericModal, imperativeModal } from '@rocket.chat/ui-client';
 
-import { t } from '../../../../app/utils/lib/i18n';
+import { t } from '../../../../lib/i18n';
 import { settings } from '../../settings';
 import { dispatchToastMessage } from '../../toast';
 import { getUser } from '../../user';
@@ -26,7 +26,7 @@ export const processTooLongMessage = async (chat: ChatAPI, { msg }: Pick<IMessag
 		const onConfirm = async (): Promise<void> => {
 			const contentType = 'text/plain';
 			const messageBlob = new Blob([msg], { type: contentType });
-			const fileName = `${getUser()?.username ?? 'anonymous'} - ${new Date()}.txt`; // TODO: proper naming and formatting
+			const fileName = `${getUser()?.username ?? 'anonymous'} - ${new Date().toString()}.txt`; // TODO: proper naming and formatting
 			const file = new File([messageBlob], fileName, {
 				type: contentType,
 				lastModified: Date.now(),

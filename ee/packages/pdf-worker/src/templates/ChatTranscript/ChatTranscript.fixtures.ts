@@ -1,4 +1,4 @@
-import { Buffer } from 'buffer';
+import { Buffer } from 'node:buffer';
 
 import type { ChatTranscriptData, PDFMessage } from '../../types/ChatTranscriptData';
 import type { WorkerData } from '../../types/WorkerData';

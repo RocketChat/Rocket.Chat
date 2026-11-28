@@ -2,6 +2,7 @@ import type { IMediaCall } from '@rocket.chat/core-typings';
 import type { CallFlag, CallRole, ServerMediaSignalNewCall } from '@rocket.chat/media-signaling';
 
 import { getNewCallTransferredBy } from './getNewCallTransferredBy';
+import { getMediaCallServer } from '../injection';
 
 function getCallFlags(call: IMediaCall, role: CallRole): CallFlag[] {
 	const flags: CallFlag[] = [];
@@ -25,6 +26,7 @@ export function getNewCallSignal(call: IMediaCall, role: CallRole): ServerMediaS
 	const contact = role === 'caller' ? call.callee : call.caller;
 	const transferredBy = getNewCallTransferredBy(call);
 	const flags = getCallFlags(call, role);
+	const iceServers = self.type === 'user' ? getMediaCallServer().getIceServersForUser(self.id) : [];
 
 	return {
 		callId: call._id,
@@ -38,5 +40,6 @@ export function getNewCallSignal(call: IMediaCall, role: CallRole): ServerMediaS
 		...(call.parentCallId && { replacingCallId: call.parentCallId }),
 		...(transferredBy && { transferredBy }),
 		...(call.callerRequestedId && role === 'caller' && { requestedCallId: call.callerRequestedId }),
+		...(iceServers.length && { iceServers }),
 	};
 }

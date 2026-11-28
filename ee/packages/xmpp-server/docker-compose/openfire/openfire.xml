@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jive>
+  <adminConsole>
+    <port>9090</port>
+    <securePort>9091</securePort>
+  </adminConsole>
+  <connectionProvider>
+    <className>org.jivesoftware.database.EmbeddedConnectionProvider</className>
+  </connectionProvider>
+  <autosetup>
+    <run>true</run>
+    <locale>en</locale>
+    <xmpp>
+      <auth>
+        <anonymous>false</anonymous>
+      </auth>
+      <domain>openfire.test</domain>
+      <fqdn>openfire.test</fqdn>
+    </xmpp>
+    <database>
+      <mode>embedded</mode>
+    </database>
+    <admin>
+      <email>admin@openfire.test</email>
+      <password>admin</password>
+    </admin>
+  </autosetup>
+</jive>

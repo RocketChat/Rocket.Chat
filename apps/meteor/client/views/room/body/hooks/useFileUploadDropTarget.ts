@@ -1,7 +1,8 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { usePermission, useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { usePermission, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import type { DragEvent, ReactNode } from 'react';
 import { useMemo, useSyncExternalStore } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useDropTarget } from './useDropTarget';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
@@ -12,6 +13,7 @@ import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 export const useFileUploadDropTarget = (): readonly [
 	fileUploadTriggerProps: {
 		onDragEnter: (event: DragEvent<Element>) => void;
+		onDragLeave: (event: DragEvent<Element>) => void;
 	},
 	fileUploadOverlayProps: {
 		visible: boolean;
@@ -25,14 +27,14 @@ export const useFileUploadDropTarget = (): readonly [
 
 	const isRoomOverMacLimit = useIsRoomOverMacLimit(room);
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const fileUploadEnabled = useSetting('FileUpload_Enabled', true);
 	const user = useUser();
 	const postReadOnly = usePermission('post-readonly', room._id);
 	const fileUploadAllowedForUser = useMemo(
 		() => !roomCoordinator.readOnly(room, { username: user?.username }),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 		[room, user?.username, postReadOnly],
 	);
 
@@ -44,8 +46,8 @@ export const useFileUploadDropTarget = (): readonly [
 		chat?.composer?.editing.get ?? (() => false),
 	);
 
-	const onFileDrop = useEffectEvent(async (files: File[]) => {
-		const { getMimeType } = await import('../../../../../app/utils/lib/mimeTypes');
+	const onFileDrop = useStableCallback(async (files: File[]) => {
+		const { getMimeType } = await import('../../../../../lib/mimeTypes');
 		const getUniqueFiles = () => {
 			const uniqueFiles: File[] = [];
 			const st: Set<string> = new Set();

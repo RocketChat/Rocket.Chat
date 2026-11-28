@@ -1,28 +1,41 @@
-import type { ActionsBlock } from '../../blocks/layout/ActionsBlock';
-import type { CalloutBlock } from '../../blocks/layout/CalloutBlock';
-import type { ContextBlock } from '../../blocks/layout/ContextBlock';
-import type { DividerBlock } from '../../blocks/layout/DividerBlock';
-import type { ImageBlock } from '../../blocks/layout/ImageBlock';
-import type { InfoCardBlock } from '../../blocks/layout/InfoCardBlock';
-import type { PreviewBlock } from '../../blocks/layout/PreviewBlock';
-import type { SectionBlock } from '../../blocks/layout/SectionBlock';
-import type { VideoConferenceBlock } from '../../blocks/layout/VideoConferenceBlock';
-import { SurfaceRenderer } from '../../rendering/SurfaceRenderer';
+import type { RenderableLayoutBlock } from '../../blocks/RenderableLayoutBlock.js';
+import { SurfaceRenderer } from '../../rendering/SurfaceRenderer.js';
 
-type MessageSurfaceLayoutBlock =
-	| ActionsBlock
-	| ContextBlock
-	| DividerBlock
-	| ImageBlock
-	| SectionBlock
-	| VideoConferenceBlock
-	| PreviewBlock
-	| CalloutBlock
-	| InfoCardBlock;
+/** Layout blocks a message accepts; every message renderer must allow exactly these. */
+export const messageSurfaceLayoutBlockTypes = [
+	'actions',
+	'alert',
+	'callout',
+	'card',
+	'carousel',
+	'container',
+	'context',
+	'context_actions',
+	'data_table',
+	'data_visualization',
+	'divider',
+	'file',
+	'header',
+	'image',
+	'info_card',
+	'input',
+	'layout',
+	'markdown',
+	'plan',
+	'preview',
+	'rich_text',
+	'section',
+	'table',
+	'task_card',
+	'video',
+	'video_conf',
+] as const satisfies readonly RenderableLayoutBlock['type'][];
+
+type MessageSurfaceLayoutBlock = Extract<RenderableLayoutBlock, { type: (typeof messageSurfaceLayoutBlockTypes)[number] }>;
 
 export abstract class UiKitParserMessage<OutputElement> extends SurfaceRenderer<OutputElement, MessageSurfaceLayoutBlock> {
 	public constructor() {
-		super(['actions', 'context', 'divider', 'image', 'section', 'preview', 'video_conf', 'callout']);
+		super(messageSurfaceLayoutBlockTypes);
 	}
 }
 

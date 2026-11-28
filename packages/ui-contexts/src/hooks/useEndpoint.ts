@@ -6,6 +6,14 @@ import { ServerContext } from '../ServerContext';
 
 type EndpointOptions = {
 	signal?: AbortSignal;
+	/**
+	 * Keeps the request alive past the document being torn down, for the one thing that has to be said on the way
+	 * out: a fetch started from a `pagehide` handler is otherwise cancelled along with the page.
+	 *
+	 * The REST client already takes it — its options are `Omit<RequestInit, 'method'>` — so the only thing missing
+	 * was a way to ask for it from here.
+	 */
+	keepalive?: boolean;
 };
 
 export type EndpointFunction<TMethod extends Method, TPathPattern extends PathPattern> =
@@ -36,6 +44,7 @@ export function useEndpoint<TMethod extends Method, TPathPattern extends PathPat
 				keys: keysRef.current as UrlParams<TPathPattern>,
 				params: params as OperationParams<TMethod, TPathPattern>,
 				signal: options?.signal,
+				keepalive: options?.keepalive,
 			}),
 		[callEndpoint, pathPattern, method],
 	);

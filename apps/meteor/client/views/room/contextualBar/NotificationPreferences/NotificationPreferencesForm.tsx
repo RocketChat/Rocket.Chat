@@ -1,13 +1,13 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { FieldGroup, IconButton, Margins } from '@rocket.chat/fuselage';
-import { useFormContext, Controller } from 'react-hook-form';
+import { FieldGroup, IconButton } from '@rocket.chat/fuselage';
+import { useFormContext, Controller, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import NotificationByDevice from './components/NotificationByDevice';
 import NotificationPreference from './components/NotificationPreference';
 import NotificationToggle from './components/NotificationToggle';
 
-type NotificationPreferencesFormProps = {
+export type NotificationPreferencesFormProps = {
 	notificationOptions: {
 		[key: string]: SelectOption[];
 	};
@@ -16,9 +16,9 @@ type NotificationPreferencesFormProps = {
 
 const NotificationPreferencesForm = ({ notificationOptions, handlePlaySound }: NotificationPreferencesFormProps) => {
 	const { t } = useTranslation();
-	const { watch, control } = useFormContext();
+	const { control } = useFormContext();
 
-	const { showCounter } = watch();
+	const { showCounter } = useWatch({ control });
 
 	return (
 		<>
@@ -72,23 +72,21 @@ const NotificationPreferencesForm = ({ notificationOptions, handlePlaySound }: N
 							/>
 						)}
 					/>
-					<Margins blockStart={16}>
-						<Controller
-							control={control}
-							name='desktopSound'
-							render={({ field: { value, onChange } }) => (
-								<NotificationPreference
-									id='DesktopSound'
-									name={t('Sound')}
-									options={notificationOptions.sounds}
-									optionValue={value}
-									onChange={onChange}
-								>
-									<IconButton icon='play' mis={4} onClick={handlePlaySound} />
-								</NotificationPreference>
-							)}
-						/>
-					</Margins>
+					<Controller
+						control={control}
+						name='desktopSound'
+						render={({ field: { value, onChange } }) => (
+							<NotificationPreference
+								id='DesktopSound'
+								name={t('Sound')}
+								options={notificationOptions.sounds}
+								optionValue={value}
+								onChange={onChange}
+							>
+								<IconButton icon='play' onClick={handlePlaySound} aria-label={t('Play')} />
+							</NotificationPreference>
+						)}
+					/>
 				</NotificationByDevice>
 				<NotificationByDevice device={t('Mobile')} icon='mobile'>
 					<Controller

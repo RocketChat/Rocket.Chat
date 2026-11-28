@@ -5,13 +5,13 @@ import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 import { tracerSpan } from '@rocket.chat/tracing';
 
 import { queueLogger } from './logger';
-import { notifyOnLivechatInquiryChangedByRoom } from '../../../app/lib/server/lib/notifyListener';
-import { getOmniChatSortQuery } from '../../../app/livechat/lib/inquiries';
-import { dispatchAgentDelegated } from '../../../app/livechat/server/lib/Helper';
-import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
-import { getInquirySortMechanismSetting } from '../../../app/livechat/server/lib/settings';
-import { metrics } from '../../../app/metrics/server';
-import { settings } from '../../../app/settings/server';
+import { getOmniChatSortQuery } from '../../../lib/livechat/inquiries';
+import { metrics } from '../../lib/metrics';
+import { notifyOnLivechatInquiryChangedByRoom } from '../../lib/notifyListener';
+import { dispatchAgentDelegated } from '../../lib/omnichannel/Helper';
+import { RoutingManager } from '../../lib/omnichannel/RoutingManager';
+import { getInquirySortMechanismSetting } from '../../lib/omnichannel/settings';
+import { settings } from '../../settings';
 
 const DEFAULT_RACE_TIMEOUT = 5000;
 
@@ -98,7 +98,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 			// We still go 1 by 1, but we go with every queue every cycle instead of just 1 queue per cycle
 			// And we get tracing :)
 			const queues = await this.getActiveQueues();
-			for await (const queue of queues) {
+			for (const queue of queues) {
 				await tracerSpan(
 					'omnichannel.queue',
 					{ attributes: { workerTime: new Date().toISOString(), queue: queue || 'Public' }, root: true },
@@ -126,7 +126,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 				return;
 			}
 
-			const result = await this.processWaitingQueue(queue, nextInquiry as InquiryWithAgentInfo);
+			const result = await this.processWaitingQueue(queue, nextInquiry);
 
 			if (!result) {
 				queueLogger.debug({ msg: 'Inquiry not taken. Unlocking and re-queueing', inquiry: nextInquiry._id });
@@ -269,7 +269,9 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 				void dispatchAgentDelegated(rid, agentId);
 			}, 1000);
 
-			metrics.timeToQueueProcessingByQueue.observe({ queue }, (Date.now() - inquiry.ts.getTime()) / 1000);
+			const waitTimeSeconds = (Date.now() - inquiry.ts.getTime()) / 1000;
+			metrics.timeToQueueProcessingByQueue.observe({ queue }, waitTimeSeconds);
+			metrics.timeToQueueProcessingByQueueHistogram.observe({ queue }, waitTimeSeconds);
 			metrics.totalItemsProcessedByQueue.inc({ queue });
 			return true;
 		}

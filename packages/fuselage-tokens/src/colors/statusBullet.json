@@ -1,0 +1,28 @@
+{
+  "statusBullet": {
+    "light": {
+      "online": { "value": "{colors.g800}" },
+      "away": { "value": "{colors.y800}" },
+      "busy": { "value": "{colors.r600}" },
+      "disabled": { "value": "{colors.o500}" },
+      "offline": { "value": "{colors.n700}" },
+      "loading": { "value": "{colors.n700}" }
+    },
+    "high-contrast": {
+      "online": { "value": "{colors.g1000}" },
+      "away": { "value": "{colors.y800}" },
+      "busy": { "value": "{colors.r1000}" },
+      "disabled": { "value": "{colors.o700}" },
+      "offline": { "value": "{colors.n900}" },
+      "loading": { "value": "{colors.n900}" }
+    },
+    "dark": {
+      "online": { "value": "#1CBF89", "type": "color" },
+      "away": { "value": "#B08C30", "type": "color" },
+      "busy": { "value": "#C75765", "type": "color" },
+      "disabled": { "value": "#CC7F42", "type": "color" },
+      "offline": { "value": "#8B9098", "type": "color" },
+      "loading": { "value": "#8B9098", "type": "color" }
+    }
+  }
+}

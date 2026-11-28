@@ -1,6 +1,7 @@
+import { Box } from '@rocket.chat/fuselage';
 import { Contextualbar } from '@rocket.chat/ui-client';
-import { action } from '@storybook/addon-actions';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta } from '@storybook/react';
+import { action } from 'storybook/actions';
 
 import RoomFiles from './RoomFiles';
 
@@ -10,7 +11,13 @@ export default {
 		layout: 'fullscreen',
 		actions: { argTypesRegex: '^on.*' },
 	},
-	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
+	decorators: [
+		(fn) => (
+			<Box height='100vh'>
+				<Contextualbar>{fn()}</Contextualbar>
+			</Box>
+		),
+	],
 	args: {
 		type: 'all',
 		text: '',
@@ -19,8 +26,6 @@ export default {
 		setType: action('setType'),
 	},
 } satisfies Meta<typeof RoomFiles>;
-
-const Template: StoryFn<typeof RoomFiles> = (args) => <RoomFiles {...args} />;
 
 const fakeItems = Array.from({ length: 10 }, (_, i) => ({
 	_id: String(i),
@@ -31,23 +36,27 @@ const fakeItems = Array.from({ length: 10 }, (_, i) => ({
 		_id: 'rocket.cat',
 		username: 'rocket.cat',
 	},
+	_updatedAt: new Date(),
 }));
 
-export const Default = Template.bind({});
-Default.args = {
-	filesItems: fakeItems,
-	total: fakeItems.length,
-	isSuccess: true,
+export const Default = {
+	args: {
+		filesItems: fakeItems,
+		total: fakeItems.length,
+		isSuccess: true,
+	},
 };
 
-export const Loading = Template.bind({});
-Loading.args = {
-	isPending: true,
+export const Loading = {
+	args: {
+		isPending: true,
+	},
 };
 
-export const Empty = Template.bind({});
-Empty.args = {
-	isSuccess: true,
-	filesItems: [],
-	total: 0,
+export const Empty = {
+	args: {
+		isSuccess: true,
+		filesItems: [],
+		total: 0,
+	},
 };

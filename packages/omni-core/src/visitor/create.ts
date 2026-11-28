@@ -14,10 +14,49 @@ type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'depa
 	externalIds?: IVisitorExternalIdentifier[];
 };
 
+type AgentAvailability = { shouldConsiderIdleAgent: boolean; shouldConsiderOfflineAgent: boolean };
+
+const findContactManager = async (
+	visitorEmail: string,
+	{ shouldConsiderIdleAgent, shouldConsiderOfflineAgent }: AgentAvailability,
+): Promise<ILivechatVisitor['contactManager']> => {
+	const contact = await LivechatContacts.findContactByEmailAndContactManager(visitorEmail);
+	if (!contact?.contactManager) {
+		return undefined;
+	}
+
+	const agent = await Users.findOneOnlineAgentById(contact.contactManager, shouldConsiderIdleAgent, shouldConsiderOfflineAgent, {
+		projection: { _id: 1, username: 1, name: 1, emails: 1 },
+	});
+	if (!agent?.username || !agent.name || !agent.emails) {
+		return undefined;
+	}
+
+	return {
+		_id: agent._id,
+		username: agent.username,
+		name: agent.name,
+		emails: agent.emails,
+	};
+};
+
+const getConnectionInfo = (connectionData: any): { userAgent?: string; ip?: string; host?: string } => {
+	const { httpHeaders, clientAddress } = connectionData;
+	if (!httpHeaders || typeof httpHeaders !== 'object') {
+		return {};
+	}
+
+	return {
+		userAgent: httpHeaders['user-agent'],
+		ip: httpHeaders['x-real-ip'] || httpHeaders['x-forwarded-for'] || clientAddress,
+		host: httpHeaders.host,
+	};
+};
+
 export const registerGuest = makeFunction(
 	async (
 		{ id, token, name, phone, email, department, username, connectionData, status = UserStatus.ONLINE, externalIds }: RegisterGuestType,
-		{ shouldConsiderIdleAgent, shouldConsiderOfflineAgent }: { shouldConsiderIdleAgent: boolean; shouldConsiderOfflineAgent: boolean },
+		agentAvailability: AgentAvailability,
 	): Promise<ILivechatVisitor | null> => {
 		if (!token) {
 			throw Error('error-invalid-token');
@@ -38,24 +77,14 @@ export const registerGuest = makeFunction(
 			validateEmail(visitorEmail);
 			visitorDataToUpdate.visitorEmails = [{ address: visitorEmail }];
 
-			const contact = await LivechatContacts.findContactByEmailAndContactManager(visitorEmail);
-			if (contact?.contactManager) {
-				const agent = await Users.findOneOnlineAgentById(contact.contactManager, shouldConsiderIdleAgent, shouldConsiderOfflineAgent, {
-					projection: { _id: 1, username: 1, name: 1, emails: 1 },
-				});
-				if (agent?.username && agent.name && agent.emails) {
-					visitorDataToUpdate.contactManager = {
-						_id: agent._id,
-						username: agent.username,
-						name: agent.name,
-						emails: agent.emails,
-					};
-					logger.debug({ msg: 'Assigning visitor to agent', token, agent: agent.username });
-				}
+			const contactManager = await findContactManager(visitorEmail, agentAvailability);
+			if (contactManager) {
+				visitorDataToUpdate.contactManager = contactManager;
+				logger.debug({ msg: 'Assigning visitor to agent', token, agent: contactManager.username });
 			}
 		}
 
-		const livechatVisitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
+		const livechatVisitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1, department: 1, token: 1 } });
 
 		if (department && livechatVisitor?.department !== department) {
 			logger.debug({ msg: 'Attempt to find a department with id/name', department });
@@ -94,12 +123,7 @@ export const registerGuest = makeFunction(
 
 			if (connectionData && typeof connectionData === 'object') {
 				logger.debug({ msg: 'Saving connection data for visitor', token });
-				const { httpHeaders, clientAddress } = connectionData;
-				if (httpHeaders && typeof httpHeaders === 'object') {
-					visitorDataToUpdate.userAgent = httpHeaders['user-agent'];
-					visitorDataToUpdate.ip = httpHeaders['x-real-ip'] || httpHeaders['x-forwarded-for'] || clientAddress;
-					visitorDataToUpdate.host = httpHeaders.host;
-				}
+				Object.assign(visitorDataToUpdate, getConnectionInfo(connectionData));
 			}
 		}
 

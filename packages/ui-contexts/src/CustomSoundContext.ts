@@ -1,6 +1,9 @@
 import type { ICustomSound } from '@rocket.chat/core-typings';
 import { createContext } from 'react';
 
+/** Stops the sound it was returned for; absent when there was nothing to play. */
+type StopSound = (() => void) | undefined;
+
 export type CustomSoundContextValue = {
 	play: (
 		soundId: string,
@@ -8,61 +11,15 @@ export type CustomSoundContextValue = {
 			volume?: number | undefined;
 			loop?: boolean | undefined;
 		},
-	) => void;
+	) => StopSound;
 	pause: (sound: ICustomSound['_id']) => void;
 	stop: (sound: ICustomSound['_id']) => void;
-	callSounds: {
-		playRinger: () => void;
-		playDialer: () => void;
-		stopRinger: () => void;
-		stopDialer: () => void;
-	};
-	voipSounds: {
-		playRinger: () => void;
-		playDialer: () => void;
-		playCallEnded: () => void;
-		stopRinger: () => void;
-		stopDialer: () => void;
-		stopCallEnded: () => void;
-		stopAll: () => void;
-	};
-	notificationSounds: {
-		playNewRoom: () => void;
-		playNewRoomLoop: () => void;
-		playNewMessage: () => void;
-		stopNewRoom: () => void;
-		stopNewMessage: () => void;
-		playNewMessageCustom: (soundId: ICustomSound['_id']) => void;
-	};
-	list: ICustomSound[];
+	list: Omit<ICustomSound, '_updatedAt'>[];
 };
 
 export const CustomSoundContext = createContext<CustomSoundContextValue>({
 	play: () => undefined,
 	pause: () => undefined,
 	stop: () => undefined,
-	callSounds: {
-		playRinger: () => undefined,
-		playDialer: () => undefined,
-		stopRinger: () => undefined,
-		stopDialer: () => undefined,
-	},
-	voipSounds: {
-		playRinger: () => undefined,
-		playDialer: () => undefined,
-		playCallEnded: () => undefined,
-		stopRinger: () => undefined,
-		stopDialer: () => undefined,
-		stopCallEnded: () => undefined,
-		stopAll: () => undefined,
-	},
-	notificationSounds: {
-		playNewRoom: () => undefined,
-		playNewRoomLoop: () => undefined,
-		playNewMessage: () => undefined,
-		stopNewRoom: () => undefined,
-		stopNewMessage: () => undefined,
-		playNewMessageCustom: () => undefined,
-	},
 	list: [],
 });

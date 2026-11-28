@@ -1,14 +1,15 @@
+import { UserStatus } from '@rocket.chat/core-typings';
 import { MessageFooterCallout, MessageFooterCalloutAction, MessageFooterCalloutContent } from '@rocket.chat/ui-composer';
-import { useEndpoint, useToastMessageDispatch, useTranslation, useUser } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useOmnichannelAgentAvailable } from '../../../omnichannel/hooks/useOmnichannelAgentAvailable';
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
 
-export const ComposerOmnichannelInquiry = (): ReactElement => {
-	const t = useTranslation();
+export const ComposerOmnichannelInquiry = () => {
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const user = useUser();
 	const agentAvailable = useOmnichannelAgentAvailable();
@@ -40,7 +41,7 @@ export const ComposerOmnichannelInquiry = (): ReactElement => {
 	};
 
 	const title = useMemo(() => {
-		if (user?.status === 'offline') {
+		if (user?.status === UserStatus.OFFLINE) {
 			return t('You_cant_take_chats_offline');
 		}
 
@@ -54,7 +55,7 @@ export const ComposerOmnichannelInquiry = (): ReactElement => {
 			<MessageFooterCalloutContent>{t('you_are_in_preview_mode_of_incoming_livechat')}</MessageFooterCalloutContent>
 			<MessageFooterCalloutAction
 				{...(title && { title })}
-				disabled={result.isPending || user?.status === 'offline' || !agentAvailable}
+				disabled={result.isPending || user?.status === UserStatus.OFFLINE || !agentAvailable}
 				onClick={handleTakeInquiry}
 			>
 				{t('Take_it')}

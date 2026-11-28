@@ -16,6 +16,8 @@ const BannersSchema = {
 		platform: {
 			type: 'string',
 			enum: ['web', 'mobile'],
+			description: 'The platform rendering the banner',
+			example: 'web',
 		},
 	},
 	required: ['platform'],
@@ -23,6 +25,21 @@ const BannersSchema = {
 };
 
 export const isBannersProps = ajvQuery.compile<Banners>(BannersSchema);
+
+const BannerIdParamsSchema = {
+	type: 'object',
+	properties: {
+		id: {
+			type: 'string',
+			description: 'The id of the banner',
+			example: 'ByehQjC44FwMeiLbX',
+		},
+	},
+	required: ['id'],
+	additionalProperties: false,
+};
+
+export const isBannerIdParams = ajv.compile<{ id: string }>(BannerIdParamsSchema);
 
 type BannersDismiss = {
 	bannerId: string;
@@ -34,6 +51,8 @@ const BannersDismissSchema = {
 		bannerId: {
 			type: 'string',
 			minLength: 1,
+			description: 'The id of the banner to dismiss',
+			example: 'ByehQjC44FwMeiLbX',
 		},
 	},
 	required: ['bannerId'],

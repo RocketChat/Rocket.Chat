@@ -7,10 +7,11 @@ import type {
 	RocketChatRecordDeleted,
 	MessageAttachment,
 	IMessageWithPendingFileImport,
+	DeepWritable,
 } from '@rocket.chat/core-typings';
-import type { FindPaginated, IMessagesModel } from '@rocket.chat/model-typings';
+import type { FindPaginated, IMessagesModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import type {
 	AggregationCursor,
 	Collection,
@@ -32,12 +33,6 @@ import type {
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 
-type DeepWritable<T> = T extends (...args: any) => any
-	? T
-	: {
-			-readonly [P in keyof T]: DeepWritable<T[P]>;
-		};
-
 export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IMessage>>) {
 		super(db, 'message', trash);
@@ -52,7 +47,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{ key: { 'editedBy._id': 1 }, sparse: true },
 			{ key: { 'rid': 1, 't': 1, 'u._id': 1 } },
 			{ key: { expireAt: 1 }, expireAfterSeconds: 0 },
-			{ key: { msg: 'text' } },
+			// The text index on `msg` is managed at startup by `ensureMessagesTextIndex`
+			// because its shape is controlled by the `USE_ROOM_SEARCH_INDEX` env var
+			// (default `{ msg: 'text' }` vs. room-scoped `{ rid: 1, msg: 'text' }`).
 			{ key: { 'file._id': 1 }, sparse: true },
 			{ key: { 'files._id': 1 }, sparse: true },
 			{ key: { 'mentions.username': 1 }, sparse: true },
@@ -81,65 +78,72 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		];
 	}
 
-	findVisibleByMentionAndRoomId(username: IUser['username'], rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage> {
-		const query: Filter<IMessage> = {
-			'_hidden': { $ne: true },
-			'mentions.username': username,
-			rid,
-		};
-
-		return this.find(query, options);
-	}
-
-	findPaginatedVisibleByMentionAndRoomId(
+	findVisibleByMentionAndRoomId<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		username: IUser['username'],
 		rid: IRoom['_id'],
-		options?: FindOptions<IMessage>,
-	): FindPaginated<FindCursor<IMessage>> {
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<IMessage> = {
 			'_hidden': { $ne: true },
 			'mentions.username': username,
 			rid,
 		};
 
-		return this.findPaginated(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findStarredByUserAtRoom(
+	findPaginatedVisibleByMentionAndRoomId<
+		T extends Document = IMessage,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(username: IUser['username'], rid: IRoom['_id'], options?: O): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
+		const query: Filter<IMessage> = {
+			'_hidden': { $ne: true },
+			'mentions.username': username,
+			rid,
+		};
+
+		return this.findPaginated<T, O>(query, options);
+	}
+
+	findStarredByUserAtRoom<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userId: IUser['_id'],
 		roomId: IRoom['_id'],
-		options?: FindOptions<IMessage>,
-	): FindPaginated<FindCursor<IMessage>> {
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
 		const query: Filter<IMessage> = {
 			'_hidden': { $ne: true },
 			'starred._id': userId,
 			'rid': roomId,
 		};
 
-		return this.findPaginated(query, options);
+		return this.findPaginated<T, O>(query, options);
 	}
 
-	findPaginatedByRoomIdAndType(
+	findPaginatedByRoomIdAndType<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		roomId: IRoom['_id'],
 		type: IMessage['t'],
-		options: FindOptions<IMessage> = {},
-	): FindPaginated<FindCursor<IMessage>> {
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
 		const query = {
 			rid: roomId,
 			t: type,
 		};
 
-		return this.findPaginated(query, options);
+		return this.findPaginated<T, O>(query, options);
 	}
 
-	findDiscussionsByRoomAndText(rid: IRoom['_id'], text: string, options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
+	findDiscussionsByRoomAndText<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: IRoom['_id'],
+		text: string,
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
 		const query: Filter<IMessage> = {
 			rid,
 			drid: { $exists: true },
 			msg: new RegExp(escapeRegExp(text), 'i'),
 		};
 
-		return this.findPaginated(query, options);
+		return this.findPaginated<T, O>(query, options);
 	}
 
 	findAllNumberOfTransferredRooms({
@@ -323,8 +327,12 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.col.aggregate(params, { allowDiskUse: true, readPreference: readSecondaryPreferred() }).toArray();
 	}
 
-	findLivechatClosedMessages(rid: IRoom['_id'], searchTerm?: string, options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
-		return this.findPaginated(
+	findLivechatClosedMessages<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: IRoom['_id'],
+		searchTerm?: string,
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
+		return this.findPaginated<T, O>(
 			{
 				rid,
 				$or: [{ t: { $exists: false } }, { t: 'livechat-close' }],
@@ -334,8 +342,11 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
-	findLivechatClosingMessage(rid: IRoom['_id'], options?: FindOptions<IMessage>): Promise<IMessage | null> {
-		return this.findOne<IMessage>(
+	findLivechatClosingMessage<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: IRoom['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
+		return this.findOne<T, O>(
 			{
 				rid,
 				t: 'livechat-close',
@@ -344,14 +355,17 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
-	findVisibleByRoomIdNotContainingTypesBeforeTs(
+	findVisibleByRoomIdNotContainingTypesBeforeTs<
+		T extends Document = IMessage,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		roomId: IRoom['_id'],
 		types: IMessage['t'][],
 		ts: Date,
 		showSystemMessages: boolean,
-		options?: FindOptions<IMessage>,
+		options?: O,
 		showThreadMessages = true,
-	): FindCursor<IMessage> {
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<IMessage> = {
 			_hidden: {
 				$ne: true,
@@ -378,15 +392,15 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			query.t = { $exists: false };
 		}
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findLivechatMessagesWithoutTypes(
+	findLivechatMessagesWithoutTypes<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		rid: IRoom['_id'],
 		ignoredTypes: IMessage['t'][],
 		showSystemMessages: boolean,
-		options?: FindOptions<IMessage>,
-	): FindCursor<IMessage> {
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<IMessage> = {
 			rid,
 		};
@@ -399,7 +413,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			query.t = { $exists: false };
 		}
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
 	async setBlocksById(_id: string, blocks: Required<IMessage>['blocks']): Promise<void> {
@@ -487,7 +501,10 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.countDocuments(query, options);
 	}
 
-	findPaginatedPinnedByRoom(roomId: IMessage['rid'], options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
+	findPaginatedPinnedByRoom<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomId: IMessage['rid'],
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
 		const query: Filter<IMessage> = {
 			t: { $ne: 'rm' },
 			_hidden: { $ne: true },
@@ -495,7 +512,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			rid: roomId,
 		};
 
-		return this.findPaginated(query, options);
+		return this.findPaginated<T, O>(query, options);
 	}
 
 	countStarred(options?: CountDocumentsOptions): Promise<number> {
@@ -557,65 +574,12 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
-	async findOneByFederationIdAndUsernameOnReactions(federationEventId: string, username: string): Promise<IMessage | null> {
-		return (
-			await this.col
-				.aggregate(
-					[
-						{
-							$match: {
-								t: { $ne: 'rm' },
-							},
-						},
-						{
-							$project: {
-								document: '$$ROOT',
-								reactions: { $objectToArray: '$reactions' },
-							},
-						},
-						{
-							$unwind: {
-								path: '$reactions',
-							},
-						},
-						{
-							$match: {
-								$and: [
-									{ 'reactions.v.usernames': { $in: [username] } },
-									{ [`reactions.v.federationReactionEventIds.${federationEventId}`]: username },
-								],
-							},
-						},
-						{ $replaceRoot: { newRoot: '$document' } },
-					],
-					{ readPreference: readSecondaryPreferred() },
-				)
-				.toArray()
-		)[0] as IMessage;
-	}
-
 	removeByRoomId(roomId: string): Promise<DeleteResult> {
-		return this.deleteMany({ rid: roomId });
+		return this.deleteMany({ rid: roomId }, { bulkTrash: true });
 	}
 
 	setReactions(messageId: string, reactions: IMessage['reactions']): Promise<UpdateResult> {
 		return this.updateOne({ _id: messageId }, { $set: { reactions } });
-	}
-
-	keepHistoryForToken(token: string): Promise<UpdateResult | Document> {
-		return this.updateMany(
-			{
-				'navigation.token': token,
-				'expireAt': {
-					$exists: true,
-				},
-			},
-			{
-				$unset: {
-					expireAt: 1,
-				},
-			},
-		);
 	}
 
 	setRoomIdByToken(token: string, rid: string): Promise<UpdateResult | Document> {
@@ -666,6 +630,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 		return this.updateMany(query, {
 			$set: {
+				'_hidden': false,
 				'_importFile.rocketChatUrl': rocketChatUrl,
 				'_importFile.downloaded': true,
 			},
@@ -691,10 +656,13 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	}
 
 	// FIND
-	findByMention(username: string, options?: FindOptions<IMessage>): FindCursor<IMessage> {
+	findByMention<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		username: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = { 'mentions.username': username };
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
 	findFilesByUserId(userId: string, options: FindOptions<IMessage> = {}): FindCursor<Pick<IMessage, 'file' | 'files'>> {
@@ -705,15 +673,19 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, { projection: { 'file._id': 1, 'files._id': 1 }, ...options });
 	}
 
-	findFilesByRoomIdPinnedTimestampAndUsers(
+	findFilesByRoomIdPinnedTimestampAndUsers<
+		T extends Document = IMessage,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		rid: string,
 		excludePinned: boolean,
 		ignoreDiscussion = true,
 		ts: Filter<IMessage>['ts'],
 		users: string[] = [],
 		ignoreThreads = true,
-		options: FindOptions<IMessage> = {},
-	): FindCursor<IMessage> {
+		excludeIds: string[] = [],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<IMessage> = {
 			rid,
 			ts,
@@ -729,18 +701,22 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			...(ignoreThreads ? { tmid: { $exists: false }, tcount: { $exists: false } } : {}),
 			...(ignoreDiscussion ? { drid: { $exists: false } } : {}),
 			...(users.length ? { 'u.username': { $in: users } } : {}),
+			...(excludeIds.length ? { _id: { $nin: excludeIds } } : {}),
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findDiscussionByRoomIdPinnedTimestampAndUsers(
+	findDiscussionByRoomIdPinnedTimestampAndUsers<
+		T extends Document = IMessage,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		rid: string,
 		excludePinned: boolean,
 		ts: Filter<IMessage>['ts'],
 		users: string[] = [],
-		options: FindOptions<IMessage> = {},
-	): FindCursor<IMessage> {
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<IMessage> = {
 			rid,
 			ts,
@@ -749,10 +725,13 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			...(users.length ? { 'u.username': { $in: users } } : {}),
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findVisibleByRoomId<T extends IMessage = IMessage>(rid: string, options?: FindOptions<T>): FindCursor<T> {
+	findVisibleByRoomId<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			_hidden: {
 				$ne: true,
@@ -761,10 +740,13 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			rid,
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findVisibleByIds(ids: string[], options?: FindOptions<IMessage>): FindCursor<IMessage> {
+	findVisibleByIds<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		ids: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			_id: { $in: ids },
 			_hidden: {
@@ -772,10 +754,13 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findVisibleThreadByThreadId(tmid: string, options?: FindOptions<IMessage>): FindCursor<IMessage> {
+	findVisibleThreadByThreadId<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		tmid: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			_hidden: {
 				$ne: true,
@@ -784,15 +769,13 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			tmid,
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findVisibleByRoomIdNotContainingTypes(
-		roomId: string,
-		types: MessageTypesValues[],
-		options?: FindOptions<IMessage>,
-		showThreadMessages = true,
-	): FindCursor<IMessage> {
+	findVisibleByRoomIdNotContainingTypes<
+		T extends Document = IMessage,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(roomId: string, types: MessageTypesValues[], options?: O, showThreadMessages = true): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<IMessage> = {
 			_hidden: {
 				$ne: true,
@@ -814,15 +797,47 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				}),
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findVisibleByRoomIdAfterTimestamp(
+	findDiscussionRoomIdsContainingTypes(types: MessageTypesValues[]): Promise<IRoom['_id'][]> {
+		return this.col
+			.aggregate<{ _id: IRoom['_id'] }>([
+				{ $match: { t: { $in: types } } },
+				{ $group: { _id: '$rid' } },
+				{
+					$lookup: {
+						from: 'rocketchat_room',
+						localField: '_id',
+						foreignField: '_id',
+						pipeline: [{ $match: { prid: { $exists: true } } }, { $project: { _id: 1 } }],
+						as: 'discussion',
+					},
+				},
+				{ $match: { discussion: { $ne: [] } } },
+			])
+			.map(({ _id }) => _id)
+			.toArray();
+	}
+
+	countVisibleByRoomIdContainingTypes(roomId: string, types: MessageTypesValues[]): Promise<number> {
+		const query: Filter<IMessage> = {
+			_hidden: {
+				$ne: true,
+			},
+			rid: roomId,
+			t: { $in: types },
+		};
+
+		return this.countDocuments(query);
+	}
+
+	findVisibleByRoomIdAfterTimestamp<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		roomId: string,
 		timestamp: Date,
 		showThreadMessages = true,
-		options?: FindOptions<IMessage>,
-	): FindCursor<IMessage> {
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			_hidden: {
 				$ne: true,
@@ -843,25 +858,30 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			}),
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findForUpdates(roomId: IMessage['rid'], timestamp: { $lt: Date } | { $gt: Date }, options?: FindOptions<IMessage>): FindCursor<IMessage> {
+	findForUpdates<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomId: IMessage['rid'],
+		{ updatedAt, minTs }: { updatedAt: { $lt: Date } | { $gt: Date }; minTs?: Date },
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			rid: roomId,
 			_hidden: { $ne: true },
-			_updatedAt: timestamp,
+			_updatedAt: updatedAt,
+			...(minTs && { ts: { $gte: minTs } }),
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findVisibleByRoomIdBeforeTimestamp(
+	findVisibleByRoomIdBeforeTimestamp<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		roomId: string,
 		timestamp: Date,
 		showThreadMessages = true,
-		options?: FindOptions<IMessage>,
-	): FindCursor<IMessage> {
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			_hidden: {
 				$ne: true,
@@ -882,17 +902,20 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			}),
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findVisibleByRoomIdBeforeTimestampNotContainingTypes(
+	findVisibleByRoomIdBeforeTimestampNotContainingTypes<
+		T extends Document = IMessage,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		roomId: string,
 		timestamp: Date,
 		types: MessageTypesValues[],
-		options?: FindOptions<IMessage>,
+		options?: O,
 		showThreadMessages = true,
 		inclusive = false,
-	): FindCursor<IMessage> {
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			_hidden: {
 				$ne: true,
@@ -917,18 +940,21 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				}),
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+	findVisibleByRoomIdBetweenTimestampsNotContainingTypes<
+		T extends Document = IMessage,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		roomId: string,
 		afterTimestamp: Date,
 		beforeTimestamp: Date,
 		types: MessageTypesValues[],
-		options: FindOptions<IMessage> = {},
+		options?: O,
 		showThreadMessages = true,
 		inclusive = false,
-	): FindCursor<IMessage> {
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			_hidden: {
 				$ne: true,
@@ -954,7 +980,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				}),
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
 	countVisibleByRoomIdBetweenTimestampsNotContainingTypes(
@@ -1000,7 +1026,11 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return message?.ts;
 	}
 
-	findByRoomIdAndMessageIds(rid: string, messageIds: string[], options?: FindOptions<IMessage>): FindCursor<IMessage> {
+	findByRoomIdAndMessageIds<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: string,
+		messageIds: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			rid,
 			_id: {
@@ -1008,7 +1038,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
 	findOneBySlackBotIdAndSlackTs(slackBotId: string, slackTs: Date): Promise<IMessage | null> {
@@ -1026,13 +1056,33 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findOne(query);
 	}
 
-	findOneByRoomIdAndMessageId(rid: string, messageId: string, options?: FindOptions<IMessage>): Promise<IMessage | null> {
+	findOneByRoomIdAndMessageId<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: string,
+		messageId: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			rid,
 			_id: messageId,
 		};
 
-		return this.findOne(query, options);
+		return this.findOne<T, O>(query, options);
+	}
+
+	findOneVisibleByRoomIdAndMessageId<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: string,
+		messageId: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
+		const query = {
+			rid,
+			_id: messageId,
+			_hidden: {
+				$ne: true,
+			},
+		};
+
+		return this.findOne<T, O>(query, options);
 	}
 
 	getLastVisibleUserMessageSentByRoomId(rid: string, messageId?: string): Promise<IMessage | null> {
@@ -1354,10 +1404,13 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	// REMOVE
 
 	removeByRoomIds(rids: string[]): Promise<DeleteResult> {
-		return this.deleteMany({ rid: { $in: rids } });
+		return this.deleteMany({ rid: { $in: rids } }, { bulkTrash: true });
 	}
 
-	findThreadsByRoomIdPinnedTimestampAndUsers(
+	findThreadsByRoomIdPinnedTimestampAndUsers<
+		T extends Document = IMessage,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
 		{
 			rid,
 			pinned,
@@ -1365,8 +1418,8 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			ts,
 			users = [],
 		}: { rid: string; pinned: boolean; ignoreDiscussion?: boolean; ts: Filter<IMessage>['ts']; users: string[] },
-		options?: FindOptions<IMessage>,
-	): FindCursor<IMessage> {
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<IMessage> = {
 			rid,
 			ts,
@@ -1383,7 +1436,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			query.drid = { $exists: false };
 		}
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
 	async findByIdPinnedTimestampLimitAndUsers(
@@ -1394,11 +1447,13 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		limit: number,
 		users: string[] = [],
 		ignoreThreads = true,
+		excludeIds: string[] = [],
 	): Promise<string[]> {
 		const query: Filter<IMessage> = {
 			rid,
 			ts,
 			...(users.length > 0 && { 'u.username': { $in: users } }),
+			...(excludeIds.length > 0 && { _id: { $nin: excludeIds } }),
 		};
 
 		if (ignorePinned) {
@@ -1433,7 +1488,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		users: string[] = [],
 		ignoreThreads = true,
 		selectedMessageIds: string[] = [],
-	): Promise<number> {
+	): Promise<{ count: number; deletedIds: string[] }> {
 		const query: Filter<IMessage> = {
 			rid,
 			ts,
@@ -1453,37 +1508,35 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			query.tcount = { $exists: false };
 		}
 
-		const notCountedMessages = (
-			await this.find(
-				{
-					...query,
-					$or: [{ _hidden: true }, { editedAt: { $exists: true }, editedBy: { $exists: true }, t: 'rm' }],
-				},
-				{
-					projection: {
-						_id: 1,
-					},
-					limit,
-				},
-			).toArray()
-		).length;
+		const notCountedMessages = await this.countDocuments({
+			...query,
+			...(limit && { _id: { $in: selectedMessageIds } }),
+			$or: [{ _hidden: true }, { editedAt: { $exists: true }, editedBy: { $exists: true }, t: 'rm' }],
+		});
+
+		const deletedIds: string[] = [];
+		const onTrash = ({ _id }: IMessage) => deletedIds.push(_id);
 
 		if (!limit) {
-			const count = (await this.deleteMany(query)).deletedCount - notCountedMessages;
+			const count = (await this.deleteMany(query, { onTrash })).deletedCount - notCountedMessages;
 
-			return count;
+			return { count, deletedIds };
 		}
 
 		const count =
 			(
-				await this.deleteMany({
-					_id: {
-						$in: selectedMessageIds,
+				await this.deleteMany(
+					{
+						...query,
+						_id: {
+							$in: selectedMessageIds,
+						},
 					},
-				})
+					{ bulkTrash: true, onTrash },
+				)
 			).deletedCount - notCountedMessages;
 
-		return count;
+		return { count, deletedIds };
 	}
 
 	removeByUserId(userId: string): Promise<DeleteResult> {
@@ -1621,17 +1674,16 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	}
 
 	/**
-	 * Copy metadata from the discussion to the system message in the parent channel
-	 * which links to the discussion.
-	 * Since we don't pass this metadata into the model's function, it is not a subject
-	 * to race conditions: If multiple updates occur, the current state will be updated
-	 * only if the new state of the discussion room is really newer.
+	 * Copy metadata from the discussion to the message in the parent channel which links to it.
+	 * The metadata is received from the caller, so the update is guarded to not overwrite the
+	 * parent message with an older state of the discussion room.
 	 */
 	async refreshDiscussionMetadata(room: Pick<IRoom, '_id' | 'msgs' | 'lm'>): Promise<null | WithId<IMessage>> {
 		const { _id: drid, msgs: dcount, lm: dlm } = room;
 
 		const query = {
 			drid,
+			$or: [{ dlm: { $exists: false } }, ...(dlm ? [{ dlm: { $lte: dlm } }] : [])],
 		};
 
 		return this.findOneAndUpdate(
@@ -1639,9 +1691,26 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{
 				$set: {
 					dcount,
-					dlm,
+					...(dlm && { dlm }),
 				},
 			},
+			{ returnDocument: 'after' },
+		);
+	}
+
+	async incDiscussionMetadata(room: Pick<IRoom, '_id' | 'lm'>, dcountInc: number): Promise<null | WithId<IMessage>> {
+		const { _id: drid, lm: dlm } = room;
+
+		return this.findOneAndUpdate(
+			{ drid },
+			[
+				{
+					$set: {
+						dcount: { $max: [0, { $add: [{ $ifNull: ['$dcount', 0] }, dcountInc] }] },
+						...(dlm && { dlm: { $max: ['$dlm', dlm] } }),
+					},
+				},
+			],
 			{ returnDocument: 'after' },
 		);
 	}
@@ -1796,6 +1865,56 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{
 				$set: {
 					attachments: setAttachments,
+				},
+			},
+		]);
+	}
+
+	findByDiscussionIdsOrQuotingInRoomIds<
+		T extends Document = IMessage,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(drids: IRoom['_id'][], messageLinkPattern: string, options?: O): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>(
+			{ $or: [{ drid: { $in: drids } }, { 'rid': { $in: drids }, 'attachments.message_link': { $regex: messageLinkPattern } }] },
+			options,
+		);
+	}
+
+	replaceQuotedFileAttachmentsByMessageIds(_ids: string[], messageLinkPattern: string, replaceWith: MessageAttachment) {
+		return this.updateMany({ _id: { $in: _ids } }, [
+			{
+				$set: {
+					attachments: {
+						$map: {
+							input: '$attachments',
+							as: 'att',
+							in: {
+								$cond: [
+									{
+										$and: [
+											{ $isArray: '$$att.attachments' },
+											{ $regexMatch: { input: { $ifNull: ['$$att.message_link', ''] }, regex: messageLinkPattern } },
+										],
+									},
+									{
+										$mergeObjects: [
+											'$$att',
+											{
+												attachments: {
+													$map: {
+														input: '$$att.attachments',
+														as: 'nested',
+														in: { $cond: [{ $eq: ['$$nested.type', 'file'] }, replaceWith, '$$nested'] },
+													},
+												},
+											},
+										],
+									},
+									'$$att',
+								],
+							},
+						},
+					},
 				},
 			},
 		]);

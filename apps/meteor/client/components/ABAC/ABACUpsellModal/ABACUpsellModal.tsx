@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next';
 
-import { getURL } from '../../../../app/utils/client';
+import { getURL } from '../../../lib/getURL';
 import GenericUpsellModal from '../../GenericUpsellModal';
 
-type ABACUpsellModalProps = {
+export type ABACUpsellModalProps = {
 	onClose: () => void;
 	onConfirm: () => void;
 };

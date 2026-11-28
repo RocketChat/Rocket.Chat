@@ -1,6 +1,8 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser } from './IUser';
-import type { UserStatus } from './UserStatus';
+
+/** The integration that owns the event. Absent on a local one and on anything the legacy desktop import wrote. */
+export type CalendarEventSource = 'outlook';
 
 export interface ICalendarEvent extends IRocketChatRecord {
 	startTime: Date;
@@ -12,11 +14,13 @@ export interface ICalendarEvent extends IRocketChatRecord {
 	notificationSent: boolean;
 
 	externalId?: string | null;
+	source?: CalendarEventSource;
+	// External id of a recurring master event
+	seriesMasterId?: string;
 	meetingUrl?: string | null;
 
 	reminderMinutesBeforeStart?: number;
 	reminderTime?: Date;
 
 	busy?: boolean;
-	previousStatus?: UserStatus;
 }

@@ -1,10 +1,16 @@
 import './api';
 import './ldap';
+import './ldapCore';
+import './saml';
 import './licenses';
 import './sessions';
 import './chat';
 import './roles';
-import '../apps/communication/uikit';
+import './apps/uikit';
 import './engagementDashboard';
 import './audit';
 import './abac';
+import './contacts';
+import './exchange';
+import './mcp';
+import './videoConferenceCallConfig';

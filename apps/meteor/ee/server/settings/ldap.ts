@@ -1,4 +1,5 @@
-import { settingsRegistry } from '../../../app/settings/server';
+import { settingsRegistry } from '../../../server/settings';
+import { validCron } from '../../../server/settings/functions/validationRuleBuilders';
 
 export const ldapIntervalValuesToCronMap: Record<string, string> = {
 	every_1_hour: '0 * * * *',
@@ -89,6 +90,7 @@ export function addSettings(): Promise<void> {
 
 					await this.add('LDAP_Background_Sync_Avatars_Interval', '0 0 * * *', {
 						type: 'string',
+						validation: [validCron()],
 						enableQuery: [enableQuery, { _id: 'LDAP_Background_Sync_Avatars', value: true }],
 						invalidValue: '0 0 * * *',
 					});
@@ -124,6 +126,7 @@ export function addSettings(): Promise<void> {
 
 					await this.add('LDAP_Sync_AutoLogout_Interval', '*/5 * * * *', {
 						type: 'string',
+						validation: [validCron()],
 						enableQuery: [enableQuery, { _id: 'LDAP_Sync_AutoLogout_Enabled', value: true }],
 						invalidValue: '',
 					});
@@ -138,6 +141,7 @@ export function addSettings(): Promise<void> {
 
 					await this.add('LDAP_CustomFieldMap', '{}', {
 						type: 'code',
+						code: 'application/json',
 						multiline: true,
 						enableQuery: [enableQuery, { _id: 'LDAP_Sync_Custom_Fields', value: true }],
 						invalidValue: '{}',
@@ -257,6 +261,8 @@ export function addSettings(): Promise<void> {
 
 					await this.add('LDAP_Groups_To_Rocket_Chat_Teams', '{}', {
 						type: 'code',
+						code: 'application/json',
+						multiline: true,
 						enableQuery: enableQueryTeams,
 						invalidValue: '{}',
 					});
@@ -293,6 +299,7 @@ export function addSettings(): Promise<void> {
 
 					await this.add('LDAP_Background_Sync_ABAC_Attributes_Interval', '0 0 * * *', {
 						type: 'string',
+						validation: [validCron()],
 						enableQuery: [enableQuery, { _id: 'LDAP_Background_Sync_ABAC_Attributes', value: true }],
 						invalidValue: '0 0 * * *',
 						modules: ['abac', 'ldap-enterprise'],
@@ -300,6 +307,7 @@ export function addSettings(): Promise<void> {
 
 					await this.add('LDAP_ABAC_AttributeMap', '{}', {
 						type: 'code',
+						code: 'application/json',
 						multiline: true,
 						enableQuery: [enableQuery, { _id: 'LDAP_Background_Sync_ABAC_Attributes', value: true }],
 						invalidValue: '{}',

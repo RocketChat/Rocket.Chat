@@ -1,5 +1,4 @@
 import {
-	Box,
 	States,
 	StatesIcon,
 	StatesSubtitle,
@@ -8,26 +7,26 @@ import {
 	StatesSuggestionListItem,
 	StatesSuggestionText,
 	StatesTitle,
+	Stack,
 } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type NoMarketplaceOrInstalledAppMatchesEmptyStateProps = { shouldShowSearchText: boolean; text: string };
+export type NoMarketplaceOrInstalledAppMatchesEmptyStateProps = { shouldShowSearchText: boolean; text: string };
 
 const NoMarketplaceOrInstalledAppMatchesEmptyState = ({
 	shouldShowSearchText,
 	text,
-}: NoMarketplaceOrInstalledAppMatchesEmptyStateProps): ReactElement => {
+}: NoMarketplaceOrInstalledAppMatchesEmptyStateProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<Box mbs={20}>
+		<Stack grow justify='center'>
 			<States>
 				<StatesIcon name='magnifier' />
 				<StatesTitle>{t('No_app_matches')}</StatesTitle>
 				{shouldShowSearchText && (
 					<StatesSubtitle>
-						{t('No_marketplace_matches_for')}: <strong>"{text}"</strong>
+						{t('No_marketplace_matches_for')}: <strong>&quot;{text}&quot;</strong>
 					</StatesSubtitle>
 				)}
 				<StatesSuggestion>
@@ -40,7 +39,7 @@ const NoMarketplaceOrInstalledAppMatchesEmptyState = ({
 					</StatesSuggestionList>
 				</StatesSuggestion>
 			</States>
-		</Box>
+		</Stack>
 	);
 };
 

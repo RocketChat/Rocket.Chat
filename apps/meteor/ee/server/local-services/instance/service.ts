@@ -1,6 +1,6 @@
-import os from 'os';
+import os from 'node:os';
 
-import type { AppStatusReport } from '@rocket.chat/core-services';
+import type { AppStatusReport, ClusterTransport, EventSignatures, LocalBroker } from '@rocket.chat/core-services';
 import { Apps, License, ServiceClassInternal, Settings } from '@rocket.chat/core-services';
 import type { IInstanceStatus } from '@rocket.chat/core-typings';
 import { InstanceStatus, defaultPingInterval, indexExpire } from '@rocket.chat/instance-status';
@@ -9,10 +9,10 @@ import EJSON from 'ejson';
 import type { BrokerNode } from 'moleculer';
 import { ServiceBroker, Transporters, Serializers } from 'moleculer';
 
+import { getEncryption, getEncryptionWarning } from './getEncryption';
 import { getLogger } from './getLogger';
 import { getTransporter } from './getTransporter';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
 import { AppsEngineNoNodesFoundError } from '../../../../server/services/apps-engine/service';
 import type { IInstanceService } from '../../sdk/types/IInstanceService';
 
@@ -30,10 +30,10 @@ class EJSONSerializer extends Base {
 	}
 }
 
+type ClusterBroker = Pick<LocalBroker, 'setClusterTransport' | 'broadcastLocal'>;
+
 export class InstanceService extends ServiceClassInternal implements IInstanceService {
 	protected name = 'instance';
-
-	private broadcastStarted = false;
 
 	private transporter: Transporters.TCP | Transporters.NATS;
 
@@ -41,12 +41,22 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 	private troubleshootDisableInstanceBroadcast = false;
 
-	constructor() {
+	private readonly clusterTransport: ClusterTransport = {
+		publish: (event, args) => {
+			if (this.troubleshootDisableInstanceBroadcast) {
+				return;
+			}
+
+			void this.broker.broadcast('event', { event, args });
+		},
+	};
+
+	constructor(private readonly localBroker: ClusterBroker) {
 		super();
 
-		this.onEvent('license.module', async ({ module, valid }) => {
+		this.onEvent('license.module', ({ module, valid }) => {
 			if (module === 'scalability' && valid) {
-				await this.startBroadcast();
+				this.startBroadcast();
 			}
 		});
 
@@ -74,6 +84,11 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 		const isTransporterTCP = typeof transporter !== 'string';
 
+		const encryptionWarning = getEncryptionWarning(process.env.MOLECULER_ENCRYPTION_SECRET, isTransporterTCP ? 'tcp' : 'nats');
+		if (encryptionWarning) {
+			SystemLogger.warn(encryptionWarning);
+		}
+
 		this.transporter = isTransporterTCP ? new Transporters.TCP(transporter) : new Transporters.NATS({ url: transporter });
 
 		this.broker = new ServiceBroker({
@@ -83,32 +98,22 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 			heartbeatInterval: defaultPingInterval,
 			heartbeatTimeout: indexExpire,
 			...getLogger(process.env),
+			...getEncryption(process.env),
 		});
+
+		const { localBroker } = this;
 
 		this.broker.createService({
 			name: 'matrix',
 			events: {
-				broadcast(ctx: any) {
-					const { eventName, streamName, args } = ctx.params;
-					const { nodeID } = ctx;
+				event(ctx: any) {
+					const { event, args } = ctx.params as { event: keyof EventSignatures; args: unknown[] };
 
-					const fromLocalNode = nodeID === InstanceStatus.id();
-					if (fromLocalNode) {
+					if (ctx.nodeID === InstanceStatus.id()) {
 						return;
 					}
 
-					const instance = StreamerCentral.instances[streamName];
-					if (!instance) {
-						// return 'stream-not-exists';
-						return;
-					}
-
-					if (instance.serverOnly) {
-						instance.__emit(eventName, ...args);
-					} else {
-						// @ts-expect-error not sure why it thinks _emit needs an extra argument
-						StreamerCentral.instances[streamName]._emit(eventName, args);
-					}
+					void localBroker.broadcastLocal(event, ...(args as Parameters<EventSignatures[typeof event]>));
 				},
 			},
 			actions: {
@@ -147,11 +152,14 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 		const { host, tcpPort } = record.extraInformation;
 
+		// oxlint-disable-next-line typescript/no-unsafe-call -- TcpTransporter internals are not in moleculer's types
 		(this.broker?.transit?.tx as any).addOfflineNode(record._id, host, tcpPort);
 	}
 
 	private disconnectNode(nodeId: string) {
+		// oxlint-disable-next-line typescript/no-unsafe-call -- TcpTransporter internals are not in moleculer's types
 		(this.broker.transit?.tx as any).nodes.disconnected(nodeId, false);
+		// oxlint-disable-next-line typescript/no-unsafe-call -- TcpTransporter internals are not in moleculer's types
 		(this.broker.transit?.tx as any).nodes.nodes.delete(nodeId);
 	}
 
@@ -186,28 +194,14 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 			this.troubleshootDisableInstanceBroadcast = await Settings.get<boolean>('Troubleshoot_Disable_Instance_Broadcast');
 
-			await this.startBroadcast();
+			this.startBroadcast();
 		} catch (error) {
 			console.error('Instance service did not start correctly', error);
 		}
 	}
 
-	private async startBroadcast() {
-		if (this.broadcastStarted) {
-			return;
-		}
-
-		this.broadcastStarted = true;
-
-		StreamerCentral.on('broadcast', this.sendBroadcast.bind(this));
-	}
-
-	private sendBroadcast(streamName: string, eventName: string, args: unknown[]) {
-		if (this.troubleshootDisableInstanceBroadcast) {
-			return;
-		}
-
-		void this.broker.broadcast('broadcast', { streamName, eventName, args });
+	private startBroadcast() {
+		this.localBroker.setClusterTransport(this.clusterTransport);
 	}
 
 	async getInstances(): Promise<BrokerNode[]> {

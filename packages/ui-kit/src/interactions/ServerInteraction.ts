@@ -1,14 +1,27 @@
 import typia from 'typia';
 
-import type { BannerView } from '../surfaces/banner';
-import type { ContextualBarView } from '../surfaces/contextualBar';
-import type { ModalView } from '../surfaces/modal';
+import type { BannerView } from '../surfaces/banner/index.js';
+import type { ContextualBarView } from '../surfaces/contextualBar/index.js';
+import type { ModalView } from '../surfaces/modal/index.js';
 
 type OpenModalServerInteraction = {
 	type: 'modal.open';
 	triggerId: string;
 	appId: string;
 	view: ModalView;
+};
+
+type PushModalServerInteraction = {
+	type: 'modal.push';
+	triggerId: string;
+	appId: string;
+	view: ModalView;
+};
+
+type ClearModalsServerInteraction = {
+	type: 'modal.clear';
+	triggerId: string;
+	appId: string;
 };
 
 type UpdateModalServerInteraction = {
@@ -22,6 +35,8 @@ type CloseModalServerInteraction = {
 	type: 'modal.close';
 	triggerId: string;
 	appId: string;
+	viewId?: ModalView['id'];
+	view?: ModalView;
 };
 
 type OpenBannerServerInteraction = {
@@ -69,13 +84,15 @@ type ReportErrorsServerInteraction = {
 	type: 'errors';
 	triggerId: string;
 	appId: string;
-	// eslint-disable-next-line @typescript-eslint/no-duplicate-type-constituents
+	// oxlint-disable-next-line @typescript-eslint/no-duplicate-type-constituents
 	viewId: ModalView['id'] | BannerView['viewId'] | ContextualBarView['id'];
 	errors: { [field: string]: string }[];
 };
 
 export type ServerInteraction =
 	| OpenModalServerInteraction
+	| PushModalServerInteraction
+	| ClearModalsServerInteraction
 	| UpdateModalServerInteraction
 	| CloseModalServerInteraction
 	| OpenBannerServerInteraction
@@ -87,6 +104,8 @@ export type ServerInteraction =
 	| ReportErrorsServerInteraction;
 
 export const isOpenModalServerInteraction = typia.createIs<OpenModalServerInteraction>();
+export const isPushModalServerInteraction = typia.createIs<PushModalServerInteraction>();
+export const isClearModalsServerInteraction = typia.createIs<ClearModalsServerInteraction>();
 export const isUpdateModalServerInteraction = typia.createIs<UpdateModalServerInteraction>();
 export const isCloseModalServerInteraction = typia.createIs<CloseModalServerInteraction>();
 export const isOpenBannerServerInteraction = typia.createIs<OpenBannerServerInteraction>();
@@ -99,6 +118,8 @@ export const isReportErrorsServerInteraction = typia.createIs<ReportErrorsServer
 
 export const isServerInteraction = (input: unknown): input is ServerInteraction =>
 	isOpenModalServerInteraction(input) ||
+	isPushModalServerInteraction(input) ||
+	isClearModalsServerInteraction(input) ||
 	isUpdateModalServerInteraction(input) ||
 	isCloseModalServerInteraction(input) ||
 	isOpenBannerServerInteraction(input) ||

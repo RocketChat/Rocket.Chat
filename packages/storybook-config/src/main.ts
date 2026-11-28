@@ -1,18 +1,22 @@
-import { dirname, join } from 'path';
+import { createRequire } from 'node:module';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import type { StorybookConfig } from '@storybook/react-webpack5';
 
-function getAbsolutePath(value: any): string {
+const require = createRequire(import.meta.url);
+
+function getAbsolutePath(value: string): string {
 	return dirname(require.resolve(join(value, 'package.json')));
 }
 
-const baseConfig = (customConfig?: StorybookConfig): StorybookConfig => {
+const baseConfig = ({ staticDirs = [], ...customConfig }: Partial<StorybookConfig> = {}): StorybookConfig => {
 	return {
 		stories: ['../src/**/*.stories.@(js|jsx|ts|tsx)'],
 		addons: [
 			getAbsolutePath('@storybook/addon-a11y'),
-			getAbsolutePath('@storybook/addon-essentials'),
-			getAbsolutePath('storybook-dark-mode'),
+			getAbsolutePath('@storybook/addon-docs'),
+			fileURLToPath(import.meta.resolve('./preset.js')),
 			getAbsolutePath('@storybook/addon-webpack5-compiler-swc'),
 			getAbsolutePath('@storybook/addon-styling-webpack'),
 		],
@@ -23,6 +27,7 @@ const baseConfig = (customConfig?: StorybookConfig): StorybookConfig => {
 		typescript: {
 			reactDocgen: 'react-docgen',
 		},
+		staticDirs: async (dirs, options) => (typeof staticDirs === 'function' ? staticDirs(dirs, options) : [...(dirs ?? []), ...staticDirs]),
 		...customConfig,
 	};
 };

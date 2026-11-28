@@ -1,4 +1,5 @@
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { ActionButton } from '@rocket.chat/ui-media';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -10,39 +11,46 @@ import {
 	WidgetHeader,
 	WidgetContent,
 	DevicePicker,
-	ActionButton,
+	Keypad,
+	useDraggableWidget,
 } from '../../components';
 import { usePeerAutocomplete } from '../../context';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import { useWidgetExternalControls } from '../../context/useWidgetExternalControls';
+import { isUnknownPeer } from '../../utils/isUnknownPeer';
 
 const NewCall = () => {
 	const { t } = useTranslation();
 
-	const { sessionState, onCall, onSelectPeer } = useMediaCallView();
-	const { peerInfo } = sessionState;
+	const { onCall, onSelectPeer, targetPeer } = useMediaCallView();
 	const { toggleWidget } = useWidgetExternalControls();
+	const isInline = !useDraggableWidget();
 
-	const autocomplete = usePeerAutocomplete(onSelectPeer, peerInfo);
+	const autocomplete = usePeerAutocomplete(onSelectPeer, targetPeer);
 
 	return (
 		<Widget>
 			<WidgetHandle />
 			<WidgetHeader title={t('New_call')}>
-				<ActionButton tiny secondary={false} label={t('Close')} icon='cross' onClick={() => toggleWidget()} />
+				{!isInline && <ActionButton size='tiny' secondary={false} label={t('Close')} icon='cross' onClick={() => toggleWidget()} />}
 			</WidgetHeader>
 			<WidgetContent>
 				<PeerAutocomplete {...autocomplete} />
-				{peerInfo && (
-					<Box mb={8}>
-						<PeerInfo {...peerInfo} />
+				{targetPeer && !isUnknownPeer(targetPeer) && (
+					<Box marginBlock={8}>
+						<PeerInfo {...targetPeer} />
+					</Box>
+				)}
+				{isInline && (
+					<Box display='flex' justifyContent='center' marginBlockStart={12}>
+						<Keypad autoFocus={false} onKeyPress={autocomplete.onKeypadPress} />
 					</Box>
 				)}
 			</WidgetContent>
 			<WidgetFooter>
 				<ButtonGroup stretch>
 					<DevicePicker secondary />
-					<Button medium icon='phone' success flexGrow={1} onClick={onCall}>
+					<Button size='medium' icon='phone' variant='success' onClick={onCall}>
 						{t('Call')}
 					</Button>
 				</ButtonGroup>

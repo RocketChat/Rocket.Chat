@@ -2,8 +2,8 @@ import { useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { BaseAvatarProps } from './BaseAvatar';
-import BaseAvatar from './BaseAvatar';
+import type { BaseAvatarProps } from './BaseAvatar.js';
+import BaseAvatar from './BaseAvatar.js';
 
 type UsernameProp = {
 	username: string;
@@ -14,10 +14,9 @@ type UserIdProp = {
 	userId: string;
 	username?: never;
 };
-type UserAvatarProps = Omit<BaseAvatarProps, 'url' | 'title'> & {
+export type UserAvatarProps = Omit<BaseAvatarProps, 'url'> & {
 	etag?: string | null;
 	url?: string;
-	title?: string;
 } & (UsernameProp | UserIdProp);
 
 const UserAvatar = ({ username, userId, etag, ...rest }: UserAvatarProps) => {
@@ -30,7 +29,7 @@ const UserAvatar = ({ username, userId, etag, ...rest }: UserAvatarProps) => {
 	}
 	if (username) {
 		const { url = getUserAvatarPath({ username, etag }), ...props } = rest;
-		return <BaseAvatar url={url} data-username={username} title={username} alt={t('Avatar')} {...props} />;
+		return <BaseAvatar url={url} data-username={username} alt={t('Avatar')} {...props} />;
 	}
 
 	// TODO: We should throw an Error after fixing the issue in Composer passing the username undefined

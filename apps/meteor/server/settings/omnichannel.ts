@@ -1,12 +1,12 @@
 import { SettingEditor } from '@rocket.chat/core-typings';
 
-import { settingsRegistry } from '../../app/settings/server';
+import { settingsRegistry } from '.';
 
 const omnichannelEnabledQuery = { _id: 'Livechat_enabled', value: true };
 
 export const createOmniSettings = () =>
 	settingsRegistry.addGroup('Omnichannel', async function () {
-		await this.add('Livechat_enabled', true, {
+		await this.add('Livechat_enabled', false, {
 			type: 'boolean',
 			group: 'Omnichannel',
 			public: true,

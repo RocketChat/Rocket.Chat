@@ -1,25 +1,21 @@
 import type { IStats } from '@rocket.chat/core-typings';
 import { Card } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import WorkspaceCardSection from '../components/WorkspaceCardSection';
-import WorkspaceCardSectionTitle from '../components/WorkspaceCardSectionTitle';
 import WorkspaceCardTextSeparator from '../components/WorkspaceCardTextSeparator';
 
-type MessagesRoomsCardProps = {
+export type MessagesRoomsCardProps = {
 	statistics: IStats;
 };
 
-const MessagesRoomsCard = ({ statistics }: MessagesRoomsCardProps): ReactElement => {
+const MessagesRoomsCard = ({ statistics }: MessagesRoomsCardProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<Card height='full'>
-			<WorkspaceCardSection>
-				<WorkspaceCardSectionTitle title={t('Total_rooms')} variant='h4' />
-
+		<Card>
+			<WorkspaceCardSection title={t('Total_rooms')}>
 				<WorkspaceCardTextSeparator label={t('Channels')} icon='hash' value={statistics.totalChannels} />
 				<WorkspaceCardTextSeparator label={t('Private_Groups')} icon='lock' value={statistics.totalPrivateGroups} />
 				<WorkspaceCardTextSeparator label={t('Direct_Messages')} icon='balloon' value={statistics.totalDirect} />
@@ -28,8 +24,7 @@ const MessagesRoomsCard = ({ statistics }: MessagesRoomsCardProps): ReactElement
 				<WorkspaceCardTextSeparator label={t('Total')} value={statistics.totalRooms} />
 			</WorkspaceCardSection>
 
-			<WorkspaceCardSection>
-				<WorkspaceCardSectionTitle title={t('Messages')} variant='h4' />
+			<WorkspaceCardSection title={t('Messages')}>
 				<WorkspaceCardTextSeparator label={t('Stats_Total_Messages_Channel')} icon='hash' value={statistics.totalChannelMessages} />
 				<WorkspaceCardTextSeparator
 					label={t('Stats_Total_Messages_PrivateGroup')}

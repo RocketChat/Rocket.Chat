@@ -1,0 +1,29 @@
+import { ClientSafeError, Message, Room } from '@rocket.chat/core-services';
+import type { IUser } from '@rocket.chat/core-typings';
+import { Rooms } from '@rocket.chat/models';
+
+import { callbacks } from '../../callbacks';
+
+export const saveRoomTopic = async (
+	rid: string,
+	roomTopic: string | undefined,
+	user: Pick<IUser, 'username' | '_id' | 'federation' | 'federated'>,
+	sendMessage = true,
+) => {
+	const room = await Rooms.findOneById(rid);
+
+	if (!room) {
+		throw new ClientSafeError('error-invalid-room', 'Invalid room', {
+			function: 'RocketChat.saveRoomTopic',
+		});
+	}
+
+	await Room.beforeTopicChange(room);
+
+	const update = await Rooms.setTopicById(rid, roomTopic);
+	if (update && sendMessage) {
+		await Message.saveSystemMessage('room_changed_topic', rid, roomTopic || '', user);
+	}
+	await callbacks.run('afterRoomTopicChange', undefined, { room, topic: roomTopic, user });
+	return update;
+};

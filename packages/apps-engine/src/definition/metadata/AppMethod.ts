@@ -77,10 +77,13 @@ export enum AppMethod {
 	EXECUTEPOSTEXTERNALCOMPONENTCLOSED = 'executePostExternalComponentClosed',
 	// Blockit handlers
 	UIKIT_BLOCK_ACTION = 'executeBlockActionHandler',
+	UIKIT_BLOCK_SUGGESTION = 'executeBlockSuggestionHandler',
 	UIKIT_VIEW_SUBMIT = 'executeViewSubmitHandler',
 	UIKIT_VIEW_CLOSE = 'executeViewClosedHandler',
 	UIKIT_ACTION_BUTTON = 'executeActionButtonHandler',
 	UIKIT_LIVECHAT_BLOCK_ACTION = 'executeLivechatBlockActionHandler',
+	UIKIT_LIVECHAT_VIEW_SUBMIT = 'executeLivechatViewSubmitHandler',
+	UIKIT_LIVECHAT_VIEW_CLOSE = 'executeLivechatViewClosedHandler',
 	// Livechat
 	EXECUTE_POST_LIVECHAT_ROOM_STARTED = 'executePostLivechatRoomStarted',
 	/**
@@ -107,6 +110,11 @@ export enum AppMethod {
 	EXECUTE_POST_USER_LOGGED_IN = 'executePostUserLoggedIn',
 	EXECUTE_POST_USER_LOGGED_OUT = 'executePostUserLoggedOut',
 	EXECUTE_POST_USER_STATUS_CHANGED = 'executePostUserStatusChanged',
+	// Media calls
+	EXECUTE_PRE_MEDIA_CALL_CREATED = 'executePreMediaCallCreated',
+	EXECUTE_POST_MEDIA_CALL_STARTED = 'executePostMediaCallStarted',
+	EXECUTE_POST_MEDIA_CALL_PARTICIPANT_JOINED = 'executePostMediaCallParticipantJoined',
+	EXECUTE_POST_MEDIA_CALL_ENDED = 'executePostMediaCallEnded',
 	// Runtime specific methods
 	RUNTIME_RESTART = 'runtime:restart',
 	RUNTIME_UNCAUGHT_EXCEPTION = 'runtime:uncaughtException',

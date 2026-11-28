@@ -1,5 +1,6 @@
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import { ajvQuery } from '../Ajv';
+import { paginationQueryProperties } from '../pagination';
 
 export type TeamsMembersProps = PaginatedRequest<
 	({ teamId: string } | { teamName: string }) & {
@@ -17,8 +18,7 @@ const teamsMembersPropsSchema = {
 		status: { type: 'array', items: { type: 'string' }, nullable: true },
 		username: { type: 'string', nullable: true },
 		name: { type: 'string', nullable: true },
-		offset: { type: 'number', nullable: true },
-		count: { type: 'number', nullable: true },
+		...paginationQueryProperties,
 		sort: { type: 'string', nullable: true },
 	},
 	oneOf: [

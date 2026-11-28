@@ -1,5 +1,6 @@
-export interface IEmailMessageHistory {
-	_id: string;
+import type { IRocketChatRecord } from './IRocketChatRecord';
+
+export interface IEmailMessageHistory extends IRocketChatRecord {
 	email: string;
 	createdAt?: Date;
 }

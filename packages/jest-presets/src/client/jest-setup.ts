@@ -1,12 +1,17 @@
 import { webcrypto } from 'node:crypto';
 import { TextEncoder, TextDecoder } from 'node:util';
 
-import { toHaveNoViolations } from 'jest-axe';
+import type { IToHaveNoViolations } from 'jest-axe';
 import * as uuid from 'uuid';
 
 import '@testing-library/jest-dom';
 
-expect.extend(toHaveNoViolations);
+expect.extend({
+	toHaveNoViolations(...args: Parameters<IToHaveNoViolations>) {
+		const { toHaveNoViolations } = jest.requireActual<typeof import('jest-axe')>('jest-axe');
+		return toHaveNoViolations.toHaveNoViolations.apply(this, args);
+	},
+});
 
 const urlByBlob = new WeakMap<Blob, string>();
 const blobByUrl = new Map<string, Blob>();
@@ -46,29 +51,31 @@ Object.defineProperty(global.navigator, 'serviceWorker', {
 	},
 });
 
-globalThis.IntersectionObserver = class IntersectionObserver {
-	root = null;
+globalThis.IntersectionObserver = class implements IntersectionObserver {
+	readonly root: Document | Element | null = null;
 
-	rootMargin = '';
+	readonly rootMargin: string = '';
 
-	thresholds = [];
+	readonly scrollMargin: string = '';
 
-	disconnect() {
-		return null;
+	readonly thresholds: ReadonlyArray<number> = [];
+
+	disconnect(): void {
+		// no-op mock
 	}
 
-	observe() {
-		return null;
+	observe(): void {
+		// no-op mock
 	}
 
-	takeRecords() {
+	takeRecords(): IntersectionObserverEntry[] {
 		return [];
 	}
 
-	unobserve() {
-		return null;
+	unobserve(): void {
+		// no-op mock
 	}
 };
 
-globalThis.TextEncoder = TextEncoder as any;
+globalThis.TextEncoder = TextEncoder;
 globalThis.TextDecoder = TextDecoder as any;

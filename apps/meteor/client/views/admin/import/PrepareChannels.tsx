@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { ChannelDescriptor } from './ChannelDescriptor';
 
-type PrepareChannelsProps = {
+export type PrepareChannelsProps = {
 	channelsCount: number;
 	channels: ChannelDescriptor[];
 	setChannels: Dispatch<SetStateAction<ChannelDescriptor[]>>;
@@ -18,7 +18,7 @@ const PrepareChannels = ({ channels, channelsCount, setChannels }: PrepareChanne
 	const [itemsPerPage, setItemsPerPage] = useState<25 | 50 | 100>(25);
 	const showingResultsLabel = useCallback(
 		({ count, current, itemsPerPage }: { count: number; current: number; itemsPerPage: 25 | 50 | 100 }) =>
-			t('Showing_results_of', { postProcess: 'sprintf', sprintf: [current + 1, Math.min(current + itemsPerPage, count), count] }),
+			t('Showing_results_of', { from: current + 1, to: Math.min(current + itemsPerPage, count), total: count }),
 		[t],
 	);
 	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), [t]);
@@ -29,10 +29,10 @@ const PrepareChannels = ({ channels, channelsCount, setChannels }: PrepareChanne
 
 	return (
 		<>
-			<Table>
+			<Table columns={['x36', 'auto', 'auto']}>
 				<TableHead>
 					<TableRow>
-						<TableCell width='x36'>
+						<TableCell>
 							<CheckBox
 								checked={channelsCount > 0}
 								indeterminate={channelsCount > 0 && channelsCount !== channels.length}
@@ -54,14 +54,14 @@ const PrepareChannels = ({ channels, channelsCount, setChannels }: PrepareChanne
 								}}
 							/>
 						</TableCell>
-						<TableCell is='th'>{t('Name')}</TableCell>
-						<TableCell is='th' align='end'></TableCell>
+						<TableCell>{t('Name')}</TableCell>
+						<TableCell align='end'></TableCell>
 					</TableRow>
 				</TableHead>
 				<TableBody>
 					{channels.slice(current, current + itemsPerPage).map((channel) => (
 						<TableRow key={channel.channel_id}>
-							<TableCell width='x36'>
+							<TableCell>
 								<CheckBox
 									checked={channel.do_import}
 									onChange={(event: ChangeEvent<HTMLInputElement>): void => {

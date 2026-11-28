@@ -1,17 +1,19 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
+import { useUserPreference } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import type { FormEvent } from 'react';
 
 import ModalBlock from './ModalBlock';
+import { useModalContextValue } from './useModalContextValue';
+import { useUiKitActionManager } from '../../../hooks/uikit/useUiKitActionManager';
+import { useUiKitView } from '../../../hooks/uikit/useUiKitView';
+import { useOpenedRoom } from '../../../lib/RoomManager';
 import { detectEmoji } from '../../../lib/utils/detectEmoji';
 import { preventSyntheticEvent } from '../../../lib/utils/preventSyntheticEvent';
-import { useModalContextValue } from '../../../uikit/hooks/useModalContextValue';
-import { useUiKitActionManager } from '../../../uikit/hooks/useUiKitActionManager';
-import { useUiKitView } from '../../../uikit/hooks/useUiKitView';
 
-type UiKitModalProps = {
+export type UiKitModalProps = {
 	key: UiKit.ModalView['id']; // force re-mount when viewId changes
 	initialView: UiKit.ModalView;
 };
@@ -19,10 +21,17 @@ type UiKitModalProps = {
 const UiKitModal = ({ initialView }: UiKitModalProps) => {
 	const actionManager = useUiKitActionManager();
 	const { view, errors, values, updateValues, state } = useUiKitView(initialView);
-	const contextValue = useModalContextValue({ view, errors, values, updateValues });
+	// The room on screen, for the elements that default to the current conversation.
+	const rid = useOpenedRoom();
+	const contextValue = useModalContextValue({ view, errors, values, updateValues, rid });
+	const useEmoji = useUserPreference<boolean>('useEmojis', true);
+	const convertAsciiToEmoji = useUserPreference<boolean>('convertAsciiEmoji', true);
 
-	const handleSubmit = useEffectEvent((e: FormEvent) => {
+	const handleSubmit = useStableCallback((e: FormEvent) => {
 		preventSyntheticEvent(e);
+		if (view.submit_disabled || contextValue.uploading) {
+			return;
+		}
 		void actionManager.emitInteraction(view.appId, {
 			type: 'viewSubmit',
 			payload: {
@@ -35,8 +44,25 @@ const UiKitModal = ({ initialView }: UiKitModalProps) => {
 		});
 	});
 
-	const handleCancel = useEffectEvent((e: FormEvent) => {
+	// Returns whether the app is to be told about the close.
+	const beforeClosing = () => {
+		if (view.clearOnClose) {
+			actionManager.clearModals(view.appId);
+		}
+
+		if (view.notifyOnClose === false) {
+			actionManager.disposeView(view.id);
+			return false;
+		}
+
+		return true;
+	};
+
+	const handleCancel = useStableCallback((e: FormEvent) => {
 		preventSyntheticEvent(e);
+		if (!beforeClosing()) {
+			return;
+		}
 		void actionManager.emitInteraction(view.appId, {
 			type: 'viewClosed',
 			payload: {
@@ -50,7 +76,10 @@ const UiKitModal = ({ initialView }: UiKitModalProps) => {
 		});
 	});
 
-	const handleClose = useEffectEvent(() => {
+	const handleClose = useStableCallback(() => {
+		if (!beforeClosing()) {
+			return;
+		}
 		void actionManager.emitInteraction(view.appId, {
 			type: 'viewClosed',
 			payload: {
@@ -69,6 +98,8 @@ const UiKitModal = ({ initialView }: UiKitModalProps) => {
 			<MarkupInteractionContext.Provider
 				value={{
 					detectEmoji,
+					useEmoji,
+					convertAsciiToEmoji,
 				}}
 			>
 				<ModalBlock view={view} errors={errors} appId={view.appId} onSubmit={handleSubmit} onCancel={handleCancel} onClose={handleClose} />

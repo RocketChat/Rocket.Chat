@@ -2,7 +2,7 @@ import { isE2EEPinnedMessage, type IRoom, type IMessage } from '@rocket.chat/cor
 import { useUserId, useSetting, useRouter, useLayout, useUser } from '@rocket.chat/ui-contexts';
 import { useEffect, useRef } from 'react';
 
-import { MentionsParser } from '../../../../../app/mentions/lib/MentionsParser';
+import { MentionsParser } from '../../../../../lib/MentionsParser';
 import { e2e } from '../../../../lib/e2ee';
 import { onClientBeforeSendMessage } from '../../../../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../../../../lib/onClientMessageReceived';
@@ -75,7 +75,7 @@ export const useE2EEncryption = () => {
 
 				if (room) resolve(room);
 
-				const unsubscribe = Rooms.use.subscribe((state) => {
+				const unsubscribe = Rooms.useStore.subscribe((state) => {
 					const room = state.get(message.rid);
 					if (room) {
 						unsubscribe();
@@ -84,7 +84,11 @@ export const useE2EEncryption = () => {
 				});
 			});
 
-			subscription.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+			if (subscription.encrypted) {
+				e2eRoom.resume();
+			} else {
+				e2eRoom.pause();
+			}
 
 			const shouldConvertSentMessages = await e2eRoom.shouldConvertSentMessages(message);
 

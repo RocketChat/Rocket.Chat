@@ -56,10 +56,6 @@ export class FederationKeysRaw extends BaseRaw<FederationKey> implements IFedera
 		return keyData && this.loadKey(keyData, 'private');
 	}
 
-	getPrivateKeyString(): Promise<string | null> {
-		return this.getKey('private');
-	}
-
 	async getPublicKey(): Promise<'' | NodeRSA | null> {
 		const keyData = await this.getKey('public');
 

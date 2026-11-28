@@ -1,18 +1,24 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { sanitize } from 'dompurify';
+import { escapeRegExp } from '@rocket.chat/tools';
+import DOMPurify from 'dompurify';
 
 export function truncate(str: string, length: number): string {
 	return str.length > length ? `${str.slice(0, length - 3)}...` : str;
 }
 
-function makeString(object: unknown): string {
+type Stringable = string | number | boolean | bigint | null | undefined;
+
+type TrimCharacters = Stringable | { source: string };
+
+function makeString(object: Stringable): string {
 	if (!object) return '';
 	return String(object);
 }
 
-function defaultToWhiteSpace(characters: unknown): string {
+function defaultToWhiteSpace(characters: TrimCharacters): string {
 	if (!characters) return '\\s';
-	if (typeof characters === 'object' && 'source' in characters) return (characters as { source: string }).source;
+	if (typeof characters === 'object' && 'source' in characters) {
+		return characters.source;
+	}
 	return `[${escapeRegExp(makeString(characters))}]`;
 }
 
@@ -20,53 +26,53 @@ const nativeTrim = String.prototype.trim;
 const nativeTrimLeft = String.prototype.trimLeft;
 const nativeTrimRight = String.prototype.trimRight;
 
-export function trim(_str: unknown, _characters?: unknown): string {
+export function trim(_str: Stringable, _characters?: TrimCharacters): string {
 	const str = makeString(_str);
 	if (!_characters && nativeTrim) return nativeTrim.call(str);
 	const characters = defaultToWhiteSpace(_characters);
 	return str.replace(new RegExp(`^${characters}+|${characters}+$`, 'g'), '');
 }
 
-export function ltrim(_str: unknown, _characters: unknown): string {
+export function ltrim(_str: Stringable, _characters: TrimCharacters): string {
 	const str = makeString(_str);
 	if (!_characters && nativeTrimLeft) return nativeTrimLeft.call(str);
 	const characters = defaultToWhiteSpace(_characters);
 	return str.replace(new RegExp(`^${characters}+`), '');
 }
 
-export function rtrim(_str: unknown, _characters: unknown): string {
+export function rtrim(_str: Stringable, _characters: TrimCharacters): string {
 	const str = makeString(_str);
 	if (!_characters && nativeTrimRight) return nativeTrimRight.call(str);
 	const characters = defaultToWhiteSpace(_characters);
 	return str.replace(new RegExp(`${characters}+$`), '');
 }
 
-export function capitalize(_str: unknown, lowercaseRest: boolean): string {
+export function capitalize(_str: Stringable, lowercaseRest: boolean): string {
 	const str = makeString(_str);
 	const remainingChars = !lowercaseRest ? str.slice(1) : str.slice(1).toLowerCase();
 
 	return str.charAt(0).toUpperCase() + remainingChars;
 }
 
-export function stripTags(str: unknown): string {
-	return sanitize(makeString(str)).replace(/<\/?[^>]+>/g, '');
+export function stripTags(str: Stringable): string {
+	return DOMPurify.sanitize(makeString(str)).replace(/<\/?[^>]+>/g, '');
 }
 
-export function strLeft(_str: unknown, _sep: unknown): string {
+export function strLeft(_str: Stringable, _sep: Stringable): string {
 	const str = makeString(_str);
 	const sep = makeString(_sep);
 	const pos = !sep ? -1 : str.indexOf(sep);
 	return ~pos ? str.slice(0, pos) : str;
 }
 
-export function strRight(_str: unknown, _sep: unknown): string {
+export function strRight(_str: Stringable, _sep: Stringable): string {
 	const str = makeString(_str);
 	const sep = makeString(_sep);
 	const pos = !sep ? -1 : str.indexOf(sep);
 	return ~pos ? str.slice(pos + sep.length, str.length) : str;
 }
 
-export function strRightBack(_str: unknown, _sep: unknown): string {
+export function strRightBack(_str: Stringable, _sep: Stringable): string {
 	const str = makeString(_str);
 	const sep = makeString(_sep);
 	const pos = !sep ? -1 : str.lastIndexOf(sep);
@@ -86,11 +92,11 @@ export function numberFormat(_number: number, dec: number, dsep?: string, tsep?:
 	return fnums.replace(/(\d)(?=(?:\d{3})+$)/g, `$1${tsep}`) + decimals;
 }
 
-export function pad(_str: unknown, _length: number, padStr?: string, type: 'right' | 'left' | 'both' = 'right') {
+export function pad(_str: Stringable, _length: number, padStr?: string, type: 'right' | 'left' | 'both' = 'right') {
 	const str = makeString(_str);
 	const length = ~~_length;
 
-	let padlen = 0;
+	let padlen: number;
 
 	if (!padStr) padStr = ' ';
 	else if (padStr.length > 1) padStr = padStr.charAt(0);
@@ -108,6 +114,6 @@ export function pad(_str: unknown, _length: number, padStr?: string, type: 'righ
 	}
 }
 
-export function lrpad(str: unknown, length: number, padStr?: string): string {
+export function lrpad(str: Stringable, length: number, padStr?: string): string {
 	return pad(str, length, padStr, 'both');
 }

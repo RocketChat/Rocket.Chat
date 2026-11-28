@@ -27,11 +27,7 @@ export const useE2EEResetRoomKey = (
 				throw new Error('Cannot reset room key');
 			}
 
-			try {
-				await resetRoomKey({ rid: roomId, e2eKeyId, e2eKey });
-			} catch (error) {
-				throw error;
-			}
+			await resetRoomKey({ rid: roomId, e2eKeyId, e2eKey });
 		},
 
 		...options,

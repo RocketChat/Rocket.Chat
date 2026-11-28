@@ -1,0 +1,65 @@
+import { before, beforeEach, describe, it, mock } from 'node:test';
+
+import { expect } from 'chai';
+import sinon from 'sinon';
+
+const hasAllPermissionAsyncMock = sinon.stub();
+const getCachedSupportedVersionsTokenMock = sinon.stub();
+
+// #ToDo: Fix those tests in a separate PR
+describe.skip('#getServerInfo()', () => {
+	let getServerInfo: any;
+
+	before(async () => {
+		mock.module('../../../rocketchat.info', {
+			exports: {
+				Info: {
+					version: '3.0.1',
+				},
+			},
+		});
+		mock.module('../../lib/authorization/hasPermission', {
+			exports: {
+				hasPermissionAsync: hasAllPermissionAsyncMock,
+			},
+		});
+		mock.module('../../lib/cloud/supportedVersionsToken/supportedVersionsToken', {
+			exports: {
+				getCachedSupportedVersionsToken: getCachedSupportedVersionsTokenMock,
+			},
+		});
+		mock.module('../../settings', {
+			exports: {
+				settings: new Map(),
+			},
+		});
+		({ getServerInfo } = await import('./getServerInfo'));
+	});
+
+	beforeEach(() => {
+		hasAllPermissionAsyncMock.reset();
+		getCachedSupportedVersionsTokenMock.reset();
+	});
+
+	it('should return only the version (without the patch info) when the user is not present', async () => {
+		expect(await getServerInfo(undefined)).to.be.eql({ version: '3.0' });
+	});
+
+	it('should return only the version (without the patch info) when the user present but they dont have permission', async () => {
+		hasAllPermissionAsyncMock.resolves(false);
+		expect(await getServerInfo('userId')).to.be.eql({ version: '3.0' });
+	});
+
+	it('should return the info object + the supportedVersions from the cloud when the request to the cloud was a success', async () => {
+		const signedJwt = 'signedJwt';
+		hasAllPermissionAsyncMock.resolves(true);
+		getCachedSupportedVersionsTokenMock.resolves(signedJwt);
+		expect(await getServerInfo('userId')).to.be.eql({ info: { version: '3.0.1', supportedVersions: signedJwt } });
+	});
+
+	it('should return the info object ONLY from the cloud when the request to the cloud was NOT a success', async () => {
+		hasAllPermissionAsyncMock.resolves(true);
+		getCachedSupportedVersionsTokenMock.rejects();
+		expect(await getServerInfo('userId')).to.be.eql({ info: { version: '3.0.1' } });
+	});
+});

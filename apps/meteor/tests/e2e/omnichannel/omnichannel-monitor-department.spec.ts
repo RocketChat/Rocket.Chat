@@ -81,7 +81,7 @@ test.describe.serial('OC - Monitor Role', () => {
 	test.beforeEach(async ({ page }: { page: Page }) => {
 		poOmnichannelDepartments = new OmnichannelDepartments(page);
 
-		await page.goto('/omnichannel/departments');
+		await poOmnichannelDepartments.goto();
 	});
 
 	test('OC - Monitor Role - Create department with business unit', async () => {
@@ -89,7 +89,7 @@ test.describe.serial('OC - Monitor Role', () => {
 		const [unitA, unitB, unitC] = units.map((unit) => unit.data);
 
 		await test.step('expect to see only departmentA in the list', async () => {
-			await expect(poOmnichannelDepartments.departmentsTable.findRowByName(departmentA.name)).toBeVisible();
+			await expect(poOmnichannelDepartments.table.findRowByName(departmentA.name)).toBeVisible();
 		});
 
 		await test.step('expect to fill departments mandatory field', async () => {
@@ -130,8 +130,8 @@ test.describe.serial('OC - Monitor Role', () => {
 		});
 
 		await test.step('expect to have departmentA and departmentB visible', async () => {
-			await expect(poOmnichannelDepartments.departmentsTable.findRowByName(departmentA.name)).toBeVisible();
-			await expect(poOmnichannelDepartments.departmentsTable.findRowByName(newDepartmentName)).toBeVisible();
+			await expect(poOmnichannelDepartments.table.findRowByName(departmentA.name)).toBeVisible();
+			await expect(poOmnichannelDepartments.table.findRowByName(newDepartmentName)).toBeVisible();
 		});
 	});
 
@@ -141,44 +141,6 @@ test.describe.serial('OC - Monitor Role', () => {
 			await poOmnichannelDepartments.getDepartmentMenuByName(newDepartmentName).click();
 			await poOmnichannelDepartments.menuEditOption.click();
 			await expect(poOmnichannelDepartments.inputUnit).toBeDisabled();
-		});
-	});
-
-	// TODO: We are going to prevent editing busines unit for now
-	test.skip('OC - Monitor Role - Edit department business unit', async () => {
-		const [departmentA] = departments.map((dep) => dep.data);
-		const [, , unitC] = units.map((unit) => unit.data);
-
-		await test.step('expect to edit unit', async () => {
-			await poOmnichannelDepartments.search(newDepartmentName);
-			await poOmnichannelDepartments.getDepartmentMenuByName(newDepartmentName).click();
-			await poOmnichannelDepartments.menuEditOption.click();
-			await poOmnichannelDepartments.selectUnit(unitC.name);
-			await poOmnichannelDepartments.labelEnabled.click();
-			await poOmnichannelDepartments.btnSave.click();
-		});
-
-		await test.step('expect departmentB to still be visible', async () => {
-			await expect(poOmnichannelDepartments.departmentsTable.findRowByName(departmentA.name)).toBeVisible();
-			await expect(poOmnichannelDepartments.departmentsTable.findRowByName(newDepartmentName)).toBeVisible();
-		});
-	});
-
-	test.skip('OC - Monitor Role - Edit department and remove business unit', async () => {
-		const [departmentA] = departments.map((dep) => dep.data);
-
-		await test.step('expect to edit unit', async () => {
-			await poOmnichannelDepartments.search(newDepartmentName);
-			await poOmnichannelDepartments.getDepartmentMenuByName(newDepartmentName).click();
-			await poOmnichannelDepartments.menuEditOption.click();
-			await poOmnichannelDepartments.selectUnit('None');
-			await poOmnichannelDepartments.labelEnabled.click();
-			await poOmnichannelDepartments.btnSave.click();
-		});
-
-		await test.step('expect departmentB to not be visible', async () => {
-			await expect(poOmnichannelDepartments.departmentsTable.findRowByName(departmentA.name)).toBeVisible();
-			await expect(poOmnichannelDepartments.departmentsTable.findRowByName(newDepartmentName)).not.toBeVisible();
 		});
 	});
 });

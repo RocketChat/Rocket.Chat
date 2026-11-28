@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEffect, useRef } from 'react';
 
 const events = ['mousemove', 'mousedown', 'touchend', 'touchstart', 'keypress'];
@@ -34,7 +34,7 @@ export const useIdleDetection = ({
 }: UseIdleDetectionOptions = {}) => {
 	const idleRef = useRef(false);
 
-	const dispatchIdle = useEffectEvent(() => {
+	const dispatchIdle = useStableCallback(() => {
 		if (idleRef.current) return;
 
 		document.dispatchEvent(new Event(`${id}_idle`));
@@ -46,7 +46,7 @@ export const useIdleDetection = ({
 		idleRef.current = true;
 	});
 
-	const dispatchActive = useEffectEvent(() => {
+	const dispatchActive = useStableCallback(() => {
 		if (!idleRef.current) return;
 
 		document.dispatchEvent(new Event(`${id}_active`));

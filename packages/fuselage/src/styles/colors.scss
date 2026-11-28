@@ -1,0 +1,53 @@
+@use 'sass:map';
+@use './palette.scss';
+
+// A color of the palette `PaletteStyleTag` writes, by its name there, light where the page declares no palette.
+@function -color($name) {
+	@return var(--rcx-color-#{$name}, map.get(palette.$light, $name));
+}
+
+@function surface($type) {
+	@return -color(surface-#{$type});
+}
+
+@function font($type, $scape: false) {
+	@if $scape {
+		@return map.get(palette.$light, font-#{$type});
+	}
+
+	@return -color(font-#{$type});
+}
+
+@function status-bullet($type) {
+	@return -color(status-bullet-#{$type});
+}
+
+@function status-background($type) {
+	@return -color(status-background-#{$type});
+}
+
+@function status-font($type) {
+	@return -color(status-font-#{$type});
+}
+
+@function stroke($type) {
+	@return -color(stroke-#{$type});
+}
+
+@function badge($type) {
+	@return -color(badge-background-#{$type});
+}
+
+@function shadow($type) {
+	@return -color(shadow-#{$type});
+}
+
+@function button($type) {
+	@if map.has-key(palette.$light, button-background-#{$type}) {
+		@return -color(button-background-#{$type});
+	}
+	@if map.has-key(palette.$light, button-font-#{$type}) {
+		@return -color(button-font-#{$type});
+	}
+	@error "Unknown button type #{$type}.";
+}

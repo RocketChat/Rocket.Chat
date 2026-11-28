@@ -1,11 +1,13 @@
 import type { IThreadMainMessage, IThreadMessage } from '@rocket.chat/core-typings';
-import { Box, Bubble, MessageDivider } from '@rocket.chat/fuselage';
+import { Bubble, MessageDivider } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
+import ListRow from '../../../../../components/ListRow';
 import SystemMessage from '../../../../../components/message/variants/SystemMessage';
 import ThreadMessage from '../../../../../components/message/variants/ThreadMessage';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
+import { useRoomSubscription } from '../../../contexts/RoomContext';
 import { useDateRef } from '../../../providers/DateListProvider';
 
 type ThreadMessageProps = {
@@ -34,11 +36,13 @@ export const ThreadMessageItem = ({
 
 	const showDivider = newDay || firstUnread;
 
+	const subscription = useRoomSubscription();
+	const ignoredUser = Boolean(subscription?.ignored?.includes(message.u._id) || (message as { ignored?: boolean }).ignored);
+
 	return (
 		<>
 			{showDivider && (
-				<Box
-					role='listitem'
+				<ListRow
 					ref={ref}
 					data-id={message.ts}
 					{...(newDay && {
@@ -55,12 +59,18 @@ export const ThreadMessageItem = ({
 							</Bubble>
 						)}
 					</MessageDivider>
-				</Box>
+				</ListRow>
 			)}
 			{system ? (
 				<SystemMessage message={message} showUserAvatar={showUserAvatar} />
 			) : (
-				<ThreadMessage message={message} sequential={shouldShowAsSequential} unread={firstUnread} showUserAvatar={showUserAvatar} />
+				<ThreadMessage
+					message={message}
+					sequential={shouldShowAsSequential}
+					unread={firstUnread}
+					showUserAvatar={showUserAvatar}
+					ignoredUser={ignoredUser}
+				/>
 			)}
 		</>
 	);

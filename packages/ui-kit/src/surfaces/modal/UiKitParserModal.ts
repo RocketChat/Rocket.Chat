@@ -1,17 +1,36 @@
-import type { ActionsBlock } from '../../blocks/layout/ActionsBlock';
-import type { CalloutBlock } from '../../blocks/layout/CalloutBlock';
-import type { ContextBlock } from '../../blocks/layout/ContextBlock';
-import type { DividerBlock } from '../../blocks/layout/DividerBlock';
-import type { ImageBlock } from '../../blocks/layout/ImageBlock';
-import type { InputBlock } from '../../blocks/layout/InputBlock';
-import type { SectionBlock } from '../../blocks/layout/SectionBlock';
-import { SurfaceRenderer } from '../../rendering/SurfaceRenderer';
+import type { RenderableLayoutBlock } from '../../blocks/RenderableLayoutBlock.js';
+import { SurfaceRenderer } from '../../rendering/SurfaceRenderer.js';
 
-type ModalSurfaceLayoutBlock = ActionsBlock | ContextBlock | DividerBlock | ImageBlock | InputBlock | SectionBlock | CalloutBlock;
+/** Layout blocks a modal accepts; every modal renderer must allow exactly these. */
+export const modalSurfaceLayoutBlockTypes = [
+	'actions',
+	'alert',
+	'callout',
+	'card',
+	'container',
+	'context',
+	'data_table',
+	'data_visualization',
+	'divider',
+	'header',
+	'image',
+	'input',
+	'layout',
+	'markdown',
+	'plan',
+	'preview',
+	'rich_text',
+	'section',
+	'table',
+	'task_card',
+	'video',
+] as const satisfies readonly RenderableLayoutBlock['type'][];
+
+type ModalSurfaceLayoutBlock = Extract<RenderableLayoutBlock, { type: (typeof modalSurfaceLayoutBlockTypes)[number] }>;
 
 export abstract class UiKitParserModal<OutputElement> extends SurfaceRenderer<OutputElement, ModalSurfaceLayoutBlock> {
 	public constructor() {
-		super(['actions', 'context', 'divider', 'image', 'input', 'section', 'callout']);
+		super(modalSurfaceLayoutBlockTypes);
 	}
 }
 

@@ -1,0 +1,136 @@
+@use '../../styles/colors.scss';
+@use '../../styles/lengths.scss';
+@use '../../styles/functions' as *;
+@use '../../styles/typography.scss' as *;
+@use '../../styles/mixins/elevation.scss';
+
+// neutral
+$banner-colors-neutral-color: theme('banner-colors-neutral-color', colors.font(default));
+$banner-colors-neutral-background-color: theme('banner-colors-neutral-background-color', colors.surface(tint));
+
+// info
+$banner-colors-info-color: theme('banner-colors-info-color', colors.status-font(on-info));
+
+// success
+$banner-colors-success-color: theme('banner-colors-success-color', colors.status-font(on-success));
+
+// warning
+$banner-colors-warning-color: theme('banner-colors-warning-color', colors.status-font(on-warning));
+
+// danger
+$banner-colors-danger-color: theme('banner-colors-danger-color', colors.status-font(on-danger));
+
+.rcx-banner {
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: space-between;
+	align-items: flex-start;
+	flex: 0 1 auto;
+
+	box-sizing: border-box;
+
+	padding-block: 14px;
+	padding-inline: 16px;
+
+	color: $banner-colors-neutral-color;
+	border-top-width: lengths.border-width(large);
+	border-top-style: solid;
+	border-bottom: lengths.border-width(default) solid colors.stroke(extra-light);
+
+	background-color: $banner-colors-neutral-background-color;
+
+	font-family: font-family('sans');
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+
+	&--inline {
+		padding-block: 12px;
+	}
+
+	&--actionable {
+		cursor: pointer;
+	}
+
+	&--neutral {
+		border-top-color: transparent;
+	}
+
+	&--info {
+		border-top-color: $banner-colors-info-color;
+	}
+
+	&--warning {
+		border-top-color: $banner-colors-warning-color;
+	}
+
+	&--danger {
+		border-top-color: $banner-colors-danger-color;
+	}
+
+	&--success {
+		border-top-color: $banner-colors-success-color;
+	}
+
+	&__icon {
+		padding-block: 8px;
+		padding-inline-end: 12px;
+
+		&--info {
+			color: $banner-colors-info-color;
+		}
+
+		&--warning {
+			color: $banner-colors-warning-color;
+		}
+
+		&--danger {
+			color: $banner-colors-danger-color;
+		}
+
+		&--success {
+			color: $banner-colors-success-color;
+		}
+
+		&--inline {
+			margin-block: -2px;
+			padding-block: 0;
+		}
+	}
+
+	&__content {
+		flex-grow: 1;
+		align-self: center;
+
+		@include use-font-scale(p2);
+
+		&--inline {
+			@include use-with-truncated-text;
+		}
+	}
+
+	&__title {
+		margin: 0;
+		padding: 0;
+		@include use-font-scale(h5);
+
+		&--inline {
+			display: inline;
+
+			padding-inline-end: 8px;
+		}
+	}
+
+	&__close-button {
+		padding-block: 6px;
+		padding-inline: 8px;
+
+		&--inline {
+			margin-block: -4px;
+			padding-block: 0;
+		}
+	}
+
+	&__link {
+		padding-left: 10px;
+	}
+}

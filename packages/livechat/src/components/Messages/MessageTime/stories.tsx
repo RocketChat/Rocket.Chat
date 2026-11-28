@@ -1,6 +1,6 @@
 import type { Meta, StoryFn } from '@storybook/preact';
-import type { ComponentProps } from 'preact';
 
+import type { MessageTimeProps } from '.';
 import MessageTime from '.';
 
 const today = new Date(Date.parse('2021-01-01T00:00:00.000Z'));
@@ -12,18 +12,18 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies Meta<ComponentProps<typeof MessageTime>>;
+} satisfies Meta<MessageTimeProps>;
 
-const Template: StoryFn<ComponentProps<typeof MessageTime>> = (args) => <MessageTime {...args} />;
+const Template: StoryFn<MessageTimeProps> = (args) => <MessageTime {...args} />;
 
 export const Today = Template.bind({});
 Today.storyName = 'today';
 Today.args = {
-	ts: today,
+	ts: today.getTime(),
 };
 
 export const Yesterday = Template.bind({});
 Yesterday.storyName = 'yesterday';
 Yesterday.args = {
-	ts: yesterday,
+	ts: yesterday.getTime(),
 };

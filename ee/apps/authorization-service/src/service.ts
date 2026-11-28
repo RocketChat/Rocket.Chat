@@ -17,7 +17,7 @@ void (async () => {
 	api.setBroker(startBroker());
 
 	// need to import service after models are registered
-	const { Authorization } = await import('../../../../apps/meteor/server/services/authorization/service');
+	const { Authorization } = await import('@rocket.chat/authorization');
 
 	api.registerService(new Authorization());
 

@@ -6,17 +6,16 @@ import {
 	GenericTableCell,
 	GenericTableBody,
 	GenericTableLoadingRow,
+	GenericNoResults,
+	useFormatDateAndTime,
 } from '@rocket.chat/ui-client';
-import { useEndpoint, useRoute, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRoute, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import GenericNoResults from '../../../components/GenericNoResults';
-import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
-
-const OAuthAppsTable = (): ReactElement => {
-	const t = useTranslation();
+const OAuthAppsTable = () => {
+	const { t } = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 
 	const uid = { uid: useUserId() || '' };
@@ -75,11 +74,11 @@ const OAuthAppsTable = (): ReactElement => {
 								action
 								qa-oauth-app-id={_id}
 							>
-								<GenericTableCell withTruncatedText color='default' fontScale='p2m'>
+								<GenericTableCell truncate color='default' strong>
 									{name}
 								</GenericTableCell>
-								<GenericTableCell withTruncatedText>{createdBy}</GenericTableCell>
-								<GenericTableCell withTruncatedText>{formatDateAndTime(_createdAt)}</GenericTableCell>
+								<GenericTableCell truncate>{createdBy}</GenericTableCell>
+								<GenericTableCell truncate>{formatDateAndTime(_createdAt)}</GenericTableCell>
 							</GenericTableRow>
 						))}
 					</GenericTableBody>

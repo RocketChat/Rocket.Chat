@@ -3,7 +3,7 @@ import { GenericModal } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { Trans, useTranslation } from 'react-i18next';
 
-type WarningModalProps = {
+export type WarningModalProps = {
 	onConfirm: () => void;
 	onCancel: () => void;
 };
@@ -33,8 +33,8 @@ const WarningModal = ({ onConfirm, onCancel }: WarningModalProps) => {
 			onDismiss={onCancel}
 		>
 			<Trans i18nKey='ABAC_Warning_Modal_Content'>
-				You will not be able to automatically or manually manage users in existing ABAC-managed rooms. To restore a room's default access
-				control, it must be removed from ABAC management in
+				You will not be able to automatically or manually manage users in existing ABAC-managed rooms. To restore a room&apos;s default
+				access control, it must be removed from ABAC management in
 				<Box is='a' onClick={handleNavigate}>
 					{' '}
 					ABAC {'>'} Rooms

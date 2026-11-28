@@ -1,17 +1,19 @@
+import { hashPassword } from '@rocket.chat/account-utils';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { UserStatus, type IUser } from '@rocket.chat/core-typings';
 import { Settings, Rooms, Users, Roles } from '@rocket.chat/models';
 import { validateEmail } from '@rocket.chat/tools';
 import colors from 'colors/safe';
-import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import { addCallHistoryTestData } from './callHistoryTestData';
-import { FileUpload } from '../../app/file-upload/server';
-import { addUserToDefaultChannels } from '../../app/lib/server/functions/addUserToDefaultChannels';
-import { checkUsernameAvailability } from '../../app/lib/server/functions/checkUsernameAvailability';
-import { notifyOnSettingChangedById } from '../../app/lib/server/lib/notifyListener';
-import { settings } from '../../app/settings/server';
+import { FileUpload } from '../lib/media/file-upload';
+import { notifyOnSettingChangedById } from '../lib/notifyListener';
+import { readPrivateAsset } from '../lib/privateAssets';
 import { addUserRolesAsync } from '../lib/roles/addUserRoles';
+import { addUserToDefaultChannels } from '../lib/rooms/addUserToDefaultChannels';
+import { checkUsernameAvailability } from '../lib/users/checkUsernameAvailability';
+import { settings } from '../settings';
 
 export async function insertAdminUserFromEnv() {
 	if (process.env.ADMIN_PASS) {
@@ -51,7 +53,7 @@ export async function insertAdminUserFromEnv() {
 				let nameValidation;
 
 				try {
-					nameValidation = new RegExp(`^${settings.get('UTF8_User_Names_Validation')}$`);
+					nameValidation = new RegExp(`^${settings.get<string>('UTF8_User_Names_Validation')}$`);
 				} catch (error) {
 					nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 				}
@@ -74,7 +76,7 @@ export async function insertAdminUserFromEnv() {
 
 			const { insertedId: userId } = await Users.create(adminUser);
 
-			await Accounts.setPasswordAsync(userId, process.env.ADMIN_PASS);
+			await Users.setPasswordHash(userId, await hashPassword(process.env.ADMIN_PASS));
 
 			await addUserRolesAsync(userId, ['admin']);
 		} else {
@@ -83,7 +85,7 @@ export async function insertAdminUserFromEnv() {
 	}
 }
 
-Meteor.startup(async () => {
+export const insertInitialData = async (): Promise<void> => {
 	const dynamicImport = {
 		'dynamic-import': {
 			useLocationOrigin: true,
@@ -115,48 +117,47 @@ Meteor.startup(async () => {
 	Meteor.settings.public.packages['dynamic-import'] = dynamicImport['dynamic-import'];
 
 	if (!settings.get('Initial_Channel_Created')) {
-		const exists = await Rooms.findOneById('GENERAL', { projection: { _id: 1 } });
-		if (!exists) {
-			await Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
-				default: true,
-			});
+		if (!(await Rooms.findOneById('GENERAL', { projection: { _id: 1 } }))) {
+			await Rooms.createWithIdTypeAndNameIfNotExists('GENERAL', 'c', 'general', { default: true });
 		}
 
-		(await Settings.updateValueById('Initial_Channel_Created', true)).modifiedCount &&
+		if ((await Settings.updateValueById('Initial_Channel_Created', true)).modifiedCount) {
 			void notifyOnSettingChangedById('Initial_Channel_Created');
+		}
 	}
 
 	try {
-		if (!(await Users.findOneById('rocket.cat', { projection: { _id: 1 } }))) {
-			await Users.create({
-				_id: 'rocket.cat',
-				name: 'Rocket.Cat',
-				username: 'rocket.cat',
-				status: UserStatus.ONLINE,
-				statusDefault: UserStatus.ONLINE,
-				utcOffset: 0,
-				active: true,
-				type: 'bot',
-			});
+		const createdRocketCat =
+			!(await Users.findOneById('rocket.cat', { projection: { _id: 1 } })) &&
+			(
+				await Users.createIfNotExists({
+					_id: 'rocket.cat',
+					name: 'Rocket.Cat',
+					username: 'rocket.cat',
+					status: UserStatus.ONLINE,
+					statusDefault: UserStatus.ONLINE,
+					utcOffset: 0,
+					active: true,
+					type: 'bot',
+				})
+			).upsertedCount > 0;
 
+		if (createdRocketCat) {
 			await addUserRolesAsync('rocket.cat', ['bot']);
 
-			const asset = await Assets.getBinaryAsync('avatars/rocketcat.png');
-			if (asset) {
-				const buffer = Buffer.from(asset);
+			const buffer = await readPrivateAsset('avatars/rocketcat.png');
 
-				const fileStore = FileUpload.getStore('Avatars');
-				await fileStore.deleteByName('rocket.cat');
+			const fileStore = FileUpload.getStore('Avatars');
+			await fileStore.deleteByName('rocket.cat');
 
-				const file = {
-					userId: 'rocket.cat',
-					type: 'image/png',
-					size: buffer.length,
-				};
+			const file = {
+				userId: 'rocket.cat',
+				type: 'image/png',
+				size: buffer.length,
+			};
 
-				const upload = await fileStore.insert(file, buffer);
-				await Users.setAvatarData('rocket.cat', 'local', upload.etag);
-			}
+			const upload = await fileStore.insert(file, buffer);
+			await Users.setAvatarData('rocket.cat', 'local', upload.etag);
 		}
 	} catch (error) {
 		console.log(
@@ -198,23 +199,27 @@ Meteor.startup(async () => {
 		if (settings.get('Show_Setup_Wizard') === 'pending') {
 			console.log('Setting Setup Wizard to "in_progress" because, at least, one admin was found');
 
-			(await Settings.updateValueById('Show_Setup_Wizard', 'in_progress')).modifiedCount &&
+			if ((await Settings.updateValueById('Show_Setup_Wizard', 'in_progress')).modifiedCount) {
 				void notifyOnSettingChangedById('Show_Setup_Wizard');
+			}
 		}
 	}
 
 	await Users.removeById('rocketchat.internal.admin.test');
 
-	if (process.env.TEST_MODE === 'true') {
+	if (process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api') {
 		console.log(colors.green('Inserting admin test user:'));
+
+		const adminUsername = 'rocketchat.internal.admin.test';
+		const adminEmail = 'rocketchat.internal.admin.test@rocket.chat';
 
 		const adminUser: Omit<IUser, 'createdAt' | 'roles' | '_updatedAt'> = {
 			_id: 'rocketchat.internal.admin.test',
 			name: 'RocketChat Internal Admin Test',
-			username: 'rocketchat.internal.admin.test',
+			username: adminUsername,
 			emails: [
 				{
-					address: 'rocketchat.internal.admin.test@rocket.chat',
+					address: adminEmail,
 					verified: true,
 				},
 			],
@@ -226,27 +231,28 @@ Meteor.startup(async () => {
 		};
 
 		console.log(colors.green(`Name: ${adminUser.name}`));
-		console.log(colors.green(`Email: ${adminUser.emails![0].address}`));
-		console.log(colors.green(`Username: ${adminUser.username}`));
+		console.log(colors.green(`Email: ${adminEmail}`));
+		console.log(colors.green(`Username: ${adminUsername}`));
 		console.log(colors.green(`Password: ${adminUser._id}`));
 
-		if (await Users.findOneByEmailAddress(adminUser.emails![0].address)) {
-			throw new Meteor.Error(`Email ${adminUser.emails![0].address} already exists`, "Rocket.Chat can't run in test mode");
+		if (await Users.findOneByEmailAddress(adminEmail)) {
+			throw new ClientSafeError(`Email ${adminEmail} already exists`, "Rocket.Chat can't run in test mode");
 		}
 
-		if (!(await checkUsernameAvailability(adminUser.username!))) {
-			throw new Meteor.Error(`Username ${adminUser.username} already exists`, "Rocket.Chat can't run in test mode");
+		if (!(await checkUsernameAvailability(adminUsername))) {
+			throw new ClientSafeError(`Username ${adminUsername} already exists`, "Rocket.Chat can't run in test mode");
 		}
 
 		await Users.create(adminUser);
 
-		await Accounts.setPasswordAsync(adminUser._id, adminUser._id);
+		await Users.setPasswordHash(adminUser._id, await hashPassword(adminUser._id));
 
 		await addUserRolesAsync(adminUser._id, ['admin']);
 
 		if (settings.get('Show_Setup_Wizard') === 'pending') {
-			(await Settings.updateValueById('Show_Setup_Wizard', 'in_progress')).modifiedCount &&
+			if ((await Settings.updateValueById('Show_Setup_Wizard', 'in_progress')).modifiedCount) {
 				void notifyOnSettingChangedById('Show_Setup_Wizard');
+			}
 		}
 
 		await addUserToDefaultChannels(adminUser as IUser, true);
@@ -254,4 +260,4 @@ Meteor.startup(async () => {
 		// Create sample call history for API tests
 		return addCallHistoryTestData('rocketchat.internal.admin.test', 'rocket.cat');
 	}
-});
+};

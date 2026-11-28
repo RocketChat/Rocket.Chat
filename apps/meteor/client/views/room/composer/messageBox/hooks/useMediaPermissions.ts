@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 type MediaDevices = 'camera' | 'microphone';
@@ -17,7 +17,7 @@ export const useMediaPermissions = (name: MediaDevices): [isPermissionDenied: bo
 
 	const queryKey = ['media-permissions', name];
 
-	const setIsPermissionDenied = useEffectEvent((isDenied: boolean) => {
+	const setIsPermissionDenied = useStableCallback((isDenied: boolean) => {
 		queryClient.setQueryData(queryKey, isDenied);
 	});
 
@@ -26,7 +26,7 @@ export const useMediaPermissions = (name: MediaDevices): [isPermissionDenied: bo
 		queryFn: async () => {
 			if (navigator.permissions) {
 				try {
-					const permissionStatus = await navigator.permissions.query({ name: name as PermissionName });
+					const permissionStatus = await navigator.permissions.query({ name });
 					permissionStatus.onchange = (): void => {
 						queryClient.setQueryData(queryKey, permissionStatus.state === 'denied');
 					};

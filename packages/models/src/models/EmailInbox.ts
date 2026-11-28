@@ -26,7 +26,7 @@ export class EmailInboxRaw extends BaseRaw<IEmailInbox> implements IEmailInboxMo
 		return this.findOneAndUpdate({ _id: id }, data, {
 			returnDocument: 'after',
 			projection: { _id: 1 },
-		}) as unknown as Promise<null | WithId<Pick<IEmailInbox, '_id'>>>;
+		});
 	}
 
 	findActive(): FindCursor<IEmailInbox> {

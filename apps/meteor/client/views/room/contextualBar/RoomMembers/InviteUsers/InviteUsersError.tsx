@@ -1,5 +1,4 @@
 import { Callout } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 
 import InviteUsersWrapper from './InviteUsersWrapper';
 
@@ -9,7 +8,7 @@ type InviteUsersProps = {
 	onClickBack?: (() => void) | undefined;
 };
 
-const InviteUsersError = ({ onClose, error, onClickBack }: InviteUsersProps): ReactElement => (
+const InviteUsersError = ({ onClose, error, onClickBack }: InviteUsersProps) => (
 	<InviteUsersWrapper onClose={onClose} onClickBack={onClickBack}>
 		<Callout type='danger'>{(error || '').toString()}</Callout>
 	</InviteUsersWrapper>

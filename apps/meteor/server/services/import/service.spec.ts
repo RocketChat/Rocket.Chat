@@ -1,4 +1,5 @@
 import type { IImport, IImportUser } from '@rocket.chat/core-typings';
+import { mockModel } from '@rocket.chat/models/testing';
 import { ObjectId } from 'mongodb';
 
 const mockImportsInvalidateAllOperations = jest.fn();
@@ -16,32 +17,15 @@ jest.mock('@rocket.chat/core-services', () => ({
 	},
 }));
 
-jest.mock('@rocket.chat/models', () => ({
-	Imports: {
-		invalidateAllOperations: (...args: unknown[]) => mockImportsInvalidateAllOperations(...args),
-		insertOne: (...args: unknown[]) => mockImportsInsertOne(...args),
-		findOneById: (...args: unknown[]) => mockImportsFindOneById(...args),
-		findLastImport: (...args: unknown[]) => mockImportsFindLastImport(...args),
-		increaseTotalCount: (...args: unknown[]) => mockImportsIncreaseTotalCount(...args),
-		setOperationStatus: (...args: unknown[]) => mockImportsSetOperationStatus(...args),
-	},
-	ImportData: {
-		col: {
-			deleteMany: (...args: unknown[]) => mockImportDataDeleteMany(...args),
-			insertMany: (...args: unknown[]) => mockImportDataInsertMany(...args),
-		},
-	},
-}));
-
 const mockImportersGet = jest.fn();
-jest.mock('../../../app/importer/server', () => ({
+jest.mock('../../lib/import', () => ({
 	Importers: {
 		get: (...args: unknown[]) => mockImportersGet(...args),
 	},
 }));
 
 const mockSettingsGet = jest.fn();
-jest.mock('../../../app/settings/server', () => ({
+jest.mock('../../settings', () => ({
 	settings: {
 		get: (...args: unknown[]) => mockSettingsGet(...args),
 	},
@@ -57,7 +41,7 @@ jest.mock('../user/lib/getNewUserRoles', () => ({
 	getNewUserRoles: (...args: unknown[]) => mockGetNewUserRoles(...args),
 }));
 
-// eslint-disable-next-line import/first
+// oxlint-disable-next-line import-x/first
 import { ImportService } from './service';
 
 const createMockOperation = (overrides?: Partial<IImport>): IImport => ({
@@ -73,6 +57,23 @@ const createMockOperation = (overrides?: Partial<IImport>): IImport => ({
 });
 
 describe('ImportService', () => {
+	beforeAll(() => {
+		mockModel('Imports', {
+			invalidateAllOperations: (...args: unknown[]) => mockImportsInvalidateAllOperations(...args),
+			insertOne: (...args: unknown[]) => mockImportsInsertOne(...args),
+			findOneById: (...args: unknown[]) => mockImportsFindOneById(...args),
+			findLastImport: (...args: unknown[]) => mockImportsFindLastImport(...args),
+			increaseTotalCount: (...args: unknown[]) => mockImportsIncreaseTotalCount(...args),
+			setOperationStatus: (...args: unknown[]) => mockImportsSetOperationStatus(...args),
+		});
+		mockModel('ImportData', {
+			col: {
+				deleteMany: (...args: unknown[]) => mockImportDataDeleteMany(...args),
+				insertMany: (...args: unknown[]) => mockImportDataInsertMany(...args),
+			},
+		});
+	});
+
 	let service: ImportService;
 
 	beforeEach(() => {

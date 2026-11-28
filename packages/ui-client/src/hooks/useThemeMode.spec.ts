@@ -1,7 +1,8 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { renderHook, act } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 
 import { useThemeMode } from './useThemeMode';
+import { useThemePreview } from './useThemePreview';
 
 const mockUseDarkMode = jest.fn();
 
@@ -14,120 +15,95 @@ afterEach(() => {
 });
 
 describe('useThemeMode', () => {
-	describe('current theme mode', () => {
-		it('should default to "auto" when no preference is set', () => {
-			mockUseDarkMode.mockReturnValue(false);
+	it('should resolve to "light" when mode is "auto" and system prefers light', () => {
+		mockUseDarkMode.mockReturnValue(false);
 
-			const { result } = renderHook(() => useThemeMode(), {
-				wrapper: mockAppRoot().build(),
-			});
-
-			expect(result.current[0]).toBe('auto');
+		const { result } = renderHook(() => useThemeMode(), {
+			wrapper: mockAppRoot().withUserPreference('themeAppearence', 'auto').build(),
 		});
 
-		it('should return the user preference when set', () => {
-			mockUseDarkMode.mockReturnValue(true);
-
-			const { result } = renderHook(() => useThemeMode(), {
-				wrapper: mockAppRoot().withUserPreference('themeAppearence', 'dark').build(),
-			});
-
-			expect(result.current[0]).toBe('dark');
-		});
+		expect(result.current).toBe('light');
+		expect(mockUseDarkMode).toHaveBeenCalledWith(undefined);
 	});
 
-	describe('resolved theme', () => {
-		it('should resolve to "light" when mode is "auto" and system prefers light', () => {
-			mockUseDarkMode.mockReturnValue(false);
+	it('should resolve to "dark" when mode is "auto" and system prefers dark', () => {
+		mockUseDarkMode.mockReturnValue(true);
 
-			const { result } = renderHook(() => useThemeMode(), {
-				wrapper: mockAppRoot().withUserPreference('themeAppearence', 'auto').build(),
-			});
-
-			expect(result.current[2]).toBe('light');
-			expect(mockUseDarkMode).toHaveBeenCalledWith(undefined);
+		const { result } = renderHook(() => useThemeMode(), {
+			wrapper: mockAppRoot().withUserPreference('themeAppearence', 'auto').build(),
 		});
 
-		it('should resolve to "dark" when mode is "auto" and system prefers dark', () => {
-			mockUseDarkMode.mockReturnValue(true);
+		expect(result.current).toBe('dark');
+		expect(mockUseDarkMode).toHaveBeenCalledWith(undefined);
+	});
 
-			const { result } = renderHook(() => useThemeMode(), {
-				wrapper: mockAppRoot().withUserPreference('themeAppearence', 'auto').build(),
-			});
+	it('should resolve to "dark" when mode is "dark"', () => {
+		mockUseDarkMode.mockReturnValue(true);
 
-			expect(result.current[2]).toBe('dark');
-			expect(mockUseDarkMode).toHaveBeenCalledWith(undefined);
+		const { result } = renderHook(() => useThemeMode(), {
+			wrapper: mockAppRoot().withUserPreference('themeAppearence', 'dark').build(),
 		});
 
-		it('should resolve to "dark" when mode is "dark"', () => {
-			mockUseDarkMode.mockReturnValue(true);
+		expect(result.current).toBe('dark');
+		expect(mockUseDarkMode).toHaveBeenCalledWith(true);
+	});
 
-			const { result } = renderHook(() => useThemeMode(), {
-				wrapper: mockAppRoot().withUserPreference('themeAppearence', 'dark').build(),
-			});
+	it('should resolve to "light" when mode is "light"', () => {
+		mockUseDarkMode.mockReturnValue(false);
 
-			expect(result.current[2]).toBe('dark');
-			expect(mockUseDarkMode).toHaveBeenCalledWith(true);
+		const { result } = renderHook(() => useThemeMode(), {
+			wrapper: mockAppRoot().withUserPreference('themeAppearence', 'light').build(),
 		});
 
-		it('should resolve to "light" when mode is "light"', () => {
-			mockUseDarkMode.mockReturnValue(false);
+		expect(result.current).toBe('light');
+		expect(mockUseDarkMode).toHaveBeenCalledWith(false);
+	});
 
-			const { result } = renderHook(() => useThemeMode(), {
+	it('should resolve to "high-contrast" when mode is "high-contrast"', () => {
+		mockUseDarkMode.mockReturnValue(false);
+
+		const { result } = renderHook(() => useThemeMode(), {
+			wrapper: mockAppRoot().withUserPreference('themeAppearence', 'high-contrast').build(),
+		});
+
+		expect(result.current).toBe('high-contrast');
+	});
+
+	it('should resolve to the previewed preference while a preview is mounted', () => {
+		mockUseDarkMode.mockImplementation((forced?: boolean) => forced ?? false);
+
+		const { result, rerender, unmount } = renderHook(
+			({ preview }: { preview?: 'dark' | 'high-contrast' }) => {
+				useThemePreview(preview);
+				return useThemeMode();
+			},
+			{
+				initialProps: { preview: 'dark' as 'dark' | 'high-contrast' | undefined },
 				wrapper: mockAppRoot().withUserPreference('themeAppearence', 'light').build(),
-			});
+			},
+		);
 
-			expect(result.current[2]).toBe('light');
-			expect(mockUseDarkMode).toHaveBeenCalledWith(false);
-		});
+		expect(result.current).toBe('dark');
 
-		it('should resolve to "high-contrast" when mode is "high-contrast"', () => {
-			mockUseDarkMode.mockReturnValue(false);
+		rerender({ preview: 'high-contrast' });
+		expect(result.current).toBe('high-contrast');
 
-			const { result } = renderHook(() => useThemeMode(), {
-				wrapper: mockAppRoot().withUserPreference('themeAppearence', 'high-contrast').build(),
-			});
+		rerender({ preview: undefined });
+		expect(result.current).toBe('light');
 
-			expect(result.current[2]).toBe('high-contrast');
-		});
+		unmount();
 	});
 
-	describe('setThemeMode', () => {
-		it('should return a function that calls the endpoint for each theme mode', async () => {
-			mockUseDarkMode.mockReturnValue(false);
-			const endpointHandler = jest.fn();
+	it('should fall back to the saved preference once the preview unmounts', () => {
+		mockUseDarkMode.mockImplementation((forced?: boolean) => forced ?? false);
+		const wrapper = mockAppRoot().withUserPreference('themeAppearence', 'light').build();
 
-			const { result } = renderHook(() => useThemeMode(), {
-				wrapper: mockAppRoot().withEndpoint('POST', '/v1/users.setPreferences', endpointHandler).build(),
-			});
+		const { unmount: unmountPreview } = renderHook(() => useThemePreview('dark'), { wrapper });
+		const { result } = renderHook(() => useThemeMode(), { wrapper });
 
-			const setTheme = result.current[1];
+		expect(result.current).toBe('dark');
 
-			await act(async () => {
-				setTheme('dark')();
-			});
-			expect(endpointHandler).toHaveBeenCalledWith({ data: { themeAppearence: 'dark' } });
-
-			endpointHandler.mockClear();
-
-			await act(async () => {
-				setTheme('light')();
-			});
-			expect(endpointHandler).toHaveBeenCalledWith({ data: { themeAppearence: 'light' } });
-
-			endpointHandler.mockClear();
-
-			await act(async () => {
-				setTheme('auto')();
-			});
-			expect(endpointHandler).toHaveBeenCalledWith({ data: { themeAppearence: 'auto' } });
-
-			endpointHandler.mockClear();
-
-			await act(async () => {
-				setTheme('high-contrast')();
-			});
-			expect(endpointHandler).toHaveBeenCalledWith({ data: { themeAppearence: 'high-contrast' } });
-		});
+		unmountPreview();
+		expect(result.current).toBe('light');
 	});
 });

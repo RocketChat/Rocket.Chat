@@ -1,22 +1,22 @@
 import type { INpsVote } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-import { getWorkspaceAccessToken } from '../../../app/cloud/server';
-import { settings } from '../../../app/settings/server';
+import { getWorkspaceAccessToken } from '../../lib/cloud';
 import { SystemLogger } from '../../lib/logger/system';
+import { settings } from '../../settings';
 
 type NPSResultPayload = {
 	total: number;
 	votes: Pick<INpsVote, 'identifier' | 'roles' | 'score' | 'comment'>[];
 };
 
-export const sendNpsResults = async function sendNpsResults(npsId: string, data: NPSResultPayload) {
+export const sendNpsResults = async function sendNpsResults(npsId: string, data: NPSResultPayload): Promise<unknown> {
 	const token = await getWorkspaceAccessToken();
 	if (!token) {
 		return false;
 	}
 
-	const npsUrl = settings.get('Nps_Url');
+	const npsUrl = settings.get<string>('Nps_Url');
 
 	try {
 		return (

@@ -1,34 +1,38 @@
-import { Box } from '@rocket.chat/fuselage';
 import { PasswordInput, FieldGroup, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useEffect } from 'react';
+import { useForm, Controller, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import type { OnConfirm } from './TwoFactorModal';
 import { Method } from './TwoFactorModal';
 
-type TwoFactorPasswordModalProps = {
+export type TwoFactorPasswordModalProps = {
 	onConfirm: OnConfirm;
 	onClose: () => void;
+	invalidAttempt?: boolean;
 };
 
 type TwoFactorPasswordFormData = {
 	password: string;
 };
 
-const TwoFactorPasswordModal = ({ onConfirm, onClose }: TwoFactorPasswordModalProps): ReactElement => {
+const TwoFactorPasswordModal = ({ onConfirm, onClose, invalidAttempt }: TwoFactorPasswordModalProps) => {
 	const { t } = useTranslation();
 
-	const {
-		control,
-		handleSubmit,
-		setError,
-		setValue,
-		formState: { errors, isSubmitting },
-	} = useForm<TwoFactorPasswordFormData>({
+	const { control, handleSubmit, setError, setValue, clearErrors } = useForm<TwoFactorPasswordFormData>({
 		defaultValues: { password: '' },
 	});
+	const { errors, isSubmitting } = useFormState({ control });
+
+	useEffect(() => {
+		if (invalidAttempt) {
+			setError('password', {
+				type: 'manual',
+				message: t('Invalid_password'),
+			});
+		}
+	}, [invalidAttempt, setError, t]);
 
 	const onSubmit = handleSubmit(async ({ password }) => {
 		try {
@@ -44,7 +48,7 @@ const TwoFactorPasswordModal = ({ onConfirm, onClose }: TwoFactorPasswordModalPr
 
 	return (
 		<GenericModal
-			wrapperFunction={(props) => <Box is='form' onSubmit={onSubmit} {...props} />}
+			onSubmit={onSubmit}
 			onCancel={onClose}
 			confirmText={t('Verify')}
 			title={t('Please_enter_your_password')}
@@ -55,14 +59,23 @@ const TwoFactorPasswordModal = ({ onConfirm, onClose }: TwoFactorPasswordModalPr
 		>
 			<FieldGroup>
 				<Field>
-					<FieldLabel alignSelf='stretch'>{t('For_your_security_you_must_enter_your_current_password_to_continue')}</FieldLabel>
+					<FieldLabel>{t('For_your_security_you_must_enter_your_current_password_to_continue')}</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='password'
 							control={control}
 							rules={{ required: t('Required_field', { field: t('Password') }) }}
-							render={({ field }) => (
-								<PasswordInput {...field} placeholder={t('Password')} disabled={isSubmitting} error={errors.password?.message} />
+							render={({ field: { onChange, ...fieldProps } }) => (
+								<PasswordInput
+									{...fieldProps}
+									onChange={(e) => {
+										clearErrors('password');
+										onChange(e);
+									}}
+									placeholder={t('Password')}
+									disabled={isSubmitting}
+									error={errors.password?.message}
+								/>
 							)}
 						/>
 					</FieldRow>

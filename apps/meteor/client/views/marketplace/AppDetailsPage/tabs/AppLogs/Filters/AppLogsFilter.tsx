@@ -1,5 +1,6 @@
-import { Box, Button, IconButton, Label } from '@rocket.chat/fuselage';
+import { Button, IconButton, Label, Stack } from '@rocket.chat/fuselage';
 import { useRouter, useSetModal } from '@rocket.chat/ui-contexts';
+import { useId } from 'react';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -9,6 +10,7 @@ import { EventFilterSelect } from './EventFilterSelect';
 import { InstanceFilterSelect } from './InstanceFilterSelect';
 import { SeverityFilterSelect } from './SeverityFilterSelect';
 import { TimeFilterSelect } from './TimeFilterSelect';
+import { useExternalLink } from '../../../../../../hooks/useExternalLink';
 import { useCompactMode } from '../../../useCompactMode';
 import { useAppLogsFilterFormContext } from '../useAppLogsFilterForm';
 import { ExportLogsModal } from './ExportLogsModal';
@@ -31,6 +33,8 @@ export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLo
 
 	const router = useRouter();
 
+	const openExternalLink = useExternalLink();
+
 	const openContextualBar = () => {
 		router.navigate(
 			{
@@ -47,82 +51,62 @@ export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLo
 		refetchLogs();
 	};
 
-	const onExportConfirm = (url: string) => {
-		window.open(url, '_blank', 'noopener noreferrer');
-	};
-
 	const openExportModal = () => {
-		setModal(<ExportLogsModal onClose={() => setModal(null)} filterValues={getValues()} onConfirm={onExportConfirm} />);
+		setModal(<ExportLogsModal onClose={() => setModal(null)} filterValues={getValues()} onConfirm={openExternalLink} />);
 	};
 
 	const compactMode = useCompactMode();
+	const eventField = useId();
+	const timeField = useId();
+	const instanceField = useId();
+	const severityField = useId();
 
 	return (
-		<Box display='flex' alignItems='flex-end' flexDirection='row' width='full' flexWrap='wrap' alignContent='flex-end'>
-			<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
-				<Label id='eventFilterLabel' htmlFor='eventFilter'>
-					{t('Event')}
-				</Label>
-				<Controller
-					control={control}
-					name='event'
-					render={({ field }) => <EventFilterSelect appId={appId} aria-labelledby='eventFilterLabel' id='eventFilter' {...field} />}
-				/>
-			</Box>
+		<Stack direction='row' wrap align='end' gap='x8'>
+			<Stack grow>
+				<Label htmlFor={eventField}>{t('Event')}</Label>
+				<Controller control={control} name='event' render={({ field }) => <EventFilterSelect {...field} appId={appId} id={eventField} />} />
+			</Stack>
 			{!compactMode && (
 				<>
-					<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
-						<Label id='timeFilterLabel' htmlFor='timeFilter'>
-							{t('Time')}
-						</Label>
-						<TimeFilterSelect id='timeFilter' aria-labelledby='timeFilterLabel' />
-					</Box>
-
-					<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
-						<Label id='instanceFilterLabel' htmlFor='instanceFilter'>
-							{t('Instance')}
-						</Label>
+					<Stack grow>
+						<Label htmlFor={timeField}>{t('Time')}</Label>
+						<TimeFilterSelect id={timeField} />
+					</Stack>
+					<Stack grow>
+						<Label htmlFor={instanceField}>{t('Instance')}</Label>
 						<Controller
 							control={control}
 							name='instance'
-							render={({ field }) => (
-								<InstanceFilterSelect appId={appId} aria-labelledby='instanceFilterLabel' id='instanceFilter' {...field} />
-							)}
+							render={({ field }) => <InstanceFilterSelect appId={appId} id={instanceField} {...field} />}
 						/>
-					</Box>
-
-					<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
-						<Label>{t('Severity')}</Label>
-						<Controller control={control} name='severity' render={({ field }) => <SeverityFilterSelect id='severityFilter' {...field} />} />
-					</Box>
-
+					</Stack>
+					<Stack grow>
+						<Label htmlFor={severityField}>{t('Severity')}</Label>
+						<Controller control={control} name='severity' render={({ field }) => <SeverityFilterSelect id={severityField} {...field} />} />
+					</Stack>
 					<IconButton
 						title={isLoading ? t('Loading') : t('Refresh_logs')}
 						disabled={isLoading}
 						icon='refresh'
-						secondary
-						mie={10}
+						variant='secondary'
 						onClick={() => refreshLogs()}
 					/>
-
 					<IconButton
 						title={noResults ? t('No_data_to_export') : t('Export')}
 						icon='circle-arrow-down'
 						disabled={noResults}
-						secondary
-						mie={10}
+						variant='secondary'
 						onClick={() => openExportModal()}
 						aria-label={noResults ? t('No_data_to_export') : t('Export')}
 						aria-disabled={noResults}
 					/>
-
 					<AppsLogsFilterOptions onExpandAll={openAllLogs} onCollapseAll={collapseAll} />
 				</>
 			)}
-
 			{compactMode && (
 				<>
-					<Button alignSelf='flex-end' icon='customize' secondary mie={10} onClick={() => openContextualBar()}>
+					<Button icon='customize' variant='secondary' onClick={() => openContextualBar()}>
 						{t('Filters')}
 					</Button>
 					<CompactFilterOptions
@@ -134,6 +118,6 @@ export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLo
 					/>
 				</>
 			)}
-		</Box>
+		</Stack>
 	);
 };

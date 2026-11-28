@@ -1,8 +1,7 @@
-import { css } from '@rocket.chat/css-in-js';
-import { Box, Button, Palette } from '@rocket.chat/fuselage';
+import { Button, Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-type OutlookSettingItemProps = {
+export type OutlookSettingItemProps = {
 	id: string;
 	title: string;
 	subTitle: string;
@@ -13,44 +12,25 @@ type OutlookSettingItemProps = {
 const OutlookSettingItem = ({ id, title, subTitle, enabled, handleEnable }: OutlookSettingItemProps) => {
 	const { t } = useTranslation();
 
-	const hovered = css`
-		&:hover,
-		&:focus {
-			background: ${Palette.surface['surface-hover']};
-			.rcx-message {
-				background: ${Palette.surface['surface-hover']};
-			}
-		}
-	`;
-
 	return (
-		<Box
-			borderBlockEndWidth={1}
-			borderBlockEndColor='stroke-extra-light'
-			borderBlockEndStyle='solid'
-			className={hovered}
-			pi={24}
-			pb={16}
-			display='flex'
-			justifyContent='space-between'
-		>
-			<Box mie={8}>
-				<Box fontScale='h4'>{title}</Box>
-				<Box fontScale='p2'>{subTitle}</Box>
-			</Box>
-			<Box>
+		<Item inset='lg' insetBlock='md' align='start' divided hoverable multiline>
+			<ItemContent>
+				<ItemTitle truncate={false}>{title}</ItemTitle>
+				<ItemDescription truncate={false}>{subTitle}</ItemDescription>
+			</ItemContent>
+			<ItemActions>
 				{id === 'authentication' && (
-					<Button small onClick={() => handleEnable(!enabled)}>
+					<Button size='small' onClick={() => handleEnable(!enabled)}>
 						{t('Disable')}
 					</Button>
 				)}
 				{id !== 'authentication' && (
-					<Button primary={!enabled} small onClick={() => handleEnable(!enabled)}>
+					<Button variant={!enabled ? 'primary' : undefined} size='small' onClick={() => handleEnable(!enabled)}>
 						{enabled ? t('Disable') : t('Enable')}
 					</Button>
 				)}
-			</Box>
-		</Box>
+			</ItemActions>
+		</Item>
 	);
 };
 

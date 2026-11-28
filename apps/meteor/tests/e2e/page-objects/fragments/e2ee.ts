@@ -1,5 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { Navbar } from './navbar';
 import { expect } from '../../utils/test';
 
 abstract class E2EEBanner {
@@ -34,5 +35,26 @@ export class E2EEKeyDecodeFailureBanner extends E2EEBanner {
 
 	async expectToNotBeVisible() {
 		await expect(this.root).not.toBeVisible();
+	}
+}
+
+export class CreateE2EEChannel {
+	private readonly navbar: Navbar;
+
+	constructor(page: Page) {
+		this.navbar = new Navbar(page);
+	}
+
+	async create(name: string): Promise<void> {
+		await this.navbar.createEncryptedChannel(name);
+	}
+
+	async createAndStore(name: string, createdChannels: string[]): Promise<void> {
+		await this.create(name);
+		this.store(name, createdChannels);
+	}
+
+	store(name: string, createdChannels: string[]): void {
+		createdChannels.push(name);
 	}
 }

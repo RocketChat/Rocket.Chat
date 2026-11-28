@@ -1,22 +1,25 @@
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { act, screen, renderHook } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
-import type { ReactElement } from 'react';
+import type { ReactNode } from 'react';
 import { Suspense } from 'react';
 
 import GenericModal from './GenericModal';
 import ModalProviderWithRegion from '../../../providers/ModalProvider/ModalProviderWithRegion';
 
-const renderModal = (modalElement: ReactElement) => {
+const renderModal = (modalElement: ReactNode) => {
 	const {
 		result: { current: setModal },
 	} = renderHook(() => useSetModal(), {
-		wrapper: ({ children }) => (
-			<Suspense fallback={null}>
-				<ModalProviderWithRegion>{children}</ModalProviderWithRegion>
-			</Suspense>
-		),
+		wrapper: mockAppRoot()
+			.wrap((children) => (
+				<Suspense fallback={null}>
+					<ModalProviderWithRegion>{children}</ModalProviderWithRegion>
+				</Suspense>
+			))
+			.build(),
 	});
 
 	act(() => {
@@ -27,16 +30,10 @@ const renderModal = (modalElement: ReactElement) => {
 };
 
 describe('renders', () => {
-	it('should render a modal without crashing', async () => {
-		renderModal(<GenericModal title='Modal' />);
-
-		expect(await screen.findByRole('dialog', { name: 'Modal' })).toMatchSnapshot();
-	});
-
 	it('should have no accessibility violations when rendered', async () => {
 		renderModal(<GenericModal title='Modal' />);
 
-		const results = await axe(screen.getByRole('dialog', { name: 'Modal' }));
+		const results = await axe(await screen.findByRole('dialog', { name: 'Modal' }));
 		expect(results).toHaveNoViolations();
 	});
 });

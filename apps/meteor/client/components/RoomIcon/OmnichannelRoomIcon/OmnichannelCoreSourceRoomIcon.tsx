@@ -1,6 +1,5 @@
 import type { IOmnichannelSource } from '@rocket.chat/core-typings';
-import { Icon } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
+import { Icon, type IconColor, type IconProps } from '@rocket.chat/fuselage';
 
 const iconMap = {
 	widget: 'livechat',
@@ -11,10 +10,10 @@ const iconMap = {
 	other: 'headset',
 } as const;
 
-type OmnichannelCoreSourceRoomIconProps = {
+export type OmnichannelCoreSourceRoomIconProps = {
 	source: IOmnichannelSource;
-	color: ComponentProps<typeof Icon>['color'];
-	size: ComponentProps<typeof Icon>['size'];
+	color: IconColor;
+	size: IconProps['size'];
 };
 
 export const OmnichannelCoreSourceRoomIcon = ({ source, color, size }: OmnichannelCoreSourceRoomIconProps) => {

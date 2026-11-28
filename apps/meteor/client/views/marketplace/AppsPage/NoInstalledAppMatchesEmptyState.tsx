@@ -1,5 +1,4 @@
 import {
-	Box,
 	States,
 	StatesIcon,
 	StatesTitle,
@@ -8,33 +7,27 @@ import {
 	StatesSuggestionText,
 	StatesActions,
 	StatesAction,
+	Stack,
 } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type NoInstalledAppMatchesEmptyStateProps = {
+export type NoInstalledAppMatchesEmptyStateProps = {
 	shouldShowSearchText: boolean;
 	text: string;
 	onButtonClick: () => void;
 };
 
-const NoInstalledAppMatchesEmptyState = ({
-	shouldShowSearchText,
-	text,
-	onButtonClick,
-}: NoInstalledAppMatchesEmptyStateProps): ReactElement => {
+const NoInstalledAppMatchesEmptyState = ({ shouldShowSearchText, text, onButtonClick }: NoInstalledAppMatchesEmptyStateProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<Box mbs={20}>
+		<Stack grow justify='center'>
 			<States>
 				<StatesIcon name='magnifier' />
 				<StatesTitle>{t('No_installed_app_matches')}</StatesTitle>
 				{shouldShowSearchText && (
 					<StatesSubtitle>
-						<span>
-							{t('No_app_matches_for')} <strong>"{text}"</strong>
-						</span>
+						{t('No_app_matches_for')} <strong>&quot;{text}&quot;</strong>
 					</StatesSubtitle>
 				)}
 				<StatesSuggestion>
@@ -44,7 +37,7 @@ const NoInstalledAppMatchesEmptyState = ({
 					<StatesAction onClick={onButtonClick}>{t('Search_on_marketplace')}</StatesAction>
 				</StatesActions>
 			</States>
-		</Box>
+		</Stack>
 	);
 };
 

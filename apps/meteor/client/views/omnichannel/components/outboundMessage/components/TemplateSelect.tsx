@@ -5,7 +5,7 @@ import { useLanguages } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import type { Key, ComponentProps } from 'react';
 
-type TemplateSelectProps = Omit<ComponentProps<typeof SelectFiltered>, 'value' | 'onChange' | 'options'> & {
+export type TemplateSelectProps = Omit<ComponentProps<typeof SelectFiltered>, 'value' | 'onChange' | 'options'> & {
 	templates: IOutboundProviderTemplate[];
 	value: string;
 	onChange(value: Key): void;

@@ -1,6 +1,6 @@
 import type { IRoom, IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Icon, TextInput, Select, Throbber, ContextualbarSection } from '@rocket.chat/fuselage';
+import { Select } from '@rocket.chat/fuselage';
 import {
 	VirtualizedScrollbars,
 	ContextualbarHeader,
@@ -9,6 +9,8 @@ import {
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarEmptyContent,
+	ContextualbarSkeletonContent,
+	ContextualbarSection,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import type { ChangeEvent } from 'react';
@@ -19,9 +21,11 @@ import { Virtuoso } from 'react-virtuoso';
 import RoomFileItemWrapper from './RoomFileItemWrapper';
 import RoomFilesListWrapper from './RoomFilesListWrapper';
 import FileItem from './components/FileItem';
+import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../../components/FilterBar';
+import ListViewport from '../../../../components/ListViewport';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 
-type RoomFilesProps = {
+export type RoomFilesProps = {
 	rid: IRoom['_id'];
 	isPending: boolean;
 	isSuccess: boolean;
@@ -73,28 +77,25 @@ const RoomFiles = ({
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
 			<ContextualbarSection>
-				<TextInput
-					data-qa-files-search
-					placeholder={t('Search_Files')}
-					aria-label={t('Search_Files')}
-					aria-controls={isSuccess ? filesListId : undefined}
-					value={text}
-					onChange={setText}
-					addon={<Icon name='magnifier' size='x20' />}
-				/>
-				<Box w='x144' mis={8}>
-					<Select aria-controls={isSuccess ? filesListId : undefined} onChange={setType} value={type} options={options} />
-				</Box>
+				<FilterBar compact>
+					<FilterBarSearch
+						data-qa-files-search
+						placeholder={t('Search_Files')}
+						aria-label={t('Search_Files')}
+						aria-controls={isSuccess ? filesListId : undefined}
+						value={text}
+						onChange={setText}
+					/>
+					<FilterBarFilters>
+						<Select aria-label={t('File_Type')} onChange={setType} value={type} options={options} />
+					</FilterBarFilters>
+				</FilterBar>
 			</ContextualbarSection>
-			<ContextualbarContent paddingInline={0}>
+			<ContextualbarContent flush>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={total} />
-				{isPending && (
-					<Box p={24}>
-						<Throbber size='x12' />
-					</Box>
-				)}
+				{isPending && <ContextualbarSkeletonContent />}
 				{isSuccess && (
-					<Box w='full' h='full' id={filesListId} flexShrink={1} overflow='hidden'>
+					<ListViewport id={filesListId}>
 						{filesItems.length === 0 && <ContextualbarEmptyContent title={t('No_files_found')} />}
 						{filesItems.length > 0 && (
 							<VirtualizedScrollbars>
@@ -103,7 +104,7 @@ const RoomFiles = ({
 										height: '100%',
 										width: '100%',
 									}}
-									totalCount={total}
+									totalCount={filesItems.length}
 									endReached={loadMoreItems}
 									overscan={100}
 									data={filesItems}
@@ -115,7 +116,7 @@ const RoomFiles = ({
 								/>
 							</VirtualizedScrollbars>
 						)}
-					</Box>
+					</ListViewport>
 				)}
 			</ContextualbarContent>
 		</ContextualbarDialog>

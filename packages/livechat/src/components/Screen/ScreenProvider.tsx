@@ -1,6 +1,6 @@
-import type { FunctionalComponent } from 'preact';
+import type { ComponentChildren } from 'preact';
 import { createContext } from 'preact';
-import { useContext, useEffect, useState } from 'preact/hooks';
+import { useContext, useEffect, useMemo, useState } from 'preact/hooks';
 import { parse } from 'query-string';
 
 import { isActiveSession } from '../../helpers/isActiveSession';
@@ -8,7 +8,21 @@ import { loadConfig } from '../../lib/main';
 import { parentCall } from '../../lib/parentCall';
 import { loadMessages } from '../../lib/room';
 import Triggers from '../../lib/triggers';
+import type { StoreState } from '../../store';
 import { StoreContext } from '../../store';
+
+export type ScreenTheme = {
+	color: string;
+	fontColor: string;
+	iconColor: string;
+	position?: 'left' | 'right';
+	guestBubbleBackgroundColor?: string;
+	agentBubbleBackgroundColor?: string;
+	background?: string;
+	hideAgentAvatar: boolean;
+	hideGuestAvatar: boolean;
+	hideExpandChat: boolean;
+};
 
 export type ScreenContextValue = {
 	hideWatermark: boolean;
@@ -17,34 +31,41 @@ export type ScreenContextValue = {
 	minimized: boolean;
 	expanded: boolean;
 	windowed: boolean;
-	sound: unknown;
-	alerts: unknown;
-	modal: unknown;
-	nameDefault: string;
-	emailDefault: string;
-	departmentDefault: string;
+	sound:
+		| {
+				src: string;
+				play: boolean;
+		  }
+		| undefined;
+	alerts: StoreState['alerts'];
+	modal: ComponentChildren;
 	onEnableNotifications: () => unknown;
 	onDisableNotifications: () => unknown;
 	onMinimize: () => unknown;
-	onRestore: () => Promise<void>;
+	onRestore: () => void;
 	onOpenWindow: () => unknown;
-	onDismissAlert: () => unknown;
+	onDismissAlert: (id?: string) => void;
 	dismissNotification: () => void;
-	theme?: {
-		color?: string;
-		fontColor?: string;
-		iconColor?: string;
-		position?: 'left' | 'right';
-		guestBubbleBackgroundColor?: string;
-		agentBubbleBackgroundColor?: string;
-		background?: string;
-		hideGuestAvatar?: boolean;
-		hideAgentAvatar?: boolean;
-		hideExpandChat?: boolean;
-	};
+	theme: ScreenTheme;
 };
 
 export const ScreenContext = createContext<ScreenContextValue>({
+	hideWatermark: false,
+	livechatLogo: undefined,
+	notificationsEnabled: true,
+	minimized: true,
+	expanded: false,
+	windowed: false,
+	sound: undefined,
+	alerts: [],
+	modal: null,
+	onEnableNotifications: () => undefined,
+	onDisableNotifications: () => undefined,
+	onMinimize: () => undefined,
+	onRestore: () => undefined,
+	onOpenWindow: () => undefined,
+	onDismissAlert: () => undefined,
+	dismissNotification: () => undefined,
 	theme: {
 		color: '',
 		fontColor: '',
@@ -53,20 +74,27 @@ export const ScreenContext = createContext<ScreenContextValue>({
 		hideGuestAvatar: true,
 		hideExpandChat: false,
 	},
-	notificationsEnabled: true,
-	minimized: true,
-	windowed: false,
-	onEnableNotifications: () => undefined,
-	onDisableNotifications: () => undefined,
-	onMinimize: () => undefined,
-	onRestore: async () => undefined,
-	onOpenWindow: () => undefined,
-} as ScreenContextValue);
+});
 
-export const ScreenProvider: FunctionalComponent = ({ children }) => {
+export type ScreenProviderProps = {
+	children: ComponentChildren;
+};
+
+export const ScreenProvider = ({ children }: ScreenProviderProps) => {
 	const store = useContext(StoreContext);
-	const { token, dispatch, config, sound, minimized = true, undocked, expanded = false, alerts, modal, iframe, customFieldsQueue } = store;
-	const { department, name, email } = iframe.guest || {};
+	const {
+		token,
+		dispatch,
+		config,
+		sound,
+		minimized = true,
+		undocked = false,
+		expanded = false,
+		alerts,
+		modal,
+		iframe,
+		customFieldsQueue,
+	} = store;
 	const { color, position: configPosition, background, hideExpandChat } = config.theme || {};
 	const { livechatLogo, hideWatermark = false } = config.settings || {};
 
@@ -104,19 +132,21 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 		dispatch({ minimized: true });
 	};
 
-	const handleRestore = async () => {
+	const handleRestore = () => {
 		parentCall('restoreWindow');
 
-		if (undocked) {
-			// Cross-tab communication will not work here due cross origin (usually the widget parent and the RC server will have different urls)
-			// So we manually update the widget to get the messages and actions done while undocked
-			await loadConfig();
-			await loadMessages();
-		}
+		void (async () => {
+			if (undocked) {
+				// Cross-tab communication will not work here due cross origin (usually the widget parent and the RC server will have different urls)
+				// So we manually update the widget to get the messages and actions done while undocked
+				await loadConfig();
+				await loadMessages();
+			}
 
-		dispatch({ minimized: false, undocked: false });
+			dispatch({ minimized: false, undocked: false });
 
-		Triggers.callbacks?.emit('chat-opened-by-visitor');
+			Triggers.callbacks?.emit('chat-opened-by-visitor');
+		})();
 	};
 
 	const handleOpenWindow = () => {
@@ -124,7 +154,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 		dispatch({ undocked: true, minimized: false });
 	};
 
-	const handleDismissAlert = (id: string) => {
+	const handleDismissAlert = (id?: string) => {
 		dispatch({ alerts: alerts.filter((alert) => alert.id !== id) });
 	};
 
@@ -139,31 +169,16 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 		}
 	}, [dispatch]);
 
-	const screenProps = {
-		theme: {
-			color: customColor || color,
-			fontColor: customFontColor,
-			iconColor: customIconColor,
-			position,
-			guestBubbleBackgroundColor,
-			agentBubbleBackgroundColor,
-			background: customBackground || background,
-			hideAgentAvatar,
-			hideGuestAvatar,
-			hideExpandChat: customHideExpandChat || hideExpandChat,
-		},
-		notificationsEnabled: sound?.enabled,
+	const screenProps: ScreenContextValue = {
+		hideWatermark,
+		livechatLogo,
+		notificationsEnabled: sound?.enabled ?? true,
 		minimized: !poppedOut && (minimized || undocked),
 		expanded: !minimized && expanded,
 		windowed: poppedOut,
-		livechatLogo,
-		hideWatermark,
-		sound,
+		sound: useMemo(() => (sound?.src && sound?.play ? { src: sound.src, play: sound.play } : undefined), [sound]),
 		alerts,
 		modal,
-		nameDefault: name,
-		emailDefault: email,
-		departmentDefault: department,
 		onEnableNotifications: handleEnableNotifications,
 		onDisableNotifications: handleDisableNotifications,
 		onMinimize: handleMinimize,
@@ -171,6 +186,18 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 		onOpenWindow: handleOpenWindow,
 		onDismissAlert: handleDismissAlert,
 		dismissNotification,
+		theme: {
+			color: customColor || color || '',
+			fontColor: customFontColor || '',
+			iconColor: customIconColor || '',
+			position,
+			guestBubbleBackgroundColor,
+			agentBubbleBackgroundColor,
+			background: customBackground || background,
+			hideAgentAvatar,
+			hideGuestAvatar,
+			hideExpandChat: customHideExpandChat || hideExpandChat || false,
+		},
 	};
 
 	return <ScreenContext.Provider value={screenProps}>{children}</ScreenContext.Provider>;

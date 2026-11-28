@@ -3,6 +3,8 @@ import { DDPSDK } from '@rocket.chat/ddp-client';
 
 import type { IRequestConfig } from '../../../../../apps/meteor/tests/data/users.helper';
 
+export type UserActivity = { shownName: string; activities: string[] };
+
 /**
  * DDP Listener for catching ephemeral messages in federation tests
  *
@@ -15,6 +17,8 @@ export class DDPListener {
 	private sdk: DDPSDK | null = null;
 
 	private ephemeralMessages: IMessage[] = [];
+
+	private userActivities: UserActivity[] = [];
 
 	private timeoutId: NodeJS.Timeout | null = null;
 
@@ -37,40 +41,36 @@ export class DDPListener {
 	 * Connect to the DDP server and subscribe to ephemeral messages
 	 */
 	async connect(): Promise<void> {
-		try {
-			// Create DDP SDK instance
-			this.sdk = DDPSDK.create(this.serverUrl);
+		// Create DDP SDK instance
+		this.sdk = DDPSDK.create(this.serverUrl);
 
-			// Add timeout for connection
-			const connectionTimeout = setTimeout(() => {
-				throw new Error('DDP connection timeout');
-			}, 10000);
+		// Add timeout for connection
+		const connectionTimeout = setTimeout(() => {
+			throw new Error('DDP connection timeout');
+		}, 10000);
 
-			// Connect to the server
-			await this.sdk.connection.connect();
+		// Connect to the server
+		await this.sdk.connection.connect();
 
-			// Wait a bit for the connection to be fully ready
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+		// Wait a bit for the connection to be fully ready
+		await new Promise((resolve) => setTimeout(resolve, 1000));
 
-			// Authenticate if we have a token
-			if (this.authToken) {
-				await this.sdk.account.loginWithToken(this.authToken);
-			}
-
-			// Subscribe to ephemeral messages using the stream method
-			this.sdk.stream('notify-user', `${this.userId}/message`, (...args) => {
-				// The args should contain the ephemeral message
-				if (args && args.length > 0) {
-					const message = args[0] as IMessage;
-					this.ephemeralMessages.push(message);
-				}
-			});
-
-			// Clear timeout on successful connection
-			clearTimeout(connectionTimeout);
-		} catch (error) {
-			throw error;
+		// Authenticate if we have a token
+		if (this.authToken) {
+			await this.sdk.account.loginWithToken(this.authToken);
 		}
+
+		// Subscribe to ephemeral messages using the stream method
+		this.sdk.stream('notify-user', `${this.userId}/message`, (...args) => {
+			// The args should contain the ephemeral message
+			if (args && args.length > 0) {
+				const message = args[0] as IMessage;
+				this.ephemeralMessages.push(message);
+			}
+		});
+
+		// Clear timeout on successful connection
+		clearTimeout(connectionTimeout);
 	}
 
 	/**
@@ -139,6 +139,35 @@ export class DDPListener {
 	 */
 	clearMessages(): void {
 		this.ephemeralMessages = [];
+	}
+
+	async publishUserActivity(rid: string, shownName: string, activities: string[]): Promise<void> {
+		if (!this.sdk) {
+			throw new Error('DDP connection is not established');
+		}
+
+		await this.sdk.client.callAsync('stream-notify-room', `${rid}/user-activity`, shownName, activities, {});
+	}
+
+	/**
+	 * Subscribe to the activity stream of a room, capturing what a client in that room would render
+	 */
+	observeUserActivity(rid: string): void {
+		if (!this.sdk) {
+			throw new Error('DDP connection is not established');
+		}
+
+		this.sdk.stream('notify-room', `${rid}/user-activity`, (shownName, activities) => {
+			this.userActivities.push({ shownName, activities });
+		});
+	}
+
+	getUserActivities(): UserActivity[] {
+		return [...this.userActivities];
+	}
+
+	clearActivities(): void {
+		this.userActivities = [];
 	}
 
 	/**

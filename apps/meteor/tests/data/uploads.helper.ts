@@ -1,7 +1,8 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { api, request, credentials } from './api-data';
@@ -9,6 +10,7 @@ import { imgURL, soundURL } from './interactions';
 import { updateSetting } from './permissions.helper';
 import { addUserToRoom, createRoom, deleteRoom } from './rooms.helper';
 import { password } from './user';
+import type { TestUser } from './users.helper';
 import { createUser, deleteUser, login } from './users.helper';
 
 export async function testFileUploads(
@@ -40,7 +42,7 @@ export async function testFileUploads(
 		Promise.all([deleteRoom({ type: 'c' as const, roomId: testRoom._id }), updateSetting('Message_KeepHistory', false), deleteUser(user)]),
 	);
 
-	it('should fail if invalid channel', (done) => {
+	it('should fail if invalid channel', (_t, done) => {
 		void request
 			.get(api(filesEndpoint))
 			.set(credentials)
@@ -56,7 +58,7 @@ export async function testFileUploads(
 			.end(done);
 	});
 
-	it('should succeed when searching by roomId', (done) => {
+	it('should succeed when searching by roomId', (_t, done) => {
 		void request
 			.get(api(filesEndpoint))
 			.set(credentials)
@@ -72,7 +74,7 @@ export async function testFileUploads(
 			.end(done);
 	});
 
-	it('should succeed when searching by roomId even requested with count and offset params', (done) => {
+	it('should succeed when searching by roomId even requested with count and offset params', (_t, done) => {
 		void request
 			.get(api(filesEndpoint))
 			.set(credentials)
@@ -90,9 +92,10 @@ export async function testFileUploads(
 			.end(done);
 	});
 
-	it('should succeed when searching by roomName', function (done) {
+	it('should succeed when searching by roomName', (t, done) => {
 		if (!testRoom.name) {
-			this.skip();
+			t.skip();
+			return done();
 		}
 		void request
 			.get(api(filesEndpoint))
@@ -109,9 +112,10 @@ export async function testFileUploads(
 			.end(done);
 	});
 
-	it('should succeed when searching by roomName even requested with count and offset params', function (done) {
+	it('should succeed when searching by roomName even requested with count and offset params', (t, done) => {
 		if (!testRoom.name) {
-			this.skip();
+			t.skip();
+			return done();
 		}
 		void request
 			.get(api(filesEndpoint))
@@ -306,7 +310,7 @@ export async function testFileUploads(
 
 	describe('with another user', () => {
 		let anotherUserCreds: Credentials;
-		let anotherUser: IUser;
+		let anotherUser: TestUser<IUser>;
 		let extraRoom: IRoom;
 
 		before(async () => {
@@ -324,19 +328,19 @@ export async function testFileUploads(
 			if (roomType === 'p') {
 				await addUserToRoom({
 					rid: testRoom._id,
-					usernames: [anotherUser.username!],
+					usernames: [anotherUser.username],
+					type: 'p',
 				});
 			}
 		});
 
-		after(() => Promise.all([deleteUser(anotherUser), deleteRoom({ type: roomType, roomId: extraRoom._id })]));
+		after(async () => {
+			await deleteRoom({ type: roomType, roomId: extraRoom._id });
+			await deleteUser(anotherUser, { confirmRelinquish: true });
+		});
 
-		it('should not allow to confirm a file from another user', async function () {
-			if (roomType === 'd') {
-				this.skip();
-			}
-
-			let fileId: string;
+		it('should not allow to confirm a file from another user', { skip: roomType === 'd' }, async () => {
+			let fileId: string | undefined;
 			await request
 				.post(api(`rooms.media/${testRoom._id}`))
 				.set(anotherUserCreds)
@@ -348,15 +352,19 @@ export async function testFileUploads(
 					fileId = res.body.file._id;
 				});
 
+			if (!fileId) {
+				throw new Error('rooms.media did not return a file id');
+			}
+
 			await request
-				.post(api(`rooms.mediaConfirm/${testRoom._id}/${fileId!}`))
+				.post(api(`rooms.mediaConfirm/${testRoom._id}/${fileId}`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400);
 		});
 
 		it('should not allow to confirm a file that was not uploaded to the same room', async () => {
-			let fileId: string;
+			let fileId: string | undefined;
 
 			await request
 				.post(api(`rooms.media/${extraRoom._id}`))
@@ -369,8 +377,12 @@ export async function testFileUploads(
 					fileId = res.body.file._id;
 				});
 
+			if (!fileId) {
+				throw new Error('rooms.media did not return a file id');
+			}
+
 			await request
-				.post(api(`rooms.mediaConfirm/${testRoom._id}/${fileId!}`))
+				.post(api(`rooms.mediaConfirm/${testRoom._id}/${fileId}`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400);

@@ -1,11 +1,11 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
-import EJSON from 'ejson';
-import { before, describe, it, after } from 'mocha';
 
-import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
@@ -18,7 +18,7 @@ import { IS_EE } from '../../e2e/config/constants';
 	let dummyUser: IUser;
 	let auditor: IUser;
 	let auditorCredentials: Credentials;
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 	before(async () => {
 		testChannel = (await createRoom({ type: 'c', name: `chat.api-test-${Date.now()}` })).body.channel;
 		testPrivateChannel = (await createRoom({ type: 'p', name: `chat.api-test-${Date.now()}` })).body.group;
@@ -26,8 +26,12 @@ import { IS_EE } from '../../e2e/config/constants';
 		auditor = await createUser({ roles: ['user', 'auditor'] });
 
 		auditorCredentials = await login(auditor.username, password);
+
+		// the auditor role has can-audit but not can-audit-log by default; grant it suite-wide for the audit.auditions cases
+		await updatePermission('can-audit-log', ['admin', 'auditor']);
 	});
 	after(async () => {
+		await updatePermission('can-audit-log', ['admin']);
 		await deleteRoom({ type: 'c', roomId: testChannel._id });
 		await deleteUser({ _id: dummyUser._id });
 		await deleteUser({ _id: auditor._id });
@@ -118,24 +122,19 @@ import { IS_EE } from '../../e2e/config/constants';
 				});
 
 			await request
-				.post(methodCall('auditGetAuditions'))
+				.get(api('audit.auditions'))
 				.set(credentials)
-				.send({
-					message: EJSON.stringify({
-						method: 'auditGetAuditions',
-						params: [{ startDate: new Date(Date.now() - 86400000), endDate: new Date() }],
-						id: 'id',
-						msg: 'method',
-					}),
+				.query({
+					startDate: new Date(Date.now() - 86400000).toISOString(),
+					endDate: new Date().toISOString(),
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					const message = JSON.parse(res.body.message);
 
-					expect(message.result).to.be.an('array').with.lengthOf.greaterThan(1);
-					const entry = message.result.find((audition: any) => {
+					expect(res.body.auditions).to.be.an('array').with.lengthOf.greaterThan(1);
+					const entry = res.body.auditions.find((audition: any) => {
 						return audition.fields?.rids?.includes(testChannel._id);
 					});
 					expect(entry).to.have.property('u').that.is.an('object').deep.equal({
@@ -152,16 +151,9 @@ import { IS_EE } from '../../e2e/config/constants';
 		});
 		it('should fetch the members of a room with offset and count', async () => {
 			await request
-				.post(methodCall('addUsersToRoom'))
+				.post(api('channels.invite'))
 				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'addUsersToRoom',
-						params: [{ rid: testChannel._id, users: [dummyUser.username] }],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
+				.send({ roomId: testChannel._id, username: dummyUser.username })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -296,6 +288,153 @@ import { IS_EE } from '../../e2e/config/constants';
 					expect(res.body.members[0].username).to.be.equal('rocketchat.internal.admin.test');
 					expect(res.body.total).to.be.equal(1);
 				});
+		});
+	});
+
+	describe('[/audit.auditions]', () => {
+		const startDate = new Date(0).toISOString();
+		const endDate = new Date().toISOString();
+
+		it('should fail if user is not logged in', async () => {
+			await request.get(api('audit.auditions')).query({ startDate, endDate }).expect(401);
+		});
+
+		it('should fail with 400 when startDate/endDate are missing', async () => {
+			await request.get(api('audit.auditions')).set(auditorCredentials).query({}).expect(400);
+		});
+
+		it('should fail with 400 when a date is invalid', async () => {
+			await request.get(api('audit.auditions')).set(auditorCredentials).query({ startDate: 'not-a-date', endDate }).expect(400);
+		});
+
+		it('should fail with 403 when the user lacks the can-audit-log permission', async () => {
+			await updatePermission('can-audit-log', []);
+			await request.get(api('audit.auditions')).set(auditorCredentials).query({ startDate, endDate }).expect(403);
+			await updatePermission('can-audit-log', ['admin', 'auditor']);
+		});
+
+		it('should return the list of auditions', async () => {
+			await request
+				.get(api('audit.auditions'))
+				.set(auditorCredentials)
+				.query({ startDate, endDate })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('auditions').that.is.an('array');
+				});
+		});
+	});
+
+	describe('[/audit.messages]', () => {
+		const startDate = new Date(0).toISOString();
+		const endDate = new Date().toISOString();
+
+		it('should fail if user is not logged in', async () => {
+			await request.post(api('audit.messages')).send({ startDate, endDate, users: [], msg: '', type: 'u' }).expect(401);
+		});
+
+		it('should fail with 400 when required params are missing', async () => {
+			await request.post(api('audit.messages')).set(auditorCredentials).send({ startDate, endDate }).expect(400);
+		});
+
+		it('should fail with 400 when a date is invalid', async () => {
+			await request
+				.post(api('audit.messages'))
+				.set(auditorCredentials)
+				.send({ startDate: 'not-a-date', endDate, users: [], msg: '', type: 'u' })
+				.expect(400);
+		});
+
+		it('should fail with 403 when the user lacks the can-audit permission', async () => {
+			await updatePermission('can-audit', []);
+			await request
+				.post(api('audit.messages'))
+				.set(auditorCredentials)
+				.send({ startDate, endDate, users: [], msg: '', type: 'u' })
+				.expect(403);
+			await updatePermission('can-audit', ['admin', 'auditor']);
+		});
+
+		it('should return matching messages', async () => {
+			await request
+				.post(api('audit.messages'))
+				.set(auditorCredentials)
+				.send({ startDate, endDate, users: [], msg: '', type: 'u' })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').that.is.an('array');
+				});
+		});
+
+		it('should persist an audit log entry', async () => {
+			// query auditions with a future endDate so the entry created by the request below (ts = now) is in range
+			const auditionsRange = { startDate, endDate: new Date(Date.now() + 60000).toISOString() };
+			const before = await request.get(api('audit.auditions')).set(auditorCredentials).query(auditionsRange);
+			await request
+				.post(api('audit.messages'))
+				.set(auditorCredentials)
+				.send({ startDate, endDate, users: [], msg: '', type: 'u' })
+				.expect(200);
+			const after = await request.get(api('audit.auditions')).set(auditorCredentials).query(auditionsRange);
+			expect(after.body.auditions.length).to.be.greaterThan(before.body.auditions.length);
+		});
+	});
+
+	describe('[/audit.omnichannelMessages]', () => {
+		const startDate = new Date(0).toISOString();
+		const endDate = new Date().toISOString();
+
+		it('should fail if user is not logged in', async () => {
+			await request.post(api('audit.omnichannelMessages')).send({ startDate, endDate, users: [], msg: '', type: 'l' }).expect(401);
+		});
+
+		it('should fail with 400 when required params are missing', async () => {
+			await request.post(api('audit.omnichannelMessages')).set(auditorCredentials).send({ startDate, endDate }).expect(400);
+		});
+
+		it('should fail with 400 when a date is invalid', async () => {
+			await request
+				.post(api('audit.omnichannelMessages'))
+				.set(auditorCredentials)
+				.send({ startDate: 'not-a-date', endDate, users: [], msg: '', type: 'l' })
+				.expect(400);
+		});
+
+		it('should fail with 403 when the user lacks the can-audit permission', async () => {
+			await updatePermission('can-audit', []);
+			await request
+				.post(api('audit.omnichannelMessages'))
+				.set(auditorCredentials)
+				.send({ startDate, endDate, users: [], msg: '', type: 'l' })
+				.expect(403);
+			await updatePermission('can-audit', ['admin', 'auditor']);
+		});
+
+		it('should return matching omnichannel messages', async () => {
+			await request
+				.post(api('audit.omnichannelMessages'))
+				.set(auditorCredentials)
+				.send({ startDate, endDate, users: [], msg: '', type: 'l' })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').that.is.an('array');
+				});
+		});
+
+		it('should persist an audit log entry', async () => {
+			// query auditions with a future endDate so the entry created by the request below (ts = now) is in range
+			const auditionsRange = { startDate, endDate: new Date(Date.now() + 60000).toISOString() };
+			const before = await request.get(api('audit.auditions')).set(auditorCredentials).query(auditionsRange);
+			await request
+				.post(api('audit.omnichannelMessages'))
+				.set(auditorCredentials)
+				.send({ startDate, endDate, users: [], msg: '', type: 'l' })
+				.expect(200);
+			const after = await request.get(api('audit.auditions')).set(auditorCredentials).query(auditionsRange);
+			expect(after.body.auditions.length).to.be.greaterThan(before.body.auditions.length);
 		});
 	});
 });

@@ -8,7 +8,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import RecipientSelect from '../../../../RecipientSelect';
 import type { RecipientFormData } from '../RecipientForm';
 
-type RecipientFieldProps = ComponentProps<typeof Field> & {
+export type RecipientFieldProps = ComponentProps<typeof Field> & {
 	control: Control<RecipientFormData>;
 	contact?: Omit<Serialized<ILivechatContact>, 'contactManager'>;
 	type: 'phone' | 'email';
@@ -36,7 +36,7 @@ const RecipientField = ({ control, contact, type, disabled = false, isLoading = 
 
 	return (
 		<Field {...props}>
-			<FieldLabel is='span' required id={`${recipientFieldId}`}>
+			<FieldLabel required id={`${recipientFieldId}`}>
 				{t('To')}
 			</FieldLabel>
 			<FieldRow>

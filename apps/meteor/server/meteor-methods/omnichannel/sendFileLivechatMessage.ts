@@ -1,0 +1,108 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
+import type {
+	FileAttachmentProps,
+	ImageAttachmentProps,
+	AudioAttachmentProps,
+	VideoAttachmentProps,
+	IUpload,
+} from '@rocket.chat/core-typings';
+import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
+import { ajv } from '@rocket.chat/rest-typings';
+
+import { sendMessageLivechat } from './sendMessageLivechat';
+import { FileUpload } from '../../lib/media/file-upload';
+
+interface ISendFileLivechatMessage {
+	roomId: string;
+	visitorToken: string;
+	file: IUpload;
+	msgData?: { avatar?: string; emoji?: string; alias?: string; groupable?: boolean; msg?: string };
+}
+
+const isLivechatFileMessageData = ajv.compile<ISendFileLivechatMessage['msgData']>({
+	type: 'object',
+	properties: {
+		avatar: { type: 'string' },
+		emoji: { type: 'string' },
+		alias: { type: 'string' },
+		groupable: { type: 'boolean' },
+		msg: { type: 'string' },
+	},
+	additionalProperties: false,
+});
+
+export const sendFileLivechatMessage = async ({ roomId, visitorToken, file, msgData = {} }: ISendFileLivechatMessage): Promise<boolean> => {
+	const visitor = await LivechatVisitors.getVisitorByToken(visitorToken);
+
+	if (!visitor) {
+		return false;
+	}
+
+	const room = await LivechatRooms.findOneOpenByRoomIdAndVisitorToken(roomId, visitorToken);
+
+	if (!room) {
+		return false;
+	}
+
+	if (!isLivechatFileMessageData(msgData)) {
+		throw new ClientSafeError('error-invalid-arguments', 'Invalid arguments', {
+			method: 'sendFileLivechatMessage',
+		});
+	}
+
+	const fileUrl = file.name && FileUpload.getPath(`${file._id}/${encodeURI(file.name)}`);
+
+	const attachment: Partial<FileAttachmentProps> = {
+		title: file.name,
+		type: 'file',
+		description: file.description,
+		title_link: fileUrl,
+		title_link_download: true,
+	};
+
+	if (file.type && /^image\/.+/.test(file.type)) {
+		(attachment as ImageAttachmentProps).image_url = fileUrl || '';
+		(attachment as ImageAttachmentProps).image_type = file.type;
+		(attachment as ImageAttachmentProps).image_size = file.size;
+		if (file.identify?.size) {
+			(attachment as ImageAttachmentProps).image_dimensions = file.identify.size;
+		}
+		(attachment as ImageAttachmentProps).image_preview = await FileUpload.resizeImagePreview(file);
+	} else if (file.type && /^audio\/.+/.test(file.type)) {
+		(attachment as AudioAttachmentProps).audio_url = fileUrl || '';
+		(attachment as AudioAttachmentProps).audio_type = file.type;
+		(attachment as AudioAttachmentProps).audio_size = file.size;
+	} else if (file.type && /^video\/.+/.test(file.type)) {
+		(attachment as VideoAttachmentProps).video_url = fileUrl || '';
+		(attachment as VideoAttachmentProps).video_type = file.type;
+		(attachment as VideoAttachmentProps).video_size = file.size || 0;
+	}
+
+	const msg = Object.assign(
+		{
+			_id: Random.id(),
+			rid: roomId,
+			ts: new Date(),
+			msg: '',
+			file: {
+				_id: file._id,
+				name: file.name,
+				type: file.type,
+			},
+			files: [
+				{
+					_id: file._id,
+					name: file.name,
+					type: file.type,
+				},
+			],
+			groupable: false,
+			attachments: [attachment],
+			token: visitorToken,
+		},
+		msgData,
+	);
+
+	return sendMessageLivechat({ message: msg });
+};

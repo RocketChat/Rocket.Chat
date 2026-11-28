@@ -1,17 +1,18 @@
 import type { ILogItem } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import { Text } from '@rocket.chat/fuselage';
 import DOMPurify from 'dompurify';
 
+import RichContent from '../../../../../components/RichContent';
 import { useHighlightedCode } from '../../../../../hooks/useHighlightedCode';
 
-type AppLogsItemEntryProps = {
+export type AppLogsItemEntryProps = {
 	fullLog: ILogItem;
 };
 
 const AppLogsItemEntry = ({ fullLog }: AppLogsItemEntryProps) => {
 	return (
-		<Box color='default'>
-			<Box withRichContent width='full'>
+		<Text color='default'>
+			<RichContent>
 				<pre>
 					<code
 						dangerouslySetInnerHTML={{
@@ -19,8 +20,8 @@ const AppLogsItemEntry = ({ fullLog }: AppLogsItemEntryProps) => {
 						}}
 					/>
 				</pre>
-			</Box>
-		</Box>
+			</RichContent>
+		</Text>
 	);
 };
 

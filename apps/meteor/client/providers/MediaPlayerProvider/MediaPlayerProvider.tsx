@@ -1,0 +1,202 @@
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useMergedRefsV2 } from '@rocket.chat/ui-client';
+import type { ReactNode } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
+
+import type { MediaPlayerContextValue, PersistentAudioTrack } from './MediaPlayerContext';
+import { MediaPlayerContext } from './MediaPlayerContext';
+import { useReloadOnError } from '../../components/message/content/attachments/file/hooks/useReloadOnError';
+
+const PLAYBACK_RATES = [1, 1.5, 2] as const;
+
+export type MediaPlayerProviderProps = {
+	children?: ReactNode;
+};
+
+/**
+ * Owns the single, app-wide `<audio>` element used to play message audio
+ * attachments. Because the element lives above the room layout and is never
+ * recreated, both the in-message controls and the sidebar card drive the very
+ * same element: switching or closing the room only swaps which UI is shown — the
+ * element keeps playing with no reload, seek, or gap.
+ */
+const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
+	const audioRef = useRef<HTMLAudioElement | null>(null);
+
+	const [track, setTrack] = useState<PersistentAudioTrack | null>(null);
+	const [playing, setPlaying] = useState(false);
+	const [currentTime, setCurrentTime] = useState(0);
+	const [duration, setDuration] = useState(0);
+	const [playbackRate, setPlaybackRate] = useState<number>(1);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState(false);
+
+	const activeTrackId = track?.id ?? null;
+
+	// Not every browser honors a seek made before the metadata is loaded, so such a seek waits for it.
+	const pendingStartTimeRef = useRef(0);
+
+	// Reuse the message player's signed-URL recovery on the shared element.
+	const { mediaRef } = useReloadOnError(track?.url ?? '', 'audio');
+	const audioCallback = useCallback((node: HTMLAudioElement | null) => {
+		audioRef.current = node;
+	}, []);
+	const setAudioRef = useMergedRefsV2(audioCallback, mediaRef);
+
+	const play = useStableCallback((next: PersistentAudioTrack, startTime = 0) => {
+		const audio = audioRef.current;
+		if (!audio) {
+			return;
+		}
+
+		if (track?.id !== next.id) {
+			setTrack(next);
+			setCurrentTime(startTime);
+			setDuration(0);
+			pendingStartTimeRef.current = startTime;
+			setError(false);
+			audio.src = next.url;
+			audio.load();
+		}
+
+		audio.playbackRate = playbackRate;
+		audio.play().catch((err) => console.warn('Failed to start audio playback:', err));
+	});
+
+	const toggle = useStableCallback(() => {
+		const audio = audioRef.current;
+		if (!audio || !track) {
+			return;
+		}
+		if (audio.paused) {
+			audio.play().catch((err) => console.warn('Failed to resume audio playback:', err));
+		} else {
+			audio.pause();
+		}
+	});
+
+	const seek = useStableCallback((time: number) => {
+		const audio = audioRef.current;
+		if (!audio) {
+			return;
+		}
+		if (audio.readyState === HTMLMediaElement.HAVE_NOTHING) {
+			pendingStartTimeRef.current = Math.max(0, time);
+			setCurrentTime(pendingStartTimeRef.current);
+			return;
+		}
+		audio.currentTime = Math.max(0, Math.min(time, audio.duration || time));
+	});
+
+	const cyclePlaybackRate = useStableCallback(() => {
+		setPlaybackRate((rate) => {
+			const idx = PLAYBACK_RATES.indexOf(rate as (typeof PLAYBACK_RATES)[number]);
+			const nextRate = PLAYBACK_RATES[(idx + 1) % PLAYBACK_RATES.length];
+			if (audioRef.current) {
+				audioRef.current.playbackRate = nextRate;
+			}
+			return nextRate;
+		});
+	});
+
+	const close = useStableCallback(() => {
+		const audio = audioRef.current;
+		if (audio) {
+			audio.pause();
+			audio.removeAttribute('src');
+			audio.load();
+		}
+		setTrack(null);
+		setPlaying(false);
+		setCurrentTime(0);
+		setDuration(0);
+		setLoading(false);
+		setError(false);
+	});
+
+	const retry = useStableCallback(() => {
+		const audio = audioRef.current;
+		if (!audio || !track) {
+			return;
+		}
+		setError(false);
+		// A retry before metadata loads sees 0, so it keeps the position an earlier retry or seek saved.
+		pendingStartTimeRef.current = audio.currentTime || pendingStartTimeRef.current;
+		audio.load();
+		audio.play().catch((err) => console.warn('Failed to retry audio playback:', err));
+	});
+
+	const value = useMemo<MediaPlayerContextValue>(
+		() => ({
+			track,
+			playing,
+			currentTime,
+			duration,
+			playbackRate,
+			loading,
+			error,
+			retry,
+			play,
+			toggle,
+			seek,
+			cyclePlaybackRate,
+			close,
+			activeTrackId,
+		}),
+		[
+			track,
+			playing,
+			currentTime,
+			duration,
+			playbackRate,
+			loading,
+			error,
+			retry,
+			play,
+			toggle,
+			seek,
+			cyclePlaybackRate,
+			close,
+			activeTrackId,
+		],
+	);
+
+	return (
+		<MediaPlayerContext.Provider value={value}>
+			{children}
+			<audio
+				ref={setAudioRef}
+				hidden
+				preload='metadata'
+				onPlay={() => setPlaying(true)}
+				onPause={() => setPlaying(false)}
+				onEnded={() => close()}
+				onWaiting={() => setLoading(true)}
+				onCanPlay={() => setLoading(false)}
+				onPlaying={() => setLoading(false)}
+				onError={() => {
+					// An error arriving after close() belongs to no track.
+					if (track) {
+						setLoading(false);
+						setError(true);
+					}
+				}}
+				onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
+				onLoadedMetadata={(e) => {
+					setError(false);
+					setDuration(e.currentTarget.duration || 0);
+					if (pendingStartTimeRef.current > 0) {
+						e.currentTarget.currentTime = pendingStartTimeRef.current;
+						pendingStartTimeRef.current = 0;
+					}
+				}}
+				onDurationChange={(e) => setDuration(e.currentTarget.duration || 0)}
+				onRateChange={(e) => setPlaybackRate(e.currentTarget.playbackRate)}
+			>
+				<track kind='captions' />
+			</audio>
+		</MediaPlayerContext.Provider>
+	);
+};
+
+export default MediaPlayerProvider;

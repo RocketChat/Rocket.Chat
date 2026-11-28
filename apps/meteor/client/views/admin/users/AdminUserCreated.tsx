@@ -3,7 +3,9 @@ import { ContextualbarEmptyContent, ContextualbarFooter } from '@rocket.chat/ui-
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-const AdminUserCreated = ({ uid }: { uid: string }) => {
+export type AdminUserCreatedProps = { uid: string };
+
+const AdminUserCreated = ({ uid }: AdminUserCreatedProps) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 
@@ -11,11 +13,11 @@ const AdminUserCreated = ({ uid }: { uid: string }) => {
 		<>
 			<ContextualbarEmptyContent icon='user' title={t('You_have_created_user')} />
 			<ContextualbarFooter>
-				<ButtonGroup stretch>
-					<Button type='reset' onClick={() => router.navigate(`/admin/users/new`)} flexBasis='0'>
+				<ButtonGroup stretch='equal'>
+					<Button type='reset' onClick={() => router.navigate(`/admin/users/new`)}>
 						{t('Add_more_users')}
 					</Button>
-					<Button primary onClick={() => router.navigate(`/admin/users/info/${uid}`)} flexBasis='0'>
+					<Button variant='primary' onClick={() => router.navigate(`/admin/users/info/${uid}`)}>
 						{t('Done')}
 					</Button>
 				</ButtonGroup>

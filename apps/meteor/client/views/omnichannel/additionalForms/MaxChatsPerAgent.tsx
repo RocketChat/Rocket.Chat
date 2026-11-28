@@ -1,12 +1,13 @@
 import { NumberInput, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useId } from 'react';
 import type { ComponentProps } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
+export type MaxChatsPerAgentProps = { className?: ComponentProps<typeof Field>['className'] };
 
-const MaxChatsPerAgent = ({ className }: { className?: ComponentProps<typeof Field>['className'] }) => {
+const MaxChatsPerAgent = ({ className }: MaxChatsPerAgentProps) => {
 	const { t } = useTranslation();
 	const { control } = useFormContext();
 	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');

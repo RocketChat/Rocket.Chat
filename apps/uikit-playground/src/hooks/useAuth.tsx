@@ -11,7 +11,9 @@ const AuthContext = createContext<{
 	logout?: () => void;
 }>({});
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export type AuthProviderProps = { children: ReactNode };
+
+export const AuthProvider = ({ children }: AuthProviderProps) => {
 	const [user, setUser] = useLocalStorage<userType>('user', null);
 	const navigate = useNavigate();
 
@@ -31,7 +33,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 			login,
 			logout,
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 		[user],
 	);
 

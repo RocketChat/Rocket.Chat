@@ -1,12 +1,11 @@
-import type { Box } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { createContext } from 'react';
-import type { ReactNode, ComponentProps, ComponentType } from 'react';
+import type { ReactNode, ComponentType } from 'react';
 
 import type { TranslationKey } from './TranslationContext';
 
 export type RenderToolboxItemParams = RoomToolboxActionConfig & {
-	className?: ComponentProps<typeof Box>['className'];
+	className?: string;
 	toolbox: RoomToolboxContextValue;
 };
 

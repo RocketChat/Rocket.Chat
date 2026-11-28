@@ -9,7 +9,7 @@ export const useRequire2faSetup = () => {
 	const totp2faEnabled = useSetting('Accounts_TwoFactorAuthentication_By_TOTP_Enabled', false);
 	const is2FAEnabled = tfaEnabled && (email2faEnabled || totp2faEnabled);
 
-	return Roles.use((state) => {
+	return Roles.useStore((state) => {
 		if (!user || !is2FAEnabled) {
 			return false;
 		}

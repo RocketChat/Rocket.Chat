@@ -8,6 +8,7 @@ export type EditableSetting = ISetting & {
 	disabled: boolean;
 	changed: boolean;
 	invisible: boolean;
+	invalid?: boolean;
 };
 
 export const compareSettings = (a: EditableSetting, b: EditableSetting): number => {
@@ -149,7 +150,7 @@ export const useEditableSettingsDispatch = (): ((changes: Partial<EditableSettin
 	return useEditableSettingsStore((state) => state.mutate);
 };
 
-export const useEditableSettingVisibilityQuery = (query?: ISetting['enableQuery'] | ISetting['displayQuery']): boolean => {
+export const useEditableSettingVisibilityQuery = (query?: ISetting['enableQuery']): boolean => {
 	const { useEditableSettingsStore } = useContext(EditableSettingsContext);
 
 	return useEditableSettingsStore((state) => {

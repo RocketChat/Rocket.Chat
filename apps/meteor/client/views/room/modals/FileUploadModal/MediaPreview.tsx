@@ -1,5 +1,4 @@
 import { AudioPlayer, Box, Icon } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -9,14 +8,17 @@ import PreviewSkeleton from './PreviewSkeleton';
 import { userAgentMIMETypeFallback } from '../../../../lib/utils/userAgentMIMETypeFallback';
 import { useFileAsDataURL } from '../../hooks/useFileAsDataURL';
 
-type MediaPreviewProps = {
+export type MediaPreviewProps = {
 	file: File;
+	url?: string;
 	fileType: FilePreviewType;
-	description?: string;
+	altText?: string;
 };
 
-const MediaPreview = ({ file, fileType, description }: MediaPreviewProps): ReactElement => {
-	const [loaded, url] = useFileAsDataURL(file);
+const MediaPreview = ({ file, url: remoteUrl, fileType, altText }: MediaPreviewProps) => {
+	const [dataURLLoaded, dataURL] = useFileAsDataURL(file);
+	const loaded = remoteUrl ? true : dataURLLoaded;
+	const url = remoteUrl ?? dataURL;
 	const { t } = useTranslation();
 
 	if (!loaded) {
@@ -25,20 +27,20 @@ const MediaPreview = ({ file, fileType, description }: MediaPreviewProps): React
 
 	if (typeof url !== 'string') {
 		return (
-			<Box display='flex' alignItems='center' w='full'>
-				<Icon name='image' size='x24' mie={4} />
+			<Box display='flex' alignItems='center' width='full' gap={4}>
+				<Icon name='image' size='x24' />
 				{t('FileUpload_Cannot_preview_file')}
 			</Box>
 		);
 	}
 
 	if (fileType === FilePreviewType.IMAGE) {
-		return <ImagePreview url={url} file={file} alt={description} />;
+		return <ImagePreview url={url} file={file} altText={altText} />;
 	}
 
 	if (fileType === FilePreviewType.VIDEO) {
 		return (
-			<Box is='video' w='full' controls>
+			<Box is='video' width='full' controls>
 				<source src={url} type={userAgentMIMETypeFallback(file.type)} />
 				{t('Browser_does_not_support_video_element')}
 			</Box>

@@ -1,0 +1,214 @@
+import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
+import type { HTMLAttributes, RefAttributes, TrackHTMLAttributes } from 'react';
+import { useState, useRef } from 'react';
+
+import { Box } from '../..';
+import AudioPlayerControls from './AudioPlayerControls';
+import { useOwnerDocument } from '../../contexts';
+import { prependClassName } from '../../helpers/prependClassName';
+
+function forceDownload(ownerDocument: Document, url: string, fileName?: string) {
+	const xhr = new XMLHttpRequest();
+	xhr.open('GET', url, true);
+	xhr.responseType = 'blob';
+	xhr.onload = function () {
+		const urlCreator = window.URL || window.webkitURL;
+		const imageUrl = urlCreator.createObjectURL(this.response);
+		const tag = ownerDocument.createElement('a');
+		tag.href = imageUrl;
+		if (fileName) {
+			tag.download = fileName;
+		}
+		ownerDocument.body.appendChild(tag);
+		tag.click();
+		ownerDocument.body.removeChild(tag);
+	};
+	xhr.send();
+}
+
+const getDurationForInfinityDurationAudioFile = (src: string, callback: (duration: number) => void) => {
+	const audioElement = new Audio();
+	audioElement.src = src;
+
+	audioElement.addEventListener('loadedmetadata', () => {
+		const { duration } = audioElement;
+		if (duration === Infinity) {
+			audioElement.currentTime = 1e101;
+			return;
+		}
+
+		return callback(duration);
+	});
+
+	audioElement.addEventListener('durationchange', () => {
+		if (audioElement.duration === Infinity) {
+			return;
+		}
+		callback(audioElement.duration);
+		audioElement.remove();
+	});
+};
+
+/**
+ * A Fuselage’s custom AudioPlayer.
+ */
+export type AudioPlayerProps = RefAttributes<HTMLAudioElement> &
+	Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'is'> & {
+		src: string;
+		type?: string;
+		maxPlaybackSpeed?: number;
+		minPlaybackSpeed?: number;
+		playbackSpeedStep?: number;
+		download?: boolean;
+		playLabel?: string;
+		pauseLabel?: string;
+		audioPlaybackRangeLabel?: string;
+		changePlaybackSpeedLabel?: string;
+		downloadAudioFileLabel?: string;
+		loadingLabel?: string;
+		errorLabel?: string;
+		retryLabel?: string;
+		trackProps?: TrackHTMLAttributes<HTMLTrackElement>;
+	};
+
+const AudioPlayer = ({
+	ref,
+	src,
+	type = 'audio/mpeg',
+	maxPlaybackSpeed = 2,
+	minPlaybackSpeed = 0.5,
+	playbackSpeedStep = 0.25,
+	download = false,
+	playLabel = 'Play',
+	pauseLabel = 'Pause',
+	audioPlaybackRangeLabel = 'Audio Playback Range',
+	changePlaybackSpeedLabel = 'Change Playback Speed',
+	downloadAudioFileLabel = 'Download Audio File',
+	loadingLabel,
+	errorLabel,
+	retryLabel,
+	trackProps,
+	className,
+	...props
+}: AudioPlayerProps) => {
+	const audioRef = useRef<HTMLAudioElement>(null);
+	const refs = useMergedRefs(ref, audioRef);
+	const [isPlaying, setIsPlaying] = useState(false);
+	const [currentTime, setCurrentTime] = useState(0);
+	const [durationTime, setDurationTime] = useState(0);
+	const [playbackSpeed, setPlaybackSpeed] = useState(1);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState(false);
+
+	const handlePlay = () => {
+		const isPlaying = audioRef.current?.paused;
+
+		if (isPlaying) {
+			void audioRef.current?.play();
+		} else {
+			audioRef.current?.pause();
+		}
+	};
+
+	const handlePlaybackSpeed = (mod: 1 | -1) => {
+		if (audioRef.current) {
+			audioRef.current.playbackRate += playbackSpeedStep * mod;
+		}
+	};
+
+	const handlePlaybackSpeedSingleControl = () => {
+		if (!audioRef.current) return;
+
+		const reachedMaxPlaybackSpeed = maxPlaybackSpeed === audioRef?.current?.playbackRate;
+
+		if (reachedMaxPlaybackSpeed) {
+			audioRef.current.playbackRate = minPlaybackSpeed;
+			return;
+		}
+		handlePlaybackSpeed(1);
+	};
+
+	const { document: ownerDocument } = useOwnerDocument();
+
+	return (
+		<Box className={prependClassName(className, 'rcx-audio-player')} {...props}>
+			<AudioPlayerControls
+				isPlaying={isPlaying}
+				currentTime={currentTime}
+				durationTime={durationTime}
+				playbackSpeed={playbackSpeed}
+				loading={loading}
+				error={error}
+				onRetry={() => {
+					setIsPlaying(false);
+					setLoading(false);
+					setError(false);
+					audioRef.current?.load();
+				}}
+				onTogglePlay={handlePlay}
+				onSeek={(time) => {
+					if (audioRef.current) {
+						audioRef.current.currentTime = time;
+					}
+				}}
+				onChangePlaybackSpeed={handlePlaybackSpeedSingleControl}
+				download={download}
+				downloadHref={src}
+				onDownload={(e) => {
+					const { host } = new URL(src);
+					if (host !== ownerDocument.defaultView?.location.host) {
+						e.preventDefault();
+						forceDownload(ownerDocument, src);
+					}
+				}}
+				playLabel={playLabel}
+				pauseLabel={pauseLabel}
+				audioPlaybackRangeLabel={audioPlaybackRangeLabel}
+				changePlaybackSpeedLabel={changePlaybackSpeedLabel}
+				downloadAudioFileLabel={downloadAudioFileLabel}
+				loadingLabel={loadingLabel}
+				errorLabel={errorLabel}
+				retryLabel={retryLabel}
+			/>
+			<audio
+				style={{ display: 'none' }}
+				onTimeUpdate={(e) => {
+					setCurrentTime((e.target as HTMLAudioElement).currentTime);
+				}}
+				onLoadedMetadata={(e) => {
+					setError(false);
+					const { duration } = e.target as HTMLAudioElement;
+
+					if (duration !== Infinity) {
+						return setDurationTime(duration);
+					}
+
+					getDurationForInfinityDurationAudioFile(src, setDurationTime);
+				}}
+				onEnded={() => setIsPlaying(false)}
+				onWaiting={() => setLoading(true)}
+				onCanPlay={() => setLoading(false)}
+				onPlaying={() => setLoading(false)}
+				onError={() => setError(true)}
+				ref={refs}
+				preload='metadata'
+				onRateChange={(e) => {
+					setPlaybackSpeed((e.target as HTMLAudioElement).playbackRate);
+				}}
+				onPlay={() => {
+					setIsPlaying(true);
+				}}
+				onPause={() => {
+					setIsPlaying(false);
+				}}
+				controls
+			>
+				{/* A failed <source> fires `error` on itself, not on the <audio> element. */}
+				<source src={src} type={type} onError={() => setError(true)} />
+				<track kind='captions' {...trackProps} />
+			</audio>
+		</Box>
+	);
+};
+
+export default AudioPlayer;

@@ -1,5 +1,5 @@
 import type { IStats } from '@rocket.chat/core-typings';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta } from '@storybook/react';
 
 import DeploymentCard from './DeploymentCard';
 
@@ -52,7 +52,6 @@ export default {
 	},
 } satisfies Meta<typeof DeploymentCard>;
 
-const Template: StoryFn<typeof DeploymentCard> = (args) => <DeploymentCard {...args} />;
-
-export const Example = Template.bind({});
-Example.storyName = 'DeploymentCard';
+export const Example = {
+	name: 'DeploymentCard',
+};

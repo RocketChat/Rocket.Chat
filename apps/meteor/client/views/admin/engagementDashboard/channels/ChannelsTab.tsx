@@ -1,9 +1,7 @@
-import type { ReactElement } from 'react';
-
-import EngagementDashboardCard from '../EngagementDashboardCard';
 import ChannelsOverview from './ChannelsOverview';
+import EngagementDashboardCard from '../EngagementDashboardCard';
 
-const ChannelsTab = (): ReactElement => (
+const ChannelsTab = () => (
 	<EngagementDashboardCard>
 		<ChannelsOverview />
 	</EngagementDashboardCard>

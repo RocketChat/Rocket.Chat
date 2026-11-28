@@ -1,7 +1,5 @@
 import type { IDiscussionMessage } from '@rocket.chat/core-typings';
 import {
-	Box,
-	Message,
 	MessageLeftContainer,
 	MessageContainer,
 	MessageHeader,
@@ -13,16 +11,17 @@ import {
 	MessageMetricsItem,
 	MessageMetricsItemLabel,
 	MessageMetricsItemIcon,
+	Message,
 } from '@rocket.chat/fuselage';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import type { ComponentProps, ReactElement, ReactNode } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Emoji from '../../../../../components/Emoji';
-import { clickableItem } from '../../../../../lib/clickableItem';
+import { activateWithKeyboard } from '../../../../../lib/clickableItem';
 
-type DiscussionListItemProps = {
+export type DiscussionListItemProps = {
 	_id: IDiscussionMessage['_id'];
 	msg: ReactNode;
 	dcount: number;
@@ -32,7 +31,7 @@ type DiscussionListItemProps = {
 	name?: IDiscussionMessage['u']['name'];
 	ts: IDiscussionMessage['ts'];
 	emoji: IDiscussionMessage['emoji'];
-} & Omit<ComponentProps<typeof Box>, 'is'>;
+} & ComponentProps<typeof Message>;
 
 const DiscussionListItem = ({
 	_id,
@@ -41,15 +40,14 @@ const DiscussionListItem = ({
 	name = username,
 	ts,
 	dcount,
-	formatDate = (date: any) => date,
+	formatDate,
 	dlm,
-	className = [],
 	emoji,
 	...props
-}: DiscussionListItemProps): ReactElement => {
+}: DiscussionListItemProps) => {
 	const { t } = useTranslation();
 	return (
-		<Box is={Message} {...props} className={className} pbs={16} pbe={8}>
+		<Message clickable insetBlock='md' divided tabIndex={0} onKeyDown={activateWithKeyboard} {...props}>
 			<MessageLeftContainer>
 				<MessageAvatar emoji={emoji ? <Emoji emojiHandle={emoji} fillContainer /> : undefined} username={username} size='x36' />
 			</MessageLeftContainer>
@@ -81,8 +79,8 @@ const DiscussionListItem = ({
 					</MessageMetrics>
 				</MessageBlock>
 			</MessageContainer>
-		</Box>
+		</Message>
 	);
 };
 
-export default memo(clickableItem(DiscussionListItem));
+export default memo(DiscussionListItem);

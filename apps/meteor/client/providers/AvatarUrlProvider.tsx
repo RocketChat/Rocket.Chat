@@ -2,10 +2,10 @@ import { AvatarUrlContext } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 
-import { getURL } from '../../app/utils/client/getURL';
+import { getURL } from '../lib/getURL';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
-type AvatarUrlProviderProps = {
+export type AvatarUrlProviderProps = {
 	children?: ReactNode;
 };
 
@@ -31,6 +31,8 @@ const AvatarUrlProvider = ({ children }: AvatarUrlProviderProps) => {
 			getUserPathAvatar,
 			getRoomPathAvatar: ({ type, ...room }: any): string =>
 				roomCoordinator.getRoomDirectives(type || room.t).getAvatarPath({ username: room._id, ...room }) || '',
+			getContactPathAvatar: ({ contactId, etag }: { contactId: string; etag?: string | null }): string =>
+				getURL(`/avatar/contact/${encodeURIComponent(contactId)}${etag ? `?etag=${etag}` : ''}`),
 		};
 	}, []);
 

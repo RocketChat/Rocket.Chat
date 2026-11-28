@@ -17,8 +17,7 @@ test.describe.serial('Apps > ContextualBar', () => {
 		page = await browser.newPage();
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
-		await poHomeChannel.navbar.openChat('general');
+		await poHomeChannel.gotoChannel('general');
 	});
 
 	test.afterAll(async () => {

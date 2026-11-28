@@ -1,4 +1,4 @@
-import type { UrlWithStringQuery } from 'url';
+import type { UrlWithStringQuery } from 'node:url';
 
 import type Icons from '@rocket.chat/icons';
 import type { Root } from '@rocket.chat/message-parser';
@@ -92,6 +92,7 @@ const MessageTypes = [
 	'leader-removed',
 	'discussion-created',
 	'abac-removed-user-from-room',
+	'abac-removed-users-from-room',
 	...TeamMessageTypesValues,
 	...LivechatMessageTypesValues,
 ] as const;

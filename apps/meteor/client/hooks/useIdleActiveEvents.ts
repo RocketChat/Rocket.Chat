@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEffect } from 'react';
 
 import { useIdleDetection } from './useIdleDetection';
@@ -29,13 +29,15 @@ export const useIdleActiveEvents = (
 	onIdleCallback: () => void,
 	onActiveCallback?: () => void,
 ) => {
-	const stableIdleCallback = useEffectEvent(onIdleCallback);
-	const stableActiveCallback = useEffectEvent(onActiveCallback || (() => undefined));
+	const stableIdleCallback = useStableCallback(onIdleCallback);
+	const stableActiveCallback = useStableCallback(onActiveCallback || (() => undefined));
 
 	useEffect(() => {
 		document.addEventListener(`${id}_idle`, stableIdleCallback);
 
-		onActiveCallback && document.addEventListener(`${id}_active`, stableActiveCallback);
+		if (onActiveCallback) {
+			document.addEventListener(`${id}_active`, stableActiveCallback);
+		}
 
 		return () => {
 			document.removeEventListener(`${id}_idle`, stableIdleCallback);

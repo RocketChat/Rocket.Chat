@@ -1,5 +1,5 @@
-import QueryString from 'querystring';
-import URL from 'url';
+import QueryString from 'node:querystring';
+import URL from 'node:url';
 
 import type { MessageAttachment, IMessage, IUser, IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, isQuoteAttachment } from '@rocket.chat/core-typings';

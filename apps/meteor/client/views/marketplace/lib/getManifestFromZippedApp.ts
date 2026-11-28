@@ -8,7 +8,7 @@ async function fileToUint8Array(file: File): Promise<Uint8Array> {
 	return new Promise((resolve, reject) => {
 		const fileReader = new FileReader();
 		fileReader.onload = (e): void => resolve(new Uint8Array((e.target as any).result as Uint8Array));
-		fileReader.onerror = (e): void => reject(e);
+		fileReader.onerror = (e): void => reject(new Error('Failed to read the app file', { cause: e }));
 		fileReader.readAsArrayBuffer(file);
 	});
 }
@@ -23,9 +23,10 @@ function getAppManifest(unzippedAppBuffer: Uint8ArrayObject): AppManifestSchema 
 	}
 
 	try {
-		return JSON.parse(strFromU8(unzippedAppBuffer['app.json']));
+		const manifest: AppManifestSchema = JSON.parse(strFromU8(unzippedAppBuffer['app.json']));
+		return manifest;
 	} catch (e) {
-		throw new Error(`Failed to parse app.json: ${e instanceof Error ? e.message : String(e)}`);
+		throw new Error(`Failed to parse app.json: ${e instanceof Error ? e.message : String(e)}`, { cause: e });
 	}
 }
 

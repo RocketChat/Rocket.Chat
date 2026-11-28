@@ -1,23 +1,23 @@
-import { Box, Throbber } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarDialog,
 	ContextualbarEmptyContent,
+	ContextualbarSkeletonContent,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
 	VirtualizedScrollbars,
 } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import BannedUsersItem from './BannedUsersItem';
+import ListViewport from '../../../../components/ListViewport';
 import type { BannedUser } from '../../../hooks/useRoomBannedUsers';
 
-type BannedUsersProps = {
+export type BannedUsersProps = {
 	loading: boolean;
 	error?: Error;
 	useRealName?: boolean;
@@ -39,12 +39,8 @@ const BannedUsers = ({ loading, error, bannedUsers, useRealName = false, onClick
 				<ContextualbarTitle>{t('Banned_Users')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClickClose} />
 			</ContextualbarHeader>
-			<ContextualbarContent p={0} pb={12}>
-				{loading && (
-					<Box pi={24} pb={12}>
-						<Throbber size='x12' />
-					</Box>
-				)}
+			<ContextualbarContent flush spaced={!loading}>
+				{loading && <ContextualbarSkeletonContent />}
 
 				{error && <ContextualbarEmptyContent icon='warning' title={t('Banned_users_error')} subtitle={t('Please_try_again')} />}
 
@@ -53,19 +49,17 @@ const BannedUsers = ({ loading, error, bannedUsers, useRealName = false, onClick
 				)}
 
 				{!loading && !error && bannedUsers.length > 0 && (
-					<Box w='full' h='full' overflow='hidden' flexShrink={1}>
+					<ListViewport role='list' aria-label={t('Banned_Users')}>
 						<VirtualizedScrollbars>
 							<Virtuoso
 								style={{ height: '100%', width: '100%' }}
 								data={bannedUsers}
 								overscan={50}
 								endReached={loadMoreBannedUsers}
-								itemContent={(_index, user): ReactElement => (
-									<BannedUsersItem user={user} useRealName={useRealName} onClickUnban={onClickUnban} />
-								)}
+								itemContent={(_index, user) => <BannedUsersItem user={user} useRealName={useRealName} onClickUnban={onClickUnban} />}
 							/>
 						</VirtualizedScrollbars>
-					</Box>
+					</ListViewport>
 				)}
 			</ContextualbarContent>
 		</ContextualbarDialog>

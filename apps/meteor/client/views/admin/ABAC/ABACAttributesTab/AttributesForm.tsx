@@ -1,20 +1,9 @@
-import {
-	Box,
-	Button,
-	ButtonGroup,
-	ContextualbarFooter,
-	Field,
-	FieldError,
-	FieldLabel,
-	FieldRow,
-	IconButton,
-	TextInput,
-} from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { ContextualbarScrollableContent } from '@rocket.chat/ui-client';
+import { Box, Button, ButtonGroup, Field, FieldError, FieldLabel, FieldRow, IconButton, TextInput, Stack } from '@rocket.chat/fuselage';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { ContextualbarFooter, ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useId, useMemo, Fragment, useState } from 'react';
-import { useFieldArray, useFormContext } from 'react-hook-form';
+import { useFieldArray, useFormContext, useFormState, useWatch } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { useViewRoomsAction } from '../hooks/useViewRoomsAction';
@@ -25,25 +14,20 @@ export type AttributesFormFormData = {
 	lockedAttributes: { value: string }[];
 };
 
-type AttributesFormProps = {
+export type AttributesFormProps = {
 	onSave: (data: AttributesFormFormData) => void;
 	onCancel: () => void;
 	description: string;
 };
 
 const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) => {
-	const {
-		handleSubmit,
-		register,
-		formState: { errors, isDirty },
-		watch,
-		getValues,
-	} = useFormContext<AttributesFormFormData>();
+	const { handleSubmit, register, getValues, control } = useFormContext<AttributesFormFormData>();
+	const { errors, isDirty } = useFormState({ control });
 
 	const { t } = useTranslation();
 
-	const attributeValues = watch('attributeValues');
-	const lockedAttributes = watch('lockedAttributes');
+	const attributeValues = useWatch({ control, name: 'attributeValues' });
+	const lockedAttributes = useWatch({ control, name: 'lockedAttributes' });
 
 	const isAttributeUsed = useEndpoint('GET', '/v1/abac/attributes/:key/is-in-use', { key: getValues('name') });
 
@@ -54,7 +38,8 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 	const validateRepeatedValues = useCallback(
 		(value: string) => {
 			// Only one instance of the same attribute value is allowed to be in the form at a time
-			const repeatedAttributes = [...lockedAttributes, ...attributeValues].filter((attribute) => attribute.value === value).length > 1;
+			const repeatedAttributes =
+				[...(lockedAttributes ?? []), ...(attributeValues ?? [])].filter((attribute) => attribute.value === value).length > 1;
 			return repeatedAttributes ? t('ABAC_No_repeated_values') : undefined;
 		},
 		[lockedAttributes, attributeValues, t],
@@ -74,7 +59,7 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 	const [showDisclaimer, setShowDisclaimer] = useState<number[]>([]);
 	const viewRoomsAction = useViewRoomsAction();
 
-	const removeLockedAttribute = useEffectEvent(async (index: number) => {
+	const removeLockedAttribute = useStableCallback(async (index: number) => {
 		const isInUse = await isAttributeUsed();
 		if (showDisclaimer.includes(index)) {
 			return;
@@ -128,91 +113,103 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 					<FieldLabel required id={valuesField}>
 						{t('Values')}
 					</FieldLabel>
-					{lockedAttributesFields.map((field, index) => (
-						<Fragment key={field.id}>
-							<FieldRow key={field.id}>
-								<TextInput
-									disabled
-									aria-labelledby={valuesField}
-									aria-describedby={errors.lockedAttributes?.[index]?.value ? `${valuesField}-lockedAttr-${index}-error` : undefined}
-									error={errors.lockedAttributes?.[index]?.value?.message || ''}
-									aria-invalid={errors.lockedAttributes?.[index]?.value ? 'true' : 'false'}
-									aria-required='true'
-									{...register(`lockedAttributes.${index}.value`, {
-										required: t('Required_field', { field: t('Values') }),
-										validate: (value: string) => validateRepeatedValues(value),
-									})}
-								/>
-								{index !== 0 && (
-									<IconButton mis={8} small title={t('ABAC_Remove_attribute')} icon='trash' onClick={() => removeLockedAttribute(index)} />
-								)}
-							</FieldRow>
-							{errors.lockedAttributes?.[index]?.value && (
-								<FieldError id={`${valuesField}-lockedAttr-${index}-error`} role='alert'>
-									{errors.lockedAttributes?.[index]?.value?.message}
-								</FieldError>
-							)}
-							{showDisclaimer.includes(index) && (
-								<FieldError>
-									<Trans
-										i18nKey='ABAC_Cannot_delete_attribute_value_in_use'
-										components={{
-											1: (
-												<Box
-													is='a'
-													onClick={(e) => {
-														e.preventDefault();
-														viewRoomsAction(getValues('name'));
-													}}
-												>
-													{t('ABAC_View_rooms')}
-												</Box>
-											),
-										}}
-									/>
-								</FieldError>
-							)}
-						</Fragment>
-					))}
-					{fields.map((field, index) => (
-						<Fragment key={field.id}>
-							<FieldRow>
-								<TextInput
-									aria-labelledby={valuesField}
-									aria-describedby={errors.attributeValues?.[index]?.value ? `${valuesField}-attr-${index}-error` : undefined}
-									error={errors.attributeValues?.[index]?.value?.message || ''}
-									aria-invalid={errors.attributeValues?.[index]?.value ? 'true' : 'false'}
-									aria-required='true'
-									{...register(`attributeValues.${index}.value`, {
-										required: t('Required_field', { field: t('Values') }),
-										validate: (value: string) => validateRepeatedValues(value),
-									})}
-								/>
-								{(index !== 0 || lockedAttributesFields.length > 0) && (
-									<IconButton mis={8} small title={t('ABAC_Remove_attribute')} icon='trash' onClick={() => remove(index)} />
-								)}
-							</FieldRow>
-							{errors.attributeValues?.[index]?.value && (
-								<FieldError id={`${valuesField}-attr-${index}-error`} role='alert'>
-									{errors.attributeValues[index].value.message}
-								</FieldError>
-							)}
-						</Fragment>
-					))}
-					<Button
-						mb={8}
-						onClick={() => append({ value: '' })}
-						// Checking for values since rhf does consider the newly added field as dirty after an append() call
-						disabled={!!getAttributeValuesError() || attributeValues?.some((value: { value: string }) => value?.value === '')}
-					>
-						{t('Add_Value')}
-					</Button>
+					<Box display='flex' flexDirection='column' gap={8} paddingBlockEnd={8}>
+						<Box display='flex' flexDirection='column'>
+							{lockedAttributesFields.map((field, index) => (
+								<Fragment key={field.id}>
+									<FieldRow key={field.id}>
+										<Stack direction='row' align='center' justify='space-between' grow gap={8}>
+											<TextInput
+												disabled
+												aria-labelledby={valuesField}
+												aria-describedby={errors.lockedAttributes?.[index]?.value ? `${valuesField}-lockedAttr-${index}-error` : undefined}
+												error={errors.lockedAttributes?.[index]?.value?.message || ''}
+												aria-invalid={errors.lockedAttributes?.[index]?.value ? 'true' : 'false'}
+												aria-required='true'
+												{...register(`lockedAttributes.${index}.value`, {
+													required: t('Required_field', { field: t('Values') }),
+													validate: (value: string) => validateRepeatedValues(value),
+												})}
+											/>
+											{index !== 0 && (
+												<IconButton
+													size='small'
+													title={t('ABAC_Remove_attribute')}
+													icon='trash'
+													onClick={() => removeLockedAttribute(index)}
+												/>
+											)}
+										</Stack>
+									</FieldRow>
+									{errors.lockedAttributes?.[index]?.value && (
+										<FieldError id={`${valuesField}-lockedAttr-${index}-error`} role='alert'>
+											{errors.lockedAttributes?.[index]?.value?.message}
+										</FieldError>
+									)}
+									{showDisclaimer.includes(index) && (
+										<FieldError>
+											<Trans
+												i18nKey='ABAC_Cannot_delete_attribute_value_in_use'
+												components={{
+													1: (
+														<Box
+															is='a'
+															onClick={(e) => {
+																e.preventDefault();
+																viewRoomsAction(getValues('name'));
+															}}
+														>
+															{t('ABAC_View_rooms')}
+														</Box>
+													),
+												}}
+											/>
+										</FieldError>
+									)}
+								</Fragment>
+							))}
+							{fields.map((field, index) => (
+								<Fragment key={field.id}>
+									<FieldRow>
+										<Stack direction='row' align='center' justify='space-between' grow gap={8}>
+											<TextInput
+												aria-labelledby={valuesField}
+												aria-describedby={errors.attributeValues?.[index]?.value ? `${valuesField}-attr-${index}-error` : undefined}
+												error={errors.attributeValues?.[index]?.value?.message || ''}
+												aria-invalid={errors.attributeValues?.[index]?.value ? 'true' : 'false'}
+												aria-required='true'
+												{...register(`attributeValues.${index}.value`, {
+													required: t('Required_field', { field: t('Values') }),
+													validate: (value: string) => validateRepeatedValues(value),
+												})}
+											/>
+											{(index !== 0 || lockedAttributesFields.length > 0) && (
+												<IconButton size='small' title={t('ABAC_Remove_attribute')} icon='trash' onClick={() => remove(index)} />
+											)}
+										</Stack>
+									</FieldRow>
+									{errors.attributeValues?.[index]?.value && (
+										<FieldError id={`${valuesField}-attr-${index}-error`} role='alert'>
+											{errors.attributeValues[index].value.message}
+										</FieldError>
+									)}
+								</Fragment>
+							))}
+						</Box>
+						<Button
+							onClick={() => append({ value: '' })}
+							// Checking for values since rhf does consider the newly added field as dirty after an append() call
+							disabled={!!getAttributeValuesError() || attributeValues?.some((value: { value: string }) => value?.value === '')}
+						>
+							{t('Add_Value')}
+						</Button>
+					</Box>
 				</Field>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={() => onCancel()}>{t('Cancel')}</Button>
-					<Button type='submit' form={formId} disabled={hasValuesErrors || !!errors.name || !isDirty} primary>
+					<Button type='submit' form={formId} disabled={hasValuesErrors || !!errors.name || !isDirty} variant='primary'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

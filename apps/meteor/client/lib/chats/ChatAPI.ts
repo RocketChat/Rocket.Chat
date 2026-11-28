@@ -4,7 +4,7 @@ import type { RefObject } from 'react';
 
 import type { Upload, EncryptedFile } from './Upload';
 import type { ReadStateManager } from './readStateManager';
-import type { FormattingButton } from '../../../app/ui-message/client/messageBox/messageBoxFormatting';
+import type { FormattingButton } from '../messageBoxFormatting';
 
 type Subscribable<T> = {
 	get(): T;
@@ -68,7 +68,7 @@ export type ComposerAPI = {
 
 	readonly formatters: Subscribable<FormattingButton[]>;
 
-	readonly composerRef: RefObject<HTMLElement>;
+	readonly composerRef: RefObject<HTMLElement | null>;
 
 	readonly uploads: UploadsAPI;
 };
@@ -102,27 +102,27 @@ export type DataAPI = {
 	getDiscussionByID(drid: IRoom['_id']): Promise<IRoom>;
 	findSubscription(): Promise<ISubscription | undefined>;
 	getSubscription(): Promise<ISubscription>;
-	findSubscriptionFromMessage(message: IMessage): Promise<ISubscription | undefined>;
-	getSubscriptionFromMessage(message: IMessage): Promise<ISubscription>;
 };
 
 export type EncryptedFileUploadContent = {
 	rawFile: File;
 	fileContent: { raw: Partial<IUpload>; encrypted?: IE2EEMessage['content'] };
 	encryptedFile: EncryptedFile;
+	imageDimensions?: { height: number; width: number };
 };
 
 export type UploadsAPI = {
 	get(): readonly Upload[];
 	subscribe(callback: () => void): () => void;
 	wipeFailedOnes(): void;
-	clear(): void;
+	attach(): void;
+	detach(): void;
 	getProcessingUploads(): boolean;
 	setProcessingUploads(processing: boolean): void;
 	cancel(id: Upload['id']): void;
 	removeUpload(id: Upload['id']): void;
 	editUploadFileName: (id: Upload['id'], fileName: string) => void;
-	editUploadDescription: (id: Upload['id'], description: string) => void;
+	editUploadAltText: (id: Upload['id'], altText: string) => void;
 	send(file: File, encrypted?: never): Promise<void>;
 	send(file: File, encrypted: EncryptedFileUploadContent): Promise<void>;
 };
@@ -131,6 +131,7 @@ export type ChatAPI = {
 	readonly uid: string | undefined;
 	readonly composer?: ComposerAPI;
 	readonly setComposerAPI: (composer?: ComposerAPI) => void;
+	readonly subscribeToComposer: (callback: () => void) => () => void;
 	readonly data: DataAPI;
 	readonly readStateManager: ReadStateManager;
 	readonly messageEditing: {
@@ -148,7 +149,7 @@ export type ChatAPI = {
 	};
 
 	readonly emojiPicker: {
-		open(el: Element, cb: (emoji: string) => void): void;
+		open(el: Element, cb: (emoji: string) => void, onClose?: () => void): void;
 		close(): void;
 	};
 

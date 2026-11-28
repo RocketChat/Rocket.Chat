@@ -1,4 +1,7 @@
+import { Palette, borderRadius, borderWidth } from '@rocket.chat/fuselage';
 import styled from '@rocket.chat/styled';
+
+import { serializeCssUrl } from '../utils/serializeCssUrl';
 
 const filterImageProps = ({
 	imageUrl: _imageUrl,
@@ -12,13 +15,18 @@ const filterImageProps = ({
 }) => props;
 
 export const Image = styled('div', filterImageProps)`
-	box-shadow: 0 0 0px 1px rgba(204, 204, 204, 38%);
+	box-sizing: border-box;
+	border-width: ${String(borderWidth('default'))};
+	border-style: solid;
+	border-color: ${Palette.stroke['stroke-extra-light'].toString()};
+	border-radius: ${String(borderRadius('large'))};
 	background-repeat: no-repeat;
 	background-position: 50%;
 	background-size: cover;
-	background-color: rgba(204, 204, 204, 38%);
-	background-image: url(${(props) => props.imageUrl});
-	width: ${(props) => String(props.width)}px;
-	height: ${(props) => String(props.height)}px;
+	background-color: ${Palette.surface['surface-tint'].toString()};
+	background-image: ${(props) => serializeCssUrl(props.imageUrl)};
+	width: 100%;
+	max-width: ${(props) => String(props.width)}px;
+	aspect-ratio: ${(props) => String(props.width)} / ${(props) => String(props.height)};
 	overflow: hidden;
 `;

@@ -1,31 +1,33 @@
 import { Pagination, States, StatesActions, StatesAction, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import {
 	GenericTable,
 	GenericTableBody,
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
+	usePaginatedQuery,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
-import { useEndpoint, useRoute, useTranslation, useLayout } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useEndpoint, useRoute, useLayout } from '@rocket.chat/ui-contexts';
 import { useMemo, useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import IntegrationRow from './IntegrationRow';
 import FilterByText from '../../../components/FilterByText';
-import GenericNoResults from '../../../components/GenericNoResults';
 
-const IntegrationsTable = ({ type }: { type?: string }) => {
-	const t = useTranslation();
+export type IntegrationsTableProps = { type?: string };
+
+const IntegrationsTable = ({ type }: IntegrationsTableProps) => {
+	const { t } = useTranslation();
 	const { isMobile } = useLayout();
 
 	const [text, setText] = useState('');
 	const router = useRoute('admin-integrations');
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'channel' | '_createdBy' | '_createdAt' | 'username'>('name');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const query = useDebouncedValue(
 		useMemo(
@@ -33,18 +35,30 @@ const IntegrationsTable = ({ type }: { type?: string }) => {
 				name: escapeRegExp(text),
 				type,
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-				count: itemsPerPage,
-				offset: current,
 			}),
-			[text, itemsPerPage, current, sortBy, sortDirection, type],
+			[text, sortBy, sortDirection, type],
 		),
 		500,
 	);
 
+	const queryKey = ['integrations', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
+
 	const getIntegrations = useEndpoint('GET', '/v1/integrations.list');
-	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
-		queryKey: ['integrations', query],
-		queryFn: async () => getIntegrations(query),
+	const { data, isLoading, isSuccess, isError, refetch } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getIntegrations({ ...query, ...page }),
+		},
+		itemsKey: 'integrations',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	const onClick = useCallback(
@@ -65,7 +79,7 @@ const IntegrationsTable = ({ type }: { type?: string }) => {
 				active={sortBy === 'name'}
 				onClick={setSort}
 				sort='name'
-				{...(!isMobile && { w: 'x280' })}
+				{...(!isMobile && { width: 'x280' })}
 			>
 				{t('Name')}
 			</GenericTableHeaderCell>

@@ -4,6 +4,7 @@ import { resolve, join, relative } from 'node:path';
 import type { Locator, Page } from '@playwright/test';
 
 import { RoomComposer, ThreadComposer } from './composer';
+import { RoomHeader } from './room-header';
 import { createMediaResponsePromise } from '../../fixtures/responses/mediaResponse';
 import { expect } from '../../utils/test';
 
@@ -16,6 +17,8 @@ export function getFilePath(fileName: string): string {
 export class HomeContent {
 	protected readonly page: Page;
 
+	readonly header: RoomHeader;
+
 	readonly composer: RoomComposer;
 
 	protected readonly threadComposer: ThreadComposer;
@@ -24,10 +27,11 @@ export class HomeContent {
 		this.page = page;
 		this.composer = new RoomComposer(page);
 		this.threadComposer = new ThreadComposer(page);
+		this.header = new RoomHeader(page.locator('main header'));
 	}
 
 	get channelHeader(): Locator {
-		return this.page.locator('main header');
+		return this.header.root;
 	}
 
 	get burgerButton(): Locator {
@@ -39,7 +43,7 @@ export class HomeContent {
 	}
 
 	get messagePopupUsers(): Locator {
-		return this.page.locator('role=menu[name="People"]');
+		return this.page.getByRole('listbox', { name: 'People' });
 	}
 
 	get mainMessageList(): Locator {
@@ -50,16 +54,21 @@ export class HomeContent {
 		return this.page.getByRole('list', { name: 'Thread message list', exact: true });
 	}
 
+	/** The open room, matched by id. Use it to assert a permalink landed in the room it should. */
+	getRoomById(roomId: string): Locator {
+		return this.page.locator(`[data-qa-rc-room="${roomId}"]`);
+	}
+
 	get messageListItems(): Locator {
 		return this.mainMessageList.locator('[role="listitem"][aria-roledescription="message"]');
 	}
 
 	get mainMessageListScroller(): Locator {
-		return this.page.locator('[data-overlayscrollbars-viewport]', { has: this.mainMessageList });
+		return this.page.locator('[data-overlayscrollbars]', { has: this.mainMessageList });
 	}
 
 	get threadMessageListScroller(): Locator {
-		return this.page.locator('[data-overlayscrollbars-viewport]', { has: this.threadMessageList });
+		return this.page.locator('[data-overlayscrollbars]', { has: this.threadMessageList });
 	}
 
 	get systemMessageListItems(): Locator {
@@ -90,6 +99,11 @@ export class HomeContent {
 		return this.messageListItems.nth(index);
 	}
 
+	/** One message of the list, by its id, for a message whose id is known from elsewhere. */
+	messageById(mid: string): Locator {
+		return this.mainMessageList.locator(`[role="listitem"][data-mid="${mid}"]`);
+	}
+
 	get lastUserMessageBody(): Locator {
 		return this.lastUserMessage.locator('[role="document"][aria-roledescription="message body"]');
 	}
@@ -110,6 +124,14 @@ export class HomeContent {
 		return this.lastUserMessageBody.locator('role=button[name="This message was ignored"]');
 	}
 
+	get lastIgnoredThreadMessage(): Locator {
+		return this.lastUserThreadMessage.getByRole('button', { name: 'This message was ignored' });
+	}
+
+	get ignoredThreadMessages(): Locator {
+		return this.threadMessageListItems.getByRole('button', { name: 'This message was ignored' });
+	}
+
 	async joinRoomIfNeeded(): Promise<void> {
 		if (await this.composer.inputMessage.isEnabled()) {
 			return;
@@ -125,23 +147,28 @@ export class HomeContent {
 		await expect(this.composer.inputMessage).toBeEnabled();
 		await this.composer.inputMessage.fill(text);
 
-		if (enforce) {
-			const responsePromise = this.page.waitForResponse(
-				(response) =>
-					/api\/v1\/method.call\/sendMessage/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
-			);
+		if (!enforce) {
+			await this.composer.btnSend.click();
+			return;
+		}
+
+		// Wait for the message to settle in the DOM. Transport-agnostic — the
+		// message may be sent via REST (`/api/v1/method.call/sendMessage`) or
+		// via DDP/WS depending on whether DDPSDK is the active dispatcher;
+		// either way Meteor's optimistic insert renders the new list item
+		// before the server confirms, and the `rcx-message--pending` class
+		// drops once the server result lands.
+		if ((await this.messageListItems.count()) > 0) {
+			const lastMessageBeforeSend = await this.messageListItems.last().getAttribute('id');
 
 			await this.composer.btnSend.click();
 
-			const response = await (await responsePromise).json();
-
-			const mid = JSON.parse(response.message).result._id;
-			const messageLocator = this.getMessageById(mid);
-
-			await expect(messageLocator).toBeVisible();
-			await expect(messageLocator).not.toHaveClass('rcx-message--pending');
+			await expect.poll(() => this.messageListItems.last().getAttribute('id'), { timeout: 10_000 }).not.toEqual(lastMessageBeforeSend);
+			await expect(this.lastUserMessage).not.toHaveClass(/rcx-message--pending/);
 		} else {
+			// No previous messages, nothing to compare
 			await this.composer.btnSend.click();
+			await expect(this.lastUserMessage).not.toHaveClass(/rcx-message--pending/);
 		}
 	}
 
@@ -159,11 +186,15 @@ export class HomeContent {
 		await this.messageListItems.last().hover();
 		await this.page.locator('role=button[name="Forward message"]').click();
 
-		await this.page.getByRole('textbox', { name: 'Person or Channel', exact: true }).click();
+		await this.page.getByRole('textbox', { name: 'Person or channel', exact: true }).click();
 		await this.page.keyboard.type(chatName);
 		await this.page.locator('#position-container').getByText(chatName).waitFor();
 		await this.page.locator('#position-container').getByText(chatName).click();
 		await this.page.locator('role=button[name="Forward"]').click();
+	}
+
+	get btnModalForward(): Locator {
+		return this.page.getByRole('dialog').getByRole('button', { name: 'Forward', exact: true });
 	}
 
 	// TODO: use modal fragments -----------------------------------------
@@ -172,19 +203,7 @@ export class HomeContent {
 	}
 
 	private get fileUploadModal(): Locator {
-		return this.page.getByRole('dialog', { name: 'File Upload' });
-	}
-
-	get createDiscussionModal(): Locator {
-		return this.page.getByRole('dialog', { name: 'Create discussion' });
-	}
-
-	get inputDiscussionName(): Locator {
-		return this.createDiscussionModal.getByRole('textbox', { name: 'Name' });
-	}
-
-	get btnCreateDiscussionModal(): Locator {
-		return this.createDiscussionModal.getByRole('button', { name: 'Create' });
+		return this.page.getByRole('dialog', { name: 'File upload' });
 	}
 
 	get btnModalConfirm(): Locator {
@@ -261,7 +280,7 @@ export class HomeContent {
 	}
 
 	get linkPreview(): Locator {
-		return this.lastUserMessage.getByText('Link Preview');
+		return this.lastUserMessage.getByText('Link preview');
 	}
 
 	quotedLinkText(name: string): Locator {
@@ -285,7 +304,7 @@ export class HomeContent {
 	}
 
 	get lastThreadMessagePreviewText(): Locator {
-		return this.page.locator('div.messages-box ul.messages-list [role=link]').last();
+		return this.page.locator('div.messages-box .messages-list [role=link]').last();
 	}
 
 	get lastThreadMessageFileDescription(): Locator {
@@ -330,7 +349,7 @@ export class HomeContent {
 	}
 
 	get btnContactInformation(): Locator {
-		return this.page.getByRole('button', { name: 'User Info' });
+		return this.page.getByRole('button', { name: 'User info' });
 	}
 
 	get btnContactInfoVoiceCall(): Locator {
@@ -350,7 +369,7 @@ export class HomeContent {
 	}
 
 	get btnNewCannedResponse(): Locator {
-		return this.page.locator('.rcx-vertical-bar button:has-text("Create")');
+		return this.page.getByRole('dialog', { name: 'Canned responses', exact: true }).getByRole('button', { name: 'Create', exact: true });
 	}
 
 	get imageGallery(): Locator {
@@ -382,6 +401,16 @@ export class HomeContent {
 		if (responsePromise) {
 			await responsePromise;
 		}
+	}
+
+	async pasteImage(): Promise<void> {
+		const image = await fs.readFile(getFilePath('number1.png'));
+		await this.composer.inputMessage.evaluate((element, base64) => {
+			const bytes = Uint8Array.from(atob(base64), (char) => char.charCodeAt(0));
+			const data = new DataTransfer();
+			data.items.add(new File([bytes], 'number1.png', { type: 'image/png' }));
+			element.dispatchEvent(new ClipboardEvent('paste', { clipboardData: data, bubbles: true, cancelable: true }));
+		}, image.toString('base64'));
 	}
 
 	async dragAndDropLstFile({ waitForResponse = true }: { waitForResponse?: boolean } = {}): Promise<void> {
@@ -420,6 +449,19 @@ export class HomeContent {
 		if (responsePromise) {
 			await responsePromise;
 		}
+	}
+
+	async sendMultipleFilesMessage(fileNames: string[], { waitForResponse = true }: { waitForResponse?: boolean } = {}): Promise<void> {
+		await this.page
+			.getByLabel('Room composer')
+			.locator('input[type=file]')
+			.setInputFiles(fileNames.map((name) => getFilePath(name)));
+
+		if (!waitForResponse) {
+			return;
+		}
+
+		await expect(this.composer.btnSend).toBeEnabled();
 	}
 
 	async sendFileMessage(fileName: string, { waitForResponse = true }: { waitForResponse?: boolean } = {}): Promise<void> {
@@ -467,11 +509,11 @@ export class HomeContent {
 	}
 
 	get primaryRoomActionsToolbar(): Locator {
-		return this.page.getByRole('toolbar', { name: 'Primary Room actions' });
+		return this.page.getByRole('toolbar', { name: 'Primary room actions' });
 	}
 
 	get btnVideoCall(): Locator {
-		return this.page.locator('[role=toolbar][aria-label="Primary Room actions"]').getByRole('button', { name: 'Video call' });
+		return this.page.locator('[role=toolbar][aria-label="Primary room actions"]').getByRole('button', { name: 'Video call' });
 	}
 
 	get btnToolbarOptions(): Locator {
@@ -483,7 +525,7 @@ export class HomeContent {
 	}
 
 	get starredMessagesMenuOption(): Locator {
-		return this.optionsMenu.getByRole('menuitem', { name: 'Starred Messages', exact: true });
+		return this.optionsMenu.getByRole('menuitem', { name: 'Starred messages', exact: true });
 	}
 
 	getVideoConfPopup(name?: string): Locator {
@@ -508,10 +550,6 @@ export class HomeContent {
 
 	get btnAnonymousSignIn(): Locator {
 		return this.page.locator('footer >> role=button[name="Sign in to start talking"]');
-	}
-
-	get btnAnonymousTalk(): Locator {
-		return this.page.locator('role=button[name="Or talk as anonymous"]');
 	}
 
 	get nextSlideButton(): Locator {
@@ -539,17 +577,51 @@ export class HomeContent {
 		return this.page.locator('[role="listitem"][aria-roledescription="message"]', { hasText: text });
 	}
 
+	getLastMessageActionButton(name: string): Locator {
+		return this.lastUserMessage.getByRole('button', { name, exact: true });
+	}
+
+	getLastThreadMessageActionButton(name: string): Locator {
+		return this.lastUserThreadMessage.getByRole('button', { name, exact: true });
+	}
+
 	getMessageById(id: string): Locator {
 		return this.page.locator(`[role="listitem"][aria-roledescription="message"][id="${id}"]`);
 	}
 
+	/** Thread replies carry `aria-roledescription="thread message"`, so `getMessageById` skips them. */
+	getThreadMessageById(id: string): Locator {
+		return this.threadMessageList.locator(`[role="listitem"][id="${id}"]`);
+	}
+
+	async scrollToMessage(messageLocator: Locator, direction: 'up' | 'down' = 'up'): Promise<Locator> {
+		const scroller = this.mainMessageListScroller;
+		const delta = direction === 'up' ? -400 : 400;
+
+		await expect(async () => {
+			await scroller.evaluate((el, d) => el.scrollBy(0, d), delta);
+			await expect(messageLocator.first()).toBeVisible({ timeout: 500 });
+		}).toPass({ timeout: 30000, intervals: [100] });
+
+		return messageLocator;
+	}
+
+	get btnJoinChannel(): Locator {
+		return this.page.getByRole('main').getByRole('button', { name: 'Join channel', exact: true });
+	}
+
 	async waitForChannel(): Promise<void> {
 		await this.page.locator('role=main').waitFor();
-		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
-		const messageList = this.page.getByRole('main').getByRole('list', { name: 'Message list', exact: true });
-		await messageList.waitFor();
 
-		await expect(messageList).not.toHaveAttribute('aria-busy', 'true');
+		// a room the user cannot preview renders a join screen instead of the header and message list
+		await this.mainMessageList.or(this.btnJoinChannel).first().waitFor();
+
+		if (await this.btnJoinChannel.isVisible()) {
+			return;
+		}
+
+		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
+		await expect(this.mainMessageList).not.toHaveAttribute('aria-busy', 'true');
 	}
 
 	async waitForThread(): Promise<void> {
@@ -580,7 +652,7 @@ export class HomeContent {
 		await this.openLastMessageMenu();
 		await this.btnOptionDeleteMessage.click();
 		await this.btnModalConfirmDelete.click();
-		await expect(this.btnModalConfirmDelete).toBeDisabled();
+		await expect(this.btnModalConfirmDelete).toBeHidden();
 	}
 
 	get btnClearSelection() {
@@ -596,7 +668,7 @@ export class HomeContent {
 	}
 
 	get btnOptionStartDiscussion(): Locator {
-		return this.page.getByRole('menuitem', { name: 'Start a Discussion' });
+		return this.page.getByRole('menuitem', { name: 'Start a discussion' });
 	}
 
 	async quoteMessage(quoteText: string, originalMessageText?: string): Promise<void> {

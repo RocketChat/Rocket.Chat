@@ -1,15 +1,15 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactElement, ReactNode, ComponentProps } from 'react';
+import type { ReactNode, ComponentProps } from 'react';
 
 import * as UserStatus from '../../../components/UserStatus';
 
-type AgentInfoDetailsProps = ComponentProps<typeof Box> & {
+export type AgentInfoDetailsProps = ComponentProps<typeof Box> & {
 	name: string | undefined;
 	status: ReactNode;
 	shortName?: string;
 };
 
-const AgentInfoDetails = ({ name, shortName, status = <UserStatus.Offline />, ...props }: AgentInfoDetailsProps): ReactElement => (
+const AgentInfoDetails = ({ name, shortName, status = <UserStatus.Offline />, ...props }: AgentInfoDetailsProps) => (
 	<Box
 		display='flex'
 		title={name}
@@ -23,11 +23,11 @@ const AgentInfoDetails = ({ name, shortName, status = <UserStatus.Offline />, ..
 		{...props}
 	>
 		{status}{' '}
-		<Box mis={8} flexGrow={1} withTruncatedText>
+		<Box marginInlineStart={8} flexGrow={1} withTruncatedText>
 			{name}
 		</Box>
 		{shortName && (
-			<Box display='flex' mis={8} mb={8} justifyContent='center' fontScale='c1'>
+			<Box display='flex' marginInlineStart={8} marginBlock={8} justifyContent='center' fontScale='c1'>
 				({shortName})
 			</Box>
 		)}

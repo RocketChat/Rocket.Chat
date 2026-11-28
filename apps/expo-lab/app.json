@@ -1,0 +1,12 @@
+{
+	"expo": {
+		"name": "expo-lab",
+		"slug": "expo-lab",
+		"version": "0.0.0",
+		"orientation": "portrait",
+		"userInterfaceStyle": "automatic",
+		"ios": { "bundleIdentifier": "chat.rocket.expolab" },
+		"android": { "package": "chat.rocket.expolab" },
+		"plugins": ["expo-dev-client"]
+	}
+}

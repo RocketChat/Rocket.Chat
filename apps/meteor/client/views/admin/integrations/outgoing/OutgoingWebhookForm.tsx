@@ -17,13 +17,13 @@ import {
 	Accordion,
 	NumberInput,
 } from '@rocket.chat/fuselage';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import { useId, useMemo } from 'react';
-import { useFormContext, Controller } from 'react-hook-form';
+import { useFormContext, Controller, useWatch, useFormState } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { outgoingEvents } from '../../../../../app/integrations/lib/outgoingEvents';
+import { outgoingEvents } from '../../../../../lib/integrations/outgoingEvents';
+import ContentColumn from '../../../../components/ContentColumn';
 import { useHighlightedCode } from '../../../../hooks/useHighlightedCode';
 import { useExampleData } from '../hooks/useExampleIncomingData';
 
@@ -55,12 +55,13 @@ type EditOutgoingWebhookPayload = Pick<
 const OutgoingWebhookForm = () => {
 	const { t } = useTranslation();
 
-	const {
-		control,
-		watch,
-		formState: { errors },
-	} = useFormContext<EditOutgoingWebhookPayload>();
-	const { event, alias, emoji, avatar } = watch();
+	const { control } = useFormContext<EditOutgoingWebhookPayload>();
+	const { errors } = useFormState({ control });
+	const watched = useWatch({ control });
+	const event = watched.event ?? 'sendMessage';
+	const alias = watched.alias ?? '';
+	const emoji = watched.emoji ?? '';
+	const avatar = watched.avatar ?? '';
 
 	const retryDelayOptions: SelectOption[] = useMemo(
 		() => [
@@ -71,10 +72,7 @@ const OutgoingWebhookForm = () => {
 		[t],
 	);
 
-	const eventOptions: SelectOption[] = useMemo(
-		() => Object.entries(outgoingEvents).map(([key, val]) => [key, t(val.label as TranslationKey)]),
-		[t],
-	);
+	const eventOptions: SelectOption[] = useMemo(() => Object.entries(outgoingEvents).map(([key, val]) => [key, t(val.label)]), [t]);
 
 	const scriptEngineOptions: SelectOption[] = useMemo(() => [['isolated-vm', t('Script_Engine_isolated_vm')]], [t]);
 
@@ -121,7 +119,7 @@ const OutgoingWebhookForm = () => {
 	const runOnEditsField = useId();
 
 	return (
-		<Box maxWidth='x600' alignSelf='center' w='full'>
+		<ContentColumn>
 			<Accordion>
 				<AccordionItem defaultExpanded title={t('Settings')}>
 					<FieldGroup>
@@ -132,7 +130,7 @@ const OutgoingWebhookForm = () => {
 									name='event'
 									control={control}
 									render={({ field }) => (
-										<Select id={eventField} {...field} options={eventOptions} aria-description={`${eventField}-hint`} />
+										<Select id={eventField} {...field} options={eventOptions} aria-describedby={`${eventField}-hint`} />
 									)}
 								/>
 							</FieldRow>
@@ -170,7 +168,7 @@ const OutgoingWebhookForm = () => {
 											<TextInput
 												id={channelField}
 												{...field}
-												addon={<Icon name='at' size='x20' />}
+												endAddon={<Icon name='at' size='x20' />}
 												aria-describedby={`${channelField}-hint-1 ${channelField}-hint-2 ${channelField}-hint-3`}
 											/>
 										)}
@@ -239,7 +237,7 @@ const OutgoingWebhookForm = () => {
 											id={urlsField}
 											{...field}
 											rows={10}
-											addon={<Icon name='permalink' size='x20' />}
+											endAddon={<Icon name='permalink' size='x20' />}
 											aria-describedby={`${urlsField}-error`}
 											aria-required={true}
 											aria-invalid={Boolean(errors?.urls)}
@@ -276,7 +274,7 @@ const OutgoingWebhookForm = () => {
 										<TextInput
 											id={usernameField}
 											{...field}
-											addon={<Icon name='user' size='x20' />}
+											endAddon={<Icon name='user' size='x20' />}
 											aria-describedby={`${usernameField}-hint-1 ${usernameField}-hint-2 ${usernameField}-error`}
 											aria-required={true}
 											aria-invalid={Boolean(errors?.username)}
@@ -299,7 +297,12 @@ const OutgoingWebhookForm = () => {
 									name='alias'
 									control={control}
 									render={({ field }) => (
-										<TextInput id={aliasField} {...field} addon={<Icon name='edit' size='x20' />} aria-describedby={`${aliasField}-hint`} />
+										<TextInput
+											id={aliasField}
+											{...field}
+											endAddon={<Icon name='edit' size='x20' />}
+											aria-describedby={`${aliasField}-hint`}
+										/>
 									)}
 								/>
 							</FieldRow>
@@ -315,14 +318,7 @@ const OutgoingWebhookForm = () => {
 										<TextInput
 											id={avatarField}
 											{...field}
-											addon={
-												<Icon
-													name='user-rounded'
-													size='x20'
-													alignSelf='center'
-													aria-describedby={`${avatarField}-hint-1 ${avatarField}-hint-2`}
-												/>
-											}
+											endAddon={<Icon name='user-rounded' size='x20' aria-describedby={`${avatarField}-hint-1 ${avatarField}-hint-2`} />}
 										/>
 									)}
 								/>
@@ -340,9 +336,7 @@ const OutgoingWebhookForm = () => {
 										<TextInput
 											id={emojiField}
 											{...field}
-											addon={
-												<Icon name='emoji' size='x20' alignSelf='center' aria-describedby={`${emojiField}-hint-1 ${emojiField}-hint-2`} />
-											}
+											endAddon={<Icon name='emoji' size='x20' aria-describedby={`${emojiField}-hint-1 ${emojiField}-hint-2`} />}
 										/>
 									)}
 								/>
@@ -365,7 +359,7 @@ const OutgoingWebhookForm = () => {
 										<TextInput
 											id={tokenField}
 											{...field}
-											addon={<Icon name='key' size='x20' />}
+											endAddon={<Icon name='key' size='x20' />}
 											aria-describedby={`${tokenField}-error`}
 											aria-invalid={Boolean(errors?.token)}
 											aria-required={true}
@@ -413,9 +407,7 @@ const OutgoingWebhookForm = () => {
 								<Controller
 									name='script'
 									control={control}
-									render={({ field }) => (
-										<TextAreaInput id={scriptField} rows={10} {...field} addon={<Icon name='code' size='x20' alignSelf='center' />} />
-									)}
+									render={({ field }) => <TextAreaInput id={scriptField} rows={10} {...field} endAddon={<Icon name='code' size='x20' />} />}
 								/>
 							</FieldRow>
 						</Field>
@@ -519,7 +511,7 @@ const OutgoingWebhookForm = () => {
 					</FieldGroup>
 				</AccordionItem>
 			</Accordion>
-		</Box>
+		</ContentColumn>
 	);
 };
 

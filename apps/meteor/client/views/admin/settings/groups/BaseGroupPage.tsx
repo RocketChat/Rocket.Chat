@@ -1,13 +1,13 @@
-import type { ReactElement } from 'react';
+import type { ReactNode } from 'react';
 
 import GenericGroupPage from './GenericGroupPage';
 import TabbedGroupPage from './TabbedGroupPage';
 import { useEditableSettingsGroupSections, useEditableSettingsGroupTabs } from '../../EditableSettingsContext';
 
-type BaseGroupPageProps = {
+export type BaseGroupPageProps = {
 	_id: string;
 	i18nLabel: string;
-	headerButtons?: ReactElement;
+	headerButtons?: ReactNode;
 	hasReset?: boolean;
 	onClickBack?: () => void;
 };
@@ -21,7 +21,17 @@ const BaseGroupPage = ({ _id, i18nLabel, headerButtons, hasReset, onClickBack, .
 		);
 	}
 
-	return <GenericGroupPage _id={_id} i18nLabel={i18nLabel} sections={sections} onClickBack={onClickBack} hasReset={hasReset} {...props} />;
+	return (
+		<GenericGroupPage
+			_id={_id}
+			i18nLabel={i18nLabel}
+			sections={sections}
+			headerButtons={headerButtons}
+			onClickBack={onClickBack}
+			hasReset={hasReset}
+			{...props}
+		/>
+	);
 };
 
 export default BaseGroupPage;

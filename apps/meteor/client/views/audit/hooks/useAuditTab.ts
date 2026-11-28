@@ -1,5 +1,5 @@
 import type { IAuditLog } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { SetStateAction } from 'react';
 import { useMemo } from 'react';
@@ -11,7 +11,7 @@ const typeToTabMap: Record<IAuditLog['fields']['type'], string> = {
 	'l': 'omnichannel',
 };
 
-const tabToTabMap = new Map(Object.entries(typeToTabMap).map(([type, tab]) => [tab, type as IAuditLog['fields']['type']]));
+const tabToTabMap = new Map(Object.entries(typeToTabMap).map(([type, tab]) => [tab, type]));
 
 export const useAuditTab = () => {
 	const tab = useRouteParameter('tab');
@@ -19,7 +19,7 @@ export const useAuditTab = () => {
 
 	const auditRoute = useRoute('audit-home');
 
-	const setType = useEffectEvent((newType: SetStateAction<IAuditLog['fields']['type']>) => {
+	const setType = useStableCallback((newType: SetStateAction<IAuditLog['fields']['type']>) => {
 		auditRoute.replace({ tab: typeToTabMap[typeof newType === 'function' ? newType(type) : newType] ?? 'rooms' });
 	});
 

@@ -1,8 +1,9 @@
-import type { CallState } from '../IClientMediaCall';
-import type { IClientMediaCallLocalParticipant } from '../IClientMediaCallParticipant';
+import type { CallState } from '../IClientMediaCall.js';
+import type { IClientMediaCallLocalParticipant } from '../IClientMediaCallParticipant.js';
 
 export interface ITempMediaCallData {
 	readonly confirmed: false;
+	readonly hidden: boolean;
 	readonly tempCallId: string;
 
 	readonly state: CallState;

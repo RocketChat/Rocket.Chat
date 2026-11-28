@@ -1,5 +1,5 @@
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { SidebarV2ItemIcon as SidebarItemIcon } from '@rocket.chat/fuselage';
+import { isOmnichannelRoom, LivechatInquiryStatus } from '@rocket.chat/core-typings';
+import { SidebarItemIcon } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
@@ -15,7 +15,7 @@ import { useOmnichannelPriorities } from '../../../omnichannel/hooks/useOmnichan
 import SidePanelItem from '../SidepanelItem';
 import RoomMenu from '../SidepanelItem/RoomMenu';
 
-type InquireSidePanelItemProps = {
+export type InquireSidePanelItemProps = {
 	room: LivechatInquiryLocalRecord;
 	openedRoom?: string;
 };
@@ -35,7 +35,7 @@ const InquireSidePanelItem = ({ room, openedRoom, ...props }: InquireSidePanelIt
 
 	const badges = <>{isOmnichannelRoom(room) && <SidePanelOmnichannelBadges room={room} />}</>;
 
-	const isQueued = room.status === 'queued';
+	const isQueued = room.status === LivechatInquiryStatus.QUEUED;
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 
 	const menu =
@@ -67,7 +67,7 @@ const InquireSidePanelItem = ({ room, openedRoom, ...props }: InquireSidePanelIt
 			}
 			unread={highlighted}
 			time={time}
-			subtitle={message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null}
+			subtitle={message ? <span className='message-body--unstyled'>{message}</span> : null}
 			badges={badges}
 			menu={menu}
 			{...props}

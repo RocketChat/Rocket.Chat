@@ -1,10 +1,10 @@
+import { GenericNoResults } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-import GenericNoResults from '../../../components/GenericNoResults';
 import { sidePanelFiltersConfig } from '../contexts/RoomsNavigationContext';
 import type { AllGroupsKeys } from '../contexts/RoomsNavigationContext';
 
-type SidePanelNoResultsProps = { currentTab: AllGroupsKeys };
+export type SidePanelNoResultsProps = { currentTab: AllGroupsKeys };
 
 const SidePanelNoResults = ({ currentTab }: SidePanelNoResultsProps) => {
 	const { t } = useTranslation();
@@ -30,6 +30,8 @@ const SidePanelNoResults = ({ currentTab }: SidePanelNoResultsProps) => {
 					description={t('No_discussions_description')}
 				/>
 			);
+		case 'drafts':
+			return <GenericNoResults icon={sidePanelFiltersConfig.drafts.icon} title={t('No_drafts')} description={t('No_drafts_description')} />;
 		case 'inProgress':
 			return (
 				<GenericNoResults

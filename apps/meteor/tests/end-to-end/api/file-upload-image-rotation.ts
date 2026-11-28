@@ -1,9 +1,9 @@
+import { after, before, describe, it } from 'node:test';
 import path from 'path';
 
 import type { Credentials } from '@rocket.chat/api-client';
 import type { ImageAttachmentProps, IRoom, IUser, SettingValue } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 import sharp from 'sharp';
 
 import { getCredentials, request } from '../../data/api-data';
@@ -22,7 +22,7 @@ const downloadBuffer = async (url: string, auth: Credentials): Promise<Buffer> =
 };
 
 describe('[File Upload - Image Rotation]', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	let user: TestUser<IUser>;
 	const userPassword = `pass${Date.now()}`;
@@ -56,8 +56,8 @@ describe('[File Upload - Image Rotation]', () => {
 			updateSetting('Message_Attachments_Strip_Exif', stripExifSetting),
 			updateSetting('Message_Attachments_Thumbnails_Enabled', thumbnailsEnabledSetting),
 			deleteRoom({ type: 'p', roomId: testRoom._id }),
-			deleteUser(user),
 		]);
+		await deleteUser(user);
 	});
 
 	it('should rotate pixels and strip EXIF orientation', async () => {

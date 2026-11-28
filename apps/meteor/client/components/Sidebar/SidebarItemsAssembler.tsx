@@ -6,7 +6,7 @@ import SidebarNavigationItem from './SidebarNavigationItem';
 import type { SidebarItem } from '../../lib/createSidebarItems';
 import { isSidebarItem } from '../../lib/createSidebarItems';
 
-type SidebarItemsAssemblerProps = {
+export type SidebarItemsAssemblerProps = {
 	items: SidebarItem[];
 	currentPath?: string;
 };
@@ -16,18 +16,18 @@ const SidebarItemsAssembler = ({ items, currentPath }: SidebarItemsAssemblerProp
 
 	return (
 		<>
-			{items.map((props) => (
-				<Fragment key={props.i18nLabel}>
-					{isSidebarItem(props) ? (
+			{items.map((item) => (
+				<Fragment key={item.i18nLabel}>
+					{isSidebarItem(item) ? (
 						<SidebarNavigationItem
-							permissionGranted={props.permissionGranted}
-							pathSection={props.href ?? props.pathSection ?? ''}
-							icon={props.icon}
-							label={t((props.i18nLabel || props.name) as Parameters<typeof t>[0])}
+							permissionGranted={item.permissionGranted}
+							pathSection={item.href ?? item.pathSection ?? ''}
+							icon={item.icon}
+							label={t((item.i18nLabel || item.name) as Parameters<typeof t>[0])}
 							currentPath={currentPath}
-							tag={props.tag && i18n.exists(props.tag) ? t(props.tag) : props.tag}
-							externalUrl={props.externalUrl}
-							badge={props.badge}
+							tag={item.tag && i18n.exists(item.tag) ? t(item.tag) : item.tag}
+							externalUrl={item.externalUrl}
+							badge={item.badge}
 						/>
 					) : (
 						<Divider />

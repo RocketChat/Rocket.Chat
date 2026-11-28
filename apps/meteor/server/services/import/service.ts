@@ -4,9 +4,9 @@ import type { IImportUser, IImport, ImportStatus } from '@rocket.chat/core-typin
 import { Imports, ImportData } from '@rocket.chat/models';
 import { ObjectId } from 'mongodb';
 
-import { Importers } from '../../../app/importer/server';
-import { settings } from '../../../app/settings/server';
+import { Importers } from '../../lib/import';
 import { validateRoleList } from '../../lib/roles/validateRoleList';
+import { settings } from '../../settings';
 import { getNewUserRoles } from '../user/lib/getNewUserRoles';
 
 export class ImportService extends ServiceClassInternal implements IImportService {
@@ -120,7 +120,7 @@ export class ImportService extends ServiceClassInternal implements IImportServic
 
 		const defaultRoles = getNewUserRoles();
 		const userRoles = new Set<string>(defaultRoles);
-		for await (const user of users) {
+		for (const user of users) {
 			if (!user.emails?.some((value) => value) || !user.importIds?.some((value) => value)) {
 				throw new Error('Users are missing required data.');
 			}
@@ -144,6 +144,7 @@ export class ImportService extends ServiceClassInternal implements IImportServic
 					roles: data.roles ? [...new Set([...data.roles, ...defaultRoles])] : defaultRoles,
 				},
 				dataType: 'user',
+				_updatedAt: new Date(),
 			})),
 		);
 
@@ -167,7 +168,7 @@ export class ImportService extends ServiceClassInternal implements IImportServic
 			throw new Error('error-importer-not-defined');
 		}
 
-		// eslint-disable-next-line new-cap
+		// oxlint-disable-next-line new-cap
 		const instance = new importer.importer(importer, operation, {
 			skipUserCallbacks: true,
 			skipDefaultChannels: true,

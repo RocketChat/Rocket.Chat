@@ -44,19 +44,20 @@ describe('UiKit UserSelect Element', () => {
 		jest.useRealTimers();
 	});
 
-	beforeEach(() => {
+	const renderElement = () =>
 		render(
 			<MockedServerContext>
 				<UsersSelectElement index={0} block={userBlock} context={BlockContext.FORM} surfaceRenderer={contextualBarParser} />
 			</MockedServerContext>,
 		);
-	});
 
 	it('should render a UiKit user selector', async () => {
+		renderElement();
 		expect(await screen.findByRole('textbox')).toBeInTheDocument();
 	});
 
 	it('should open the user selector', async () => {
+		renderElement();
 		const input = await screen.findByRole('textbox');
 		input.focus();
 
@@ -64,6 +65,7 @@ describe('UiKit UserSelect Element', () => {
 	});
 
 	it('should select a user', async () => {
+		renderElement();
 		const input = await screen.findByRole('textbox');
 
 		input.focus();

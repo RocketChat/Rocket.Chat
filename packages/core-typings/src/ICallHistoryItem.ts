@@ -1,3 +1,4 @@
+import type { IContact } from './IContact';
 import type { IMessage } from './IMessage/IMessage';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRoom } from './IRoom';
@@ -13,7 +14,9 @@ export type CallHistoryItemState =
 	/** The call was established, but it ended due to an error */
 	| 'error'
 	/** The call ended due to a transfer */
-	| 'transferred';
+	| 'transferred'
+	/** An app refused the call before anyone's device rang */
+	| 'prevented';
 
 interface ICallHistoryItem extends IRocketChatRecord {
 	uid: IUser['_id'];
@@ -48,6 +51,9 @@ export interface IExternalMediaCallHistoryItem extends IMediaCallHistoryItem {
 	external: true;
 
 	contactExtension: string;
+
+	externalContactId?: IContact['_id'];
+	externalContactName?: IContact['displayName'];
 }
 
 export type CallHistoryItem = IInternalMediaCallHistoryItem | IExternalMediaCallHistoryItem;

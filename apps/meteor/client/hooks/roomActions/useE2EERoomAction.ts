@@ -1,5 +1,5 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { imperativeModal } from '@rocket.chat/ui-client';
 import { useSetting, usePermission, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
@@ -46,30 +46,6 @@ export const useE2EERoomAction = () => {
 
 	const canResetRoomKey = enabled && isE2EEReady && (room.t === 'd' || permittedToToggleEncryption) && isE2EERoomNotReady();
 
-	const action = useEffectEvent(async () => {
-		if (enabledOnRoom) {
-			imperativeModal.open({
-				component: BaseDisableE2EEModal,
-				props: {
-					onClose: imperativeModal.close,
-					onConfirm: handleToogleE2E,
-					roomType,
-					roomId,
-					canResetRoomKey,
-				},
-			});
-		} else {
-			imperativeModal.open({
-				component: EnableE2EEModal,
-				props: {
-					onClose: imperativeModal.close,
-					onConfirm: handleToogleE2E,
-					roomType,
-				},
-			});
-		}
-	});
-
 	const handleToogleE2E = async () => {
 		const { success } = await toggleE2E({ rid: room._id, encrypted: !room.encrypted });
 		if (!success) {
@@ -90,6 +66,34 @@ export const useE2EERoomAction = () => {
 		}
 	};
 
+	const action = useStableCallback(() => {
+		if (enabledOnRoom) {
+			imperativeModal.open({
+				component: BaseDisableE2EEModal,
+				props: {
+					onClose: imperativeModal.close,
+					onConfirm: () => {
+						void handleToogleE2E();
+					},
+					roomType,
+					roomId,
+					canResetRoomKey,
+				},
+			});
+		} else {
+			imperativeModal.open({
+				component: EnableE2EEModal,
+				props: {
+					onClose: imperativeModal.close,
+					onConfirm: () => {
+						void handleToogleE2E();
+					},
+					roomType,
+				},
+			});
+		}
+	});
+
 	return useMemo((): RoomToolboxActionConfig | undefined => {
 		if (!enabled || !permitted) {
 			return undefined;
@@ -100,7 +104,7 @@ export const useE2EERoomAction = () => {
 			groups: ['direct', 'direct_multiple', 'group', 'team'],
 			title: enabledOnRoom ? 'Disable_E2E_encryption' : 'Enable_E2E_encryption',
 			icon: 'key',
-			order: 13,
+			order: 14,
 			action,
 			type: 'organization',
 			...(federated && {

@@ -3,19 +3,20 @@ import { css } from '@rocket.chat/css-in-js';
 import { TextAreaInput, FieldGroup, Field, FieldRow, FieldError, FieldLabel, FieldDescription, Box } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useId } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../../components/MarkdownText';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
+import { getMarkdownParserLimit } from '../../../../lib/getMarkdownParserLimit';
+import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';
 
 type ReportMessageModalsFields = {
 	description: string;
 };
 
-type ReportMessageModalProps = {
+export type ReportMessageModalProps = {
 	onClose: () => void;
 	message: IMessage;
 };
@@ -24,22 +25,21 @@ const wordBreak = css`
 	word-break: break-word;
 `;
 
-const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps): ReactElement => {
+const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps) => {
 	const { t } = useTranslation();
 	const reasonForReportId = useId();
-	const {
-		control,
-		formState: { errors },
-		handleSubmit,
-	} = useForm<ReportMessageModalsFields>({
+	const { control, handleSubmit } = useForm<ReportMessageModalsFields>({
 		defaultValues: {
 			description: '',
 		},
 	});
+	const { errors } = useFormState({ control });
 	const dispatchToastMessage = useToastMessageDispatch();
 	const reportMessage = useEndpoint('POST', '/v1/chat.reportMessage');
 
 	const { _id } = message;
+
+	const md = message.md ?? (message.msg.length > getMarkdownParserLimit() ? toPlainTextRoot(message.msg) : undefined);
 
 	const handleReportMessage = async ({ description }: ReportMessageModalsFields): Promise<void> => {
 		try {
@@ -54,14 +54,14 @@ const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps): Reac
 
 	return (
 		<GenericModal
-			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleReportMessage)} {...props} />}
+			onSubmit={handleSubmit(handleReportMessage)}
 			variant='danger'
 			title={t('Report_message')}
 			onCancel={onClose}
 			confirmText={t('Report')}
 		>
-			<Box mbe={24} className={wordBreak}>
-				{message.md ? <MessageContentBody md={message.md} /> : <MarkdownText variant='inline' parseEmoji content={message.msg} />}
+			<Box marginBlockEnd={24} className={wordBreak}>
+				{md ? <MessageContentBody md={md} /> : <MarkdownText variant='inline' parseEmoji content={message.msg} />}
 			</Box>
 			<FieldGroup>
 				<Field>

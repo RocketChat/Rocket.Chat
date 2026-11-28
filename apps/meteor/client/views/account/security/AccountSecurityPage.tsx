@@ -1,20 +1,21 @@
-import { Box, Accordion, AccordionItem, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
+import { Accordion, AccordionItem, ButtonGroup, Button, Callout, Stack } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
-import { useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
+import { useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
-import type { ReactElement } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import ChangePassword from './ChangePassword';
 import EndToEnd from './EndToEnd';
 import TwoFactorEmail from './TwoFactorEmail';
 import TwoFactorTOTP from './TwoFactorTOTP';
+import ContentColumn from '../../../components/ContentColumn';
 import { useRequire2faSetup } from '../../hooks/useRequire2faSetup';
 
 const passwordDefaultValues = { password: '', confirmationPassword: '' };
 
-const AccountSecurityPage = (): ReactElement => {
-	const t = useTranslation();
+const AccountSecurityPage = () => {
+	const { t } = useTranslation();
 	const user = useUser();
 
 	const isEmail2FAAvailableForOAuth = useSetting('Accounts_twoFactorAuthentication_email_available_for_OAuth_users');
@@ -45,7 +46,7 @@ const AccountSecurityPage = (): ReactElement => {
 		<Page>
 			<PageHeader title={t('Security')} />
 			<PageScrollableContentWithShadow>
-				<Box maxWidth='x600' w='full' alignSelf='center' color='default'>
+				<ContentColumn>
 					{allowPasswordChange && (
 						<FormProvider {...methods}>
 							<Accordion>
@@ -58,13 +59,15 @@ const AccountSecurityPage = (): ReactElement => {
 					<Accordion>
 						{(twoFactorTOTP || showEmailTwoFactor) && twoFactorEnabled && (
 							<AccordionItem defaultExpanded={require2faSetup} title={t('Two Factor Authentication')}>
-								{require2faSetup && (
-									<Callout type='warning' title={t('Enable_two-factor_authentication')} mbe='24px'>
-										{t('Enable_two-factor_authentication_callout_description')}
-									</Callout>
-								)}
-								{twoFactorTOTP && <TwoFactorTOTP />}
-								{showEmailTwoFactor && <TwoFactorEmail />}
+								<Stack gap='x24'>
+									{require2faSetup && (
+										<Callout type='warning' title={t('Enable_two-factor_authentication')}>
+											{t('Enable_two-factor_authentication_callout_description')}
+										</Callout>
+									)}
+									{twoFactorTOTP && <TwoFactorTOTP />}
+									{showEmailTwoFactor && <TwoFactorEmail />}
+								</Stack>
 							</AccordionItem>
 						)}
 						{e2eEnabled && (
@@ -78,12 +81,12 @@ const AccountSecurityPage = (): ReactElement => {
 							</AccordionItem>
 						)}
 					</Accordion>
-				</Box>
+				</ContentColumn>
 			</PageScrollableContentWithShadow>
 			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset(passwordDefaultValues)}>{t('Cancel')}</Button>
-					<Button form={passwordFormId} primary disabled={!isDirty} type='submit'>
+					<Button form={passwordFormId} variant='primary' disabled={!isDirty} type='submit'>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

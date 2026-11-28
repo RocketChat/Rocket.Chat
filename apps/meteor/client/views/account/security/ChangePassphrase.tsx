@@ -1,11 +1,25 @@
-import { Box, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow, PasswordInput, Button } from '@rocket.chat/fuselage';
+import {
+	Button,
+	ButtonGroup,
+	Field,
+	FieldError,
+	FieldGroup,
+	FieldHint,
+	FieldLabel,
+	FieldRow,
+	LinkButton,
+	PasswordInput,
+	Stack,
+	Text,
+} from '@rocket.chat/fuselage';
 import { PasswordVerifierList } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, usePasswordPolicy } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useEffect, useId } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useWatch, useFormState } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
+import SecuritySection from './layout/SecuritySection';
 import { e2e } from '../../../lib/e2ee/rocketchat.e2e';
 import { useE2EEState } from '../../room/hooks/useE2EEState';
 
@@ -42,7 +56,7 @@ const defaultValues = {
 	confirmationPassphrase: '',
 };
 
-export const ChangePassphrase = (): JSX.Element => {
+export const ChangePassphrase = () => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -55,20 +69,15 @@ export const ChangePassphrase = (): JSX.Element => {
 	const passphraseVerifierId = `verifier-${uniqueId}`;
 	const e2ePasswordExplanationId = `explanation-${uniqueId}`;
 
-	const {
-		watch,
-		formState: { errors, isValid },
-		handleSubmit,
-		reset,
-		resetField,
-		control,
-		trigger,
-	} = useForm({
+	const { handleSubmit, reset, resetField, control, trigger } = useForm({
 		defaultValues,
 		mode: 'all',
 	});
+	const { errors, isValid } = useFormState({ control });
 
-	const { passphrase, confirmationPassphrase } = watch();
+	const watched = useWatch({ control });
+	const passphrase = watched.passphrase ?? '';
+	const confirmationPassphrase = watched.confirmationPassphrase ?? '';
 	const { validations, valid } = useValidatePassphrase(passphrase);
 	useEffect(() => {
 		if (!valid) {
@@ -97,15 +106,12 @@ export const ChangePassphrase = (): JSX.Element => {
 	};
 
 	return (
-		<>
-			<Box is='p' fontScale='p1' id={e2ePasswordExplanationId}>
+		<Stack gap='x32'>
+			<Text is='p' fontScale='p1' id={e2ePasswordExplanationId}>
 				<Trans i18nKey='E2E_Encryption_Password_Explanation' />
-			</Box>
-			<Box mbs={36} w='full'>
-				<Box is='h3' fontScale='h4' mbe={12}>
-					{t('Change_E2EE_password')}
-				</Box>
-				<FieldGroup w='full'>
+			</Text>
+			<SecuritySection title={t('Change_E2EE_password')} headingLevel='h3'>
+				<FieldGroup>
 					<Field>
 						<FieldLabel htmlFor={passphraseId}>{t('New_E2EE_password')}</FieldLabel>
 						<FieldRow>
@@ -145,16 +151,7 @@ export const ChangePassphrase = (): JSX.Element => {
 							<FieldHint id={passphraseHintId}>
 								<Trans i18nKey='Enter_current_E2EE_password_to_set_new'>
 									To set a new password, first
-									<Box
-										is='a'
-										href='#'
-										onClick={async (e) => {
-											e.preventDefault();
-											await e2e.decodePrivateKeyFlow();
-										}}
-									>
-										enter your current E2EE password.
-									</Box>
+									<LinkButton onClick={() => e2e.decodePrivateKeyFlow()}>enter your current E2EE password.</LinkButton>
 								</Trans>
 							</FieldHint>
 						)}
@@ -175,7 +172,6 @@ export const ChangePassphrase = (): JSX.Element => {
 											{...field}
 											id={confirmPassphraseId}
 											error={errors.confirmationPassphrase?.message}
-											flexGrow={1}
 											disabled={!keysExist || !valid}
 											aria-required={passphrase ? 'true' : 'false'}
 											aria-invalid={errors.confirmationPassphrase ? 'true' : 'false'}
@@ -192,10 +188,12 @@ export const ChangePassphrase = (): JSX.Element => {
 						</Field>
 					)}
 				</FieldGroup>
-				<Button primary disabled={!(keysExist && valid && isValid)} onClick={handleSubmit(handleSave)} mbs={12}>
-					{t('Save_changes')}
-				</Button>
-			</Box>
-		</>
+				<ButtonGroup>
+					<Button variant='primary' disabled={!(keysExist && valid && isValid)} onClick={handleSubmit(handleSave)}>
+						{t('Save_changes')}
+					</Button>
+				</ButtonGroup>
+			</SecuritySection>
+		</Stack>
 	);
 };

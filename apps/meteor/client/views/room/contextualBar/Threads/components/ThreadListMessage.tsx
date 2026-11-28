@@ -1,6 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import {
-	Message,
 	MessageLeftContainer,
 	MessageContainer,
 	MessageHeader,
@@ -8,19 +7,24 @@ import {
 	MessageTimestamp,
 	MessageBody,
 	MessageContainerFixed,
-	Box,
+	MessageStatusIndicatorItem,
+	Message,
+	Stack,
+	Text,
 } from '@rocket.chat/fuselage';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import type { ComponentProps, ReactElement, ReactNode } from 'react';
+import { useTimeAgo } from '@rocket.chat/ui-client';
+import type { ComponentProps, ReactNode } from 'react';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import ThreadListMetrics from './ThreadListMetrics';
 import Emoji from '../../../../../components/Emoji';
 import ThreadMetricsFollow from '../../../../../components/message/content/ThreadMetricsFollow';
 import ThreadMetricsUnreadBadge from '../../../../../components/message/content/ThreadMetricsUnreadBadge';
-import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
+import { activateWithKeyboard } from '../../../../../lib/clickableItem';
 
-type ThreadListMessageProps = {
+export type ThreadListMessageProps = {
 	_id: IMessage['_id'];
 	msg: ReactNode;
 	following: boolean;
@@ -35,7 +39,9 @@ type ThreadListMessageProps = {
 	all: boolean;
 	tlm: Date;
 	emoji: IMessage['emoji'];
-} & Omit<ComponentProps<typeof Box>, 'is'>;
+	hasDraft?: boolean;
+	ignored?: boolean;
+} & ComponentProps<typeof Message>;
 
 const ThreadListMessage = ({
 	_id,
@@ -51,36 +57,43 @@ const ThreadListMessage = ({
 	mention,
 	all,
 	tlm,
-	className = [],
 	emoji,
+	hasDraft,
+	ignored,
 	...props
-}: ThreadListMessageProps): ReactElement => {
+}: ThreadListMessageProps) => {
+	const { t } = useTranslation();
 	const formatDate = useTimeAgo();
 
 	return (
-		<Box className={className}>
-			<Box pbs={16} is={Message} {...props}>
-				<MessageLeftContainer>
-					<MessageAvatar emoji={emoji ? <Emoji emojiHandle={emoji} fillContainer /> : undefined} username={username} size='x36' />
-				</MessageLeftContainer>
-				<MessageContainer>
-					<MessageHeader>
-						<MessageName title={username}>{name}</MessageName>
-						<MessageTimestamp>{formatDate(ts)}</MessageTimestamp>
-					</MessageHeader>
-					<MessageBody clamp={2}>{msg}</MessageBody>
-					<ThreadListMetrics lm={tlm} participants={participants || []} counter={replies} />
-				</MessageContainer>
-				<MessageContainerFixed>
-					<ThreadMetricsFollow following={following} mid={_id} rid={rid} mention={false} unread={false} all={false} />
-					{unread && (
-						<Box mbs={24}>
-							<ThreadMetricsUnreadBadge unread={unread} mention={mention} all={all} />
-						</Box>
+		<Message clickable insetBlock='md' divided tabIndex={0} onKeyDown={activateWithKeyboard} {...props}>
+			<MessageLeftContainer>
+				<MessageAvatar emoji={emoji ? <Emoji emojiHandle={emoji} fillContainer /> : undefined} username={username} size='x36' />
+			</MessageLeftContainer>
+			<MessageContainer>
+				<MessageHeader>
+					<MessageName title={username}>{name}</MessageName>
+					<MessageTimestamp>{formatDate(ts)}</MessageTimestamp>
+					{hasDraft && <MessageStatusIndicatorItem name='pencil' title={t('Thread_draft')} />}
+				</MessageHeader>
+				<MessageBody clamp={2}>
+					{ignored ? (
+						<Text is='span' fontScale='c2' color='hint'>
+							{t('Message_Ignored')}
+						</Text>
+					) : (
+						msg
 					)}
-				</MessageContainerFixed>
-			</Box>
-		</Box>
+				</MessageBody>
+				<ThreadListMetrics lm={tlm} participants={participants || []} counter={replies} />
+			</MessageContainer>
+			<MessageContainerFixed>
+				<Stack align='center' gap='x24'>
+					<ThreadMetricsFollow following={following} mid={_id} rid={rid} mention={false} unread={false} all={false} />
+					{unread && <ThreadMetricsUnreadBadge unread={unread} mention={mention} all={all} />}
+				</Stack>
+			</MessageContainerFixed>
+		</Message>
 	);
 };
 

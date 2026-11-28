@@ -1,4 +1,4 @@
-/* eslint-disable new-cap */
+/* oxlint-disable new-cap */
 import type { ConversationData } from '@rocket.chat/core-services';
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
@@ -145,7 +145,7 @@ export class AgentOverviewData {
 		};
 
 		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics, servedBy }) => {
-			if (servedBy && metrics && metrics.chatDuration) {
+			if (servedBy && metrics?.chatDuration) {
 				if (agentChatDurations.has(servedBy.username)) {
 					agentChatDurations.set(servedBy.username, {
 						chatDuration: agentChatDurations.get(servedBy.username).chatDuration + metrics.chatDuration,
@@ -237,7 +237,7 @@ export class AgentOverviewData {
 		};
 
 		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics, responseBy }) => {
-			if (responseBy && metrics && metrics.response && metrics.response.ft) {
+			if (responseBy && metrics?.response?.ft) {
 				if (agentAvgRespTime.has(responseBy.username)) {
 					agentAvgRespTime.set(responseBy.username, {
 						frt: agentAvgRespTime.get(responseBy.username).frt + metrics.response.ft,
@@ -268,7 +268,7 @@ export class AgentOverviewData {
 	}
 
 	async Best_first_response_time(from: moment.Moment, to: moment.Moment, departmentId?: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
-		const agentFirstRespTime = new Map(); // stores best response time for each agent
+		const agentFirstRespTime = new Map<string, number>(); // stores best response time for each agent
 		const date = {
 			gte: from.toDate(),
 			lte: to.toDate(),
@@ -287,12 +287,9 @@ export class AgentOverviewData {
 		};
 
 		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics, responseBy }) => {
-			if (responseBy && metrics && metrics.response && metrics.response.ft) {
-				if (agentFirstRespTime.has(responseBy.username)) {
-					agentFirstRespTime.set(responseBy.username, Math.min(agentFirstRespTime.get(responseBy.username), metrics.response.ft));
-				} else {
-					agentFirstRespTime.set(responseBy.username, metrics.response.ft);
-				}
+			if (responseBy && metrics?.response?.ft) {
+				const best = agentFirstRespTime.get(responseBy.username);
+				agentFirstRespTime.set(responseBy.username, best === undefined ? metrics.response.ft : Math.min(best, metrics.response.ft));
 			}
 		});
 
@@ -329,7 +326,7 @@ export class AgentOverviewData {
 		};
 
 		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics, servedBy }) => {
-			if (servedBy && metrics && metrics.response && metrics.response.avg) {
+			if (servedBy && metrics?.response?.avg) {
 				if (agentAvgRespTime.has(servedBy.username)) {
 					agentAvgRespTime.set(servedBy.username, {
 						avg: agentAvgRespTime.get(servedBy.username).avg + metrics.response.avg,
@@ -379,7 +376,7 @@ export class AgentOverviewData {
 		};
 
 		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics, servedBy }) => {
-			if (servedBy && metrics && metrics.reaction && metrics.reaction.ft) {
+			if (servedBy && metrics?.reaction?.ft) {
 				if (agentAvgReactionTime.has(servedBy.username)) {
 					agentAvgReactionTime.set(servedBy.username, {
 						frt: agentAvgReactionTime.get(servedBy.username).frt + metrics.reaction.ft,

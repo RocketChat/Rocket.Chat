@@ -1,4 +1,3 @@
-/* eslint-disable new-cap */
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type {
 	AgentOverviewDataOptions,
@@ -14,9 +13,9 @@ import { ChartData } from './ChartData';
 import { OverviewData } from './OverviewData';
 import { serviceLogger } from './logger';
 import { dayIterator } from './utils';
-import { getTimezone } from '../../../app/utils/server/lib/getTimezone';
 import { callbacks } from '../../lib/callbacks';
 import { i18n } from '../../lib/i18n';
+import { getTimezone } from '../../lib/utils/lib/getTimezone';
 
 const HOURS_IN_DAY = 24;
 
@@ -108,7 +107,7 @@ export class OmnichannelAnalyticsService extends ServiceClassInternal implements
 		if (isSameDay) {
 			// data for single day
 			const m = moment(from);
-			for await (const currentHour of Array.from({ length: HOURS_IN_DAY }, (_, i) => i)) {
+			for (const currentHour of Array.from({ length: HOURS_IN_DAY }, (_, i) => i)) {
 				const hour = parseInt(m.add(currentHour ? 1 : 0, 'hour').format('H'));
 				const label = {
 					from: moment.utc().set({ hour }).tz(timezone).format('hA'),

@@ -1,46 +1,53 @@
-import { isThreadMessage, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
+import { isThreadMessage, type IMessage } from '@rocket.chat/core-typings';
+import { css } from '@rocket.chat/css-in-js';
 import { Box, Bubble, MessageDivider } from '@rocket.chat/fuselage';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useMessageListFormatDate } from '../../../components/message/list/MessageListContext';
 import RoomMessage from '../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../components/message/variants/SystemMessage';
 import ThreadMessagePreview from '../../../components/message/variants/ThreadMessagePreview';
 import { useDateRef } from '../providers/DateListProvider';
-import { isMessageNewDay } from './lib/isMessageNewDay';
-import { useMessageListFormatDate } from '../../../components/message/list/MessageListContext';
 
-type MessageListItemProps = {
+const dividerClassName = css`
+	transition: opacity 0.2s ease-out;
+`;
+
+export type MessageListItemProps = {
 	message: IMessage;
-	previous?: IMessage;
+	newDay: boolean;
 	showUnreadDivider: boolean;
 
 	sequential: boolean;
 	showUserAvatar: boolean;
 	visible: boolean;
-	subscription: ISubscription | undefined;
+	unread: boolean;
+	mention: boolean;
+	all: boolean;
+	ignoredUser: boolean;
 	system: boolean;
 };
-export const MessageListItem = ({
+
+export const MessageListItem = memo(function MessageListItem({
 	message,
-	previous,
+	newDay,
 	showUnreadDivider,
 	sequential,
 	showUserAvatar,
 	visible,
-	subscription,
+	unread,
+	mention,
+	all,
+	ignoredUser,
 	system,
-}: MessageListItemProps) => {
+}: MessageListItemProps) {
 	const { t } = useTranslation();
 	const formatDate = useMessageListFormatDate();
 
 	const ref = useDateRef();
 
-	const newDay = isMessageNewDay(message, previous);
 	const showDivider = newDay || showUnreadDivider;
-	const unread = Boolean(subscription?.tunread?.includes(message._id));
-	const mention = Boolean(subscription?.tunreadUser?.includes(message._id));
-	const all = Boolean(subscription?.tunreadGroup?.includes(message._id));
-	const ignoredUser = Boolean(subscription?.ignored?.includes(message.u._id));
 	const shouldShowAsSequential = sequential && !newDay;
 
 	return (
@@ -50,6 +57,7 @@ export const MessageListItem = ({
 					ref={ref}
 					data-id={message.ts}
 					role='listitem'
+					className={dividerClassName}
 					{...(newDay && {
 						'data-time': new Date(message.ts)
 							.toISOString()
@@ -78,7 +86,7 @@ export const MessageListItem = ({
 				/>
 			)}
 			{isThreadMessage(message) && (
-				<li>
+				<div role='listitem'>
 					<ThreadMessagePreview
 						data-mid={message._id}
 						data-tmid={message.tmid}
@@ -88,9 +96,9 @@ export const MessageListItem = ({
 						message={message}
 						showUserAvatar={showUserAvatar}
 					/>
-				</li>
+				</div>
 			)}
 			{system && <SystemMessage showUserAvatar={showUserAvatar} message={message} />}
 		</>
 	);
-};
+});

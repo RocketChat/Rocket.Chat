@@ -1,16 +1,16 @@
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
 import { Logger } from '@rocket.chat/logger';
 import { Settings } from '@rocket.chat/models';
 
+import { settingsRegistry, settings } from '.';
 import { updateAuditedBySystem } from './lib/auditedSettingUpdates';
-import { notifyOnSettingChangedById } from '../../app/lib/server/lib/notifyListener';
-import { settingsRegistry, settings } from '../../app/settings/server';
+import { notifyOnSettingChangedById } from '../lib/notifyListener';
 
 const logger = new Logger('FingerPrint');
 
 const generateFingerprint = function () {
-	const siteUrl = settings.get('Site_Url');
+	const siteUrl = settings.get<string>('Site_Url');
 	const dbConnectionString = process.env.MONGO_URL;
 
 	const fingerprint = `${siteUrl}${dbConnectionString}`;

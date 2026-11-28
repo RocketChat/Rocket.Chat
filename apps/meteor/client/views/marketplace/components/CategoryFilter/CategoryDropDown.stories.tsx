@@ -3,12 +3,12 @@ import type { StoryFn } from '@storybook/react';
 import { useState } from 'react';
 
 import CategoryDropDown from './CategoryDropDown';
-import CategoryDropDownAnchor from './CategoryDropDownAnchor';
 import CategoryDropDownList from './CategoryDropDownList';
 import TagList from './TagList';
 import type { CategoryDropDownListProps } from '../../definitions/CategoryDropdownDefinitions';
 import { useCategories } from '../../hooks/useCategories';
 import { useCategoryToggle } from '../../hooks/useCategoryToggle';
+import CategoryDropDownAnchor from '../../layout/CategoryDropDownAnchor';
 
 export default {
 	component: CategoryDropDownAnchor,
@@ -57,6 +57,7 @@ const testCategories: CategoryDropDownListProps['categories'] = [
 export const Anchor: StoryFn = () => (
 	<CategoryDropDownAnchor selectedCategoriesCount={testCategories.flatMap((group) => group.items).length} />
 );
+export const AnchorNothingSelected: StoryFn = () => <CategoryDropDownAnchor selectedCategoriesCount={0} />;
 export const List: StoryFn = () => {
 	const [data, setData] = useState(() => testCategories);
 
@@ -73,7 +74,7 @@ export const Default: StoryFn = () => {
 	const onSelected = useCategoryToggle(setData);
 
 	return (
-		<Box w='x144'>
+		<Box width='x144'>
 			<ButtonGroup>
 				<CategoryDropDown categories={data} selectedCategories={selectedCategories} onSelected={onSelected} />
 			</ButtonGroup>

@@ -1,5 +1,4 @@
 import type { VideoConference } from '@rocket.chat/core-typings';
-import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -9,16 +8,17 @@ import {
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarEmptyContent,
+	ContextualbarSkeletonContent,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import VideoConfListItem from './VideoConfListItem';
+import ListViewport from '../../../../../components/ListViewport';
 import { getErrorMessage } from '../../../../../lib/errorHandling';
 
-type VideoConfListProps = {
+export type VideoConfListProps = {
 	onClose: () => void;
 	total: number;
 	videoConfs: VideoConference[];
@@ -28,7 +28,7 @@ type VideoConfListProps = {
 	loadMoreItems: () => void;
 };
 
-const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loadMoreItems }: VideoConfListProps): ReactElement => {
+const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loadMoreItems }: VideoConfListProps) => {
 	const { t } = useTranslation();
 
 	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver<HTMLElement>({
@@ -42,32 +42,24 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 				<ContextualbarTitle>{t('Calls')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-
-			<ContextualbarContent paddingInline={0} ref={ref}>
-				{loading && (
-					<Box pi={24} pb={12}>
-						<Throbber size='x12' />
-					</Box>
+			<ContextualbarContent flush ref={ref}>
+				{loading && <ContextualbarSkeletonContent />}
+				{error && (
+					<ContextualbarEmptyContent
+						icon='circle-exclamation'
+						iconVariation='danger'
+						title={t('Something_went_wrong')}
+						subtitle={getErrorMessage(error)}
+					/>
 				)}
-				{(total === 0 || error) && (
-					<Box display='flex' flexDirection='column' justifyContent='center' height='100%'>
-						{error && (
-							<States>
-								<StatesIcon name='circle-exclamation' variation='danger' />
-								<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
-								<StatesSubtitle>{getErrorMessage(error)}</StatesSubtitle>
-							</States>
-						)}
-						{!loading && total === 0 && (
-							<ContextualbarEmptyContent
-								icon='phone'
-								title={t('No_history')}
-								subtitle={t('There_is_no_video_conference_history_in_this_room')}
-							/>
-						)}
-					</Box>
+				{!error && !loading && total === 0 && (
+					<ContextualbarEmptyContent
+						icon='phone'
+						title={t('No_history')}
+						subtitle={t('There_is_no_video_conference_history_in_this_room')}
+					/>
 				)}
-				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
+				<ListViewport>
 					{videoConfs.length > 0 && (
 						<VirtualizedScrollbars>
 							<Virtuoso
@@ -79,11 +71,11 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 								endReached={loadMoreItems}
 								overscan={25}
 								data={videoConfs}
-								itemContent={(_index, data): ReactElement => <VideoConfListItem videoConfData={data} reload={reload} />}
+								itemContent={(_index, data) => <VideoConfListItem videoConfData={data} reload={reload} />}
 							/>
 						</VirtualizedScrollbars>
 					)}
-				</Box>
+				</ListViewport>
 			</ContextualbarContent>
 		</ContextualbarDialog>
 	);

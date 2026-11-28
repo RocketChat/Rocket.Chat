@@ -1,8 +1,12 @@
 import type { Locator } from '@playwright/test';
 
-import { OmnichannelAdmin } from './omnichannel-admin';
+import { OmnichannelAdmin, OmnichannelSectionsHref } from './omnichannel-admin';
 
 export class OmnichannelCannedResponses extends OmnichannelAdmin {
+	protected readonly route = OmnichannelSectionsHref.cannedResponses;
+
+	protected readonly title = 'Canned responses';
+
 	get inputShortcut() {
 		return this.page.getByRole('textbox', { name: 'Shortcut', exact: true });
 	}
@@ -42,9 +46,5 @@ export class OmnichannelCannedResponses extends OmnichannelAdmin {
 
 	get btnSave(): Locator {
 		return this.page.getByRole('button', { name: 'Save', exact: true });
-	}
-
-	get btnNew(): Locator {
-		return this.page.locator('role=button[name="Create canned response"]').first();
 	}
 }

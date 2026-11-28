@@ -1,9 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
-import { Box, ModalBackdrop, Skeleton } from '@rocket.chat/fuselage';
+import { ModalBackdrop, Skeleton } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import {
-	Contextualbar,
 	ContextualbarHeader,
 	ContextualbarAction,
 	ContextualbarActions,
@@ -11,6 +9,7 @@ import {
 	ContextualbarBack,
 	ContextualbarInnerContent,
 	ContextualbarDialog,
+	ContextualbarSkeletonContent,
 } from '@rocket.chat/ui-client';
 import {
 	useLayoutContextualBarExpanded,
@@ -22,14 +21,15 @@ import {
 import { createPortal } from 'react-dom';
 
 import ThreadChat from './components/ThreadChat';
-import ThreadSkeleton from './components/ThreadSkeleton';
 import ThreadTitle from './components/ThreadTitle';
 import { useThreadMainMessageQuery } from './hooks/useThreadMainMessageQuery';
 import { useToggleFollowingThreadMutation } from './hooks/useToggleFollowingThreadMutation';
+import ThreadDockedSlot from './layout/ThreadDockedSlot';
+import ThreadSurface from './layout/ThreadSurface';
 import { useGoToThreadList } from '../../hooks/useGoToThreadList';
 import ChatProvider from '../../providers/ChatProvider';
 
-type ThreadProps = {
+export type ThreadProps = {
 	tmid: IMessage['_id'];
 };
 
@@ -87,27 +87,7 @@ const Thread = ({ tmid }: ThreadProps) => {
 	const portalTarget = isExpanded ? document.getElementById('main-content') : null;
 
 	const threadContent = (
-		<Contextualbar
-			rcx-thread-view
-			className={
-				isExpanded
-					? css`
-							max-width: 855px !important;
-							@media (min-width: 780px) and (max-width: 1135px) {
-								max-width: calc(100% - var(--sidebar-width)) !important;
-							}
-						`
-					: undefined
-			}
-			position='absolute'
-			display='flex'
-			flexDirection='column'
-			width='full'
-			overflow='hidden'
-			zIndex={100}
-			insetBlock={0}
-			border='none'
-		>
+		<ThreadSurface expanded={isExpanded}>
 			<ContextualbarHeader>
 				<ContextualbarBack onClick={handleGoBack} />
 				{(mainMessageQueryResult.isLoading && <Skeleton width='100%' />) ||
@@ -131,14 +111,14 @@ const Thread = ({ tmid }: ThreadProps) => {
 				</ContextualbarActions>
 			</ContextualbarHeader>
 
-			{(mainMessageQueryResult.isLoading && <ThreadSkeleton />) ||
+			{(mainMessageQueryResult.isLoading && <ContextualbarSkeletonContent />) ||
 				(mainMessageQueryResult.isSuccess && (
 					<ChatProvider tmid={tmid}>
 						<ThreadChat mainMessage={mainMessageQueryResult.data} />
 					</ChatProvider>
 				)) ||
 				null}
-		</Contextualbar>
+		</ThreadSurface>
 	);
 
 	return (
@@ -147,20 +127,13 @@ const Thread = ({ tmid }: ThreadProps) => {
 				{portalTarget ? (
 					createPortal(
 						<>
-							<ModalBackdrop
-								className={css`
-									position: absolute !important;
-								`}
-								onClick={handleBackdropClick}
-							/>
+							<ModalBackdrop contained onClick={handleBackdropClick} />
 							{threadContent}
 						</>,
 						portalTarget,
 					)
 				) : (
-					<Box flexGrow={1} position='relative'>
-						{threadContent}
-					</Box>
+					<ThreadDockedSlot>{threadContent}</ThreadDockedSlot>
 				)}
 			</ContextualbarInnerContent>
 		</ContextualbarDialog>

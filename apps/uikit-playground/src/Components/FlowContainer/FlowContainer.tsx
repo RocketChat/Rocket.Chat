@@ -32,7 +32,7 @@ const FlowContainer = () => {
 			custom: UIKitWrapper,
 		}),
 		// used to rerender edge lines on reorder payload
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 		[edges],
 	);
 

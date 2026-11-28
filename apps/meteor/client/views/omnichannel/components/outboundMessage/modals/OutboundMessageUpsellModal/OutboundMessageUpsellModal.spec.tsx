@@ -10,7 +10,7 @@ jest.mock('../../../../../../hooks/useExternalLink', () => ({
 	useExternalLink: jest.fn(() => openExternalLink),
 }));
 
-jest.mock('../../../../../../../app/utils/client', () => ({
+jest.mock('../../../../../../../client/lib/getURL', () => ({
 	getURL: (url: string) => url,
 }));
 

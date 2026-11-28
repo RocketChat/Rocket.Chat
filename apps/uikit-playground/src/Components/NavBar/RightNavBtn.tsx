@@ -8,8 +8,8 @@ const RightNavBtn = () => {
 	const { state, dispatch } = useContext(context);
 
 	return (
-		<Box mie='15px' onClick={() => state.isMobile && dispatch(navMenuToggleAction(true))}>
-			{state.isMobile ? <BurgerIcon /> : <Button primary>Send to RocketChat</Button>}
+		<Box marginInlineEnd='x16' onClick={() => state.isMobile && dispatch(navMenuToggleAction(true))}>
+			{state.isMobile ? <BurgerIcon /> : <Button variant='primary'>Send to RocketChat</Button>}
 		</Box>
 	);
 };

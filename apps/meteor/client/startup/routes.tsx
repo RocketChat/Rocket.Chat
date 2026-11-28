@@ -1,16 +1,19 @@
-import { SetupWizardRoute } from '@rocket.chat/ui-client';
+import { SetupWizardRoute } from '@rocket.chat/ui-setup-wizard';
 import { createElement, lazy, useEffect } from 'react';
 
 import { appLayout } from '../lib/appLayout';
+import { preloadedLazy } from '../lib/preloadedLazy';
 import { router } from '../providers/RouterProvider';
+import OAuthTwoFactorAuthenticationRouter from '../views/OAuthTwoFactorAuthentication/OAuthTwoFactorAuthenticationRouter';
 import MainLayout from '../views/root/MainLayout';
 
 const IndexRoute = lazy(() => import('../views/root/IndexRoute'));
-const HomePage = lazy(() => import('../views/home/HomePage'));
+// the route most sessions land on
+const HomePage = preloadedLazy(() => import('../views/home/HomePage'));
 const DirectoryPage = lazy(() => import('../views/directory'));
 const OmnichannelDirectoryRouter = lazy(() => import('../views/omnichannel/directory/OmnichannelDirectoryRouter'));
 const OmnichannelQueueList = lazy(() => import('../views/omnichannel/queueList'));
-const CMSPage = lazy(() => import('@rocket.chat/web-ui-registration').then(({ CMSPage }) => ({ default: CMSPage })));
+const CMSPage = lazy(() => import('@rocket.chat/ui-registration').then(({ CMSPage }) => ({ default: CMSPage })));
 const SecretURLPage = lazy(() => import('../views/invite/SecretURLPage'));
 const InvitePage = lazy(() => import('../views/invite/InvitePage'));
 const ConferenceRoute = lazy(() => import('../views/conference/ConferenceRoute'));
@@ -18,12 +21,14 @@ const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubs
 const LoginTokenRoute = lazy(() => import('../views/root/LoginTokenRoute'));
 const SAMLLoginRoute = lazy(() => import('../views/root/SAMLLoginRoute'));
 const ResetPasswordPage = lazy(() =>
-	import('@rocket.chat/web-ui-registration').then(({ ResetPasswordPage }) => ({ default: ResetPasswordPage })),
+	import('@rocket.chat/ui-registration').then(({ ResetPasswordPage }) => ({ default: ResetPasswordPage })),
 );
 const OAuthAuthorizationPage = lazy(() => import('../views/oauth/OAuthAuthorizationPage'));
 const OAuthErrorPage = lazy(() => import('../views/oauth/OAuthErrorPage'));
 const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
-const CallHistoryPage = lazy(() => import('../views/mediaCallHistory/CallHistoryPage'));
+const CallHistoryRoute = lazy(() => import('../views/mediaCallHistory/CallHistoryRoute'));
+const SidebarRailCallPanel = lazy(() => import('../sidebar/SidebarRail/SidebarRailCallPanel'));
+const SearchPage = lazy(() => import('../views/search/SearchPage'));
 
 declare module '@rocket.chat/ui-contexts' {
 	interface IRouterPaths {
@@ -38,6 +43,10 @@ declare module '@rocket.chat/ui-contexts' {
 		'meet': {
 			pathname: `/meet/${string}`;
 			pattern: '/meet/:rid';
+		};
+		'2fa': {
+			pathname: `/2fa/${string}/${string}`;
+			pattern: '/2fa/:method/:challengeId';
 		};
 		'home': {
 			pathname: '/home';
@@ -79,10 +88,6 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: `/conference/${string}`;
 			pattern: '/conference/:id';
 		};
-		'setup-wizard': {
-			pathname: `/setup-wizard${`/${string}` | ''}`;
-			pattern: '/setup-wizard/:step?';
-		};
 		'mailer-unsubscribe': {
 			pathname: `/mailer/unsubscribe/${string}/${string}`;
 			pattern: '/mailer/unsubscribe/:_id/:createdAt';
@@ -108,8 +113,12 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/saml/:token';
 		};
 		'call-history': {
-			pathname: `/call-history${`/details/${string}` | ''}`;
-			pattern: '/call-history/:tab?/:historyId?';
+			pathname: `/call-history${`/details/${string}` | '/contacts' | `/contacts/${string}` | '/favorites' | `/favorites/${string}` | ''}`;
+			pattern: '/call-history/:tab?/:historyId?/:context?';
+		};
+		'search': {
+			pathname: '/search';
+			pattern: '/search';
 		};
 	}
 }
@@ -130,6 +139,11 @@ router.defineRoutes([
 
 			return null;
 		}),
+	},
+	{
+		path: '/2fa/:method/:challengeId',
+		id: '2fa',
+		element: appLayout.wrap(<OAuthTwoFactorAuthenticationRouter />),
 	},
 	{
 		path: '/home',
@@ -195,7 +209,7 @@ router.defineRoutes([
 	{
 		path: '/conference/:id',
 		id: 'conference',
-		element: appLayout.wrap(<ConferenceRoute />),
+		element: appLayout.wrap(<ConferenceRoute />, { standalone: true }),
 	},
 	{
 		path: '/setup-wizard/:step?',
@@ -233,11 +247,21 @@ router.defineRoutes([
 		element: appLayout.wrap(<SAMLLoginRoute />),
 	},
 	{
-		path: '/call-history/:tab?/:historyId?',
+		path: '/call-history/:tab?/:historyId?/:context?',
 		id: 'call-history',
 		element: appLayout.wrap(
 			<MainLayout>
-				<CallHistoryPage />
+				<CallHistoryRoute />
+				<SidebarRailCallPanel />
+			</MainLayout>,
+		),
+	},
+	{
+		path: '/search',
+		id: 'search',
+		element: appLayout.wrap(
+			<MainLayout>
+				<SearchPage />
 			</MainLayout>,
 		),
 	},

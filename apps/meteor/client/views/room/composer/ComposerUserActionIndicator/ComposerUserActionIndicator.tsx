@@ -1,9 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useCallback, Fragment, useSyncExternalStore, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { UserAction, USER_ACTIVITIES } from '../../../../../app/ui/client/lib/UserAction';
+import { UserAction, USER_ACTIVITIES } from '../../../../lib/UserAction';
 
 const maxUsernames = 5;
 
@@ -14,7 +13,9 @@ const ACTION_PRIORITY: Record<string, number> = {
 	[USER_ACTIVITIES.USER_PLAYING]: 3,
 };
 
-const ComposerUserActionIndicator = ({ rid, tmid }: { rid: string; tmid?: string }): ReactElement => {
+export type ComposerUserActionIndicatorProps = { rid: string; tmid?: string };
+
+const ComposerUserActionIndicator = ({ rid, tmid }: ComposerUserActionIndicatorProps) => {
 	const { t } = useTranslation();
 	const roomAction = useSyncExternalStore(
 		UserAction.subscribe,
@@ -56,22 +57,30 @@ const ComposerUserActionIndicator = ({ rid, tmid }: { rid: string; tmid?: string
 	return (
 		<Box
 			role='status'
-			h='x20'
+			height='x20'
 			className='rc-message-box__activity-wrapper'
 			fontScale='c1'
 			color='annotation'
 			display='flex'
 			alignItems='center'
 		>
-			{actions.map(({ action, users }, index) => (
-				<Fragment key={action}>
-					{index > 0 && ', '}
-					{users.length < maxUsernames
-						? users.join(', ')
-						: `${users.slice(0, maxUsernames - 1).join(', ')} ${t('and')} ${t('others')}`}{' '}
-					{users.length > 1 ? t(`are_${action}`) : t(`is_${action}`)}
-				</Fragment>
-			))}
+			{actions.map(({ action, users }, index) => {
+				const shownUsers = users.length <= maxUsernames ? users : users.slice(0, maxUsernames - 1);
+				const hiddenUsersCount = users.length - shownUsers.length;
+				// The verb agrees with the listed subject (one person, two, or several), not with the total number of users
+				const subjectCount = Math.min(users.length, 3);
+
+				return (
+					<Fragment key={action}>
+						{index > 0 && ', '}
+						{t('User_activity', {
+							context: action,
+							count: subjectCount,
+							users: hiddenUsersCount ? [...shownUsers, t('User_activity_hidden_users', { count: hiddenUsersCount })] : shownUsers,
+						})}
+					</Fragment>
+				);
+			})}
 		</Box>
 	);
 };

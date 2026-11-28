@@ -6,7 +6,6 @@ import type { RocketchatI18nKeys } from './resources.ts';
 export type { RocketchatI18nKeys };
 
 declare module 'i18next' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface TFunction {
 		(key: RocketchatI18nKeys): string;
 		(key: RocketchatI18nKeys, options: TOptions): string;
@@ -20,7 +19,7 @@ export const addSprinfToI18n = (t: TFunction) => {
 		}
 
 		if (isObject(replaces[0]) && !Array.isArray(replaces[0])) {
-			return t(key, replaces[0]);
+			return t(key, replaces[0] as TOptions);
 		}
 
 		return t(key, {
@@ -107,7 +106,7 @@ export const extractTranslationNamespaces = (source: Record<string, string>): Re
 export const extractTranslationKeys = (source: Record<string, string>, namespaces: string | string[] = []): { [key: string]: any } => {
 	const all = extractTranslationNamespaces(source);
 	return Array.isArray(namespaces)
-		? (namespaces as TranslationNamespace[]).reduce((result, namespace) => ({ ...result, ...all[namespace] }), {})
+		? (namespaces as TranslationNamespace[]).reduce((result, namespace) => Object.assign(result, all[namespace]), {})
 		: all[namespaces as TranslationNamespace];
 };
 

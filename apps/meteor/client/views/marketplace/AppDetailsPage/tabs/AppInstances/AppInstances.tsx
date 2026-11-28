@@ -1,6 +1,6 @@
 import type { AppStatus } from '@rocket.chat/apps';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
-import { Box, Palette, Tag } from '@rocket.chat/fuselage';
+import { Stack, Tag, type TableColumnWidth } from '@rocket.chat/fuselage';
 import {
 	GenericMenu,
 	CustomScrollbars,
@@ -10,30 +10,24 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableRow,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import GenericNoResults from '../../../../../components/GenericNoResults';
 import AccordionLoading from '../../../components/AccordionLoading';
 import { useAppInstances } from '../../../hooks/useAppInstances';
+import AppDetailsTabContent from '../../layout/AppDetailsTabContent';
 
 type AppInstanceProps = {
 	id: string;
 };
 
-const AppInstances = ({ id }: AppInstanceProps): ReactElement => {
+const AppInstances = ({ id }: AppInstanceProps) => {
 	const { t } = useTranslation();
 	const { data, isSuccess, isError, isLoading } = useAppInstances({ appId: id });
 
-	const getStatusColor = (status: AppStatus) => {
-		if (AppStatusUtils.isDisabled(status) || AppStatusUtils.isError(status)) {
-			return Palette.text['font-danger'].toString();
-		}
-
-		return Palette.text['font-default'].toString();
-	};
+	const isFailing = (status: AppStatus) => AppStatusUtils.isDisabled(status) || AppStatusUtils.isError(status);
 
 	const router = useRouter();
 
@@ -48,32 +42,30 @@ const AppInstances = ({ id }: AppInstanceProps): ReactElement => {
 		);
 	};
 
+	const columns: TableColumnWidth[] = ['auto', 'auto', 64];
+
 	return (
-		<Box h='full' w='full' marginInline='auto' color='default' pbs={24}>
+		<AppDetailsTabContent fill>
 			{isLoading && <AccordionLoading />}
-			{isError && (
-				<Box maxWidth='x600' alignSelf='center'>
-					{t('App_not_found')}
-				</Box>
-			)}
+			{isError && t('App_not_found')}
 			{isSuccess && data.clusterStatus && data.clusterStatus.length > 0 && (
 				<CustomScrollbars>
-					<GenericTable w='full'>
+					<GenericTable columns={columns}>
 						<GenericTableHeader>
 							<GenericTableHeaderCell key='instanceId'>{t('Workspace_instance')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell key='status'>{t('Status')}</GenericTableHeaderCell>
-							<GenericTableHeaderCell key='actions' width={64} />
+							<GenericTableHeaderCell key='actions' />
 						</GenericTableHeader>
 						<GenericTableBody>
 							{data?.clusterStatus?.map((instance) => (
 								<GenericTableRow key={instance.instanceId}>
 									<GenericTableCell>{instance.instanceId}</GenericTableCell>
 									<GenericTableCell>
-										<Box justifyContent='flex-start' display='flex'>
-											<Tag medium color={getStatusColor(instance.status)}>
+										<Stack direction='row'>
+											<Tag medium variant={isFailing(instance.status) ? 'secondary-danger' : undefined}>
 												{t(`App_status_${instance.status}`)}
 											</Tag>
-										</Box>
+										</Stack>
 									</GenericTableCell>
 									<GenericTableCell>
 										<GenericMenu
@@ -99,7 +91,7 @@ const AppInstances = ({ id }: AppInstanceProps): ReactElement => {
 					<GenericNoResults />
 				</CustomScrollbars>
 			)}
-		</Box>
+		</AppDetailsTabContent>
 	);
 };
 

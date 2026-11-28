@@ -11,13 +11,14 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { isTruthy } from '@rocket.chat/tools';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
-import { getWorkspaceAccessToken } from '../../../app/cloud/server';
-import { syncWorkspace } from '../../../app/cloud/server/functions/syncWorkspace';
-import { settings } from '../../../app/settings/server';
 import { CloudWorkspaceConnectionError } from '../../../lib/errors/CloudWorkspaceConnectionError';
 import { InvalidCloudAnnouncementInteractionError } from '../../../lib/errors/InvalidCloudAnnouncementInteractionError';
 import { InvalidCoreAppInteractionError } from '../../../lib/errors/InvalidCoreAppInteractionError';
+import { getWorkspaceAccessToken } from '../../lib/cloud';
+import { assertNotOfflineLicense } from '../../lib/cloud/offlineLicense';
+import { syncWorkspace } from '../../lib/cloud/syncWorkspace';
 import { SystemLogger } from '../../lib/logger/system';
+import { settings } from '../../settings';
 
 type CloudAnnouncementInteractant =
 	| {
@@ -37,7 +38,7 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 	}
 
 	protected getCloudUrl() {
-		return settings.get('Cloud_Url');
+		return settings.get<string>('Cloud_Url');
 	}
 
 	blockAction(payload: UiKitCoreAppBlockActionPayload): Promise<UiKit.ServerInteraction | undefined> {
@@ -241,7 +242,7 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 			return {
 				type: 'viewSubmit',
 				payload: {
-					view: view as any,
+					view,
 				},
 				triggerId,
 				viewId: view.id,
@@ -255,6 +256,8 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 		interactant: CloudAnnouncementInteractant,
 		userInteraction: UiKit.UserInteraction,
 	): Promise<UiKit.ServerInteraction> {
+		assertNotOfflineLicense();
+
 		const token = await this.getWorkspaceAccessToken();
 
 		const request: CloudAnnouncementInteractionRequest = {

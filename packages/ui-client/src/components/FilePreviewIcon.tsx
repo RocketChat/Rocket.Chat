@@ -1,20 +1,23 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 
-const FilePreviewIcon = ({ format }: { format: string }) => {
+export type FilePreviewIconProps = { format: string };
+
+const FilePreviewIcon = ({ format }: FilePreviewIconProps) => {
 	return (
 		<Box
 			width='x48'
 			height='x48'
-			borderRadius={4}
-			bg='surface-neutral'
+			borderRadius='medium'
+			backgroundColor='surface-neutral'
+			color='default'
 			justifyContent='center'
 			display='flex'
 			flexDirection='column'
 			alignItems='center'
 			flexShrink={0}
 		>
-			<Icon name='attachment-file' color='default' size={32} />
-			<Box withTruncatedText fontScale='micro' maxWidth='x40' color='default' textTransform='uppercase'>
+			<Icon name='attachment-file' size={32} />
+			<Box withTruncatedText fontScale='micro' maxWidth='x40' textTransform='uppercase'>
 				{format}
 			</Box>
 		</Box>

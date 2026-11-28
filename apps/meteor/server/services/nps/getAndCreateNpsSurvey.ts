@@ -3,9 +3,9 @@ import type { IBanner, BannerPlatform } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
-import { getWorkspaceAccessToken } from '../../../app/cloud/server';
-import { settings } from '../../../app/settings/server';
+import { getWorkspaceAccessToken } from '../../lib/cloud';
 import { SystemLogger } from '../../lib/logger/system';
+import { settings } from '../../settings';
 
 type NpsSurveyData = {
 	id: string;
@@ -29,7 +29,7 @@ export const getAndCreateNpsSurvey = async function getNpsSurvey(npsId: string) 
 		return false;
 	}
 
-	const npsUrl = settings.get('Nps_Url');
+	const npsUrl = settings.get<string>('Nps_Url');
 
 	try {
 		const result = await fetch(`${npsUrl}/v1/surveys/${npsId}`, {

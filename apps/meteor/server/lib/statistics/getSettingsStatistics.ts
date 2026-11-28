@@ -1,6 +1,6 @@
 import type { ISettingStatistics, ISettingStatisticsObject } from '@rocket.chat/core-typings';
 
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 
 const setSettingsStatistics = async (settings: ISettingStatistics): Promise<ISettingStatisticsObject> => {
 	const {
@@ -141,6 +141,7 @@ export const getSettingsStatistics = async (): Promise<ISettingStatisticsObject>
 
 		return staticticObject;
 	} catch (error: any) {
+		// oxlint-disable-next-line typescript/no-unsafe-return -- resolves with the caught error by existing contract; widening the return type would change every caller
 		return error;
 	}
 };

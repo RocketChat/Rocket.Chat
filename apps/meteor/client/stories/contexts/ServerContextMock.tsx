@@ -3,9 +3,9 @@ import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } fro
 import type { Method, OperationParams, OperationResult, PathFor, PathPattern } from '@rocket.chat/rest-typings';
 import type { UploadResult } from '@rocket.chat/ui-contexts';
 import { ServerContext } from '@rocket.chat/ui-contexts';
-import { action } from '@storybook/addon-actions';
-import type { ContextType, ReactElement, ReactNode } from 'react';
+import type { ContextType, ReactNode } from 'react';
 import { useContext, useMemo } from 'react';
+import { action } from 'storybook/actions';
 
 const logAction = action('ServerContext');
 
@@ -36,23 +36,27 @@ const getStream = (
 };
 
 type Operations = {
-	[TOperation in Method extends infer TMethod
-		? TMethod extends Method
-			? PathPattern extends infer TPathPattern
-				? TPathPattern extends PathPattern
-					? {
-							id: `${TMethod} ${TPathPattern extends `/${string}` ? TPathPattern : `/v1/${TPathPattern}`}`;
-							fn: (
-								params: void extends OperationParams<TMethod, TPathPattern> ? void : OperationParams<TMethod, TPathPattern>,
-							) => Promise<void extends OperationResult<TMethod, TPathPattern> ? Serialized<OperationResult<TMethod, TPathPattern>> : void>;
-						}
+	[
+		TOperation in Method extends infer TMethod
+			? TMethod extends Method
+				? PathPattern extends infer TPathPattern
+					? TPathPattern extends PathPattern
+						? {
+								id: `${TMethod} ${TPathPattern extends `/${string}` ? TPathPattern : `/v1/${TPathPattern}`}`;
+								fn: (
+									params: void extends OperationParams<TMethod, TPathPattern> ? void : OperationParams<TMethod, TPathPattern>,
+								) => Promise<
+									void extends OperationResult<TMethod, TPathPattern> ? Serialized<OperationResult<TMethod, TPathPattern>> : void
+								>;
+							}
+						: never
 					: never
 				: never
-			: never
-		: never as TOperation['id']]: TOperation['fn'];
+			: never as TOperation['id']
+	]: TOperation['fn'];
 };
 
-type ServerContextMockProps = Omit<Partial<ContextType<typeof ServerContext>>, 'callEndpoint' | 'callMethod'> & {
+export type ServerContextMockProps = Omit<Partial<ContextType<typeof ServerContext>>, 'callEndpoint' | 'callMethod'> & {
 	children: ReactNode;
 	baseURL?: string | URL;
 	callEndpoint?: {
@@ -60,19 +64,11 @@ type ServerContextMockProps = Omit<Partial<ContextType<typeof ServerContext>>, '
 	};
 	callMethod?: {
 		[TMethodName in ServerMethodName]?:
-			| ((...args: ServerMethodParameters<TMethodName>) => Promise<ServerMethodReturn<TMethodName>>)
-			| 'infinite'
-			| 'errored';
+			((...args: ServerMethodParameters<TMethodName>) => Promise<ServerMethodReturn<TMethodName>>) | 'infinite' | 'errored';
 	};
 };
 
-const ServerContextMock = ({
-	children,
-	baseURL,
-	callEndpoint = {},
-	callMethod = {},
-	...overrides
-}: ServerContextMockProps): ReactElement => {
+const ServerContextMock = ({ children, baseURL, callEndpoint = {}, callMethod = {}, ...overrides }: ServerContextMockProps) => {
 	const parent = useContext(ServerContext);
 
 	const value = useMemo((): ContextType<typeof ServerContext> => {
@@ -114,6 +110,7 @@ const ServerContextMock = ({
 
 			if (!handler) {
 				logAction('callEndpoint (undefined)', method, pathPattern, params);
+				// oxlint-disable-next-line typescript/no-unsafe-return -- unmocked endpoints resolve undefined, which no endpoint result type allows
 				return undefined as any;
 			}
 
@@ -138,12 +135,13 @@ const ServerContextMock = ({
 			const handler = callMethod[methodName];
 			if (!handler) {
 				logAction('callMethod (undefined)', methodName, ...args);
+				// oxlint-disable-next-line typescript/no-unsafe-return -- unmocked methods resolve undefined, which no method return type allows
 				return undefined as any;
 			}
 
 			if (handler === 'infinite') {
 				logAction('callMethod (infinite)', methodName, ...args);
-				return new Promise<any>(() => undefined);
+				return new Promise<ServerMethodReturn<MethodName>>(() => undefined);
 			}
 
 			if (handler === 'errored') {
@@ -177,6 +175,7 @@ const ServerContextMock = ({
 			callMethod: _callMethod,
 			uploadToEndpoint,
 			getStream,
+			getStreamAll: () => () => () => undefined,
 			...overrides,
 		};
 	}, [baseURL, callEndpoint, callMethod, overrides, parent]);

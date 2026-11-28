@@ -23,16 +23,25 @@ import { encryptAESCTR, generateAESCTRKey, sha256HashFromArrayBuffer, createSha2
 import { createLogger } from './logger';
 import { PrefixedBase64 } from './prefixed';
 import { e2e } from './rocketchat.e2e';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
-import { t } from '../../../app/utils/lib/i18n';
 import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
+import { t } from '../../../lib/i18n';
 import { Messages, Rooms, Subscriptions } from '../../stores';
+import { sdk } from '../SDKClient';
 import { roomCoordinator } from '../rooms/roomCoordinator';
 
 const log = createLogger('E2E:Room');
 
 const KEY_ID = Symbol('keyID');
 const PAUSED = Symbol('PAUSED');
+
+const isRoomKeyAlreadyExistsError = async (error: Response): Promise<boolean> => {
+	try {
+		const body = await error.clone().json();
+		return body?.errorType === 'error-room-e2e-key-already-exists';
+	} catch {
+		return false;
+	}
+};
 
 type Mutations = { [k in E2ERoomState]?: E2ERoomState[] };
 
@@ -242,7 +251,7 @@ export class E2ERoom extends Emitter {
 		}
 
 		const keys = [];
-		for await (const key of sub.oldRoomKeys) {
+		for (const key of sub.oldRoomKeys) {
 			try {
 				const k = await this.decryptSessionKey(key.E2EKey);
 				keys.push({
@@ -269,7 +278,7 @@ export class E2ERoom extends Emitter {
 		}
 
 		const keys = [];
-		for await (const key of oldKeys) {
+		for (const key of oldKeys) {
 			try {
 				if (!key.E2EKey) {
 					continue;
@@ -331,7 +340,12 @@ export class E2ERoom extends Emitter {
 			span.set('room', room);
 			if (!room?.e2eKeyId) {
 				this.setState('CREATING_KEYS');
-				await this.createGroupKey();
+				const created = await this.createGroupKey();
+				if (!created) {
+					// another member won the race
+					this.setState('WAITING_KEYS');
+					return;
+				}
 				this.setState('READY');
 				return;
 			}
@@ -401,7 +415,7 @@ export class E2ERoom extends Emitter {
 
 		// Import session key for use.
 		try {
-			const key = await Aes.importKey(JSON.parse(this.sessionKeyExportedString!));
+			const key = await Aes.importKey(JSON.parse(this.sessionKeyExportedString));
 			// Key has been obtained. E2E is now in session.
 			this.groupSessionKey = key;
 			span.info('Group key imported');
@@ -420,11 +434,31 @@ export class E2ERoom extends Emitter {
 		this.keyID = crypto.randomUUID();
 	}
 
-	async createGroupKey() {
+	private discardGroupKey() {
+		this.groupSessionKey = null;
+		this.sessionKeyExportedString = undefined;
+		this.keyID = undefined as unknown as string;
+	}
+
+	async createGroupKey(): Promise<boolean> {
+		const span = log.span('createGroupKey');
 		await this.createNewGroupKey();
 
-		await sdk.call('e2e.setRoomKeyID', this.roomId, this.keyID);
-		const myKey = await this.encryptGroupKeyForParticipant(e2e.publicKey!);
+		try {
+			await sdk.rest.post('/v1/e2e.setRoomKeyID', { rid: this.roomId, keyID: this.keyID });
+		} catch (error) {
+			if (error instanceof Response && (await isRoomKeyAlreadyExistsError(error))) {
+				span.info('Room key already established by another member; discarding local key');
+				this.discardGroupKey();
+				return false;
+			}
+			throw error;
+		}
+		if (!e2e.publicKey) {
+			span.error('No public key found');
+			return true;
+		}
+		const myKey = await this.encryptGroupKeyForParticipant(e2e.publicKey);
 		if (myKey) {
 			await sdk.rest.post('/v1/e2e.updateGroupKey', {
 				rid: this.roomId,
@@ -433,6 +467,7 @@ export class E2ERoom extends Emitter {
 			});
 			await this.encryptKeyForOtherParticipants();
 		}
+		return true;
 	}
 
 	async resetRoomKey() {
@@ -482,7 +517,8 @@ export class E2ERoom extends Emitter {
 		try {
 			const mySub = Subscriptions.state.find((record) => record.rid === this.roomId);
 			const decryptedOldGroupKeys = await this.exportOldRoomKeys(mySub?.oldRoomKeys);
-			const users = (await sdk.call('e2e.getUsersOfRoomWithoutKey', this.roomId)).users.filter((user) => user?.e2e?.public_key);
+			const { users: roomUsers } = await sdk.rest.get('/v1/e2e.getUsersOfRoomWithoutKey', { rid: this.roomId });
+			const users = roomUsers.flatMap((user) => (user.e2e?.public_key ? [{ _id: user._id, publicKey: user.e2e.public_key }] : []));
 
 			if (!users.length) {
 				span.info('No users to encrypt the key for');
@@ -497,14 +533,14 @@ export class E2ERoom extends Emitter {
 					oldKeys: ISubscription['suggestedOldRoomKeys'];
 				}[]
 			> = { [this.roomId]: [] };
-			for await (const user of users) {
-				const encryptedGroupKey = await this.encryptGroupKeyForParticipant(user.e2e!.public_key!);
+			for (const user of users) {
+				const encryptedGroupKey = await this.encryptGroupKeyForParticipant(user.publicKey);
 				if (!encryptedGroupKey) {
 					span.warn(`Could not encrypt group key for user ${user._id}`);
 					return;
 				}
 				if (decryptedOldGroupKeys) {
-					const oldKeys = await this.encryptOldKeysForParticipant(user.e2e!.public_key!, decryptedOldGroupKeys);
+					const oldKeys = await this.encryptOldKeysForParticipant(user.publicKey, decryptedOldGroupKeys);
 					if (oldKeys) {
 						usersSuggestedGroupKeys[this.roomId].push({ _id: user._id, key: encryptedGroupKey, oldKeys });
 						continue;
@@ -536,7 +572,7 @@ export class E2ERoom extends Emitter {
 
 		try {
 			const keys = [];
-			for await (const oldRoomKey of oldRoomKeys) {
+			for (const oldRoomKey of oldRoomKeys) {
 				if (!oldRoomKey.E2EKey) {
 					continue;
 				}
@@ -560,9 +596,13 @@ export class E2ERoom extends Emitter {
 			return span.set('error', error).error('Error importing user key');
 		}
 
+		if (this.sessionKeyExportedString === undefined) {
+			return span.error('No group key to encrypt');
+		}
+
 		// Encrypt session key for this user with his/her public key
 		try {
-			const encryptedUserKey = await Rsa.encrypt(userKey, Binary.decode(this.sessionKeyExportedString!));
+			const encryptedUserKey = await Rsa.encrypt(userKey, Binary.decode(this.sessionKeyExportedString));
 			const encryptedUserKeyToString = PrefixedBase64.encode([this.keyID, encryptedUserKey]);
 			span.info('Group key encrypted for participant');
 			return encryptedUserKeyToString;

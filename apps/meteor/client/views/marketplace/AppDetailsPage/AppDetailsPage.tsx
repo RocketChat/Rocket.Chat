@@ -1,16 +1,16 @@
-import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { App, SettingValue } from '@rocket.chat/core-typings';
-import { Button, ButtonGroup, Box } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { Button, ButtonGroup, Stack } from '@rocket.chat/fuselage';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
-import { useTranslation, useRouteParameter, useToastMessageDispatch, usePermission, useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import { useRouteParameter, useToastMessageDispatch, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import { useMemo, useCallback } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm, useFormState } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import AppDetailsPageHeader from './AppDetailsPageHeader';
 import AppDetailsPageLoading from './AppDetailsPageLoading';
 import AppDetailsPageTabs from './AppDetailsPageTabs';
+import AppDetailsPageBody from './layout/AppDetailsPageBody';
 import { handleAPIError } from '../helpers/handleAPIError';
 import { useAppInfo } from '../hooks/useAppInfo';
 import AppDetails from './tabs/AppDetails';
@@ -23,16 +23,16 @@ import AppRequests from './tabs/AppRequests/AppRequests';
 import AppSecurity from './tabs/AppSecurity/AppSecurity';
 import AppSettings from './tabs/AppSettings';
 import { useCompactMode } from './useCompactMode';
-import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
+import { AppClientOrchestratorInstance } from '../../../lib/apps/orchestrator';
 
 type AppDetailsPageFormData = Record<string, SettingValue>;
 
-type AppDetailsPageProps = {
+export type AppDetailsPageProps = {
 	id: App['id'];
 };
 
-const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
-	const t = useTranslation();
+const AppDetailsPage = ({ id }: AppDetailsPageProps) => {
+	const { t } = useTranslation();
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const isAdminUser = usePermission('manage-apps');
@@ -43,7 +43,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 	const appData = useAppInfo(id, context || '');
 	const compactMode = useCompactMode();
 
-	const handleReturn = useEffectEvent((): void => {
+	const handleReturn = useStableCallback((): void => {
 		if (!context) {
 			return;
 		}
@@ -54,7 +54,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 		});
 	});
 
-	const handleReturnToLogs = useEffectEvent((): void => {
+	const handleReturnToLogs = useStableCallback((): void => {
 		if (!context) {
 			return;
 		}
@@ -79,11 +79,8 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 	}, [settings]);
 
 	const settingsFormMethods = useForm<AppDetailsPageFormData>({ values: reducedSettings });
-	const {
-		handleSubmit,
-		reset,
-		formState: { isDirty, isSubmitting },
-	} = settingsFormMethods;
+	const { handleSubmit, reset, control } = settingsFormMethods;
+	const { isDirty, isSubmitting } = useFormState({ control });
 
 	const logsFilterFormMethods = useAppLogsFilterForm();
 
@@ -92,7 +89,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 			try {
 				await AppClientOrchestratorInstance.setAppSettings(
 					id,
-					(Object.values(settings || {}) as ISetting[]).map((setting) => ({
+					Object.values(settings || {}).map((setting) => ({
 						...setting,
 						value: data[setting.id],
 					})),
@@ -108,22 +105,24 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 
 	return (
 		<Page flexDirection='row'>
-			<Page flexDirection='column' h='full'>
+			<Page flexDirection='column' height='full'>
 				<PageHeader title={t('App_Info')} onClickBack={handleReturn} />
-				<PageScrollableContentWithShadow pi={24} pbs={24} pbe={0} h='full'>
-					<Box w='full' alignSelf='center' h='full' display='flex' flexDirection='column'>
+				<PageScrollableContentWithShadow paddingInline={24} paddingBlockStart={24} paddingBlockEnd={0} height='full'>
+					<AppDetailsPageBody>
 						{!appData && <AppDetailsPageLoading />}
 						{appData && (
 							<>
-								<AppDetailsPageHeader app={appData} />
-								<AppDetailsPageTabs
-									context={context || ''}
-									installed={installed}
-									isSecurityVisible={isSecurityVisible}
-									settings={settings}
-									tab={tab}
-									hasCluster={!!appData.clusterStatus}
-								/>
+								<Stack gap='x20'>
+									<AppDetailsPageHeader app={appData} />
+									<AppDetailsPageTabs
+										context={context || ''}
+										installed={installed}
+										isSecurityVisible={isSecurityVisible}
+										settings={settings}
+										tab={tab}
+										hasCluster={!!appData.clusterStatus}
+									/>
+								</Stack>
 								{Boolean(!tab || tab === 'details') && <AppDetails app={appData} />}
 								{tab === 'requests' && <AppRequests id={id} isAdminUser={isAdminUser} />}
 								{tab === 'security' && isSecurityVisible && (
@@ -148,13 +147,13 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 								{tab === 'instances' && <AppInstances id={id} />}
 							</>
 						)}
-					</Box>
+					</AppDetailsPageBody>
 				</PageScrollableContentWithShadow>
 				<PageFooter isDirty={isDirty}>
 					<ButtonGroup>
 						<Button onClick={() => reset()}>{t('Cancel')}</Button>
 						{installed && isAdminUser && (
-							<Button primary loading={isSubmitting} onClick={handleSubmit(saveAppSettings)}>
+							<Button variant='primary' loading={isSubmitting} onClick={handleSubmit(saveAppSettings)}>
 								{t('Save_changes')}
 							</Button>
 						)}

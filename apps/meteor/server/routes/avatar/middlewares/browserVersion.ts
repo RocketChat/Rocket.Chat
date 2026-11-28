@@ -1,13 +1,12 @@
-import type { IncomingMessage, ServerResponse } from 'http';
+/* oxlint-disable eslint-js/no-useless-escape -- JS drops the backslash in `\@`, so the page receives an unescaped `@` and browsers skip the `.rcx-@…` rules. Fuselage's selector baseline (packages/fuselage/scripts/verify/selector-inventory.baseline.json) records these lines as written; CORE-3092 fixes the escapes to `\\@` and updates the baseline together. */
+import type { IncomingMessage, ServerResponse } from 'node:http';
 
 import type { IIncomingMessage } from '@rocket.chat/core-typings';
 import type { NextFunction } from 'connect';
-import { Cookies } from 'meteor/ostrio:cookies';
+import { parseCookie } from 'cookie';
 import parser from 'ua-parser-js';
 
-import { getURL } from '../../../../app/utils/server/getURL';
-
-const cookies = new Cookies();
+import { getURL } from '../../../lib/utils/getURL';
 
 export const isIEOlderThan11 = (userAgent: ReturnType<typeof parser>) => {
 	if (!userAgent?.browser.name || !userAgent?.browser.version) {
@@ -19,7 +18,7 @@ export const isIEOlderThan11 = (userAgent: ReturnType<typeof parser>) => {
 export const handleBrowserVersionCheck = (request: IncomingMessage, res: ServerResponse, next: NextFunction) => {
 	const req = request as IIncomingMessage;
 
-	const browserVersionCheck = cookies.get('browser_version_check', req.headers.cookie);
+	const { browser_version_check: browserVersionCheck } = parseCookie(req.headers.cookie ?? '');
 	if (browserVersionCheck === 'bypass') {
 		next();
 		return;

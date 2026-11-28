@@ -1,28 +1,40 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import * as core from '@actions/core';
 import { exec } from '@actions/exec';
 import * as github from '@actions/github';
 import semver from 'semver';
 
-import { createNpmFile } from './createNpmFile';
-import { fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish';
-import { checkoutBranch, commitChanges, createTag, getCurrentBranch, mergeBranch, pushChanges } from './gitUtils';
-import { setupOctokit } from './setupOctokit';
-import { bumpFileVersions, createBumpFile, getChangelogEntry, getEngineVersionsMd, isPreRelease, readPackageJson } from './utils';
+import { createNpmFile } from './createNpmFile.js';
+import { fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish.js';
+import { checkoutBranch, commitChanges, createTag, getCurrentBranch, mergeBranch, pushChanges } from './gitUtils.js';
+import { setupOctokit } from './setupOctokit.js';
+import {
+	MAX_RELEASE_BODY_LENGTH,
+	bumpFileVersions,
+	createBumpFile,
+	getChangelogEntry,
+	getEngineVersionsMd,
+	getReleaseName,
+	isPreRelease,
+	readPackageJson,
+	truncateReleaseNotes,
+} from './utils.js';
 
 export async function publishRelease({
 	githubToken,
 	mainPackagePath,
 	mergeFinal = false,
 	baseRef,
+	ltsVersions = [],
 	cwd = process.cwd(),
 }: {
 	githubToken: string;
 	mainPackagePath: string;
 	baseRef?: string;
 	mergeFinal?: boolean;
+	ltsVersions?: string[];
 	cwd?: string;
 }) {
 	const octokit = setupOctokit(githubToken);
@@ -72,6 +84,9 @@ export async function publishRelease({
 	core.info('update version in all files to new');
 	await bumpFileVersions(cwd, currentVersion, newVersion);
 
+	core.info('update lockfile after version bump');
+	await exec('yarn', ['install', '--no-immutable']);
+
 	await commitChanges(`Release ${newVersion}\n\n[no ci]`);
 
 	const { data: latestRelease } = await octokit.rest.repos.getLatestRelease({
@@ -117,9 +132,9 @@ export async function publishRelease({
 
 	core.info('create release');
 	await octokit.rest.repos.createRelease({
-		name: newVersion,
+		name: getReleaseName(newVersion, ltsVersions),
 		tag_name: newVersion,
-		body: releaseBody,
+		body: truncateReleaseNotes(releaseBody, MAX_RELEASE_BODY_LENGTH),
 		prerelease,
 		make_latest: isLatestRelease ? 'true' : 'false',
 		...github.context.repo,

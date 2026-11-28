@@ -1,7 +1,6 @@
 import { jest } from '@jest/globals';
 
 export const Meteor = {
-	loginWithSamlToken: jest.fn((_token, callback: () => void) => callback()),
 	connection: {
 		_stream: { on: jest.fn() },
 	},
@@ -49,4 +48,9 @@ export const EJSON = {
 	isBinary: jest.fn(() => false),
 	clone: jest.fn((obj) => obj),
 	equals: jest.fn((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+};
+
+export const DDPCommon = {
+	parseDDP: jest.fn((msg: string) => JSON.parse(msg)),
+	stringifyDDP: jest.fn((msg: unknown) => JSON.stringify(msg)),
 };

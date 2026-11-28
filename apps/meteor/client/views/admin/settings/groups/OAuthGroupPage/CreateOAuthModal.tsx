@@ -1,10 +1,10 @@
-import { TextInput, Field, FieldLabel, FieldRow, FieldError, Box, FieldHint } from '@rocket.chat/fuselage';
+import { TextInput, Field, FieldLabel, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useId, type ReactElement } from 'react';
-import { useForm } from 'react-hook-form';
+import { useId } from 'react';
+import { useForm, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-type CreateOAuthModalProps = {
+export type CreateOAuthModalProps = {
 	onConfirm: (text: string) => Promise<void>;
 	onClose: () => void;
 };
@@ -13,16 +13,13 @@ type CreateOAuthModalFields = {
 	customOAuthName: string;
 };
 
-const CreateOAuthModal = ({ onConfirm, onClose }: CreateOAuthModalProps): ReactElement => {
-	const {
-		register,
-		handleSubmit,
-		formState: { errors },
-	} = useForm<CreateOAuthModalFields>({
+const CreateOAuthModal = ({ onConfirm, onClose }: CreateOAuthModalProps) => {
+	const { register, handleSubmit, control } = useForm<CreateOAuthModalFields>({
 		defaultValues: {
 			customOAuthName: '',
 		},
 	});
+	const { errors } = useFormState({ control });
 
 	const { t } = useTranslation();
 
@@ -30,7 +27,7 @@ const CreateOAuthModal = ({ onConfirm, onClose }: CreateOAuthModalProps): ReactE
 
 	return (
 		<GenericModal
-			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(({ customOAuthName }) => onConfirm(customOAuthName))} {...props} />}
+			onSubmit={handleSubmit(({ customOAuthName }) => onConfirm(customOAuthName))}
 			title={t('Add_custom_oauth')}
 			confirmText={t('Add')}
 			onCancel={onClose}

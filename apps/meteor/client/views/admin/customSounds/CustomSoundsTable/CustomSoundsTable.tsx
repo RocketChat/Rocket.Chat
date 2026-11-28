@@ -1,4 +1,4 @@
-import { Pagination, States, StatesIcon, StatesActions, StatesAction, StatesTitle } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesIcon, StatesActions, StatesAction, StatesTitle, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -6,28 +6,27 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
+	usePaginatedQuery,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { MutableRefObject } from 'react';
 import { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import CustomSoundRow from './CustomSoundRow';
 import FilterByText from '../../../../components/FilterByText';
-import GenericNoResults from '../../../../components/GenericNoResults';
 
-type CustomSoundsTableProps = {
+export type CustomSoundsTableProps = {
 	onClick: (soundId: string) => () => void;
 	reload: MutableRefObject<() => void>;
 };
 
 const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { sortBy, sortDirection, setSort } = useSort<'name'>('name');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
-
 	const [text, setText] = useState('');
 
 	const query = useDebouncedValue(
@@ -35,31 +34,49 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 			() => ({
 				name: text,
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-				...(itemsPerPage && { count: itemsPerPage }),
-				...(current && { offset: current }),
 			}),
-			[text, itemsPerPage, current, sortBy, sortDirection],
+			[text, sortBy, sortDirection],
 		),
 		500,
 	);
 
+	const queryKey = ['custom-sounds', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetKey: queryKey,
+	});
+
 	const getSounds = useEndpoint('GET', '/v1/custom-sounds.list');
-	const { data, refetch, isLoading, isError, isSuccess } = useQuery({
-		queryKey: ['custom-sounds', query],
-		queryFn: async () => getSounds(query),
-		refetchOnMount: false,
+	const { data, refetch, isLoading, isError, isSuccess } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getSounds({ ...query, ...page }),
+			refetchOnMount: false,
+		},
+		itemsKey: 'sounds',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	useEffect(() => {
-		reload.current = refetch;
+		reload.current = () => {
+			void refetch();
+		};
 	}, [reload, refetch]);
+
+	const columns: TableColumnWidth[] = ['auto', 'x40'];
 
 	const headers = (
 		<>
 			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 				{t('Name')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell w='x40' key='action' />
+			<GenericTableHeaderCell key='action' />
 		</>
 	);
 
@@ -67,7 +84,7 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 		<>
 			<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingTable headerCells={2} />
@@ -76,7 +93,7 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 			)}
 			{isSuccess && data?.sounds.length > 0 && (
 				<>
-					<GenericTable>
+					<GenericTable columns={columns}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.sounds.map((sound) => (

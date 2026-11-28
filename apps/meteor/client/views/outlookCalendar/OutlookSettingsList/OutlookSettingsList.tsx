@@ -8,20 +8,20 @@ import {
 	ContextualbarFooter,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useUserPreference, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import { useUserPreference, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import OutlookSettingItem from './OutlookSettingItem';
 import { useOutlookAuthentication, useOutlookAuthenticationMutationLogout } from '../hooks/useOutlookAuthentication';
 
-type OutlookSettingsListProps = {
+export type OutlookSettingsListProps = {
 	onClose: () => void;
 	changeRoute: () => void;
 };
 
-const OutlookSettingsList = ({ onClose, changeRoute }: OutlookSettingsListProps): ReactElement => {
-	const t = useTranslation();
+const OutlookSettingsList = ({ onClose, changeRoute }: OutlookSettingsListProps) => {
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 	const notifyCalendarEvents = useUserPreference('notifyCalendarEvents') as boolean;
@@ -67,7 +67,7 @@ const OutlookSettingsList = ({ onClose, changeRoute }: OutlookSettingsListProps)
 				<ContextualbarTitle>{t('Outlook_calendar_settings')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-			<ContextualbarContent paddingInline={0} color='default'>
+			<ContextualbarContent flush>
 				{calendarSettings.map((setting, index) => {
 					if (setting.id === 'authentication' && !setting.enabled) {
 						return;

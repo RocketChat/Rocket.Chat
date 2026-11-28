@@ -4,13 +4,13 @@ import {
 	ButtonGroup,
 	Icon,
 	IconButton,
-	Margins,
 	States,
 	StatesIcon,
 	StatesSubtitle,
 	StatesTitle,
 	TextInput,
 	Throbber,
+	Stack,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { VirtualizedScrollbars, ContextualbarContent, ContextualbarEmptyContent, ContextualbarFooter } from '@rocket.chat/ui-client';
@@ -20,6 +20,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
+import ListViewport from '../../../../../components/ListViewport';
 import { isMessageNewDay } from '../../../../room/MessageList/lib/isMessageNewDay';
 import { isMessageSequential } from '../../../../room/MessageList/lib/isMessageSequential';
 import ContactHistoryMessage from '../../../contactHistory/MessageList/ContactHistoryMessage';
@@ -58,30 +59,28 @@ const ContactInfoHistoryMessages = ({ chatId, onBack, onOpenRoom }: ContactHisto
 
 	return (
 		<>
-			<ContextualbarContent paddingInline={0}>
+			<ContextualbarContent flush>
 				<Box
 					display='flex'
 					flexDirection='row'
-					p={24}
+					padding={24}
 					borderBlockEndWidth='default'
 					borderBlockEndStyle='solid'
 					borderBlockEndColor='extra-light'
 					flexShrink={0}
 				>
-					<Box display='flex' alignItems='center' flexDirection='row' flexGrow={1} mi='neg-x4'>
-						<Margins inline={4}>
-							<TextInput
-								placeholder={t('Search')}
-								value={text}
-								onChange={handleSearchChange}
-								addon={<Icon name='magnifier' size='x20' />}
-							/>
-							<IconButton title={t('Back')} small icon='back' onClick={onBack} />
-						</Margins>
-					</Box>
+					<Stack direction='row' align='center' grow gap={8}>
+						<TextInput
+							placeholder={t('Search')}
+							value={text}
+							onChange={handleSearchChange}
+							endAddon={<Icon name='magnifier' size='x20' />}
+						/>
+						<IconButton title={t('Back')} size='small' icon='back' onClick={onBack} />
+					</Stack>
 				</Box>
 				{isPending && (
-					<Box pi={24} pb={12}>
+					<Box paddingInline={24} paddingBlock={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}
@@ -93,7 +92,7 @@ const ContactInfoHistoryMessages = ({ chatId, onBack, onOpenRoom }: ContactHisto
 					</States>
 				)}
 				{isSuccess && totalItemCount === 0 && <ContextualbarEmptyContent title={t('No_results_found')} />}
-				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' ref={ref}>
+				<ListViewport ref={ref}>
 					{!error && totalItemCount > 0 && messages.length > 0 && (
 						<VirtualizedScrollbars>
 							<Virtuoso
@@ -118,7 +117,7 @@ const ContactInfoHistoryMessages = ({ chatId, onBack, onOpenRoom }: ContactHisto
 							/>
 						</VirtualizedScrollbars>
 					)}
-				</Box>
+				</ListViewport>
 			</ContextualbarContent>
 			{onOpenRoom && (
 				<ContextualbarFooter>

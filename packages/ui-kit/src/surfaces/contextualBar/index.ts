@@ -1,3 +1,7 @@
-export { type ContextualBarView, isContextualBarView } from './ContextualBarView';
-export { UiKitParserContextualBar, type ContextualBarSurfaceLayout } from './UiKitParserContextualBar';
-export { uiKitContextualBar } from './uiKitContextualBar';
+export { type ContextualBarView, isContextualBarView } from './ContextualBarView.js';
+export {
+	UiKitParserContextualBar,
+	type ContextualBarSurfaceLayout,
+	contextualBarSurfaceLayoutBlockTypes,
+} from './UiKitParserContextualBar.js';
+export { uiKitContextualBar } from './uiKitContextualBar.js';

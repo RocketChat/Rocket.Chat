@@ -1,7 +1,7 @@
 import { License } from '@rocket.chat/license';
 import { LivechatRooms } from '@rocket.chat/models';
 
-import { fetchContactHistory } from '../../../app/livechat/server/lib/contacts/getContactHistory';
+import { fetchContactHistory } from '../../../server/lib/omnichannel/contacts/getContactHistory';
 
 fetchContactHistory.patch(
 	async (next, params) => {

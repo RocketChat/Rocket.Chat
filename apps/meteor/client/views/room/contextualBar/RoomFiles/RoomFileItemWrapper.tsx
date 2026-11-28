@@ -1,35 +1,10 @@
 import type { IUploadWithUser } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
-import { Box, Palette } from '@rocket.chat/fuselage';
-import type { ComponentProps, Ref } from 'react';
-import { forwardRef } from 'react';
 
-const customClass = css`
-	&:hover {
-		cursor: pointer;
-		background: ${Palette.surface['surface-hover']};
-	}
-`;
+import type { ListRowProps } from '../../../../components/ListRow';
+import ListRow from '../../../../components/ListRow';
 
-type RoomFileItemWrapperProps = ComponentProps<typeof Box> & { item: IUploadWithUser };
+export type RoomFileItemWrapperProps = Omit<ListRowProps, 'aria-label'> & { item: IUploadWithUser };
 
-const RoomFileItemWrapper = forwardRef(function RoomFileItemWrapper(
-	{ item, ...props }: RoomFileItemWrapperProps,
-	ref: Ref<HTMLDivElement>,
-) {
-	return (
-		<Box
-			ref={ref}
-			role='listitem'
-			aria-label={item.name}
-			display='flex'
-			pb={12}
-			pi={24}
-			borderRadius={4}
-			className={customClass}
-			{...props}
-		/>
-	);
-});
+const RoomFileItemWrapper = ({ item, ...props }: RoomFileItemWrapperProps) => <ListRow aria-label={item.name} {...props} />;
 
 export default RoomFileItemWrapper;

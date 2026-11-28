@@ -13,7 +13,7 @@ export const useDownloadExportMutation = () => {
 	const user = useUser();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const filterMessages = Messages.use((state) => state.filter);
+	const filterMessages = Messages.useStore((state) => state.filter);
 
 	return useMutation({
 		mutationFn: async ({ mids }: { mids: IMessage['_id'][] }) => {
@@ -39,6 +39,7 @@ export const useDownloadExportMutation = () => {
 							...('image_type' in attachment && { image_type: attachment.image_type }),
 							...('image_size' in attachment && { image_size: attachment.image_size }),
 							...('type' in attachment && { type: attachment.type }),
+							description: attachment.description,
 						})) ?? [],
 				}),
 			);

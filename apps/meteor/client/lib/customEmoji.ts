@@ -1,8 +1,9 @@
 import type { IEmoji } from '@rocket.chat/core-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
+import { removeFromRecent } from '@rocket.chat/ui-emoji-picker';
 
-import { emoji, removeFromRecent, replaceEmojiInRecent } from '../../app/emoji/client';
-import { getURL } from '../../app/utils/client';
+import { emoji, replaceEmojiInRecent } from './emoji';
+import { getURL } from './getURL';
 
 const isSetNotNull = (fn: () => unknown) => {
 	let value;
@@ -45,7 +46,12 @@ export const updateEmojiCustom = (emojiData: IEmoji) => {
 		emoji.packages.emojiCustom.emojisByCategory.rocket.push(`${emojiData.name}`);
 		emoji.packages.emojiCustom.list?.push(`:${emojiData.name}:`);
 	}
-	emoji.list[`:${emojiData.name}:`] = Object.assign({ emojiPackage: 'emojiCustom' }, emoji.list[`:${emojiData.name}:`], emojiData);
+	// Don't inherit fields from a native emoji being overridden (e.g. its unicode), or the pick would output the native emoji
+	// TODO: Fix the IEmoji type and standardize the emoji packs types
+	emoji.list[`:${emojiData.name}:`] = {
+		...emojiData,
+		emojiPackage: 'emojiCustom',
+	} as unknown as (typeof emoji.list)[keyof typeof emoji.list];
 	if (currentAliases) {
 		for (const alias of emojiData.aliases) {
 			emoji.packages.emojiCustom.list?.push(`:${alias}:`);
@@ -97,16 +103,18 @@ const getEmojiUrlFromName = (name: string, extension: string, etag?: string) => 
 
 export const customRender = (html: string) => {
 	const emojisMatchGroup = emoji.packages.emojiCustom.list?.map(escapeRegExp).join('|');
-	if (emojisMatchGroup !== emoji.packages.emojiCustom._regexpSignature) {
+	let regexp = emoji.packages.emojiCustom._regexp;
+	if (!regexp || emojisMatchGroup !== emoji.packages.emojiCustom._regexpSignature) {
 		emoji.packages.emojiCustom._regexpSignature = emojisMatchGroup;
-		emoji.packages.emojiCustom._regexp = new RegExp(
-			`<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(${emojisMatchGroup})`,
+		regexp = new RegExp(
+			`<object[^>]*>.*?</object>|<span[^>]*>.*?</span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(${emojisMatchGroup})`,
 			'gi',
 		);
+		emoji.packages.emojiCustom._regexp = regexp;
 		emoji.dispatchUpdate();
 	}
 
-	html = html.replace(emoji.packages.emojiCustom._regexp!, (shortname) => {
+	html = html.replace(regexp, (shortname) => {
 		if (typeof shortname === 'undefined' || shortname === '' || (emoji.packages.emojiCustom.list?.indexOf(shortname) ?? -1) === -1) {
 			return shortname;
 		}
@@ -119,9 +127,13 @@ export const customRender = (html: string) => {
 			dataCheck = emoji.list[`:${emojiAlias}:`];
 		}
 
-		return `<span class="emoji" style="background-image:url(${getEmojiUrlFromName(
+		if (!dataCheck.extension) {
+			return shortname;
+		}
+
+		return `<span class="emoji emoji--custom" style="background-image:url(${getEmojiUrlFromName(
 			emojiAlias,
-			dataCheck.extension!,
+			dataCheck.extension,
 			dataCheck.etag,
 		)});" data-emoji="${emojiAlias}" title="${shortname}">${shortname}</span>`;
 	});

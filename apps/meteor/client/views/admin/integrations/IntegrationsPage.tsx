@@ -1,14 +1,14 @@
-import { Button, ButtonGroup, Tabs } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import IntegrationsTable from './IntegrationsTable';
 import NewBot from './NewBot';
 import NewZapier from './NewZapier';
+import { PageTabs } from '../../../components/PageTabs';
 
-const IntegrationsPage = (): ReactElement => {
+const IntegrationsPage = () => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const context = useRouteParameter('context');
@@ -20,30 +20,24 @@ const IntegrationsPage = (): ReactElement => {
 			<PageHeader title={t('Integrations')}>
 				<ButtonGroup>
 					<Button
-						primary
+						variant='primary'
 						onClick={() => router.navigate(`/admin/integrations/new/${context === 'webhook-outgoing' ? 'outgoing' : 'incoming'}`)}
 					>
 						{t('New')}
 					</Button>
 				</ButtonGroup>
 			</PageHeader>
-			<Tabs>
-				<Tabs.Item selected={!context} onClick={() => router.navigate('/admin/integrations')}>
-					{t('All')}
-				</Tabs.Item>
-				<Tabs.Item selected={context === 'webhook-incoming'} onClick={() => router.navigate('/admin/integrations/webhook-incoming')}>
-					{t('Incoming')}
-				</Tabs.Item>
-				<Tabs.Item selected={context === 'webhook-outgoing'} onClick={() => router.navigate('/admin/integrations/webhook-outgoing')}>
-					{t('Outgoing')}
-				</Tabs.Item>
-				<Tabs.Item selected={context === 'zapier'} onClick={() => router.navigate('/admin/integrations/zapier')}>
-					{t('Zapier')}
-				</Tabs.Item>
-				<Tabs.Item selected={context === 'bots'} onClick={() => router.navigate('/admin/integrations/bots')}>
-					{t('Bots')}
-				</Tabs.Item>
-			</Tabs>
+			<PageTabs
+				items={[
+					{ id: '', label: t('All') },
+					{ id: 'webhook-incoming', label: t('Incoming') },
+					{ id: 'webhook-outgoing', label: t('Outgoing') },
+					{ id: 'zapier', label: t('Zapier') },
+					{ id: 'bots', label: t('Bots') },
+				]}
+				selected={context ?? ''}
+				onSelect={(context) => router.navigate(context ? `/admin/integrations/${context}` : '/admin/integrations')}
+			/>
 			<PageContent>
 				{context === 'zapier' && <NewZapier />}
 				{context === 'bots' && <NewBot />}

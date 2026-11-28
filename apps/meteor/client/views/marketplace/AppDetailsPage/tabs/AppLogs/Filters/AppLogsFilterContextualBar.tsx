@@ -1,4 +1,4 @@
-import { Box, Button, Label } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -17,7 +17,7 @@ import { SeverityFilterSelect } from './SeverityFilterSelect';
 import { TimeFilterSelect } from './TimeFilterSelect';
 import { useAppLogsFilterFormContext } from '../useAppLogsFilterForm';
 
-type AppLogsFilterContextualBarProps = {
+export type AppLogsFilterContextualBarProps = {
 	appId: string;
 	onClose: () => void;
 };
@@ -35,47 +35,59 @@ export const AppLogsFilterContextualBar = ({ appId, onClose = () => undefined }:
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent is='form'>
-				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
-					<Label id='timeFilterLabel' htmlFor='timeFilter'>
+				<Field>
+					<FieldLabel id='timeFilterLabel' htmlFor='timeFilter'>
 						{t('Time')}
-					</Label>
-					<TimeFilterSelect aria-labelledby='timeFilterLabel' id='timeFilter' compactView={true} />
-				</Box>
-				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
-					<Label htmlFor='timeFilter'>{t('Logs_from')}</Label>
-					<DateTimeFilter control={control} type='start' />
-				</Box>
-				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
-					<Label htmlFor='timeFilter'>{t('Until')}</Label>
-					<DateTimeFilter control={control} type='end' />
-				</Box>
-				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
-					<Label id='instanceFilterLabel' htmlFor='instanceFilter'>
+					</FieldLabel>
+					<FieldRow>
+						<TimeFilterSelect aria-labelledby='timeFilterLabel' id='timeFilter' compactView={true} />
+					</FieldRow>
+				</Field>
+				<Field>
+					<FieldLabel htmlFor='timeFilter'>{t('Logs_from')}</FieldLabel>
+					<FieldRow>
+						<DateTimeFilter control={control} type='start' />
+					</FieldRow>
+				</Field>
+				<Field>
+					<FieldLabel htmlFor='timeFilter'>{t('Until')}</FieldLabel>
+					<FieldRow>
+						<DateTimeFilter control={control} type='end' />
+					</FieldRow>
+				</Field>
+				<Field>
+					<FieldLabel id='instanceFilterLabel' htmlFor='instanceFilter'>
 						{t('Instance')}
-					</Label>
-					<Controller
-						control={control}
-						name='instance'
-						render={({ field }) => (
-							<InstanceFilterSelect appId={appId} aria-labelledby='instanceFilterLabel' id='instanceFilter' {...field} />
-						)}
-					/>
-				</Box>
-				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
-					<Label id='severityFilterLabel' htmlFor='severityFilter'>
+					</FieldLabel>
+					<FieldRow>
+						<Controller
+							control={control}
+							name='instance'
+							render={({ field }) => (
+								<InstanceFilterSelect appId={appId} aria-labelledby='instanceFilterLabel' id='instanceFilter' {...field} />
+							)}
+						/>
+					</FieldRow>
+				</Field>
+				<Field>
+					<FieldLabel id='severityFilterLabel' htmlFor='severityFilter'>
 						{t('Severity')}
-					</Label>
-					<Controller
-						control={control}
-						name='severity'
-						render={({ field }) => <SeverityFilterSelect aria-labelledby='severityFilterLabel' id='severityFilter' {...field} />}
-					/>
-				</Box>
+					</FieldLabel>
+					<FieldRow>
+						<Controller
+							control={control}
+							name='severity'
+							render={({ field }) => <SeverityFilterSelect aria-labelledby='severityFilterLabel' id='severityFilter' {...field} />}
+						/>
+					</FieldRow>
+				</Field>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
-				<Button secondary w='full' aria-label={t('Clear_filters')} onClick={() => reset()}>
-					{t('Clear_filters')}
-				</Button>
+				<ButtonGroup stretch>
+					<Button variant='secondary' aria-label={t('Clear_filters')} onClick={() => reset()}>
+						{t('Clear_filters')}
+					</Button>
+				</ButtonGroup>
 			</ContextualbarFooter>
 		</ContextualbarDialog>
 	);

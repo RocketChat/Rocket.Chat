@@ -132,22 +132,8 @@ describe('RepliesForm', () => {
 		expect(screen.getByLabelText('Department (optional)')).toBeInTheDocument();
 		expect(screen.getByLabelText('Agent (optional)')).toBeInTheDocument();
 
-		expect(screen.getByLabelText('Department (optional)')).not.toHaveAttribute('aria-disabled');
+		expect(screen.getByLabelText('Department (optional)')).toBeEnabled();
 		expect(screen.getByLabelText('Agent (optional)')).toBeDisabled();
-	});
-
-	xit('should render with default values', async () => {
-		const defaultValues = {
-			departmentId: 'department-1',
-			agentId: 'agent-1',
-		};
-
-		render(<RepliesForm defaultValues={defaultValues} onSubmit={jest.fn()} />, {
-			wrapper: appRoot().build(),
-		});
-
-		await waitFor(() => expect(screen.getByLabelText('Department (optional)')).toHaveTextContent('Department 1'));
-		await waitFor(() => expect(screen.getByLabelText('Agent (optional)')).toHaveTextContent('agent.one'));
 	});
 
 	it('should enable agent selection when a department is selected', async () => {
@@ -156,7 +142,7 @@ describe('RepliesForm', () => {
 		const departmentInput = screen.getByLabelText('Department (optional)');
 		const agentInput = screen.getByLabelText('Agent (optional)');
 
-		await waitFor(() => expect(departmentInput).not.toHaveAttribute('aria-busy', 'true'));
+		await waitFor(() => expect(departmentInput).not.toHaveAttribute('placeholder', 'Loading...'));
 		expect(agentInput).toBeDisabled();
 
 		await userEvent.click(departmentInput);
@@ -183,7 +169,7 @@ describe('RepliesForm', () => {
 		await waitFor(() => expect(screen.queryByText('Error loading department information')).not.toBeInTheDocument());
 	});
 
-	xit('should call submit with correct values when form is submitted', async () => {
+	it('should call submit with correct values when form is submitted', async () => {
 		const handleSubmit = jest.fn();
 		const defaultValues = {
 			departmentId: 'department-1',
@@ -194,12 +180,14 @@ describe('RepliesForm', () => {
 			wrapper: appRoot().build(),
 		});
 
+		await userEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
 		await waitFor(() =>
 			expect(handleSubmit).toHaveBeenCalledWith({
 				departmentId: 'department-1',
 				department: mockDepartment,
 				agentId: 'agent-1',
-				agent: mockAgentOne,
+				agent: expect.objectContaining(mockAgentOne),
 			}),
 		);
 	});

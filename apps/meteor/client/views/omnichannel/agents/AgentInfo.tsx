@@ -1,12 +1,15 @@
-import { Box, Margins, ButtonGroup } from '@rocket.chat/fuselage';
+import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
+import { Box, ButtonGroup, Stack } from '@rocket.chat/fuselage';
 import {
-	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
 	ContextualbarSkeletonBody,
+	ContextualbarTitle,
 	InfoPanelLabel,
 	InfoPanelText,
+	UserInfoAvatar,
+	UserInfoUsername,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -15,11 +18,10 @@ import { useTranslation } from 'react-i18next';
 
 import AgentInfoAction from './AgentInfoAction';
 import { useRemoveAgent } from './hooks/useRemoveAgent';
-import { UserInfoAvatar, UserInfoUsername } from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
 import { MaxChatsPerAgentDisplay } from '../additionalForms';
 
-type AgentInfoProps = {
+export type AgentInfoProps = {
 	uid: string;
 } & Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
@@ -39,11 +41,11 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 		return <ContextualbarSkeletonBody />;
 	}
 
-	if (isError) {
-		return <Box mbs={16}>{t('User_not_found')}</Box>;
+	if (isError || !data.user) {
+		return <Box marginBlockStart={16}>{t('User_not_found')}</Box>;
 	}
 
-	const { username, statusLivechat, status: userStatus } = data?.user;
+	const { username, statusLivechat, status: userStatus } = data.user;
 
 	return (
 		<>
@@ -67,18 +69,18 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 					/>
 					<AgentInfoAction key={t('Remove')} title={t('Remove')} label={t('Remove')} onClick={handleDelete} icon='trash' />
 				</ButtonGroup>
-				<Margins block={4}>
-					<Box mb={2}>
-						<UserInfoUsername username={username} status={<UserStatus status={userStatus} />} />
-					</Box>
+				<Box marginBlockStart='x20'>
+					<UserInfoUsername username={username} status={<UserStatus status={userStatus} />} />
+				</Box>
+				<Stack gap='x8'>
 					{statusLivechat && (
 						<>
 							<InfoPanelLabel>{t('Livechat_status')}</InfoPanelLabel>
-							<InfoPanelText>{statusLivechat === 'available' ? t('Available') : t('Not_Available')}</InfoPanelText>
+							<InfoPanelText>{statusLivechat === ILivechatAgentStatus.AVAILABLE ? t('Available') : t('Not_Available')}</InfoPanelText>
 						</>
 					)}
 					{MaxChatsPerAgentDisplay && <MaxChatsPerAgentDisplay maxNumberSimultaneousChat={data.user.livechat?.maxNumberSimultaneousChat} />}
-				</Margins>
+				</Stack>
 			</ContextualbarScrollableContent>
 		</>
 	);

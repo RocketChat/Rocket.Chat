@@ -1,10 +1,13 @@
-import type { Page, Locator } from '@playwright/test';
+import type { Locator } from '@playwright/test';
 
-export class OmnichannelLiveChatEmbedded {
-	readonly page: Page;
+import { RoutedPage } from '../routed-page';
 
-	constructor(page: Page) {
-		this.page = page;
+/** The widget as embedded on a host page, driven through `window.RocketChat.livechat`. */
+export class OmnichannelLiveChatEmbedded extends RoutedPage {
+	protected readonly route = '/packages/rocketchat_livechat/assets/demo.html';
+
+	async waitForReady(): Promise<void> {
+		await this.btnOpenLiveChat().waitFor({ state: 'visible' });
 	}
 
 	btnOpenLiveChat(): Locator {
@@ -25,6 +28,10 @@ export class OmnichannelLiveChatEmbedded {
 
 	get btnCloseChatConfirm(): Locator {
 		return this.page.frameLocator('#rocketchat-iframe').locator(`button >> text="Yes"`);
+	}
+
+	get selectDepartment(): Locator {
+		return this.page.frameLocator('#rocketchat-iframe').locator('[name="department"]');
 	}
 
 	get headerTitle(): Locator {

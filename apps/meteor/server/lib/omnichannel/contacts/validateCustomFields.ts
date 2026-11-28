@@ -1,0 +1,57 @@
+import type { AtLeast, ILivechatCustomField } from '@rocket.chat/core-typings';
+
+import { i18n } from '../../../../lib/i18n';
+
+export function validateCustomFields(
+	allowedCustomFields: AtLeast<ILivechatCustomField, '_id'>[],
+	customFields: Record<string, string | unknown>,
+	{
+		ignoreAdditionalFields = false,
+		ignoreValidationErrors = false,
+	}: { ignoreAdditionalFields?: boolean; ignoreValidationErrors?: boolean } = {},
+): Record<string, string> {
+	const validValues: Record<string, string> = {};
+
+	for (const cf of allowedCustomFields) {
+		if (!Object.hasOwn(customFields, cf._id)) {
+			if (cf.required && !ignoreValidationErrors) {
+				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label || cf._id }));
+			}
+			continue;
+		}
+		const rawValue = customFields[cf._id];
+		// oxlint-disable-next-line typescript/no-base-to-string -- TODO: reject non-string values on the next major; clients still send arrays (['VIP'] is saved as 'VIP')
+		const cfValue: string = rawValue ? String(rawValue).trim() : '';
+
+		if (!cfValue || typeof cfValue !== 'string') {
+			if (cf.required && !ignoreValidationErrors) {
+				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label || cf._id }));
+			}
+			continue;
+		}
+
+		if (cf.regexp) {
+			const regex = new RegExp(cf.regexp);
+			if (!regex.test(cfValue)) {
+				if (ignoreValidationErrors) {
+					continue;
+				}
+
+				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label || cf._id }));
+			}
+		}
+
+		validValues[cf._id] = cfValue;
+	}
+
+	if (!ignoreAdditionalFields) {
+		const allowedCustomFieldIds = new Set(allowedCustomFields.map((cf) => cf._id));
+		for (const key in customFields) {
+			if (!allowedCustomFieldIds.has(key)) {
+				throw new Error(i18n.t('error-custom-field-not-allowed', { key }));
+			}
+		}
+	}
+
+	return validValues;
+}

@@ -2,8 +2,8 @@ import type { IImportUser, ILDAPEntry } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 
 import { replacesNestedValues } from './replacesNestedValues';
-import { templateVarHandler } from '../../../../app/utils/lib/templateVarHandler';
 import { getNestedProp } from '../../../../server/lib/getNestedProp';
+import { templateVarHandler } from '../../../../server/lib/utils/lib/templateVarHandler';
 
 export const copyCustomFieldsLDAP = (
 	{
@@ -34,9 +34,10 @@ export const copyCustomFieldsLDAP = (
 		return;
 	}
 
-	const map: Record<string, string> = (() => {
+	const map: Record<string, string> | undefined = (() => {
 		try {
-			return JSON.parse(customFieldsMap);
+			const parsed: Record<string, string> = JSON.parse(customFieldsMap);
+			return parsed;
 		} catch (err) {
 			logger.error({ msg: 'Error parsing LDAP custom fields map.', err });
 		}

@@ -1,10 +1,10 @@
 import type { ILivechatAgent, ILivechatTrigger, ILivechatTriggerAction, ILivechatTriggerType, Serialized } from '@rocket.chat/core-typings';
 
 import { Livechat } from '../api';
+import { processUnread } from './main';
 import type { Agent } from '../definitions/agents';
 import { upsert } from '../helpers/upsert';
 import store from '../store';
-import { processUnread } from './main';
 
 type AgentPromise = { username: string } | Serialized<ILivechatAgent> | null;
 
@@ -27,14 +27,10 @@ const getNextAgentFromQueue = async () => {
 	const dep = department || defaultDepartment;
 
 	let agent = null;
-	try {
-		const tempAgent = await Livechat.nextAgent({ department: dep });
+	const tempAgent = await Livechat.nextAgent({ department: dep });
 
-		if (isAgentWithInfo(tempAgent?.agent)) {
-			agent = tempAgent.agent;
-		}
-	} catch (error) {
-		return Promise.reject(error);
+	if (isAgentWithInfo(tempAgent?.agent)) {
+		agent = tempAgent.agent;
 	}
 
 	store.setState({ defaultAgent: { ...agent, department: dep, ts: Date.now() } as Agent });
@@ -47,24 +43,24 @@ export const getAgent = async (triggerAction: ILivechatTriggerAction): Promise<A
 		return agentPromise;
 	}
 
-	agentPromise = new Promise(async (resolve, reject) => {
+	agentPromise = (async () => {
 		const { sender, name = '' } = triggerAction.params || {};
 
 		if (sender === 'custom') {
-			resolve({ username: name });
+			return { username: name };
 		}
 
 		if (sender === 'queue') {
 			try {
-				const agent = await getNextAgentFromQueue();
-				resolve(agent);
+				return await getNextAgentFromQueue();
 			} catch (_) {
-				resolve({ username: 'rocket.cat' });
+				return { username: 'rocket.cat' };
 			}
 		}
 
-		return reject('Unknown sender type.');
-	});
+		// oxlint-disable-next-line typescript/prefer-promise-reject-errors -- the reason is persisted to triggersRecords and logged as-is; an Error would serialize to {}
+		return Promise.reject('Unknown sender type.');
+	})();
 
 	// expire the promise cache as well
 	setTimeout(() => {
@@ -75,7 +71,7 @@ export const getAgent = async (triggerAction: ILivechatTriggerAction): Promise<A
 };
 
 export const upsertMessage = async (message: Record<string, unknown>) => {
-	await store.setState({
+	store.setState({
 		messages: upsert(
 			store.state.messages,
 			message,
@@ -89,12 +85,12 @@ export const upsertMessage = async (message: Record<string, unknown>) => {
 
 export const removeMessage = async (messageId: string) => {
 	const { messages } = store.state;
-	await store.setState({ messages: messages.filter(({ _id }) => _id !== messageId) });
+	store.setState({ messages: messages.filter(({ _id }) => _id !== messageId) });
 };
 
 export const removeTriggerMessage = async (messageId: string) => {
 	const { renderedTriggers } = store.state;
-	await store.setState({ renderedTriggers: renderedTriggers.filter(({ _id }) => _id !== messageId) });
+	store.setState({ renderedTriggers: renderedTriggers.filter(({ _id }) => _id !== messageId) });
 };
 
 export const hasTriggerCondition = (conditionName: ILivechatTriggerType) => (trigger: ILivechatTrigger) => {
@@ -122,9 +118,9 @@ export const requestTriggerMessages = async ({
 
 		const { response } = await Livechat.rest.post(`/v1/livechat/triggers/${triggerId}/external-service/call`, { extraData, token });
 		return response.contents;
-	} catch (_) {
+	} catch (error) {
 		if (!fallbackMessage) {
-			throw Error('Unable to fetch message from external service.');
+			throw Error('Unable to fetch message from external service.', { cause: error });
 		}
 
 		return [{ msg: fallbackMessage, order: 0 }];

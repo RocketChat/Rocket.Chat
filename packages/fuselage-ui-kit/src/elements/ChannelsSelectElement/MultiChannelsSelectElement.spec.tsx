@@ -56,19 +56,20 @@ describe('UiKit MultiChannelsSelect Element', () => {
 		jest.useRealTimers();
 	});
 
-	beforeEach(() => {
+	const renderElement = () =>
 		render(
 			<MockedServerContext>
 				<MultiChannelsSelectElement index={0} block={channelsBlock} context={BlockContext.FORM} surfaceRenderer={contextualBarParser} />
 			</MockedServerContext>,
 		);
-	});
 
 	it('should render a UiKit multiple channels selector', async () => {
+		renderElement();
 		expect(await screen.findByRole('textbox')).toBeInTheDocument();
 	});
 
 	it('should open the channels selector', async () => {
+		renderElement();
 		const input = await screen.findByRole('textbox');
 		input.focus();
 
@@ -76,6 +77,7 @@ describe('UiKit MultiChannelsSelect Element', () => {
 	});
 
 	it('should select channels', async () => {
+		renderElement();
 		const input = await screen.findByRole('textbox');
 
 		input.focus();
@@ -92,6 +94,7 @@ describe('UiKit MultiChannelsSelect Element', () => {
 	});
 
 	it('should remove a selected channel', async () => {
+		renderElement();
 		const input = await screen.findByRole('textbox');
 
 		input.focus();

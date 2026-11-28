@@ -1,5 +1,5 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	useTranslation,
 	usePermission,
@@ -53,7 +53,7 @@ export const useChangeLeaderAction = (user: Pick<IUser, '_id' | 'username'>, rid
 		},
 	});
 
-	const changeLeaderAction = useEffectEvent(async () => toggleOwnerMutation.mutateAsync({ roomId: rid, userId: uid }));
+	const changeLeaderAction = useStableCallback(async () => toggleOwnerMutation.mutateAsync({ roomId: rid, userId: uid }));
 
 	const changeLeaderOption = useMemo(
 		() =>

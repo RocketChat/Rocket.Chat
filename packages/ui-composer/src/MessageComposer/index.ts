@@ -1,15 +1,17 @@
-import MessageComposer from './MessageComposer';
-import MessageComposerAction from './MessageComposerAction';
-import MessageComposerActionsDivider from './MessageComposerActionsDivider';
-import MessageComposerButton from './MessageComposerButton';
-import MessageComposerHint from './MessageComposerHint';
-import MessageComposerIcon from './MessageComposerIcon';
-import MessageComposerInput from './MessageComposerInput';
-import MessageComposerInputExpandable from './MessageComposerInputExpandable';
-import MessageComposerSkeleton from './MessageComposerSkeleton';
-import MessageComposerToolbar from './MessageComposerToolbar';
-import MessageComposerToolbarActions from './MessageComposerToolbarActions';
-import MessageComposerToolbarSubmit from './MessageComposerToolbarSubmit';
+import MessageComposer from './MessageComposer.js';
+import MessageComposerAction from './MessageComposerAction.js';
+import MessageComposerActionsDivider from './MessageComposerActionsDivider.js';
+import MessageComposerButton from './MessageComposerButton.js';
+import MessageComposerHint from './MessageComposerHint.js';
+import MessageComposerIcon from './MessageComposerIcon.js';
+import MessageComposerInput from './MessageComposerInput.js';
+import MessageComposerInputExpandable from './MessageComposerInputExpandable.js';
+import MessageComposerSkeleton from './MessageComposerSkeleton.js';
+import MessageComposerToolbar from './MessageComposerToolbar.js';
+import MessageComposerToolbarActions from './MessageComposerToolbarActions.js';
+import MessageComposerToolbarSubmit from './MessageComposerToolbarSubmit.js';
+import RichTextComposerInput from './RichTextComposerInput.js';
+import RichTextComposerInputExpandable from './RichTextComposerInputExpandable.js';
 
 export {
 	MessageComposer,
@@ -24,6 +26,13 @@ export {
 	MessageComposerIcon,
 	MessageComposerHint,
 	MessageComposerButton,
+	RichTextComposerInput,
+	RichTextComposerInputExpandable,
 };
 
-export { MessageComposerFile, MessageComposerFileError, MessageComposerFileLoader, MessageComposerFileGroup } from './MessageComposerFile';
+export {
+	MessageComposerFile,
+	MessageComposerFileError,
+	MessageComposerFileLoader,
+	MessageComposerFileGroup,
+} from './MessageComposerFile/index.js';

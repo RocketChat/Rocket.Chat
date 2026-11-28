@@ -7,7 +7,6 @@ import { createFakeLicenseInfo } from '../../../../../../../tests/mocks/data';
 import { createFakeProvider } from '../../../../../../../tests/mocks/data/outbound-message';
 import type { OmnichannelContextValue } from '../../../../../../contexts/OmnichannelContext';
 import { OmnichannelContext } from '../../../../../../contexts/OmnichannelContext';
-import { useOutboundMessageUpsellModal } from '../../modals';
 
 const openUpsellModal = jest.fn();
 jest.mock('../../modals', () => ({
@@ -17,14 +16,12 @@ jest.mock('../../modals', () => ({
 	}),
 }));
 
-useOutboundMessageUpsellModal;
-
 jest.mock('tinykeys', () => ({
 	__esModule: true,
 	default: jest.fn().mockReturnValue(() => () => undefined),
 }));
 
-jest.mock('../../../../../../../app/utils/client', () => ({
+jest.mock('../../../../../../../client/lib/getURL', () => ({
 	getURL: (url: string) => url,
 }));
 

@@ -1,9 +1,9 @@
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
 import type { IUpload } from '@rocket.chat/core-typings';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
-import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
+import { ajv } from '@rocket.chat/rest-typings';
 
 import { MatrixMediaService } from '../../services/MatrixMediaService';
 import { canAccessResourceMiddleware } from '../middlewares/canAccessResource';
@@ -74,76 +74,82 @@ async function getMediaFile(mediaId: string, serverName: string): Promise<{ file
 }
 
 export const getMatrixMediaRoutes = () => {
-	return new Router('/federation')
-		.get(
-			'/v1/media/download/:mediaId',
-			{
-				params: isMediaDownloadParamsProps,
-				response: {
-					200: isBufferResponseProps,
-					401: isErrorResponseProps,
-					403: isErrorResponseProps,
-					404: isErrorResponseProps,
-					429: isErrorResponseProps,
-					500: isErrorResponseProps,
+	return (
+		new Router('/federation')
+			// GET /_matrix/federation/v1/media/download/{mediaId}
+			// https://spec.matrix.org/v1.19/server-server-api/#get_matrixfederationv1mediadownloadmediaid
+			.get(
+				'/v1/media/download/:mediaId',
+				{
+					params: isMediaDownloadParamsProps,
+					response: {
+						200: isBufferResponseProps,
+						401: isErrorResponseProps,
+						403: isErrorResponseProps,
+						404: isErrorResponseProps,
+						429: isErrorResponseProps,
+						500: isErrorResponseProps,
+					},
+					tags: ['Federation', 'Media'],
 				},
-				tags: ['Federation', 'Media'],
-			},
-			canAccessResourceMiddleware('media'),
-			async (c) => {
-				try {
-					const { mediaId } = c.req.param();
-					const serverName = federationSDK.getConfig('serverName');
+				canAccessResourceMiddleware('media'),
+				async (c) => {
+					try {
+						const { mediaId } = c.req.param();
+						const serverName = federationSDK.getConfig('serverName');
 
-					// TODO: Add file streaming support
-					const result = await getMediaFile(mediaId, serverName);
-					if (!result) {
+						// TODO: Add file streaming support
+						const result = await getMediaFile(mediaId, serverName);
+						if (!result) {
+							return {
+								statusCode: 404,
+								body: { errcode: 'M_NOT_FOUND', error: 'Media not found' },
+							};
+						}
+
+						const { file, buffer } = result;
+
+						const mimeType = file.type || 'application/octet-stream';
+						const fileName = file.name || mediaId;
+
+						const multipartResponse = createMultipartResponse(buffer, mimeType, fileName);
+
 						return {
-							statusCode: 404,
-							body: { errcode: 'M_NOT_FOUND', error: 'Media not found' },
+							statusCode: 200,
+							headers: {
+								...SECURITY_HEADERS,
+								'content-type': multipartResponse.contentType,
+								'content-length': String(multipartResponse.body.length),
+							},
+							body: multipartResponse.body,
+						};
+					} catch (error) {
+						return {
+							statusCode: 500,
+							body: { errcode: 'M_UNKNOWN', error: 'Internal server error' },
 						};
 					}
-
-					const { file, buffer } = result;
-
-					const mimeType = file.type || 'application/octet-stream';
-					const fileName = file.name || mediaId;
-
-					const multipartResponse = createMultipartResponse(buffer, mimeType, fileName);
-
-					return {
-						statusCode: 200,
-						headers: {
-							...SECURITY_HEADERS,
-							'content-type': multipartResponse.contentType,
-							'content-length': String(multipartResponse.body.length),
-						},
-						body: multipartResponse.body,
-					};
-				} catch (error) {
-					return {
-						statusCode: 500,
-						body: { errcode: 'M_UNKNOWN', error: 'Internal server error' },
-					};
-				}
-			},
-		)
-		.get(
-			'/v1/media/thumbnail/:mediaId',
-			{
-				params: isMediaDownloadParamsProps,
-				response: {
-					404: isErrorResponseProps,
 				},
-				tags: ['Federation', 'Media'],
-			},
-			canAccessResourceMiddleware('media'),
-			async (_c) => ({
-				statusCode: 404,
-				body: {
-					errcode: 'M_UNRECOGNIZED',
-					error: 'This endpoint is not implemented on the homeserver side',
+			)
+			// GET /_matrix/federation/v1/media/thumbnail/{mediaId}
+			// https://spec.matrix.org/v1.19/server-server-api/#get_matrixfederationv1mediathumbnailmediaid
+			.get(
+				'/v1/media/thumbnail/:mediaId',
+				{
+					params: isMediaDownloadParamsProps,
+					response: {
+						404: isErrorResponseProps,
+					},
+					tags: ['Federation', 'Media'],
 				},
-			}),
-		);
+				canAccessResourceMiddleware('media'),
+				async (_c) => ({
+					statusCode: 404,
+					body: {
+						errcode: 'M_UNRECOGNIZED',
+						error: 'This endpoint is not implemented on the homeserver side',
+					},
+				}),
+			)
+	);
 };

@@ -1,0 +1,36 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { OEmbedCache } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
+
+import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { settings } from '../../settings';
+
+declare module '@rocket.chat/ddp-client' {
+	interface ServerMethods {
+		OEmbedCacheCleanup(): { message: string };
+	}
+}
+
+export const executeClearOEmbedCache = async () => {
+	const date = new Date();
+	const expirationDays = settings.get<number>('API_EmbedCacheExpirationDays');
+	date.setDate(date.getDate() - expirationDays);
+	return OEmbedCache.removeBeforeDate(date);
+};
+
+Meteor.methods<ServerMethods>({
+	async OEmbedCacheCleanup() {
+		const uid = Meteor.userId();
+		if (!uid || !(await hasPermissionAsync(uid, 'clear-oembed-cache'))) {
+			throw new ClientSafeError('error-not-allowed', 'Not allowed', {
+				method: 'OEmbedCacheCleanup',
+			});
+		}
+
+		await executeClearOEmbedCache();
+		return {
+			message: 'cache_cleared',
+		};
+	},
+});

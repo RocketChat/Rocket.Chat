@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 import Section from './InfoPanelSection';
 
-type InfoPanelAvatarProps = {
+export type InfoPanelAvatarProps = {
 	children?: ReactNode;
 };
 

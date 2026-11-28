@@ -1,6 +1,7 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import type { IMediaSignalLogger, IWebRTCProcessor, NegotiationData, NegotiationEvents } from '../../../definition';
+import { SDP } from './sdp.js';
+import type { IMediaSignalLogger, IWebRTCProcessor, NegotiationData, NegotiationEvents } from '../../../definition/index.js';
 
 export class Negotiation {
 	public readonly emitter: Emitter<NegotiationEvents>;
@@ -206,12 +207,38 @@ export class Negotiation {
 			if (!sdp) {
 				throw new Error('No local description');
 			}
-			return sdp;
+			return this.mutateLocalDescription(sdp);
 		} catch (err) {
 			this.logger?.error(err);
 			this.fail('failed-to-get-local-description');
 			throw err;
 		}
+	}
+
+	protected mutateLocalDescription(this: WebRTCNegotiation, description: RTCSessionDescriptionInit): RTCSessionDescriptionInit {
+		const { sdp, type } = description;
+		if (!sdp) {
+			return description;
+		}
+
+		this.logger?.debug('MediaCallWebRTCProcessor.mutateLocalDescription', type);
+
+		const mainStreamId = this.webrtcProcessor.streams.mainLocal.stream.id;
+		const screenShareStreamId = this.webrtcProcessor.streams.screenShareLocal.stream.id;
+
+		const mutated = SDP.mutateSDPWithStreamContents(sdp, [
+			{ id: mainStreamId, content: 'main' },
+			{ id: screenShareStreamId, content: 'slides' },
+		]);
+
+		if (sdp !== mutated) {
+			this.logger?.debug('SDP was mutated');
+		}
+
+		return {
+			type,
+			sdp: mutated,
+		};
 	}
 }
 

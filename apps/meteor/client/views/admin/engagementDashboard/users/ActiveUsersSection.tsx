@@ -1,8 +1,12 @@
 import { ResponsiveLine } from '@nivo/line';
-import { Box, Flex, Skeleton, Tile } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import { addDays, startOfDay, differenceInDays, endOfDay, subDays, format } from 'date-fns';
-import type { ReactElement } from 'react';
+import { Skeleton, Text, Tile } from '@rocket.chat/fuselage';
+import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
+import { addDays } from 'date-fns/addDays';
+import { differenceInDays } from 'date-fns/differenceInDays';
+import { endOfDay } from 'date-fns/endOfDay';
+import { format } from 'date-fns/format';
+import { startOfDay } from 'date-fns/startOfDay';
+import { subDays } from 'date-fns/subDays';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -10,14 +14,15 @@ import { useActiveUsers } from './useActiveUsers';
 import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
 import CounterSet from '../../../../components/dataView/CounterSet';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
-import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
-import LegendSymbol from '../dataView/LegendSymbol';
+import ChartFrame from '../layout/ChartFrame';
+import EngagementDashboardCardFilter from '../layout/EngagementDashboardCardFilter';
+import LegendSymbol from '../layout/LegendSymbol';
 
-type ActiveUsersSectionProps = {
+export type ActiveUsersSectionProps = {
 	timezone: 'utc' | 'local';
 };
 
-const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement => {
+const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps) => {
 	const utc = timezone === 'utc';
 	const { data } = useActiveUsers({ utc });
 
@@ -109,7 +114,9 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 		<>
 			<EngagementDashboardCardFilter>
 				<DownloadDataButton
-					attachmentName={`ActiveUsersSection_start_${data?.start}_end_${data?.end ? subDays(new Date(data.end), 1).toISOString() : ''}`}
+					attachmentName={
+						data ? `ActiveUsersSection_start_${data.start.toISOString()}_end_${subDays(new Date(data.end), 1).toISOString()}` : ''
+					}
 					headers={['Date', 'DAU', 'WAU', 'MAU']}
 					dataAvailable={!!data}
 					dataExtractor={(): unknown[][] | undefined => {
@@ -154,126 +161,108 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 					},
 				]}
 			/>
-			<Flex.Container>
-				{data ? (
-					<Box style={{ height: 240 }}>
-						<Flex.Item align='stretch' grow={1} shrink={0}>
-							<Box style={{ position: 'relative' }}>
-								<Box
-									style={{
-										position: 'absolute',
-										width: '100%',
-										height: '100%',
-									}}
-								>
-									<ResponsiveLine
-										data={[
-											{
-												id: 'dau',
-												data: dauValues,
-											},
-											{
-												id: 'wau',
-												data: wauValues,
-											},
-											{
-												id: 'mau',
-												data: mauValues,
-											},
-										]}
-										xScale={{
-											type: 'time',
-											format: 'native',
-											precision: 'day',
-										}}
-										xFormat='time:%Y-%m-%d'
-										yScale={{
-											type: 'linear',
-											stacked: true,
-										}}
-										enableGridX={false}
-										enableGridY={false}
-										enablePoints={false}
-										useMesh
-										enableArea
-										areaOpacity={1}
-										enableCrosshair
-										crosshairType='bottom'
-										margin={{
-											// TODO: Get it from theme
-											top: 0,
-											bottom: 20,
-											right: 0,
-											left: 40,
-										}}
-										colors={[colors.b200, colors.b300, colors.b500]}
-										axisLeft={{
-											// TODO: Get it from theme
-											tickSize: 0,
-											tickPadding: 4,
-											tickRotation: 0,
-											tickValues: 3,
-										}}
-										axisBottom={{
-											// TODO: Get it from theme
-											tickSize: 0,
-											tickPadding: 4,
-											tickRotation: 0,
-											tickValues: 'every 3 days',
-											format: (date): string => format(new Date(date), 'dd/MM'),
-										}}
-										animate={true}
-										motionConfig='stiff'
-										theme={{
-											// TODO: Get it from theme
-											axis: {
-												ticks: {
-													text: {
-														fill: '#9EA2A8',
-														fontFamily:
-															'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
-														fontSize: '10px',
-														fontStyle: 'normal',
-														fontWeight: 600,
-														letterSpacing: '0.2px',
-														lineHeight: '12px',
-													},
-												},
-											},
-											tooltip: {
-												container: {
-													backgroundColor: '#1F2329',
-													boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
-													borderRadius: 2,
-												},
-											},
-										}}
-										enableSlices='x'
-										sliceTooltip={({ slice: { points } }): ReactElement => (
-											<Tile elevation='2'>
-												<Box>
-													<Box>{formatDate(points[0].data.x)}</Box>
-													{points.map(({ serieId, data: { y: activeUsers } }) => (
-														<Box key={serieId} fontScale='p1m'>
-															<Box>
-																{(serieId === 'dau' && t('DAU_value', { value: activeUsers })) ||
-																	(serieId === 'wau' && t('WAU_value', { value: activeUsers })) ||
-																	(serieId === 'mau' && t('MAU_value', { value: activeUsers }))}
-															</Box>
-														</Box>
-													))}
-												</Box>
-											</Tile>
-										)}
-									/>
-								</Box>
-							</Box>
-						</Flex.Item>
-					</Box>
-				) : (
-					<Skeleton variant='rect' height={240} />
-				)}
-			</Flex.Container>
+			{data ? (
+				<ChartFrame height={240}>
+					<ResponsiveLine
+						data={[
+							{
+								id: 'dau',
+								data: dauValues,
+							},
+							{
+								id: 'wau',
+								data: wauValues,
+							},
+							{
+								id: 'mau',
+								data: mauValues,
+							},
+						]}
+						xScale={{
+							type: 'time',
+							format: 'native',
+							precision: 'day',
+						}}
+						xFormat='time:%Y-%m-%d'
+						yScale={{
+							type: 'linear',
+							stacked: true,
+						}}
+						enableGridX={false}
+						enableGridY={false}
+						enablePoints={false}
+						useMesh
+						enableArea
+						areaOpacity={1}
+						enableCrosshair
+						crosshairType='bottom'
+						margin={{
+							// TODO: Get it from theme
+							top: 0,
+							bottom: 20,
+							right: 0,
+							left: 40,
+						}}
+						colors={[colors.b200, colors.b300, colors.b500]}
+						axisLeft={{
+							// TODO: Get it from theme
+							tickSize: 0,
+							tickPadding: 4,
+							tickRotation: 0,
+							tickValues: 3,
+						}}
+						axisBottom={{
+							// TODO: Get it from theme
+							tickSize: 0,
+							tickPadding: 4,
+							tickRotation: 0,
+							tickValues: 'every 3 days',
+							format: (date): string => format(new Date(date), 'dd/MM'),
+						}}
+						animate={true}
+						motionConfig='stiff'
+						theme={{
+							// TODO: Get it from theme
+							axis: {
+								ticks: {
+									text: {
+										fill: '#9EA2A8',
+										fontFamily:
+											'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
+										fontSize: '10px',
+										fontStyle: 'normal',
+										fontWeight: 600,
+										letterSpacing: '0.2px',
+										lineHeight: '12px',
+									},
+								},
+							},
+							tooltip: {
+								container: {
+									backgroundColor: '#1F2329',
+									boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
+									borderRadius: 2,
+								},
+							},
+						}}
+						enableSlices='x'
+						sliceTooltip={({ slice: { points } }) => (
+							<Tile elevation='2'>
+								<Text>{formatDate(points[0].data.x)}</Text>
+								{points.map(({ serieId, data: { y: activeUsers } }) => (
+									<Text key={serieId} fontScale='p1m'>
+										{(serieId === 'dau' && t('DAU_value', { value: activeUsers })) ||
+											(serieId === 'wau' && t('WAU_value', { value: activeUsers })) ||
+											(serieId === 'mau' && t('MAU_value', { value: activeUsers }))}
+									</Text>
+								))}
+							</Tile>
+						)}
+					/>
+				</ChartFrame>
+			) : (
+				<Skeleton variant='rect' height={240} />
+			)}
 		</>
 	);
 };

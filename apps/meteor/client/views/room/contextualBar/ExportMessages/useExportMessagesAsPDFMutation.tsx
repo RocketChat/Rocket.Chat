@@ -1,13 +1,13 @@
 import { Document, Font, Image, Page, pdf, StyleSheet, Text, View } from '@react-pdf/renderer';
 import type { IMessage, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
-import { escapeHTML } from '@rocket.chat/string-helpers';
+import { escapeHTML } from '@rocket.chat/tools';
+import { useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useSetting, useToastMessageDispatch, useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { Messages } from '../../../../stores';
 
 const leftTab = {
@@ -30,6 +30,33 @@ const NOTO_SANS_FONTS: { name: string; fontSrc: string }[] = [
 	{ name: 'Noto Sans TC', fontSrc: '/fonts/NotoSansTC-Regular.ttf' },
 	{ name: 'Noto Sans HK', fontSrc: '/fonts/NotoSansHK-Regular.ttf' },
 ];
+
+const EMOJI_RENDER_SIZE = 72;
+
+const renderEmojiToDataURL = (codePoints: string): string => {
+	const points = codePoints.split('-').map((codePoint) => parseInt(codePoint, 16));
+	if (points.some((point) => !Number.isInteger(point) || point < 0 || point > 0x10ffff)) {
+		return '';
+	}
+
+	const emoji = String.fromCodePoint(...points);
+
+	const canvas = document.createElement('canvas');
+	canvas.width = EMOJI_RENDER_SIZE;
+	canvas.height = EMOJI_RENDER_SIZE;
+
+	const ctx = canvas.getContext('2d');
+	if (!ctx) {
+		return '';
+	}
+
+	ctx.textBaseline = 'middle';
+	ctx.textAlign = 'center';
+	ctx.font = `${Math.floor(EMOJI_RENDER_SIZE * 0.8)}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Noto Emoji", sans-serif`;
+	ctx.fillText(emoji, EMOJI_RENDER_SIZE / 2, EMOJI_RENDER_SIZE / 2);
+
+	return canvas.toDataURL('image/png');
+};
 
 const pdfStyles = StyleSheet.create({
 	page: {
@@ -78,7 +105,13 @@ export const useExportMessagesAsPDFMutation = () => {
 				fonts: [{ src: absoluteUrl(font.fontSrc) }],
 			});
 		}
-	}, []);
+		// Manually build the emoji data to avoid relying on a cdn
+		// https://react-pdf.org/fonts#registeremojisource
+		Font.registerEmojiSource({
+			withVariationSelectors: true,
+			builder: renderEmojiToDataURL,
+		});
+	}, [absoluteUrl]);
 
 	return useMutation({
 		mutationFn: async (messageIds: IMessage['_id'][]) => {
@@ -116,6 +149,7 @@ export const useExportMessagesAsPDFMutation = () => {
 										<Text style={message.tmid ? pdfStyles.threadMessage : pdfStyles.message}>{parseMessage(message)}</Text>
 										{message.attachments?.map((attachment: MessageAttachmentDefault, index) => (
 											<View key={index}>
+												{attachment.description && <Text style={pdfStyles.message}>{attachment.description}</Text>}
 												{attachment.image_url && <Image src={attachment.title_link} style={attachment.image_dimensions} />}
 												<Text style={pdfStyles.message}>{attachment.title}</Text>
 											</View>
@@ -130,7 +164,7 @@ export const useExportMessagesAsPDFMutation = () => {
 
 			const instance = pdf();
 
-			await new Promise<void>((resolve, reject) => {
+			await new Promise<void>((resolve) => {
 				const callback = async () => {
 					const link = document.createElement('a');
 					link.href = URL.createObjectURL(await instance.toBlob());
@@ -145,8 +179,6 @@ export const useExportMessagesAsPDFMutation = () => {
 				try {
 					instance.on('change', callback);
 					instance.updateContainer(jsx);
-				} catch (error) {
-					reject(error);
 				} finally {
 					instance.removeListener('change', callback);
 				}

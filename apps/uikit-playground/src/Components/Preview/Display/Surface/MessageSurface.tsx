@@ -15,7 +15,9 @@ import {
 } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-const MessageSurface = ({ children }: { children: ReactNode }) => (
+export type MessageSurfaceProps = { children: ReactNode };
+
+const MessageSurface = ({ children }: MessageSurfaceProps) => (
 	<Message>
 		<MessageLeftContainer>
 			<Avatar
@@ -34,7 +36,7 @@ const MessageSurface = ({ children }: { children: ReactNode }) => (
 			</MessageHeader>
 			<MessageBody>{children}</MessageBody>
 		</MessageContainer>
-		<MessageToolbarWrapper>
+		<MessageToolbarWrapper visible>
 			<MessageToolbar>
 				<MessageToolbarItem icon='quote' />
 				<MessageToolbarItem icon='clock' />

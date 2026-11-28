@@ -1,0 +1,55 @@
+import { useSession } from '@rocket.chat/ui-contexts';
+import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import GuestForm from './GuestForm.js';
+import { LoginForm } from './LoginForm.js';
+import RegisterSecretPageRouter from './RegisterSecretPageRouter.js';
+import RegisterTemplate from './RegisterTemplate.js';
+import ResetPasswordForm from './ResetPasswordForm.js';
+import { useLoginRouter } from './hooks/useLoginRouter.js';
+import type { LoginRoutes } from './hooks/useLoginRouter.js';
+
+export type RegistrationPageRouterProps = { defaultRoute?: LoginRoutes; children?: ReactNode };
+
+export const RegistrationPageRouter = ({ defaultRoute = 'login', children }: RegistrationPageRouterProps) => {
+	const { t } = useTranslation();
+	const defaultRouteSession = useSession('loginDefaultState') as LoginRoutes | undefined;
+	const [route, setLoginRoute] = useLoginRouter(defaultRouteSession || defaultRoute);
+
+	if (route === 'guest') {
+		return (
+			<RegisterTemplate aria-label={t('Guest')}>
+				<GuestForm setLoginRoute={setLoginRoute} />
+			</RegisterTemplate>
+		);
+	}
+
+	if (route === 'login') {
+		return (
+			<RegisterTemplate aria-label={t('Login')}>
+				<LoginForm setLoginRoute={setLoginRoute} />
+			</RegisterTemplate>
+		);
+	}
+
+	if (route === 'reset-password') {
+		return (
+			<RegisterTemplate aria-label={t('Reset_password')}>
+				<ResetPasswordForm setLoginRoute={setLoginRoute} />
+			</RegisterTemplate>
+		);
+	}
+
+	if (route === 'secret-register' || route === 'register' || route === 'invite-register') {
+		return <RegisterSecretPageRouter origin={route} setLoginRoute={setLoginRoute} />;
+	}
+
+	if (route === 'anonymous') {
+		return <>{children}</>;
+	}
+
+	return null;
+};
+
+export default RegistrationPageRouter;

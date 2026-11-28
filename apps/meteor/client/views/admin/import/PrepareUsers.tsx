@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { UserDescriptor } from './UserDescriptor';
 
-type PrepareUsersProps = {
+export type PrepareUsersProps = {
 	usersCount: number;
 	users: UserDescriptor[];
 	setUsers: Dispatch<SetStateAction<UserDescriptor[]>>;
@@ -18,17 +18,17 @@ const PrepareUsers = ({ usersCount, users, setUsers }: PrepareUsersProps) => {
 	const [itemsPerPage, setItemsPerPage] = useState<25 | 50 | 100>(25);
 	const showingResultsLabel = useCallback(
 		({ count, current, itemsPerPage }: { count: number; current: number; itemsPerPage: 25 | 50 | 100 }) =>
-			t('Showing_results_of', { postProcess: 'sprintf', sprintf: [current + 1, Math.min(current + itemsPerPage, count), count] }),
+			t('Showing_results_of', { from: current + 1, to: Math.min(current + itemsPerPage, count), total: count }),
 		[t],
 	);
 	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), [t]);
 
 	return (
 		<>
-			<Table>
+			<Table columns={['x36', 'auto', 'auto', 'auto']}>
 				<TableHead>
 					<TableRow>
-						<TableCell width='x36'>
+						<TableCell>
 							<CheckBox
 								checked={usersCount > 0}
 								indeterminate={usersCount > 0 && usersCount !== users.length}
@@ -50,15 +50,15 @@ const PrepareUsers = ({ usersCount, users, setUsers }: PrepareUsersProps) => {
 								}}
 							/>
 						</TableCell>
-						<TableCell is='th'>{t('Username')}</TableCell>
-						<TableCell is='th'>{t('Email')}</TableCell>
-						<TableCell is='th'></TableCell>
+						<TableCell>{t('Username')}</TableCell>
+						<TableCell>{t('Email')}</TableCell>
+						<TableCell></TableCell>
 					</TableRow>
 				</TableHead>
 				<TableBody>
 					{users.slice(current, current + itemsPerPage).map((user) => (
 						<TableRow key={user.user_id}>
-							<TableCell width='x36'>
+							<TableCell>
 								<CheckBox
 									checked={user.do_import}
 									onChange={(event: ChangeEvent<HTMLInputElement>): void => {

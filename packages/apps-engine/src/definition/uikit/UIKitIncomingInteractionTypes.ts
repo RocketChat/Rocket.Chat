@@ -26,9 +26,17 @@ export interface IUIKitBlockIncomingInteraction extends IUIKitBaseIncomingIntera
 	blockId: string;
 	room: IUIKitBaseIncomingInteraction['room'];
 	container:
-		| IUIKitIncomingInteractionModalContainer
-		| IUIKitIncomingInteractionContextualBarContainer
-		| IUIKitIncomingInteractionMessageContainer;
+		IUIKitIncomingInteractionModalContainer | IUIKitIncomingInteractionContextualBarContainer | IUIKitIncomingInteractionMessageContainer;
+}
+
+export interface IUIKitBlockSuggestionIncomingInteraction extends IUIKitBaseIncomingInteraction {
+	/** What the user has typed so far. */
+	value: string;
+	message?: IMessage;
+	actionId: string;
+	blockId: string;
+	container:
+		IUIKitIncomingInteractionModalContainer | IUIKitIncomingInteractionContextualBarContainer | IUIKitIncomingInteractionMessageContainer;
 }
 
 export interface IUIKitViewSubmitIncomingInteraction extends IUIKitBaseIncomingInteraction {

@@ -1,16 +1,16 @@
 import type { IOmnichannelRoom, IVisitor } from '@rocket.chat/core-typings';
-import { Box, Margins, Tag, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { Stack, Tag, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { ContextualbarScrollableContent, ContextualbarFooter, InfoPanelField, InfoPanelLabel, InfoPanelText } from '@rocket.chat/ui-client';
 import type { IRouterPaths } from '@rocket.chat/ui-contexts';
-import { useToastMessageDispatch, useRoute, useUserSubscription, useTranslation, usePermission, useUserId } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute, useUserSubscription, usePermission, useUserId } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import ChatTimingFields from './ChatTimingFields';
 import DepartmentField from './DepartmentField';
 import VisitorClientInfo from './VisitorClientInfo';
 import MarkdownText from '../../../../../components/MarkdownText';
-import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
-import { useFormatDuration } from '../../../../../hooks/useFormatDuration';
 import { useFormattedRelativeTime } from '../../../../../hooks/useFormattedRelativeTime';
 import CustomField from '../../../components/CustomField';
 import { useValidCustomFields } from '../../../contactInfo/hooks/useValidCustomFields';
@@ -19,17 +19,14 @@ import PriorityField from '../../components/PriorityField';
 import { useOmnichannelRoomInfo } from '../../hooks/useOmnichannelRoomInfo';
 import { formatQueuedAt } from '../../utils/formatQueuedAt';
 
-type ChatInfoProps = {
+export type ChatInfoProps = {
 	id: string;
 	route: keyof IRouterPaths;
 };
 
 function ChatInfo({ id, route }: ChatInfoProps) {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-
-	const formatDateAndTime = useFormatDateAndTime();
-	const formatDuration = useFormatDuration();
 
 	const { data: room } = useOmnichannelRoomInfo(id); // FIXME: `room` is serialized, but we need to deserialize it
 
@@ -67,7 +64,7 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 
 	const customFieldEntries = useValidCustomFields(livechatData, 'room');
 
-	const onEditClick = useEffectEvent(() => {
+	const onEditClick = useStableCallback(() => {
 		const hasEditAccess = !!subscription || hasLocalEditRoomPermission || hasGlobalEditRoomPermission;
 		if (!hasEditAccess) {
 			return dispatchToastMessage({ type: 'error', message: t('Not_authorized') });
@@ -90,84 +87,51 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 
 	return (
 		<>
-			<ContextualbarScrollableContent p={24}>
-				<Margins block='x4'>
-					{source && <SourceField room={room as unknown as IOmnichannelRoom} />}
-					{room && v && <ContactField contact={v as IVisitor} room={room as unknown as IOmnichannelRoom} />}
-					{visitorId && <VisitorClientInfo uid={visitorId} />}
-					{servedBy && <AgentField agent={servedBy as unknown as IOmnichannelRoom['servedBy']} />}
-					{departmentId && <DepartmentField departmentId={departmentId} />}
-					{tags && tags.length > 0 && (
-						<InfoPanelField>
-							<InfoPanelLabel id={`${roomId}-tags`}>{t('Tags')}</InfoPanelLabel>
-							<InfoPanelText>
-								<ul aria-labelledby={`${roomId}-tags`}>
-									{tags.map((tag) => (
-										<Box is='li' key={tag} mie={4} display='inline'>
-											<Tag style={{ display: 'inline' }} disabled>
-												{tag}
-											</Tag>
-										</Box>
-									))}
-								</ul>
-							</InfoPanelText>
-						</InfoPanelField>
-					)}
-					{topic && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Topic')}</InfoPanelLabel>
-							<InfoPanelText withTruncatedText={false}>
-								<MarkdownText variant='inline' content={topic} />
-							</InfoPanelText>
-						</InfoPanelField>
-					)}
-					{queueStartedAt && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Queue_Time')}</InfoPanelLabel>
-							<InfoPanelText>{queueTime}</InfoPanelText>
-						</InfoPanelField>
-					)}
-					{closedAt && ts && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Chat_Duration')}</InfoPanelLabel>
-							<InfoPanelText>{formatDuration((new Date(closedAt).getTime() - new Date(ts).getTime()) / 1000)}</InfoPanelText>
-						</InfoPanelField>
-					)}
-					{ts && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Created_at')}</InfoPanelLabel>
-							<InfoPanelText>{formatDateAndTime(ts)}</InfoPanelText>
-						</InfoPanelField>
-					)}
-					{closedAt && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Closed_At')}</InfoPanelLabel>
-							<InfoPanelText>{formatDateAndTime(closedAt)}</InfoPanelText>
-						</InfoPanelField>
-					)}
-					{servedBy?.ts && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Taken_at')}</InfoPanelLabel>
-							<InfoPanelText>{formatDateAndTime(servedBy.ts)}</InfoPanelText>
-						</InfoPanelField>
-					)}
-					{metrics?.response?.avg && formatDuration(metrics.response.avg) && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Avg_response_time')}</InfoPanelLabel>
-							<InfoPanelText>{formatDuration(metrics.response.avg)}</InfoPanelText>
-						</InfoPanelField>
-					)}
-					{!waitingResponse && responseBy?.lastMessageTs && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Inactivity_Time')}</InfoPanelLabel>
-							<InfoPanelText>{inactivityTime}</InfoPanelText>
-						</InfoPanelField>
-					)}
-					{customFieldEntries?.length > 0 &&
-						customFieldEntries.map(([key, value]) => <CustomField key={key} id={key} value={value as string} />)}
-					{slaId && <SlaField id={slaId} />}
-					{priorityId && <PriorityField id={priorityId} />}
-				</Margins>
+			<ContextualbarScrollableContent padding='x24' gap={0}>
+				{source && <SourceField room={room as unknown as IOmnichannelRoom} />}
+				{room && v && <ContactField contact={v as IVisitor} room={room as unknown as IOmnichannelRoom} />}
+				{visitorId && <VisitorClientInfo uid={visitorId} />}
+				{servedBy && <AgentField agent={servedBy as unknown as IOmnichannelRoom['servedBy']} />}
+				{departmentId && <DepartmentField departmentId={departmentId} />}
+				{tags && tags.length > 0 && (
+					<InfoPanelField>
+						<InfoPanelLabel id={`${roomId}-tags`}>{t('Tags')}</InfoPanelLabel>
+						<InfoPanelText>
+							<Stack is='ul' direction='row' wrap gap='x4' aria-labelledby={`${roomId}-tags`}>
+								{tags.map((tag) => (
+									<li key={tag}>
+										<Tag disabled>{tag}</Tag>
+									</li>
+								))}
+							</Stack>
+						</InfoPanelText>
+					</InfoPanelField>
+				)}
+				{topic && (
+					<InfoPanelField>
+						<InfoPanelLabel>{t('Topic')}</InfoPanelLabel>
+						<InfoPanelText withTruncatedText={false}>
+							<MarkdownText variant='inline' content={topic} />
+						</InfoPanelText>
+					</InfoPanelField>
+				)}
+				{queueStartedAt && (
+					<InfoPanelField>
+						<InfoPanelLabel>{t('Queue_Time')}</InfoPanelLabel>
+						<InfoPanelText>{queueTime}</InfoPanelText>
+					</InfoPanelField>
+				)}
+				<ChatTimingFields ts={ts} closedAt={closedAt} servedBy={servedBy} metrics={metrics} />
+				{!waitingResponse && responseBy?.lastMessageTs && (
+					<InfoPanelField>
+						<InfoPanelLabel>{t('Inactivity_Time')}</InfoPanelLabel>
+						<InfoPanelText>{inactivityTime}</InfoPanelText>
+					</InfoPanelField>
+				)}
+				{customFieldEntries?.length > 0 &&
+					customFieldEntries.map(([key, value]) => <CustomField key={key} id={key} value={value as string} notFoundMarginBlock='x4' />)}
+				{slaId && <SlaField id={slaId} />}
+				{priorityId && <PriorityField id={priorityId} />}
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>

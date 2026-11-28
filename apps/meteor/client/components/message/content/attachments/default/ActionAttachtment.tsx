@@ -4,13 +4,13 @@ import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import ActionAttachmentButton from './ActionAttachmentButton';
 import { useExternalLink } from '../../../../../hooks/useExternalLink';
 
-type ActionAttachmentProps = MessageAttachmentAction;
+export type ActionAttachmentProps = MessageAttachmentAction;
 
 export const ActionAttachment = ({ actions }: ActionAttachmentProps) => {
 	const handleLinkClick = useExternalLink();
 
 	return (
-		<Box mb={4}>
+		<Box marginBlock={4}>
 			<ButtonGroup small>
 				{actions
 					.filter(
@@ -21,7 +21,7 @@ export const ActionAttachment = ({ actions }: ActionAttachmentProps) => {
 						const content = image ? <Box is='img' src={image} maxHeight={200} /> : text;
 						if (url) {
 							return (
-								<Button role='link' onClick={() => handleLinkClick(url)} key={index} small>
+								<Button role='link' onClick={() => handleLinkClick(url)} key={index} size='small'>
 									{content}
 								</Button>
 							);

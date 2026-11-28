@@ -7,11 +7,13 @@ import type {
 } from '@rocket.chat/core-typings';
 import { ServerEvents } from '@rocket.chat/models';
 
-import { settings } from '../../../app/settings/server/cached';
+import { settings } from '../cached';
 
 const shouldMaskSettingInAudit = (settingId: ISetting['_id']): boolean => {
 	const setting = settings.getSetting(settingId);
-	return Boolean(setting && (setting.type === 'password' || (setting.type === 'string' && setting.secret === true)));
+	return Boolean(
+		setting && (setting.type === 'password' || ((setting.type === 'string' || setting.type === 'code') && setting.secret === true)),
+	);
 };
 
 const maskIfNeeded = (settingId: ISetting['_id'], value: SettingValue): SettingValue => {
@@ -23,7 +25,7 @@ const maskIfNeeded = (settingId: ISetting['_id'], value: SettingValue): SettingV
 		return value;
 	}
 
-	const valueString = String(value);
+	const valueString = typeof value === 'object' ? JSON.stringify(value) : String(value);
 	const valueLength = valueString.length;
 
 	let maskedValue: string;
@@ -54,6 +56,7 @@ export const resetAuditedSettingByUser =
 				...actor,
 			},
 		);
+		// oxlint-disable-next-line typescript/no-unsafe-return -- generic passthrough: F's return type is any by constraint
 		return fn(key);
 	};
 
@@ -80,6 +83,7 @@ export const updateAuditedByUser =
 				...actor,
 			},
 		);
+		// oxlint-disable-next-line typescript/no-unsafe-return -- generic passthrough: F's return type is any by constraint
 		return fn(key, value, ...rest);
 	};
 
@@ -106,6 +110,7 @@ export const updateAuditedBySystem =
 				...actor,
 			},
 		);
+		// oxlint-disable-next-line typescript/no-unsafe-return -- generic passthrough: F's return type is any by constraint
 		return fn(key, value, ...rest);
 	};
 
@@ -130,5 +135,6 @@ export const updateAuditedByApp =
 				...actor,
 			},
 		);
+		// oxlint-disable-next-line typescript/no-unsafe-return -- generic passthrough: F's return type is any by constraint
 		return fn(key, value, ...rest);
 	};

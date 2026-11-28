@@ -1,0 +1,11 @@
+{
+	"extends": "@rocket.chat/tsconfig/base.json",
+	"compilerOptions": {
+		"target": "ES2024",
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
+		"noEmit": true
+	},
+	"include": ["playwright.config.ts", "test"],
+	"exclude": ["node_modules"]
+}

@@ -1,20 +1,28 @@
-import type { LayoutBlockish } from '../LayoutBlockish';
-import type { ChannelsSelectElement } from '../elements/ChannelsSelectElement';
-import type { CheckboxElement } from '../elements/CheckboxElement';
-import type { ConversationsSelectElement } from '../elements/ConversationsSelectElement';
-import type { DatePickerElement } from '../elements/DatePickerElement';
-import type { LinearScaleElement } from '../elements/LinearScaleElement';
-import type { MultiChannelsSelectElement } from '../elements/MultiChannelsSelectElement';
-import type { MultiConversationsSelectElement } from '../elements/MultiConversationsSelectElement';
-import type { MultiStaticSelectElement } from '../elements/MultiStaticSelectElement';
-import type { MultiUsersSelectElement } from '../elements/MultiUsersSelectElement';
-import type { PlainTextInputElement } from '../elements/PlainTextInputElement';
-import type { RadioButtonElement } from '../elements/RadioButtonElement';
-import type { StaticSelectElement } from '../elements/StaticSelectElement';
-import type { TimePickerElement } from '../elements/TimePickerElement';
-import type { ToggleSwitchElement } from '../elements/ToggleSwitchElement';
-import type { UsersSelectElement } from '../elements/UsersSelectElement';
-import type { PlainText } from '../text/PlainText';
+import type { LayoutBlockish } from '../LayoutBlockish.js';
+import type { ChannelsSelectElement } from '../elements/ChannelsSelectElement.js';
+import type { CheckboxElement } from '../elements/CheckboxElement.js';
+import type { ConversationsSelectElement } from '../elements/ConversationsSelectElement.js';
+import type { DatePickerElement } from '../elements/DatePickerElement.js';
+import type { DateTimePickerElement } from '../elements/DateTimePickerElement.js';
+import type { EmailTextInputElement } from '../elements/EmailTextInputElement.js';
+import type { ExternalSelectElement } from '../elements/ExternalSelectElement.js';
+import type { FileInputElement } from '../elements/FileInputElement.js';
+import type { LinearScaleElement } from '../elements/LinearScaleElement.js';
+import type { MultiChannelsSelectElement } from '../elements/MultiChannelsSelectElement.js';
+import type { MultiConversationsSelectElement } from '../elements/MultiConversationsSelectElement.js';
+import type { MultiExternalSelectElement } from '../elements/MultiExternalSelectElement.js';
+import type { MultiStaticSelectElement } from '../elements/MultiStaticSelectElement.js';
+import type { MultiUsersSelectElement } from '../elements/MultiUsersSelectElement.js';
+import type { NumberInputElement } from '../elements/NumberInputElement.js';
+import type { PlainTextInputElement } from '../elements/PlainTextInputElement.js';
+import type { RadioButtonElement } from '../elements/RadioButtonElement.js';
+import type { RichTextInputElement } from '../elements/RichTextInputElement.js';
+import type { StaticSelectElement } from '../elements/StaticSelectElement.js';
+import type { TimePickerElement } from '../elements/TimePickerElement.js';
+import type { ToggleSwitchElement } from '../elements/ToggleSwitchElement.js';
+import type { UrlTextInputElement } from '../elements/UrlTextInputElement.js';
+import type { UsersSelectElement } from '../elements/UsersSelectElement.js';
+import type { PlainText } from '../text/PlainText.js';
 
 export type InputBlock = LayoutBlockish<{
 	type: 'input';
@@ -23,16 +31,24 @@ export type InputBlock = LayoutBlockish<{
 		| ChannelsSelectElement
 		| ConversationsSelectElement
 		| DatePickerElement
+		| DateTimePickerElement
+		| ExternalSelectElement
+		| FileInputElement
 		| LinearScaleElement
 		| MultiChannelsSelectElement
 		| MultiConversationsSelectElement
+		| MultiExternalSelectElement
 		| MultiStaticSelectElement
 		| MultiUsersSelectElement
 		| PlainTextInputElement
+		| NumberInputElement
+		| EmailTextInputElement
+		| UrlTextInputElement
 		| StaticSelectElement
 		| UsersSelectElement
 		| CheckboxElement
 		| RadioButtonElement
+		| RichTextInputElement
 		| TimePickerElement
 		| ToggleSwitchElement;
 	hint?: PlainText;

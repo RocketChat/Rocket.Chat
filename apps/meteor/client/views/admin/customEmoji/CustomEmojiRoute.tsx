@@ -9,7 +9,6 @@ import {
 	PageContent,
 } from '@rocket.chat/ui-client';
 import { useRoute, useRouteParameter, usePermission } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -18,7 +17,7 @@ import CustomEmoji from './CustomEmoji';
 import EditCustomEmojiWithData from './EditCustomEmojiWithData';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
-const CustomEmojiRoute = (): ReactElement => {
+const CustomEmojiRoute = () => {
 	const { t } = useTranslation();
 	const route = useRoute('emoji-custom');
 	const context = useRouteParameter('context');
@@ -54,7 +53,7 @@ const CustomEmojiRoute = (): ReactElement => {
 		<Page flexDirection='row'>
 			<Page name='admin-emoji-custom'>
 				<PageHeader title={t('Emoji')}>
-					<Button primary onClick={handleAddEmoji} aria-label={t('New')}>
+					<Button variant='primary' onClick={handleAddEmoji} aria-label={t('New')}>
 						{t('New')}
 					</Button>
 				</PageHeader>

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import ShareLocationModal from '../../../../ShareLocation/ShareLocationModal';
 
-export const useShareLocationAction = (room?: IRoom, tmid?: IMessage['tmid']): GenericMenuItemProps => {
+export const useShareLocationAction = (disabled: boolean, room?: IRoom, tmid?: IMessage['tmid']): GenericMenuItemProps => {
 	if (!room) {
 		throw new Error('Invalid room');
 	}
@@ -17,7 +17,7 @@ export const useShareLocationAction = (room?: IRoom, tmid?: IMessage['tmid']): G
 	const isMapViewEnabled = useSetting('MapView_Enabled') === true;
 	const isGeolocationCurrentPositionSupported = Boolean(navigator.geolocation?.getCurrentPosition);
 	const googleMapsApiKey = useSetting('MapView_GMapsAPIKey', '');
-	const canGetGeolocation = isMapViewEnabled && isGeolocationCurrentPositionSupported && googleMapsApiKey && googleMapsApiKey.length;
+	const canGetGeolocation = isMapViewEnabled && isGeolocationCurrentPositionSupported && googleMapsApiKey?.length;
 
 	const handleShareLocation = () => setModal(<ShareLocationModal rid={room._id} tmid={tmid} onClose={() => setModal(null)} />);
 
@@ -28,6 +28,6 @@ export const useShareLocationAction = (room?: IRoom, tmid?: IMessage['tmid']): G
 		content: t('Location'),
 		icon: 'map-pin',
 		onClick: handleShareLocation,
-		disabled: !allowGeolocation,
+		disabled: !allowGeolocation || disabled,
 	};
 };

@@ -1,9 +1,9 @@
 import type { Filter, FilterOperators } from 'mongodb';
 
-import { compareBSONValues, getBSONType } from './bson';
-import { isBinary, isIndexable, isPlainObject, isTruthy, equals } from './common';
-import { createLookupFunction } from './lookups';
-import type { ArrayIndices, LookupBranch } from './types';
+import { compareBSONValues, getBSONType } from './bson.js';
+import { isBinary, isIndexable, isPlainObject, isTruthy, equals } from './common.js';
+import { createLookupFunction } from './lookups.js';
+import type { ArrayIndices, LookupBranch } from './types.js';
 
 type Match = {
 	readonly result: boolean;
@@ -55,7 +55,7 @@ const getValueBitmask = (value: unknown, length: number): Uint8Array | false => 
 		const buffer = new ArrayBuffer(Math.max(length, 2 * Uint32Array.BYTES_PER_ELEMENT));
 
 		let view: Uint32Array | Uint8Array = new Uint32Array(buffer, 0, 2);
-		view[0] = value % ((1 << 16) * (1 << 16)) | 0;
+		view[0] = (value % ((1 << 16) * (1 << 16))) | 0;
 		view[1] = (value / ((1 << 16) * (1 << 16))) | 0;
 
 		if (value < 0) {
@@ -479,8 +479,8 @@ const $nor = <T>(subSelector: Filter<T>[]) => {
 };
 
 const $where = <T>(selectorValue: string | ((this: T, doc: T) => boolean)) => {
-	if (!(selectorValue instanceof Function)) {
-		selectorValue = Function('obj', `return ${selectorValue}`) as (this: T, doc: T) => boolean;
+	if (typeof selectorValue !== 'function') {
+		throw new Error('$where only supports functions');
 	}
 
 	return (doc: T) => ({ result: selectorValue.call(doc, doc) });

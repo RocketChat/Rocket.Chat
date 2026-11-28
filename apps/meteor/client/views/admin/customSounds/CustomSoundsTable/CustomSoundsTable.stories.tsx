@@ -1,20 +1,13 @@
-import { Margins } from '@rocket.chat/fuselage';
 import { PageContent } from '@rocket.chat/ui-client';
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
 import { useRef } from 'react';
+import { action } from 'storybook/actions';
 
 import CustomSoundsTable from './CustomSoundsTable';
 
 export default {
 	component: CustomSoundsTable,
-	decorators: [
-		(fn) => (
-			<PageContent mb='neg-x8'>
-				<Margins block={8}>{fn()}</Margins>
-			</PageContent>
-		),
-	],
+	decorators: [(fn) => <PageContent gap='x16'>{fn()}</PageContent>],
 } satisfies Meta<typeof CustomSoundsTable>;
 
 const Template: StoryFn<typeof CustomSoundsTable> = (args) => {
@@ -22,7 +15,10 @@ const Template: StoryFn<typeof CustomSoundsTable> = (args) => {
 	return <CustomSoundsTable {...args} reload={reloadRef} />;
 };
 
-export const Default = Template.bind({});
-Default.args = {
-	onClick: () => action('clicked'),
+export const Default = {
+	render: Template,
+
+	args: {
+		onClick: () => action('clicked'),
+	},
 };

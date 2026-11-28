@@ -13,13 +13,13 @@ import type { ParsedMail, Attachment } from 'mailparser';
 import { stripHtml } from 'string-strip-html';
 
 import { logger } from './logger';
-import { FileUpload } from '../../../app/file-upload/server';
-import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
-import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
-import { setDepartmentForGuest } from '../../../app/livechat/server/lib/departmentsLib';
-import { sendMessage } from '../../../app/livechat/server/lib/messages';
-import { settings } from '../../../app/settings/server';
 import { i18n } from '../../lib/i18n';
+import { FileUpload } from '../../lib/media/file-upload';
+import { notifyOnMessageChange } from '../../lib/notifyListener';
+import { QueueManager } from '../../lib/omnichannel/QueueManager';
+import { setDepartmentForGuest } from '../../lib/omnichannel/departmentsLib';
+import { sendMessage } from '../../lib/omnichannel/messages';
+import { settings } from '../../settings';
 
 type FileAttachment = VideoAttachmentProps & ImageAttachmentProps & AudioAttachmentProps;
 
@@ -218,7 +218,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 			}
 
 			const attachments = [];
-			for await (const attachment of email.attachments) {
+			for (const attachment of email.attachments) {
 				if (attachment.type !== 'attachment') {
 					continue;
 				}
@@ -240,7 +240,9 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 					},
 				},
 			);
-			room && (await LivechatRooms.updateEmailThreadByRoomId(room._id, thread));
+			if (room) {
+				await LivechatRooms.updateEmailThreadByRoomId(room._id, thread);
+			}
 			void notifyOnMessageChange({
 				id: msgId,
 			});

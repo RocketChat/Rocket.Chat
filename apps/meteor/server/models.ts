@@ -8,6 +8,7 @@ import {
 	BannersDismissRaw,
 	BannersRaw,
 	CalendarEventRaw,
+	ContactsRaw,
 	CallHistoryRaw,
 	CredentialTokensRaw,
 	CronHistoryRaw,
@@ -16,9 +17,11 @@ import {
 	EmailInboxRaw,
 	EmailMessageHistoryRaw,
 	EmojiCustomRaw,
+	ExchangeCalendarSyncStateRaw,
+	ExchangeContactSyncStateRaw,
+	ExchangeSyncLeaseRaw,
 	ExportOperationsRaw,
 	FederationKeysRaw,
-	FederationRoomEventsRaw,
 	ImportDataRaw,
 	ImportsModel,
 	InstanceStatusRaw,
@@ -38,7 +41,6 @@ import {
 	LivechatVisitorsRaw,
 	LoginServiceConfigurationRaw,
 	MediaCallsRaw,
-	MediaCallChannelsRaw,
 	MediaCallNegotiationsRaw,
 	MessageReadsRaw,
 	MessagesRaw,
@@ -50,6 +52,8 @@ import {
 	OAuthAccessTokensRaw,
 	OAuthAppsRaw,
 	OAuthAuthCodesRaw,
+	LoginCodesRaw,
+	UiKitViewsRaw,
 	OAuthRefreshTokensRaw,
 	OEmbedCacheRaw,
 	PermissionsRaw,
@@ -72,9 +76,10 @@ import {
 	UsersRaw,
 	UsersSessionsRaw,
 	VideoConferenceRaw,
-	WebdavAccountsRaw,
 	WorkspaceCredentialsRaw,
 	AbacAttributesRaw,
+	TwoFactorChallengesRaw,
+	SamlUsedAssertionsRaw,
 } from '@rocket.chat/models';
 import type { Collection } from 'mongodb';
 
@@ -90,6 +95,7 @@ registerModel('IBannersDismissModel', new BannersDismissRaw(db));
 registerModel('IBannersModel', new BannersRaw(db));
 registerModel('ICalendarEventModel', new CalendarEventRaw(db));
 registerModel('ICallHistoryModel', new CallHistoryRaw(db));
+registerModel('IContactsModel', new ContactsRaw(db));
 registerModel('ICredentialTokensModel', new CredentialTokensRaw(db));
 registerModel('ICronHistoryModel', new CronHistoryRaw(db));
 registerModel('ICustomSoundsModel', new CustomSoundsRaw(db));
@@ -97,9 +103,11 @@ registerModel('ICustomUserStatusModel', new CustomUserStatusRaw(db));
 registerModel('IEmailInboxModel', new EmailInboxRaw(db));
 registerModel('IEmailMessageHistoryModel', new EmailMessageHistoryRaw(db));
 registerModel('IEmojiCustomModel', new EmojiCustomRaw(db, trashCollection));
+registerModel('IExchangeCalendarSyncStateModel', new ExchangeCalendarSyncStateRaw(db));
+registerModel('IExchangeContactSyncStateModel', new ExchangeContactSyncStateRaw(db));
+registerModel('IExchangeSyncLeaseModel', new ExchangeSyncLeaseRaw(db));
 registerModel('IExportOperationsModel', new ExportOperationsRaw(db));
 registerModel('IFederationKeysModel', new FederationKeysRaw(db));
-registerModel('IFederationRoomEventsModel', new FederationRoomEventsRaw(db));
 registerModel('IImportDataModel', new ImportDataRaw(db));
 registerModel('IImportsModel', new ImportsModel(db));
 registerModel('IInstanceStatusModel', new InstanceStatusRaw(db));
@@ -125,7 +133,6 @@ registerModel('ILivechatTriggerModel', new LivechatTriggerRaw(db));
 registerModel('ILivechatVisitorsModel', new LivechatVisitorsRaw(db));
 registerModel('ILoginServiceConfigurationModel', new LoginServiceConfigurationRaw(db));
 registerModel('IMediaCallsModel', new MediaCallsRaw(db));
-registerModel('IMediaCallChannelsModel', new MediaCallChannelsRaw(db));
 registerModel('IMediaCallNegotiationsModel', new MediaCallNegotiationsRaw(db));
 registerModel('IMessageReadsModel', new MessageReadsRaw(db));
 registerModel('IMessagesModel', new MessagesRaw(db, trashCollection));
@@ -137,6 +144,8 @@ registerModel('INpsVoteModel', new NpsVoteRaw(db));
 registerModel('IOAuthAccessTokensModel', new OAuthAccessTokensRaw(db));
 registerModel('IOAuthAppsModel', new OAuthAppsRaw(db));
 registerModel('IOAuthAuthCodesModel', new OAuthAuthCodesRaw(db));
+registerModel('ILoginCodesModel', new LoginCodesRaw(db));
+registerModel('IUiKitViewsModel', new UiKitViewsRaw(db));
 registerModel('IOAuthRefreshTokensModel', new OAuthRefreshTokensRaw(db));
 registerModel('IOEmbedCacheModel', new OEmbedCacheRaw(db));
 registerModel('IPermissionsModel', new PermissionsRaw(db, trashCollection));
@@ -158,6 +167,7 @@ registerModel('IUserDataFilesModel', new UserDataFilesRaw(db));
 registerModel('IUsersModel', new UsersRaw(db, trashCollection));
 registerModel('IUsersSessionsModel', new UsersSessionsRaw(db));
 registerModel('IVideoConferenceModel', new VideoConferenceRaw(db));
-registerModel('IWebdavAccountsModel', new WebdavAccountsRaw(db));
 registerModel('IWorkspaceCredentialsModel', new WorkspaceCredentialsRaw(db));
 registerModel('IAbacAttributesModel', new AbacAttributesRaw(db));
+registerModel('ITwoFactorChallengesModel', new TwoFactorChallengesRaw(db));
+registerModel('ISamlUsedAssertionsModel', new SamlUsedAssertionsRaw(db));

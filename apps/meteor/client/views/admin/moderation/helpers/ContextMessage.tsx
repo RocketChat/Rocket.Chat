@@ -12,21 +12,20 @@ import {
 	MessageName,
 	MessageToolbar,
 	MessageToolbarItem,
-	MessageToolbarWrapper,
 	MessageUsername,
 } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useUserDisplayName } from '@rocket.chat/ui-client';
+import { useFormatTime, useUserDisplayName, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import ReportReasonCollapsible from './ReportReasonCollapsible';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
 import Attachments from '../../../../components/message/content/Attachments';
+import MessageToolbarReveal, { messageToolbarScope } from '../../../../components/message/toolbar/MessageToolbarReveal';
 import UiKitMessageBlock from '../../../../components/message/uikit/UiKitMessageBlock';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
-import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
-import { useFormatTime } from '../../../../hooks/useFormatTime';
+import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';
 import MessageReportInfo from '../MessageReportInfo';
 import useDeleteMessage from '../hooks/useDeleteMessage';
 import { useDismissMessageAction } from '../hooks/useDismissMessageAction';
@@ -43,7 +42,7 @@ const ContextMessage = ({
 	deleted: boolean;
 	onRedirect: (id: IMessage['_id']) => void;
 	onChange: () => void;
-}): JSX.Element => {
+}) => {
 	const { t } = useTranslation();
 
 	const isEncryptedMessage = isE2EEMessage(message);
@@ -61,14 +60,16 @@ const ContextMessage = ({
 
 	const displayName = useUserDisplayName({ name, username });
 
+	// oxlint-disable-next-line typescript/no-unsafe-call -- reported messages arrive serialized from the REST API, while the message components below take IMessage
 	const quotes = message?.attachments?.filter(isQuoteAttachment) || [];
 
+	// oxlint-disable-next-line typescript/no-unsafe-call -- reported messages arrive serialized from the REST API, while the message components below take IMessage
 	const attachments = message?.attachments?.filter((attachment: MessageAttachment) => !isQuoteAttachment(attachment)) || [];
 
 	return (
 		<>
 			<MessageDivider>{formatDate(message._updatedAt)}</MessageDivider>
-			<Message>
+			<Message className={messageToolbarScope} tabIndex={0}>
 				<MessageLeftContainer>
 					<UserAvatar username={message.u.username} />
 				</MessageLeftContainer>
@@ -92,7 +93,9 @@ const ContextMessage = ({
 								{message.e2e === 'pending' && t('E2E_message_encrypted_placeholder')}
 							</>
 						) : (
-							message.msg
+							!!message.msg && (
+								<MessageContentBody md={toPlainTextRoot(message.msg)} mentions={message.mentions} channels={message.channels} />
+							)
 						)}
 
 						{!!attachments && <Attachments id={message.files?.[0]?._id} attachments={attachments} />}
@@ -102,7 +105,7 @@ const ContextMessage = ({
 						<MessageReportInfo msgId={message._id} />
 					</ReportReasonCollapsible>
 				</MessageContainer>
-				<MessageToolbarWrapper>
+				<MessageToolbarReveal>
 					<MessageToolbar>
 						<MessageToolbarItem
 							icon='checkmark-circled'
@@ -112,7 +115,7 @@ const ContextMessage = ({
 						<MessageToolbarItem icon='arrow-forward' title={t('Moderation_Go_to_message')} onClick={() => onRedirect(message._id)} />
 						<MessageToolbarItem disabled={deleted} icon='trash' title={t('Moderation_Delete_message')} onClick={() => deleteMessage()} />
 					</MessageToolbar>
-				</MessageToolbarWrapper>
+				</MessageToolbarReveal>
 			</Message>
 		</>
 	);

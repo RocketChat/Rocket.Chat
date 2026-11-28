@@ -1,4 +1,10 @@
+import { Accounts } from 'meteor/accounts-base';
 import { MongoInternals } from 'meteor/mongo';
+
+import { expireLoginTokens } from '../../lib/auth/expireLoginTokens';
+
+// Meteor's accounts-base still runs the expiry interval and calls this
+Accounts._expireTokens = expireLoginTokens;
 
 type Callbacks = {
 	added(id: string, record: object): void;
@@ -6,10 +12,8 @@ type Callbacks = {
 	removed(id: string): void;
 };
 
-export const serviceConfigCallbacks = new Set<Callbacks>();
-
 // Stores the callbacks for the disconnection reactivity bellow
-const userCallbacks = new Map();
+const userCallbacks = new Map<string, Set<{ hashedToken: string; callbacks: Callbacks }>>();
 
 // Overrides the native observe changes to prevent database polling and stores the callbacks
 // for the users' tokens to re-implement the reactivity based on our database listeners
@@ -56,16 +60,11 @@ MongoInternals.Connection.prototype._observeChanges = async function (
 		}
 	}
 
-	if (collectionName === 'meteor_accounts_loginServiceConfiguration') {
-		serviceConfigCallbacks.add(callbacks);
-	}
-
 	return {
 		stop(): void {
 			if (cbs) {
 				cbs.delete(data);
 			}
-			serviceConfigCallbacks.delete(callbacks);
 		},
 	};
 };
@@ -82,7 +81,7 @@ export const processOnChange = (diff: Record<string, any>, id: string): void => 
 	const cbs = userCallbacks.get(id);
 	if (cbs) {
 		[...cbs]
-			.filter(({ hashedToken }) => tokens === undefined || !tokens.includes(hashedToken))
+			.filter(({ hashedToken }) => !tokens?.includes(hashedToken))
 			.forEach((item) => {
 				item.callbacks.removed(id);
 				cbs.delete(item);

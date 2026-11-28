@@ -1,19 +1,6 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import {
-	FieldError,
-	Field,
-	FieldLabel,
-	FieldRow,
-	TextAreaInput,
-	TextInput,
-	ButtonGroup,
-	Button,
-	Icon,
-	FieldGroup,
-	Select,
-	InputBox,
-	Callout,
-} from '@rocket.chat/fuselage';
+import { ButtonGroup, Button, Icon, InputBox, Callout } from '@rocket.chat/fuselage';
+import { FieldError, Field, FieldLabel, FieldRow, TextAreaInput, FieldGroup, Select, TextInput } from '@rocket.chat/fuselage-forms';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { validateEmail } from '@rocket.chat/tools';
 import {
@@ -27,7 +14,7 @@ import {
 } from '@rocket.chat/ui-client';
 import { usePermission, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useContext, useEffect, useId, useMemo } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useWatch, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useDownloadExportMutation } from './useDownloadExportMutation';
@@ -59,16 +46,7 @@ const ExportMessages = () => {
 
 	const roomName = room?.t && roomCoordinator.getRoomName(room.t, room);
 
-	const {
-		control,
-		formState: { errors, isSubmitting, isDirty, isSubmitted },
-		watch,
-		register,
-		setValue,
-		handleSubmit,
-		clearErrors,
-		reset,
-	} = useForm<ExportMessagesFormValues>({
+	const { control, getValues, register, setValue, handleSubmit, clearErrors, reset } = useForm<ExportMessagesFormValues>({
 		defaultValues: {
 			type: isE2ERoom ? 'download' : 'email',
 			dateFrom: '',
@@ -76,13 +54,11 @@ const ExportMessages = () => {
 			toUsers: [],
 			additionalEmails: '',
 			messagesCount: 0,
-			subject: t('Mail_Messages_Subject', {
-				postProcess: 'sprintf',
-				sprintf: [roomName],
-			}),
+			subject: t('Mail_Messages_Subject', { roomName }),
 			format: isE2ERoom ? 'json' : 'html',
 		},
 	});
+	const { errors, isSubmitting, isDirty, isSubmitted } = useFormState({ control });
 
 	const exportOptions = useMemo<SelectOption[]>(
 		() => [
@@ -122,7 +98,9 @@ const ExportMessages = () => {
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
 	const messageCount = useCountSelected();
 
-	const { type, toUsers } = watch();
+	const watched = useWatch({ control });
+	const { type } = watched;
+	const toUsers = watched.toUsers ?? [];
 
 	useEffect(() => {
 		if (type === 'email') {
@@ -197,13 +175,8 @@ const ExportMessages = () => {
 	};
 
 	const formId = useId();
-	const methodField = useId();
-	const formatField = useId();
-	const toUsersField = useId();
 	const dateFromField = useId();
 	const dateToField = useId();
-	const additionalEmailsField = useId();
-	const subjectField = useId();
 
 	return (
 		<ContextualbarDialog aria-labelledby={`${formId}-title`}>
@@ -212,18 +185,17 @@ const ExportMessages = () => {
 				<ContextualbarTitle id={`${formId}-title`}>{t('Export_Messages')}</ContextualbarTitle>
 				<ContextualbarClose onClick={closeTab} />
 			</ContextualbarHeader>
-			<ContextualbarScrollableContent>
+			<ContextualbarScrollableContent paddingBlockEnd='x32'>
 				<form ref={formFocus} tabIndex={-1} aria-labelledby={`${formId}-title`} id={formId} onSubmit={handleSubmit(handleExport)}>
 					<FieldGroup>
 						<Field>
-							<FieldLabel htmlFor={methodField}>{t('Method')}</FieldLabel>
+							<FieldLabel>{t('Method')}</FieldLabel>
 							<FieldRow>
 								<Controller
 									name='type'
 									control={control}
 									render={({ field }) => (
 										<Select
-											id={methodField}
 											data-testid='export-messages-method'
 											{...field}
 											placeholder={t('Type')}
@@ -235,7 +207,7 @@ const ExportMessages = () => {
 							</FieldRow>
 						</Field>
 						<Field>
-							<FieldLabel htmlFor={formatField}>{t('Output_format')}</FieldLabel>
+							<FieldLabel>{t('Output_format')}</FieldLabel>
 							<FieldRow>
 								<Controller
 									name='format'
@@ -254,7 +226,6 @@ const ExportMessages = () => {
 										return (
 											<Select
 												{...field}
-												id={formatField}
 												data-testid='export-messages-output-format'
 												disabled={type === 'email'}
 												placeholder={t('Format')}
@@ -292,7 +263,7 @@ const ExportMessages = () => {
 						{type === 'email' && (
 							<>
 								<Field>
-									<FieldLabel htmlFor={toUsersField}>{t('To_users')}</FieldLabel>
+									<FieldLabel>{t('To_users')}</FieldLabel>
 									<FieldRow>
 										<Controller
 											name='toUsers'
@@ -300,7 +271,7 @@ const ExportMessages = () => {
 											rules={{
 												validate: {
 													validateRecipient: (toUsers) => {
-														const additionalEmails = watch('additionalEmails');
+														const additionalEmails = getValues('additionalEmails');
 														if (toUsers?.length > 0 || additionalEmails !== '') {
 															return undefined;
 														}
@@ -308,9 +279,9 @@ const ExportMessages = () => {
 													},
 												},
 											}}
-											render={({ field: { value, onChange, onBlur, name } }) => (
+											render={({ field: { value, onChange, onBlur, name, ...field } }) => (
 												<UserAutoCompleteMultiple
-													id={toUsersField}
+													{...field}
 													value={value}
 													onChange={(value) => {
 														onChange(value);
@@ -318,22 +289,15 @@ const ExportMessages = () => {
 													}}
 													onBlur={onBlur}
 													name={name}
-													aria-label={t('To_users')}
-													aria-describedby={`${toUsersField}-error`}
-													aria-invalid={Boolean(errors?.toUsers?.message)}
 													error={errors?.toUsers?.message}
 												/>
 											)}
 										/>
 									</FieldRow>
-									{errors?.toUsers && (
-										<FieldError role='alert' id={`${toUsersField}-error`}>
-											{errors.toUsers.message}
-										</FieldError>
-									)}
+									{errors?.toUsers && <FieldError>{errors.toUsers.message}</FieldError>}
 								</Field>
 								<Field>
-									<FieldLabel htmlFor={additionalEmailsField}>{t('To_additional_emails')}</FieldLabel>
+									<FieldLabel>{t('To_additional_emails')}</FieldLabel>
 									<FieldRow>
 										<Controller
 											name='additionalEmails'
@@ -350,7 +314,7 @@ const ExportMessages = () => {
 															return undefined;
 														}
 
-														return t('Mail_Message_Invalid_emails', { postProcess: 'sprintf', sprintf: [additionalEmails] });
+														return t('Mail_Message_Invalid_emails', { emails: additionalEmails });
 													},
 													validateRecipient: (additionalEmails) => {
 														if (additionalEmails !== '' || toUsers?.length > 0) {
@@ -361,40 +325,30 @@ const ExportMessages = () => {
 													},
 												},
 											}}
-											render={({ field: { value, onChange, onBlur, name } }) => (
+											render={({ field: { onChange, onBlur, ...field } }) => (
 												<TextInput
-													id={additionalEmailsField}
-													value={value}
+													{...field}
 													onChange={(e) => {
 														onChange(e);
 														clearErrors('toUsers');
 													}}
 													onBlur={onBlur}
-													name={name}
 													placeholder={t('Email_Placeholder_any')}
-													addon={<Icon name='mail' size='x20' />}
-													aria-describedby={`${additionalEmailsField}-error`}
-													aria-invalid={Boolean(errors?.additionalEmails?.message)}
+													endAddon={<Icon name='mail' size='x20' />}
 													error={errors?.additionalEmails?.message}
 												/>
 											)}
 										/>
 									</FieldRow>
-									{errors?.additionalEmails && (
-										<FieldError role='alert' id={`${additionalEmailsField}-error`}>
-											{errors.additionalEmails.message}
-										</FieldError>
-									)}
+									{errors?.additionalEmails && <FieldError>{errors.additionalEmails.message}</FieldError>}
 								</Field>
 								<Field>
-									<FieldLabel htmlFor={subjectField}>{t('Subject')}</FieldLabel>
+									<FieldLabel>{t('Subject')}</FieldLabel>
 									<FieldRow>
 										<Controller
 											name='subject'
 											control={control}
-											render={({ field }) => (
-												<TextAreaInput rows={3} id={subjectField} {...field} addon={<Icon name='edit' size='x20' />} />
-											)}
+											render={({ field }) => <TextAreaInput rows={3} {...field} endAddon={<Icon name='edit' size='x20' />} />}
 										/>
 									</FieldRow>
 								</Field>
@@ -425,7 +379,7 @@ const ExportMessages = () => {
 					<Button type='reset' disabled={!isDirty || isSubmitting} onClick={() => reset()}>
 						{t('Reset')}
 					</Button>
-					<Button loading={isSubmitting} form={formId} primary type='submit'>
+					<Button loading={isSubmitting} form={formId} variant='primary' type='submit'>
 						{type === 'download' ? t('Download') : t('Send')}
 					</Button>
 				</ButtonGroup>

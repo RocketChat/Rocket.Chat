@@ -1,11 +1,12 @@
-import { Box, Icon } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import { Icon, Stack, Text } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
+import FeatureUsageCardBody from '../../layout/FeatureUsageCardBody';
 import FeatureUsageCard from '../FeatureUsageCard';
-import FeatureUsageCardBody from '../FeatureUsageCardBody';
 
-const CountSeatsCard = ({ activeUsers }: { activeUsers: number }): ReactElement => {
+export type CountSeatsCardProps = { activeUsers: number };
+
+const CountSeatsCard = ({ activeUsers }: CountSeatsCardProps) => {
 	const { t } = useTranslation();
 
 	return (
@@ -16,10 +17,10 @@ const CountSeatsCard = ({ activeUsers }: { activeUsers: number }): ReactElement 
 			}}
 		>
 			<FeatureUsageCardBody>
-				<Box fontScale='h1' display='flex' alignItems='center' justifyContent='center'>
-					<Icon color='font-annotation' name='user' size={40} mie={4} />
-					{activeUsers}
-				</Box>
+				<Stack direction='row' align='center' justify='center' gap='x4'>
+					<Icon color='hint' name='user' size={40} />
+					<Text fontScale='h1'>{activeUsers}</Text>
+				</Stack>
 			</FeatureUsageCardBody>
 		</FeatureUsageCard>
 	);

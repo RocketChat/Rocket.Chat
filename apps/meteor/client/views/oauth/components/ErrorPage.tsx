@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import Layout from './Layout';
 import { getErrorMessage } from '../../../lib/errorHandling';
 
-type ErrorPageProps = {
+export type ErrorPageProps = {
 	error: unknown;
 };
 

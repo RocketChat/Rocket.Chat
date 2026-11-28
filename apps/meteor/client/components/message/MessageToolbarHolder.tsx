@@ -1,21 +1,20 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { MessageToolbarWrapper } from '@rocket.chat/fuselage';
+import { useIsVisible } from '@rocket.chat/ui-client';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { Suspense, lazy, memo, useState } from 'react';
 
-import type { MessageActionContext } from '../../../app/ui-utils/client/lib/MessageAction';
+import MessageToolbarReveal from './toolbar/MessageToolbarReveal';
+import type { MessageActionContext } from '../../lib/MessageAction';
 import { useChat } from '../../views/room/contexts/ChatContext';
-import { useIsVisible } from '../../views/room/hooks/useIsVisible';
 
-type MessageToolbarHolderProps = {
+export type MessageToolbarHolderProps = {
 	message: IMessage;
 	context?: MessageActionContext;
 };
 
 const MessageToolbar = lazy(() => import('./toolbar/MessageToolbar'));
 
-const MessageToolbarHolder = ({ message, context }: MessageToolbarHolderProps): ReactElement => {
+const MessageToolbarHolder = ({ message, context }: MessageToolbarHolderProps) => {
 	const chat = useChat();
 	const [ref, isVisible] = useIsVisible();
 	const [isToolbarMenuOpen, setIsToolbarMenuOpen] = useState(false);
@@ -38,7 +37,7 @@ const MessageToolbarHolder = ({ message, context }: MessageToolbarHolderProps): 
 	});
 
 	return (
-		<MessageToolbarWrapper ref={ref} visible={isToolbarMenuOpen}>
+		<MessageToolbarReveal ref={ref} visible={isToolbarMenuOpen}>
 			{showToolbar && depsQueryResult.isSuccess && depsQueryResult.data.room && (
 				<Suspense fallback={null}>
 					<MessageToolbar
@@ -50,7 +49,7 @@ const MessageToolbarHolder = ({ message, context }: MessageToolbarHolderProps): 
 					/>
 				</Suspense>
 			)}
-		</MessageToolbarWrapper>
+		</MessageToolbarReveal>
 	);
 };
 

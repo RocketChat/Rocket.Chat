@@ -29,7 +29,8 @@ export const usePeerAutocomplete = (onSelectPeer: (peerInfo: PeerInfo) => void, 
 		queryFn: async () => {
 			const options = await getAutocompleteOptions(debouncedFilter);
 
-			if (debouncedFilter.length > 0) {
+			// A result already reading exactly as the filter makes the dial option an indistinguishable duplicate of it.
+			if (debouncedFilter.length > 0 && !options.some(({ label }) => label === debouncedFilter)) {
 				return [getFirstOption(debouncedFilter), ...options];
 			}
 
@@ -65,7 +66,7 @@ export const usePeerAutocomplete = (onSelectPeer: (peerInfo: PeerInfo) => void, 
 			}
 
 			if (isFirstPeerAutocompleteOption(value)) {
-				onSelectPeer({ number: value.replace(PREFIX_FIRST_OPTION, '') });
+				onSelectPeer({ type: 'sip', number: value.replace(PREFIX_FIRST_OPTION, '') });
 				return;
 			}
 
@@ -76,6 +77,7 @@ export const usePeerAutocomplete = (onSelectPeer: (peerInfo: PeerInfo) => void, 
 			}
 
 			onSelectPeer({
+				type: 'user',
 				userId: localInfo.value,
 				displayName: localInfo.label,
 				avatarUrl: localInfo.avatarUrl,

@@ -1,16 +1,15 @@
 import type { OptionType } from '@rocket.chat/fuselage';
 import { IconButton, PositionAnimated, Options, useCursor } from '@rocket.chat/fuselage';
-import type * as UiKit from '@rocket.chat/ui-kit';
-import type { ReactElement } from 'react';
+import * as UiKit from '@rocket.chat/ui-kit';
 import { useRef, useCallback, useMemo } from 'react';
 
 import { useStringFromTextObject } from '../hooks/useStringFromTextObject';
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
 
-type OverflowElementProps = BlockProps<UiKit.OverflowElement>;
+export type OverflowElementProps = BlockProps<UiKit.OverflowElement>;
 
-const OverflowElement = ({ block, context }: OverflowElementProps): ReactElement => {
+const OverflowElement = ({ block, context }: OverflowElementProps) => {
 	const [{ loading }, action] = useUiKitState(block, context);
 	const fromTextObjectToString = useStringFromTextObject();
 
@@ -34,11 +33,13 @@ const OverflowElement = ({ block, context }: OverflowElementProps): ReactElement
 	}, [show]);
 
 	const handleSelection = useCallback(
-		([value, _label, _selected, _type, url]: OptionType) => {
-			if (url) {
-				window.open(url);
-			}
-			void action({ target: { value: String(value) } });
+		([value, _label, _selected, _disabled, _type, url]: OptionType) => {
+			const openUrl = () => {
+				if (url && UiKit.isSafeUrl(url)) {
+					window.open(url, '_blank', 'noopener');
+				}
+			};
+			void action({ target: { value: String(value) }, onConfirmed: openUrl });
 			reset();
 			hide();
 		},
@@ -49,7 +50,7 @@ const OverflowElement = ({ block, context }: OverflowElementProps): ReactElement
 		<>
 			<IconButton
 				ref={ref}
-				small
+				size='small'
 				onClick={onClick}
 				onBlur={hide}
 				onKeyUp={handleKeyUp}
@@ -57,7 +58,7 @@ const OverflowElement = ({ block, context }: OverflowElementProps): ReactElement
 				disabled={loading}
 				icon='kebab'
 			/>
-			<PositionAnimated width='auto' visible={visible} anchor={ref} placement='bottom-start'>
+			<PositionAnimated visible={visible} anchor={ref} placement='bottom-start'>
 				<Options onSelect={handleSelection} options={options} cursor={cursor} />
 			</PositionAnimated>
 		</>

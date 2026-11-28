@@ -1,23 +1,19 @@
 import { PasswordInput } from '@rocket.chat/fuselage';
 import { MessageFooterCallout, MessageFooterCalloutAction, MessageFooterCalloutContent } from '@rocket.chat/ui-composer';
-import { useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { Controller, useForm, useFormState } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { useRoom } from '../contexts/RoomContext';
 
-const ComposerJoinWithPassword = (): ReactElement => {
-	const t = useTranslation();
+const ComposerJoinWithPassword = () => {
+	const { t } = useTranslation();
 	const room = useRoom();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const joinChannelEndpoint = useEndpoint('POST', '/v1/channels.join');
-	const {
-		control,
-		handleSubmit,
-		setError,
-		formState: { errors, isDirty },
-	} = useForm({ defaultValues: { joinCode: '' } });
+	const joinChannelEndpoint = useEndpoint('POST', '/v1/rooms.join');
+	const { control, handleSubmit, setError } = useForm({ defaultValues: { joinCode: '' } });
+	const { errors, isDirty } = useFormState({ control });
 
 	const handleJoinChannel = async ({ joinCode }: { joinCode: string }) => {
 		try {

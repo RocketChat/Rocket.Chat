@@ -1,4 +1,4 @@
-/* eslint-disable new-cap */
+/* oxlint-disable new-cap */
 import {
 	AnimatedVisibility,
 	Button,
@@ -12,16 +12,21 @@ import {
 	ModalClose,
 } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
-import { action } from '@storybook/addon-actions';
+import type { Meta, StoryObj } from '@storybook/react';
 import type { ReactNode } from 'react';
+import { action } from 'storybook/actions';
 
 import { UiKitContext, UiKitModal } from '..';
 import * as payloads from './payloads';
 
-type VisibilityType = 'hidden' | 'visible' | 'hiding' | 'unhiding' | undefined;
+const suggestProjects = async ({ value }: { value: string }): Promise<UiKit.BlockSuggestionResponse> => ({
+	options: ['Rocket.Chat', 'Rocket.Chat Apps', 'Rocketeer', 'Livechat', 'Omnichannel']
+		.filter((name) => name.toLowerCase().includes(value.toLowerCase()))
+		.map((name) => ({ text: { type: 'plain_text', text: name }, value: name.toLowerCase().replace(/\W+/g, '-') })),
+});
 
 const DemoModal = ({ children, visible }: { children?: ReactNode; visible: boolean }) => (
-	<AnimatedVisibility visibility={visible ? (AnimatedVisibility.VISIBLE as VisibilityType) : (AnimatedVisibility.HIDDEN as VisibilityType)}>
+	<AnimatedVisibility visibility={visible ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN}>
 		<Modal open={visible}>
 			<ModalHeader>
 				<ModalThumb url='data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==' />
@@ -32,7 +37,7 @@ const DemoModal = ({ children, visible }: { children?: ReactNode; visible: boole
 			<ModalFooter>
 				<ButtonGroup align='end'>
 					<Button onClick={action('cancel')}>Cancel</Button>
-					<Button primary onClick={action('submit')}>
+					<Button variant='primary' onClick={action('submit')}>
 						Submit
 					</Button>
 				</ButtonGroup>
@@ -41,47 +46,54 @@ const DemoModal = ({ children, visible }: { children?: ReactNode; visible: boole
 	</AnimatedVisibility>
 );
 
+type StoryArgs = {
+	blocks: readonly UiKit.LayoutBlock[];
+	errors: Record<string, string>;
+	visible: boolean;
+};
+
 export default {
-	title: 'Surfaces/Modal',
 	argTypes: {
 		blocks: { control: 'object' },
 		errors: { control: 'object' },
-		visible: { control: 'boolean', defaultValue: true },
+		visible: { control: 'boolean' },
 	},
-};
-
-const createStory = (blocks: readonly UiKit.LayoutBlock[], errors = {}) => {
-	const story = ({
-		blocks,
-		errors,
-		visible,
-	}: {
-		blocks: readonly UiKit.LayoutBlock[];
-		errors: Record<string, string>;
-		visible: boolean;
-	}) => (
+	args: {
+		visible: true,
+	},
+	render: ({ blocks, errors, visible }) => (
 		<DemoModal visible={visible}>
 			<UiKitContext.Provider
 				value={{
 					action: action('action'),
 					updateState: action('updateState'),
 					values: {},
+					suggest: suggestProjects,
 					errors,
 				}}
 			>
 				{UiKitModal(blocks)}
 			</UiKitContext.Provider>
 		</DemoModal>
-	);
-	story.args = {
+	),
+} satisfies Meta<StoryArgs>;
+
+const createStory = (blocks: readonly UiKit.LayoutBlock[], errors: Record<string, string> = {}): StoryObj<StoryArgs> => ({
+	args: {
 		blocks,
 		errors,
-	};
-
-	return story;
-};
+	},
+});
 
 export const Divider = createStory(payloads.divider);
+
+export const Header = createStory(payloads.header);
+
+export const Markdown = createStory(payloads.markdown);
+
+export const RichText = createStory(payloads.richText);
+
+export const InputWithRichTextInput = createStory(payloads.inputWithRichTextInput);
 
 export const SectionWithPlainText = createStory(payloads.sectionWithPlainText);
 
@@ -96,6 +108,8 @@ export const SectionWithImageAccessory = createStory(payloads.sectionWithImageAc
 export const SectionWithOverflowMenuAccessory = createStory(payloads.sectionWithOverflowMenuAccessory);
 
 export const SectionWithDatePickerAccessory = createStory(payloads.sectionWithDatePickerAccessory);
+
+export const SectionWithRadioButtonAccessory = createStory(payloads.sectionWithRadioButtonAccessory);
 
 export const ImageWithTitle = createStory(payloads.imageWithTitle);
 
@@ -127,7 +141,31 @@ export const InputWithPlainTextInput = createStory(payloads.inputWithPlainTextIn
 	'input-0': 'Error',
 });
 
+export const InputWithNumberInput = createStory(payloads.inputWithNumberInput, {
+	'input-0': 'Error',
+});
+
+export const InputWithEmailTextInput = createStory(payloads.inputWithEmailTextInput, {
+	'input-0': 'Error',
+});
+
+export const InputWithUrlTextInput = createStory(payloads.inputWithUrlTextInput, {
+	'input-0': 'Error',
+});
+
 export const InputWithMultiUsersSelect = createStory(payloads.inputWithMultiUsersSelect, {
+	'input-0': 'Error',
+});
+
+export const InputWithExternalSelect = createStory(payloads.inputWithExternalSelect);
+
+export const InputWithMultiExternalSelect = createStory(payloads.inputWithMultiExternalSelect);
+
+export const InputWithConversationsSelect = createStory(payloads.inputWithConversationsSelect, {
+	'input-0': 'Error',
+});
+
+export const InputWithMultiConversationsSelect = createStory(payloads.inputWithMultiConversationsSelect, {
 	'input-0': 'Error',
 });
 
@@ -139,12 +177,48 @@ export const InputWithDatePicker = createStory(payloads.inputWithDatePicker, {
 	'input-0': 'Error',
 });
 
+export const InputWithDateTimePicker = createStory(payloads.inputWithDateTimePicker, {
+	'input-0': 'Error',
+});
+
 export const InputWithLinearScale = createStory(payloads.inputWithLinearScale, {
+	'input-0': 'Error',
+});
+
+export const InputWithFileInput = createStory(payloads.inputWithFileInput, {
 	'input-0': 'Error',
 });
 
 export const Conditional = createStory(payloads.conditional);
 
+export const Alert = createStory(payloads.alert);
+
+export const Card = createStory(payloads.card);
+
+export const Container = createStory(payloads.container);
+
+export const ContainerCollapsed = createStory(payloads.containerCollapsed);
+
+export const ContainerWithHeaderDivider = createStory(payloads.containerWithHeaderDivider);
+
+export const LayoutThreeColumns = createStory(payloads.layoutThreeColumns);
+
+export const LayoutWithGridLines = createStory(payloads.layoutWithGridLines);
+
+export const DataTable = createStory(payloads.dataTable);
+
+export const DataVisualizationPie = createStory(payloads.dataVisualizationPie);
+
+export const DataVisualizationBar = createStory(payloads.dataVisualizationBar);
+
+export const DataVisualizationArea = createStory(payloads.dataVisualizationArea);
+
+export const DataVisualizationLine = createStory(payloads.dataVisualizationLine);
+
 export const Callout = createStory(payloads.callout);
 
 export const CalloutWithAction = createStory(payloads.calloutWithAction);
+
+export const Table = createStory(payloads.table);
+
+export const Video = createStory(payloads.video);

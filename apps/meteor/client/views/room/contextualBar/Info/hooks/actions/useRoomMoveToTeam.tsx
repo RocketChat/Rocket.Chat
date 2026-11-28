@@ -1,13 +1,14 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
 import ChannelToTeamModal from '../../ChannelToTeamModal';
 import { useCanEditRoom } from '../useCanEditRoom';
 
 export const useRoomMoveToTeam = (room: IRoom) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -16,7 +17,7 @@ export const useRoomMoveToTeam = (room: IRoom) => {
 
 	const moveChannelToTeam = useEndpoint('POST', '/v1/teams.addRooms');
 
-	const handleMoveToTeam = useEffectEvent(async () => {
+	const handleMoveToTeam = useStableCallback(async () => {
 		const onConfirm = async (teamId: IRoom['teamId']) => {
 			if (!teamId) {
 				throw new Error('teamId not provided');
@@ -32,7 +33,9 @@ export const useRoomMoveToTeam = (room: IRoom) => {
 			}
 		};
 
-		setModal(<ChannelToTeamModal onCancel={() => setModal(null)} onConfirm={onConfirm} />);
+		setModal(
+			<ChannelToTeamModal onCancel={() => setModal(null)} onConfirm={onConfirm} removesAbacAttributes={!!room.abacAttributes?.length} />,
+		);
 	});
 
 	return canMoveToTeam ? handleMoveToTeam : null;

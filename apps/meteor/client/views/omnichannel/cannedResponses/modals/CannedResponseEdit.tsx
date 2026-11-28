@@ -1,10 +1,11 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useId, memo, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import CannedResponseForm from '../components/CannedResponseForm';
 
@@ -17,7 +18,7 @@ export type CannedResponseEditFormData = {
 	departmentId: string;
 };
 
-type CannedResponseEditProps = {
+export type CannedResponseEditProps = {
 	cannedResponseData?: Serialized<IOmnichannelCannedResponse>;
 	departmentData?: Serialized<ILivechatDepartment>;
 	onDelete?: () => void;
@@ -33,7 +34,7 @@ const getInitialData = (cannedResponseData: Serialized<IOmnichannelCannedRespons
 });
 
 const CannedResponseEdit = ({ cannedResponseData, onDelete }: CannedResponseEditProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();
@@ -80,7 +81,7 @@ const CannedResponseEdit = ({ cannedResponseData, onDelete }: CannedResponseEdit
 			>
 				{cannedResponseData?._id && (
 					<ButtonGroup>
-						<Button danger onClick={onDelete}>
+						<Button variant='danger' onClick={onDelete}>
 							{t('Delete')}
 						</Button>
 					</ButtonGroup>
@@ -88,7 +89,7 @@ const CannedResponseEdit = ({ cannedResponseData, onDelete }: CannedResponseEdit
 			</PageHeader>
 			<PageScrollableContentWithShadow>
 				<FormProvider {...methods}>
-					<Box id={formId} onSubmit={handleSubmit(handleSave)} w='full' alignSelf='center' maxWidth='x600' is='form' autoComplete='off'>
+					<Box id={formId} onSubmit={handleSubmit(handleSave)} width='full' alignSelf='center' maxWidth='x600' is='form' autoComplete='off'>
 						<CannedResponseForm />
 					</Box>
 				</FormProvider>
@@ -96,7 +97,7 @@ const CannedResponseEdit = ({ cannedResponseData, onDelete }: CannedResponseEdit
 			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset()}>{t('Cancel')}</Button>
-					<Button form={formId} primary type='submit'>
+					<Button form={formId} variant='primary' type='submit'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

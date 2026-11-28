@@ -1,0 +1,58 @@
+{
+  "status": {
+    "light": {
+      "info": { "value": "{colors.b200}" },
+      "font-on-info": { "value": "{colors.b600}" },
+      "success": { "value": "{colors.g200}" },
+      "font-on-success": { "value": "{colors.g800}" },
+      "danger": { "value": "{colors.r200}" },
+      "font-on-danger": { "value": "{colors.r800}" },
+      "warning": { "value": "{colors.y200}" },
+      "font-on-warning": { "value": "{colors.y950}" },
+      "warning-2": { "value": "{colors.y100}" },
+      "font-on-warning-2": { "value": "{colors.n800}" },
+      "service-1": { "value": "{colors.o200}" },
+      "font-on-service-1": { "value": "{colors.o800}" },
+      "service-2": { "value": "{colors.p200}" },
+      "font-on-service-2": { "value": "{colors.p600}" },
+      "service-3": { "value": "{colors.p700}" },
+      "font-on-service-3": { "value": "{colors.white}" }
+    },
+    "high-contrast": {
+      "info": { "value": "{colors.b200}" },
+      "font-on-info": { "value": "{colors.b800}" },
+      "success": { "value": "{colors.g200}" },
+      "font-on-success": { "value": "{colors.g1000}" },
+      "danger": { "value": "{colors.r200}" },
+      "font-on-danger": { "value": "{colors.r1000}" },
+      "warning": { "value": "{colors.y200}" },
+      "font-on-warning": { "value": "{colors.y1000}" },
+      "warning-2": { "value": "{colors.y100}" },
+      "font-on-warning-2": { "value": "{colors.n800}" },
+      "service-1": { "value": "{colors.o200}" },
+      "font-on-service-1": { "value": "{colors.o1000}" },
+      "service-2": { "value": "{colors.p200}" },
+      "font-on-service-2": { "value": "{colors.p600}" },
+      "service-3": { "value": "{colors.p700}" },
+      "font-on-service-3": { "value": "{colors.white}" }
+    },
+    "dark": {
+      "info": { "value": "#A8C3EB", "type": "color" },
+      "font-on-info": { "value": "#8DB6FC", "type": "color" },
+      "success": { "value": "#C1EBDD", "type": "color" },
+      "font-on-success": { "value": "#58AD90", "type": "color" },
+      "danger": { "value": "#F7CFD4", "type": "color" },
+      "font-on-danger": { "value": "#D88892", "type": "color" },
+      "warning": { "value": "#FEEFBE", "type": "color" },
+      "font-on-warning": { "value": "#CFB26C", "type": "color" },
+      "warning-2": { "value": "#3C3625", "type": "color" },
+      "font-on-warning-2": { "value": "#FFFFFF", "type": "color" },
+      "service-1": { "value": "#FCE3CF", "type": "color" },
+      "font-on-service-1": { "value": "#CA9163", "type": "color" },
+      "service-2": { "value": "#EDD0F7", "type": "color" },
+      "font-on-service-2": { "value": "#C393D2", "type": "color" },
+      "service-3": { "value": "#5F1477", "type": "color" },
+      "font-on-service-3": { "value": "#FFFFFF", "type": "color" }
+    }
+  }
+}

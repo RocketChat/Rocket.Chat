@@ -1,12 +1,11 @@
-import { Button, Box, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { UserAutoComplete } from '@rocket.chat/ui-client';
+import { Button, Box, Field, FieldLabel, FieldRow, Stack } from '@rocket.chat/fuselage';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { UserAutoComplete, useEndpointMutation } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useEndpointMutation } from '../../../../hooks/useEndpointMutation';
 import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
 
 const AddAgent = () => {
@@ -25,7 +24,7 @@ const AddAgent = () => {
 		},
 	});
 
-	const handleSave = useEffectEvent(async () => {
+	const handleSave = useStableCallback(async () => {
 		await saveAction({ username });
 	});
 
@@ -40,10 +39,12 @@ const AddAgent = () => {
 			<Field>
 				<FieldLabel htmlFor={usernameFieldId}>{t('Username')}</FieldLabel>
 				<FieldRow>
-					<UserAutoComplete id={usernameFieldId} value={username} onChange={handleChange} />
-					<Button disabled={!username} onClick={handleSave} mis={8} primary>
-						{t('Add_agent')}
-					</Button>
+					<Stack direction='row' align='center' justify='space-between' grow gap={8}>
+						<UserAutoComplete id={usernameFieldId} value={username} onChange={handleChange} />
+						<Button disabled={!username} onClick={handleSave} variant='primary'>
+							{t('Add_agent')}
+						</Button>
+					</Stack>
 				</FieldRow>
 			</Field>
 		</Box>

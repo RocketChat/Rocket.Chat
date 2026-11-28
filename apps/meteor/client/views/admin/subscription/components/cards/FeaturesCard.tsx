@@ -1,8 +1,8 @@
-import { Box, Card, CardBody, CardControls, CardTitle, FramedIcon } from '@rocket.chat/fuselage';
+import { Card, CardBody, CardControls, CardTitle, FramedIcon, Stack, Text } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import FeatureListItem from '../../layout/FeatureListItem';
 import { PRICING_LINK } from '../../utils/links';
 import InfoTextIconModal from '../InfoTextIconModal';
 
@@ -13,7 +13,7 @@ type FeatureSet = {
 	infoText?: string;
 };
 
-type FeaturesCardProps = {
+export type FeaturesCardProps = {
 	activeModules: string[];
 	isEnterprise: boolean;
 };
@@ -55,11 +55,11 @@ const getFeatureSet = (modules: string[], isEnterprise: boolean): FeatureSet[] =
 		},
 	];
 
-	// eslint-disable-next-line no-nested-ternary
+	// oxlint-disable-next-line no-nested-ternary
 	return featureSet.sort(({ success: a }, { success: b }) => (a === b ? 0 : a ? -1 : 1));
 };
 
-const FeaturesCard = ({ activeModules, isEnterprise }: FeaturesCardProps): ReactElement => {
+const FeaturesCard = ({ activeModules, isEnterprise }: FeaturesCardProps) => {
 	const { t } = useTranslation();
 	const isSmall = useMediaQuery('(min-width: 1180px)');
 
@@ -67,17 +67,20 @@ const FeaturesCard = ({ activeModules, isEnterprise }: FeaturesCardProps): React
 		<Card>
 			<CardTitle>{!isEnterprise ? t('Unlock_premium_capabilities') : t('Includes')}</CardTitle>
 			<CardBody>
-				<Box display='flex' flexWrap='wrap' justifyContent='space-between' flexDirection={isSmall ? 'row' : 'column'}>
+				<Stack is='ul' direction={isSmall ? 'row' : 'column'} justify='space-between' wrap>
 					{getFeatureSet(activeModules, isEnterprise).map(({ success, title, infoText }, index) => (
-						<Box key={`feature_${index}`} display='flex' alignItems='center' mbe={4} width={isSmall ? '50%' : 'full'}>
-							<FramedIcon success={success} icon={success ? 'check' : 'lock'} />
-							<Box is='p' fontScale='p2' mis={12} mie={2} color='font-secondary-info'>
+						<FeatureListItem
+							key={`feature_${index}`}
+							twoColumns={isSmall}
+							icon={<FramedIcon success={success} icon={success ? 'check' : 'lock'} />}
+							action={infoText && <InfoTextIconModal title={t(title)} infoText={t(infoText)} />}
+						>
+							<Text is='p' fontScale='p2' color='secondary-info'>
 								{t(title)}
-							</Box>
-							{infoText && <InfoTextIconModal title={t(title)} infoText={t(infoText)} />}
-						</Box>
+							</Text>
+						</FeatureListItem>
 					))}
-				</Box>
+				</Stack>
 			</CardBody>
 			<CardControls>
 				<a target='_blank' rel='noopener noreferrer' href={PRICING_LINK}>

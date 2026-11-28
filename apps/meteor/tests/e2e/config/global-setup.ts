@@ -1,11 +1,14 @@
 import addCustomOAuth from '../fixtures/addCustomOAuth';
+import enableOmnichannel from '../fixtures/enableOmnichannel';
 import injectInitialData from '../fixtures/inject-initial-data';
-import insertApp from '../fixtures/insert-apps';
+import { insertDefaultTestApp } from '../utils/apps';
 
 export default async function (): Promise<void> {
 	await injectInitialData();
 
-	await insertApp();
+	await insertDefaultTestApp();
 
 	await addCustomOAuth();
+
+	await enableOmnichannel();
 }

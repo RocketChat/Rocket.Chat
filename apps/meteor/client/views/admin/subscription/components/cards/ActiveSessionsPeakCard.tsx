@@ -1,15 +1,14 @@
-import { Box, Skeleton } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import { Skeleton, Stack, Text } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import { useStatistics } from '../../../../hooks/useStatistics';
+import FeatureUsageCardBody from '../../layout/FeatureUsageCardBody';
 import type { CardProps } from '../FeatureUsageCard';
 import FeatureUsageCard from '../FeatureUsageCard';
-import FeatureUsageCardBody from '../FeatureUsageCardBody';
 import UpgradeButton from '../UpgradeButton';
 
-const ActiveSessionsPeakCard = (): ReactElement => {
+const ActiveSessionsPeakCard = () => {
 	const { t } = useTranslation();
 	const { data, isLoading } = useStatistics();
 	const formatDate = useFormatDate();
@@ -26,7 +25,7 @@ const ActiveSessionsPeakCard = (): ReactElement => {
 		infoText: t('ActiveSessionsPeak_InfoText'),
 		...(exceedLimit && {
 			upgradeButton: (
-				<UpgradeButton target='active-session-peak-card' action='upgrade' small>
+				<UpgradeButton target='active-session-peak-card' action='upgrade' size='small'>
 					{t('Upgrade')}
 				</UpgradeButton>
 			),
@@ -45,12 +44,12 @@ const ActiveSessionsPeakCard = (): ReactElement => {
 
 	return (
 		<FeatureUsageCard card={card}>
-			<Box color='font-secondary-info' textAlign='center'>
-				<Box fontScale='h1' color={exceedLimit ? 'font-danger' : 'font-default'} mbe={12}>
+			<Stack align='center' gap='x12'>
+				<Text fontScale='h1' color={exceedLimit ? 'danger' : 'default'}>
 					{used} / {total}
-				</Box>
-				{formatDate(new Date())}
-			</Box>
+				</Text>
+				<Text color='secondary-info'>{formatDate(new Date())}</Text>
+			</Stack>
 		</FeatureUsageCard>
 	);
 };

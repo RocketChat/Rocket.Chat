@@ -1,5 +1,5 @@
-import type { Actionable } from '../Actionable';
-import type { PlainText } from '../text/PlainText';
+import type { Actionable } from '../Actionable.js';
+import type { PlainText } from '../text/PlainText.js';
 
 export type ButtonElement = Actionable<{
 	type: 'button';
@@ -8,4 +8,6 @@ export type ButtonElement = Actionable<{
 	value?: string;
 	style?: 'primary' | 'secondary' | 'danger' | 'warning' | 'success';
 	secondary?: boolean;
+	/** What assistive technology announces instead of `text`, when the visible text alone is ambiguous. */
+	accessibility_label?: string;
 }>;

@@ -1,9 +1,9 @@
-import { Box, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow, PasswordInput } from '@rocket.chat/fuselage';
+import { Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow, PasswordInput } from '@rocket.chat/fuselage';
 import { PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes } from 'react';
 import { useId } from 'react';
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller, useFormContext, useFormState, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useAllowPasswordChange } from './useAllowPasswordChange';
@@ -28,15 +28,10 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	const confirmPasswordId = useId();
 	const passwordVerifierId = useId();
 
-	const {
-		watch,
-		formState: { errors },
-		handleSubmit,
-		reset,
-		control,
-	} = useFormContext<PasswordFieldValues>();
+	const { handleSubmit, reset, control } = useFormContext<PasswordFieldValues>();
+	const { errors } = useFormState({ control });
 
-	const password = watch('password');
+	const password = useWatch({ control, name: 'password' });
 	const passwordIsValid = useValidatePassword(password);
 	const { allowPasswordChange } = useAllowPasswordChange();
 
@@ -57,7 +52,7 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	};
 
 	return (
-		<Box {...props} is='form' autoComplete='off' onSubmit={handleSubmit(handleSave)}>
+		<form {...props} autoComplete='off' onSubmit={handleSubmit(handleSave)}>
 			<FieldGroup>
 				<Field>
 					<FieldLabel htmlFor={passwordId}>{t('New_password')}</FieldLabel>
@@ -74,7 +69,6 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 									{...field}
 									id={passwordId}
 									error={errors.password?.message}
-									flexGrow={1}
 									disabled={!allowPasswordChange}
 									aria-describedby={getAriaDescribedbyForPassword(
 										passwordVerifierId,
@@ -110,7 +104,6 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 									{...field}
 									id={confirmPasswordId}
 									error={errors.confirmationPassword?.message}
-									flexGrow={1}
 									disabled={!allowPasswordChange || !passwordIsValid}
 									aria-required={password !== '' ? 'true' : 'false'}
 									aria-invalid={errors.confirmationPassword ? 'true' : 'false'}
@@ -126,7 +119,7 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 					)}
 				</Field>
 			</FieldGroup>
-		</Box>
+		</form>
 	);
 };
 

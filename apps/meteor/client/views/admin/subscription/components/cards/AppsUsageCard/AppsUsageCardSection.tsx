@@ -1,7 +1,9 @@
-import { Box, ProgressBar } from '@rocket.chat/fuselage';
+import { ProgressBar, Text } from '@rocket.chat/fuselage';
 import { useId, type ReactNode } from 'react';
 
-type AppsUsageCardSectionProps = {
+import AppsUsageMeter from '../../../layout/AppsUsageMeter';
+
+export type AppsUsageCardSectionProps = {
 	title: ReactNode;
 	tip?: string;
 	appsCount: number;
@@ -15,15 +17,19 @@ const AppsUsageCardSection = ({ title, tip, appsCount, appsMaxCount, warningThre
 	const labelId = useId();
 
 	return (
-		<Box fontScale='c1' mb={12} title={tip} display='flex' flexDirection='column' width='100%'>
-			<Box display='flex' flexGrow='1' justifyContent='space-between' mbe={4}>
-				<div id={labelId}>{title}</div>
-
-				<Box color={warningThresholdCrossed ? 'status-font-on-danger' : 'status-font-on-success'}>
+		<AppsUsageMeter
+			title={tip}
+			label={
+				<Text id={labelId} fontScale='c1'>
+					{title}
+				</Text>
+			}
+			count={
+				<Text fontScale='c1' color={warningThresholdCrossed ? 'status-font-on-danger' : 'status-font-on-success'}>
 					{appsCount} / {appsMaxCount}
-				</Box>
-			</Box>
-
+				</Text>
+			}
+		>
 			<ProgressBar
 				percentage={percentage}
 				variant={warningThresholdCrossed ? 'danger' : 'success'}
@@ -33,7 +39,7 @@ const AppsUsageCardSection = ({ title, tip, appsCount, appsMaxCount, warningThre
 				aria-valuemax={100}
 				aria-valuenow={percentage}
 			/>
-		</Box>
+		</AppsUsageMeter>
 	);
 };
 

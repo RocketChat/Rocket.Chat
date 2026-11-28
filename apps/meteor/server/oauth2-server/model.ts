@@ -8,7 +8,7 @@ import type {
 	Token,
 	User,
 } from '@node-oauth/oauth2-server';
-import { OAuthApps, OAuthAuthCodes, OAuthAccessTokens, OAuthRefreshTokens } from '@rocket.chat/models';
+import { OAuthApps, OAuthAuthCodes, OAuthAccessTokens, OAuthRefreshTokens, Users } from '@rocket.chat/models';
 
 export type ModelConfig = {
 	debug?: boolean;
@@ -25,7 +25,13 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 
 	async verifyScope(token: Token, scope: string | string[]): Promise<boolean> {
 		if (this.debug === true) {
-			console.log('[OAuth2Server]', 'in grantTypeAllowed (clientId:', token.client.id, ', grantType:', `${scope})`);
+			console.log(
+				'[OAuth2Server]',
+				'in grantTypeAllowed (clientId:',
+				token.client.id,
+				', grantType:',
+				`${Array.isArray(scope) ? scope.join(',') : scope})`,
+			);
 		}
 
 		if (!Array.isArray(scope)) {
@@ -51,6 +57,11 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 
 		if (!client) {
 			throw new Error('Invalid clientId');
+		}
+
+		const user = await Users.findOneActiveById(token.userId, { projection: { _id: 1 } });
+		if (!user) {
+			return;
 		}
 
 		const result: Token = {
@@ -116,13 +127,14 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 				grants: client.grants,
 			},
 			redirectUri: code.redirectUri,
+			...(code.codeChallenge && { codeChallenge: code.codeChallenge, codeChallengeMethod: code.codeChallengeMethod }),
 		};
 
 		return authCode;
 	}
 
 	async saveAuthorizationCode(
-		code: Pick<AuthorizationCode, 'authorizationCode' | 'expiresAt' | 'redirectUri' | 'scope'>,
+		code: Pick<AuthorizationCode, 'authorizationCode' | 'expiresAt' | 'redirectUri' | 'scope' | 'codeChallenge' | 'codeChallengeMethod'>,
 		client: Client,
 		user: User,
 	): Promise<AuthorizationCode | Falsey> {
@@ -141,19 +153,13 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 			);
 		}
 
-		await OAuthAuthCodes.updateOne(
-			{ authCode: code.authorizationCode },
-			{
-				$set: {
-					authCode: code.authorizationCode,
-					clientId: client.id,
-					userId: user.id,
-					expires: code.expiresAt,
-					redirectUri: code.redirectUri,
-				},
-			},
-			{ upsert: true },
-		);
+		await OAuthAuthCodes.upsertByAuthCode(code.authorizationCode, {
+			clientId: client.id,
+			userId: user.id,
+			expires: code.expiresAt,
+			redirectUri: code.redirectUri,
+			...(code.codeChallenge && { codeChallenge: code.codeChallenge, codeChallengeMethod: code.codeChallengeMethod }),
+		});
 
 		const newCode = {
 			...code,
@@ -228,8 +234,13 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 			throw new Error('Invalid clientId');
 		}
 
+		const user = await Users.findOneActiveById(token.userId, { projection: { _id: 1 } });
+		if (!user) {
+			throw new Error('Invalid token');
+		}
+
 		const result: RefreshToken = {
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 			refreshToken: token.refreshToken!,
 			// Keep compatibility with old collection
 			// Deprecated: Remove on next major within a migration

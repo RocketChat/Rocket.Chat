@@ -5,9 +5,9 @@ import { License } from '@rocket.chat/license';
 import moment from 'moment';
 
 import { OmnichannelQueue } from './queue';
-import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
-import { notifyAgentStatusChanged } from '../../../app/livechat/server/lib/omni-users';
-import { settings } from '../../../app/settings/server';
+import { RoutingManager } from '../../lib/omnichannel/RoutingManager';
+import { notifyAgentStatusChanged } from '../../lib/omnichannel/omni-users';
+import { settings } from '../../settings';
 
 export class OmnichannelService extends ServiceClassInternal implements IOmnichannelService {
 	protected name = 'omnichannel';
@@ -34,21 +34,27 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 
 	override async started() {
 		settings.watchMultiple(['Livechat_enabled', 'Livechat_Routing_Method'], () => {
-			this.queueWorker.shouldStart();
+			void this.queueWorker.shouldStart();
 		});
 
 		License.onLimitReached('monthlyActiveContacts', async (): Promise<void> => {
-			this.queueWorker.isRunning() && (await this.queueWorker.stop());
+			if (this.queueWorker.isRunning()) {
+				await this.queueWorker.stop();
+			}
 		});
 
 		License.onValidateLicense(async (): Promise<void> => {
-			RoutingManager.isMethodSet() && (await this.queueWorker.shouldStart());
+			if (RoutingManager.isMethodSet()) {
+				await this.queueWorker.shouldStart();
+			}
 		});
 
 		// NOTE: When there's no license or license is invalid, we fallback to CE behavior
 		// CE behavior means there's no MAC limit, so we start the queue
 		License.onInvalidateLicense(async (): Promise<void> => {
-			this.queueWorker.isRunning() && (await this.queueWorker.shouldStart());
+			if (this.queueWorker.isRunning()) {
+				await this.queueWorker.shouldStart();
+			}
 		});
 	}
 

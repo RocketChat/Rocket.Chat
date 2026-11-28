@@ -19,33 +19,31 @@ import {
 	FieldGroup,
 	FieldDescription,
 } from '@rocket.chat/fuselage-forms';
-import type { ReactElement, ComponentProps } from 'react';
 import { memo, useCallback, useId } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import FilePreview from './FilePreview';
-import { fileUploadIsValidContentType } from '../../../../../app/utils/client/restrictions';
-import { getMimeTypeFromFileName } from '../../../../../app/utils/lib/mimeTypes';
+import { getMimeTypeFromFileName } from '../../../../../lib/mimeTypes';
+import { fileUploadIsValidContentType } from '../../../../lib/utils/restrictions';
 
-type FileUploadModalProps = {
+export type FileUploadModalProps = {
 	onClose: () => void;
-	onSubmit: (name: string, description?: string) => void;
+	onSubmit: (name: string, altText?: string) => void;
 	file: File;
+	/** Where to load the preview from when `file` holds no bytes. */
+	previewUrl?: string;
 	fileName: string;
-	fileDescription?: string;
+	fileAltText?: string;
 };
 
-const FileUploadModal = ({ onClose, file, fileName, fileDescription = '', onSubmit }: FileUploadModalProps): ReactElement => {
+const FileUploadModal = ({ onClose, file, previewUrl, fileName, fileAltText = '', onSubmit }: FileUploadModalProps) => {
 	const { t } = useTranslation();
 	const fileUploadFormId = useId();
 	const isImage = file.type.startsWith('image/');
 
-	const {
-		control,
-		handleSubmit,
-		formState: { errors, isDirty, isSubmitting },
-	} = useForm({ mode: 'onBlur', defaultValues: { name: fileName, description: fileDescription } });
+	const { control, handleSubmit } = useForm({ mode: 'onBlur', defaultValues: { name: fileName, altText: fileAltText } });
+	const { errors, isDirty, isSubmitting } = useFormState({ control });
 
 	const validateFileName = useCallback(
 		(fieldValue: string) => {
@@ -62,14 +60,8 @@ const FileUploadModal = ({ onClose, file, fileName, fileDescription = '', onSubm
 	return (
 		<Modal
 			aria-labelledby={`${fileUploadFormId}-title`}
-			wrapperFunction={(props: ComponentProps<typeof Box>) => (
-				<Box
-					is='form'
-					id={fileUploadFormId}
-					onSubmit={handleSubmit(({ name, description }) => onSubmit(name, description?.trim() || undefined))}
-					{...props}
-				/>
-			)}
+			onSubmit={handleSubmit(({ name, altText }) => onSubmit(name, altText?.trim()))}
+			formId={fileUploadFormId}
 		>
 			<Box display='flex' flexDirection='column' height='100%'>
 				<ModalHeader>
@@ -77,8 +69,8 @@ const FileUploadModal = ({ onClose, file, fileName, fileDescription = '', onSubm
 					<ModalClose tabIndex={-1} onClick={onClose} />
 				</ModalHeader>
 				<ModalContent>
-					<Box display='flex' maxHeight='x360' w='full' justifyContent='center' alignContent='center' mbe={16}>
-						<FilePreview file={file} description={fileDescription} />
+					<Box display='flex' maxHeight='x360' width='full' justifyContent='center' alignContent='center' marginBlockEnd={16}>
+						<FilePreview file={file} url={previewUrl} altText={fileAltText} />
 					</Box>
 					<FieldGroup>
 						<Field>
@@ -101,7 +93,7 @@ const FileUploadModal = ({ onClose, file, fileName, fileDescription = '', onSubm
 								<FieldLabel>{t('Alternative_text')}</FieldLabel>
 								<FieldDescription>{t('Alt_text_description')}</FieldDescription>
 								<FieldRow>
-									<Controller name='description' control={control} render={({ field }) => <TextAreaInput {...field} />} />
+									<Controller name='altText' control={control} render={({ field }) => <TextAreaInput {...field} />} />
 								</FieldRow>
 							</Field>
 						)}
@@ -109,10 +101,10 @@ const FileUploadModal = ({ onClose, file, fileName, fileDescription = '', onSubm
 				</ModalContent>
 				<ModalFooter>
 					<ModalFooterControllers>
-						<Button secondary onClick={onClose}>
+						<Button variant='secondary' onClick={onClose}>
 							{t('Cancel')}
 						</Button>
-						<Button primary type='submit' disabled={!isDirty} loading={isSubmitting}>
+						<Button variant='primary' type='submit' disabled={!isDirty} loading={isSubmitting}>
 							{t('Update')}
 						</Button>
 					</ModalFooterControllers>

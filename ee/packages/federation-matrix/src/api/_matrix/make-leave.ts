@@ -1,8 +1,8 @@
 import { NotAllowedError, federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
-import { Logger } from '@rocket.chat/logger';
 import { ajv } from '@rocket.chat/rest-typings';
 
+import { logger } from '../logger';
 import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
 
 const isMakeLeaveParamsProps = ajv.compile({
@@ -24,9 +24,6 @@ const isMakeLeaveSuccessResponseProps = ajv.compile({
 							const: 'leave',
 						},
 					},
-				},
-				origin: {
-					type: 'string',
 				},
 				origin_server_ts: {
 					type: 'number',
@@ -56,8 +53,8 @@ const isMakeLeaveErrorResponseProps = ajv.compile({
 });
 
 export const getMatrixMakeLeaveRoutes = () => {
-	const logger = new Logger('matrix-make-leave');
-
+	// GET /_matrix/federation/v1/make_leave/{roomId}/{userId}
+	// https://spec.matrix.org/v1.19/server-server-api/#get_matrixfederationv1make_leaveroomiduserid
 	return new Router('/federation').get(
 		'/v1/make_leave/:roomId/:userId',
 		{
@@ -75,7 +72,7 @@ export const getMatrixMakeLeaveRoutes = () => {
 			const { roomId, userId } = c.req.param();
 			try {
 				// TODO: Remove out of spec attributes being returned
-				const makeLeaveResponse = await federationSDK.makeLeave(roomId, userId);
+				const makeLeaveResponse = await federationSDK.makeLeave(roomId, userId, c.get('authenticatedServer'));
 				return {
 					body: makeLeaveResponse,
 					statusCode: 200,
@@ -86,6 +83,16 @@ export const getMatrixMakeLeaveRoutes = () => {
 						body: {
 							errcode: 'M_FORBIDDEN',
 							error: 'This server does not allow leaving this room based on federation settings.',
+						},
+						statusCode: 403,
+					};
+				}
+
+				if (error instanceof Error && 'errcode' in error && error.errcode === 'M_FORBIDDEN') {
+					return {
+						body: {
+							errcode: 'M_FORBIDDEN',
+							error: error.message,
 						},
 						statusCode: 403,
 					};
