@@ -2836,6 +2836,27 @@ describe('[Chat]', () => {
 
 				expectNoUnreadThreadMessages(userWhoWasFollowingTheThreadSubscription);
 			});
+
+			it('should turn the parent back into a regular message once its last reply is removed', async () => {
+				const firstReplyId = (await sendSimpleMessage({ roomId: testChannel._id, tmid: parentThreadId })).body.message._id;
+				const secondReplyId = (
+					await sendSimpleMessage({ roomId: testChannel._id, tmid: parentThreadId, userCredentials: otherUserCredentials })
+				).body.message._id;
+
+				await deleteMessage({ msgId: firstReplyId, roomId: testChannel._id });
+
+				const parentWithOneReply = await getMessageById({ msgId: parentThreadId });
+				expect(parentWithOneReply).to.have.property('tcount', 1);
+				expect(parentWithOneReply).to.have.property('tlm');
+				expect(parentWithOneReply).to.have.property('replies').that.is.an('array').that.is.not.empty;
+
+				await deleteMessage({ msgId: secondReplyId, roomId: testChannel._id });
+
+				const parentWithoutReplies = await getMessageById({ msgId: parentThreadId });
+				expect(parentWithoutReplies).to.not.have.property('tcount');
+				expect(parentWithoutReplies).to.not.have.property('tlm');
+				expect(parentWithoutReplies).to.not.have.property('replies');
+			});
 		});
 
 		describe('in read-only rooms with unmuted users', () => {

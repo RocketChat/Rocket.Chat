@@ -125,6 +125,7 @@ async function deleteThreadMessage(message: IThreadMessage, user: IUser, room: I
 	}
 
 	if (updatedParentMessage?.tcount === 0) {
+		await Messages.unsetThreadByIdIfEmpty(message.tmid);
 		void notifyOnMessageChange({
 			id: message.tmid,
 		});
