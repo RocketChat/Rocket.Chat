@@ -54,7 +54,7 @@ export const useDepartmentsList = (options: DepartmentsListOptions) => {
 				sort: `{ "name": 1 }`,
 				...(!unitId && {
 					excludeDepartmentId: excludeId,
-					enabled: enabled ? 'true' : 'false',
+					...(enabled !== undefined && { enabled: enabled ? 'true' : 'false' }),
 					showArchived: showArchived ? 'true' : 'false',
 				}),
 			});
