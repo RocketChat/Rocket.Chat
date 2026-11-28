@@ -583,7 +583,8 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 
 		// A kick is the echo of a Rocket.Chat removal — only a voluntary leave has to be mirrored back.
 		server.on('muc.occupantLeft', (event) => {
-			if (event.reason === 'kicked') {
+			// A kick echoes a removal already made in Rocket.Chat; an unreachable occupant stays a member (hosted-muc R19)
+			if (event.reason === 'kicked' || event.reason === 'unreachable') {
 				return;
 			}
 			this.track(

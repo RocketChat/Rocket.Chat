@@ -4,7 +4,7 @@ import type Element from 'ltx/lib/Element';
 
 import type { XMPPServerConfig, ResolvedXMPPServerConfig } from './config';
 import { resolveConfig } from './config';
-import { NotJoinedToRemoteRoomError, ServerNotRunningError } from './errors';
+import { ConnectionFailedError, NotJoinedToRemoteRoomError, ServerNotRunningError } from './errors';
 import type { ConnectionStatus, XMPPServerEventMap } from './events';
 import { normalizeRoomJid, normalizeUserBareJid } from './jid/normalize';
 import type { Logger } from './logger';
@@ -60,7 +60,7 @@ export class XMPPServer {
 			config: this.config,
 			events: this.emitter,
 			logger: this.logger,
-			send: (stanza) => this.reply(stanza),
+			send: (stanza) => this.sendFromRoom(stanza),
 		});
 		this.router = new StanzaRouter({
 			config: this.config,
@@ -336,6 +336,19 @@ export class XMPPServer {
 	/** Sends without waiting; a failed delivery is logged, not thrown. */
 	private reply(stanza: Element): void {
 		this.send(stanza).catch((error: Error) => {
+			this.logger.debug({ err: error, name: stanza.name }, 'Failed to send reply stanza');
+		});
+	}
+
+	/** Like `reply`, but a recipient whose server cannot be reached is taken out of the rooms (hosted-muc R19). */
+	private sendFromRoom(stanza: Element): void {
+		const { s2s } = this;
+		this.send(stanza).catch((error: Error) => {
+			// Stanzas abandoned because our own server is stopping say nothing about the recipient
+			if (error instanceof ConnectionFailedError && s2s && this.s2s === s2s && stanza.attrs.to) {
+				this.muc.removeUnreachable(stanza.attrs.to);
+				return;
+			}
 			this.logger.debug({ err: error, name: stanza.name }, 'Failed to send reply stanza');
 		});
 	}
