@@ -14,21 +14,31 @@ type ThreadsListOptions =
 			text?: string;
 			type: 'unread';
 			tunread: ISubscription['tunread'];
+			drafts?: never;
+	  }
+	| {
+			rid: IMessage['rid'];
+			text?: string;
+			type: 'drafts';
+			tunread?: never;
+			drafts: IMessage['_id'][];
 	  }
 	| {
 			rid: IMessage['rid'];
 			text?: string;
 			type: 'following';
 			tunread?: never;
+			drafts?: never;
 	  }
 	| {
 			rid: IMessage['rid'];
 			text?: string;
 			type?: undefined;
 			tunread?: never;
+			drafts?: never;
 	  };
 
-export const useThreadsList = ({ rid, text, type, tunread }: ThreadsListOptions) => {
+export const useThreadsList = ({ rid, text, type, tunread, drafts }: ThreadsListOptions) => {
 	const getThreadsList = useEndpoint('GET', '/v1/chat.getThreadsList');
 
 	const count = getNumericConfig('threadsListSize', 10);
@@ -52,6 +62,12 @@ export const useThreadsList = ({ rid, text, type, tunread }: ThreadsListOptions)
 
 			if (type === 'unread') {
 				if (!tunread?.includes(message._id)) {
+					return false;
+				}
+			}
+
+			if (type === 'drafts') {
+				if (!drafts?.includes(message._id)) {
 					return false;
 				}
 			}
