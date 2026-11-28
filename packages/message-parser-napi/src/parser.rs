@@ -418,11 +418,11 @@ impl<'a> Parser<'a> {
 
     // ── Char-level helpers (from SKIP_RULES) ─────────────────────────
 
-    fn parse_whitespace(&mut self) -> Option<Inline> {
+    fn parse_whitespace(&mut self) -> Option<()> {
         let s = self.pos;
-        let w = self.consume_while1(Self::is_space)?;
+        self.consume_while1(Self::is_space)?;
         self.emit_text(s, self.pos);
-        Some(Self::plain(w))
+        Some(())
     }
 
     fn parse_space(&mut self) -> Option<char> {
@@ -430,11 +430,11 @@ impl<'a> Parser<'a> {
         if Self::is_space(c) { self.advance(c.len_utf8()); Some(c) } else { None }
     }
 
-    fn parse_any(&mut self) -> Option<Inline> {
+    fn parse_any(&mut self) -> Option<()> {
         let s = self.pos;
-        let c = self.any_char()?;
+        self.any_char()?;
         self.emit_text(s, self.pos);
-        Some(Self::plain(&c.to_string()))
+        Some(())
     }
 
     fn parse_digit(&mut self) -> Option<char> {
@@ -463,57 +463,57 @@ impl<'a> Parser<'a> {
 
     // UTF8NamesValidation generated from grammar AST
 
-    fn parse_plain_run(&mut self) -> Option<Inline> {
+    fn parse_plain_run(&mut self) -> Option<()> {
         let s = self.pos;
-        let run = self.consume_while1(|c| !matches!(c, '*' | '_' | '~' | '\x60' | ':' | '\n' | '<' | '[' | ']' | '!' | ' ' | '\t' | '\u{a0}' | '(' | ')' | '\\' | '|'))?;
+        self.consume_while1(|c| !matches!(c, '*' | '_' | '~' | '\x60' | ':' | '\n' | '<' | '[' | ']' | '!' | ' ' | '\t' | '\u{a0}' | '(' | ')' | '\\' | '|'))?;
         self.emit_text(s, self.pos);
-        Some(Self::plain(run))
+        Some(())
     }
 
-    fn parse_bold_plain_run(&mut self) -> Option<Inline> {
+    fn parse_bold_plain_run(&mut self) -> Option<()> {
         let s = self.pos;
-        let run = self.consume_while1(|c| c != '\n' && c != '*' && c != ' ' && c != '_' && c != '~' && c != '\u{a0}')?;
+        self.consume_while1(|c| c != '\n' && c != '*' && c != ' ' && c != '_' && c != '~' && c != '\u{a0}')?;
         self.emit_text(s, self.pos);
-        Some(Self::plain(run))
+        Some(())
     }
 
-    fn parse_any_bold(&mut self) -> Option<Inline> {
+    fn parse_any_bold(&mut self) -> Option<()> {
         let s = self.pos;
         let c = self.peek_char()?;
-        if c != '\n' && c != '*' && c != ' ' { self.advance(c.len_utf8()); self.emit_text(s, self.pos); Some(Self::plain(&c.to_string())) } else { None }
+        if c != '\n' && c != '*' && c != ' ' { self.advance(c.len_utf8()); self.emit_text(s, self.pos); Some(()) } else { None }
     }
 
-    fn parse_italic_plain_run(&mut self) -> Option<Inline> {
+    fn parse_italic_plain_run(&mut self) -> Option<()> {
         let s = self.pos;
-        let run = self.consume_while1(|c| c != '\n' && c != '_' && c != ' ' && c != '\u{a0}' && c != '*' && c != '~')?;
+        self.consume_while1(|c| c != '\n' && c != '_' && c != ' ' && c != '\u{a0}' && c != '*' && c != '~')?;
         self.emit_text(s, self.pos);
-        Some(Self::plain(run))
+        Some(())
     }
 
-    fn parse_any_italic(&mut self) -> Option<Inline> {
+    fn parse_any_italic(&mut self) -> Option<()> {
         let s = self.pos;
         let c = self.peek_char()?;
-        if c != '\n' && c != '_' && c != ' ' { self.advance(c.len_utf8()); self.emit_text(s, self.pos); Some(Self::plain(&c.to_string())) } else { None }
+        if c != '\n' && c != '_' && c != ' ' { self.advance(c.len_utf8()); self.emit_text(s, self.pos); Some(()) } else { None }
     }
 
-    fn parse_strike_plain_run(&mut self) -> Option<Inline> {
+    fn parse_strike_plain_run(&mut self) -> Option<()> {
         let s = self.pos;
-        let run = self.consume_while1(|c| c != '\n' && c != '~' && c != ' ' && c != '\u{a0}' && c != '*' && c != '_')?;
+        self.consume_while1(|c| c != '\n' && c != '~' && c != ' ' && c != '\u{a0}' && c != '*' && c != '_')?;
         self.emit_text(s, self.pos);
-        Some(Self::plain(run))
+        Some(())
     }
 
-    fn parse_strike_plain_run_full(&mut self) -> Option<Inline> {
+    fn parse_strike_plain_run_full(&mut self) -> Option<()> {
         let s = self.pos;
-        let run = self.consume_while1(|c| c != '\n' && c != '~' && c != ' ' && c != '*' && c != '_' && c != ':' && c != '\x60' && c != '@' && c != '#' && c != '[' && c != ']' && c != '\\' && c != '<' && c != '!' && c != '|')?;
+        self.consume_while1(|c| c != '\n' && c != '~' && c != ' ' && c != '*' && c != '_' && c != ':' && c != '\x60' && c != '@' && c != '#' && c != '[' && c != ']' && c != '\\' && c != '<' && c != '!' && c != '|')?;
         self.emit_text(s, self.pos);
-        Some(Self::plain(run))
+        Some(())
     }
 
-    fn parse_any_strike(&mut self) -> Option<Inline> {
+    fn parse_any_strike(&mut self) -> Option<()> {
         let s = self.pos;
         let c = self.peek_char()?;
-        if c != '\n' && c != '~' && c != ' ' { self.advance(c.len_utf8()); self.emit_text(s, self.pos); Some(Self::plain(&c.to_string())) } else { None }
+        if c != '\n' && c != '~' && c != ' ' { self.advance(c.len_utf8()); self.emit_text(s, self.pos); Some(()) } else { None }
     }
 
     // Inline: scan line hints once, then loop InlineItemPattern / Any
@@ -647,21 +647,21 @@ impl<'a> Parser<'a> {
         Some(())
     }
 
-    fn parse_escaped(&mut self) -> Option<Inline> {
+    fn parse_escaped(&mut self) -> Option<()> {
         let s = self.pos;
         self.expect_str("\\")?;
         let c = self.peek_char()?;
         if matches!(c, '*' | '_' | '~' | '\x60' | '#' | '.') {
             self.advance(1);
             self.emit_text(s, self.pos);
-            Some(Self::plain(&c.to_string()))
+            Some(())
         } else {
             None
         }
     }
 
-    fn parse_blocked_by_javascript(&mut self) -> Option<Inline> {
-        None // unreachable sentinel
+    fn parse_blocked_by_javascript(&mut self) -> Option<()> {
+        None
     }
 
     // Domain / URL helpers (simplified)
