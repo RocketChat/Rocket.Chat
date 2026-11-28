@@ -115,17 +115,11 @@
 	"rcx-sidebar-item": [
 		"packages/fuselage/src/components/Item/Item.styles.scss: .rcx-sidebar-item .rcx-item__row > .rcx-item__actions {"
 	],
-	"rcx-check-box": [
-		"packages/fuselage/src/components/Message/Messages.styles.scss: > li > .rcx-check-box > .rcx-check-box__input:focus + .rcx-check-box__fake {"
-	],
 	"rcx-option": [
 		"packages/fuselage/src/components/Options/Options.styles.scss: .rcx-option--focus:not(.rcx-option--selected):not(:hover),"
 	],
 	"rcx-input-box": [
 		"packages/fuselage/src/components/Select/Select.styles.scss: @extend .rcx-input-box__addon;"
-	],
-	"rcx-divider": [
-		"packages/fuselage/src/components/Sidepanel/Sidepanel.styles.scss: &.rcx-divider {"
 	],
 	"rcx-tag": [
 		"packages/fuselage/src/styles/normalize.scss: a:where(:not(.rcx-button, .rcx-item, .rcx-item__link, .rcx-tag)) {"
