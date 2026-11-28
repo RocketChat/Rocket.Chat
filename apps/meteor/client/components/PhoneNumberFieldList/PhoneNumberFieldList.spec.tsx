@@ -52,6 +52,11 @@ describe('PhoneNumberFieldList', () => {
 	});
 
 	describe('interactions', () => {
+		it('uses a telephone input for phone numbers', () => {
+			render(<TestComponent initialPhones={[{ number: '+15551234567', label: 'Home' }]} />, { wrapper: appRoot });
+
+			expect(getNumberInputs()[0]).toHaveAttribute('type', 'tel');
+		});
 		it('adds a blank row when clicking Add number', async () => {
 			render(<TestComponent initialPhones={[{ number: '+15551234567', label: 'Home' }]} />, { wrapper: appRoot });
 
