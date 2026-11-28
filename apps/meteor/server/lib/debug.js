@@ -2,8 +2,6 @@ import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Logger } from '@rocket.chat/logger';
 import { tracerActiveSpan } from '@rocket.chat/tracing';
 import { Meteor } from 'meteor/meteor';
-import { WebApp } from 'meteor/webapp';
-import _ from 'underscore';
 
 import { getMethodArgs } from './logger/logPayloads';
 import { metrics } from './metrics';
@@ -97,7 +95,7 @@ const wrapMethods = function (name, originalHandler, methodsMap) {
 const originalMeteorMethods = Meteor.methods;
 
 Meteor.methods = function (methodMap) {
-	_.each(methodMap, (handler, name) => {
+	Object.entries(methodMap).forEach(([name, handler]) => {
 		wrapMethods(name, handler, methodMap);
 	});
 	originalMeteorMethods(methodMap);
@@ -132,7 +130,8 @@ Meteor.publish = function (name, func) {
 	});
 };
 
-WebApp.rawConnectHandlers.use((req, res, next) => {
-	res.setHeader('X-Instance-ID', InstanceStatus.id());
+/** @type {import('@rocket.chat/http-router').RootMiddleware} */
+export const instanceIdHeader = async (c, next) => {
+	c.env.outgoing.setHeader('X-Instance-ID', InstanceStatus.id());
 	return next();
-});
+};

@@ -55,21 +55,17 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 			userId,
 		};
 
-		const update: Filter<T> = {
-			$set: {
-				complete: true,
-				uploading: false,
-				progress: 1,
-			},
-		};
+		const $set: Partial<T> = Object.assign(file, {
+			complete: true,
+			uploading: false,
+			progress: 1,
+		});
 
-		update.$set = Object.assign(file, update.$set);
-
-		if (update.$set.type) {
-			update.$set.typeGroup = update.$set.type.split('/').shift();
+		if ($set.type) {
+			$set.typeGroup = $set.type.split('/').shift();
 		}
 
-		return this.updateOne(filter, update);
+		return this.updateOne(filter, { $set });
 	}
 
 	confirmTemporaryFile(fileId: string, userId: string): Promise<Document | UpdateResult> | undefined {

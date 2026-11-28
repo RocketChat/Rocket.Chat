@@ -1,10 +1,12 @@
 import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
-import { Box } from '@rocket.chat/fuselage';
+import { Stack, Text } from '@rocket.chat/fuselage';
 import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import RichContent from '../../../../../components/RichContent';
 import { apiCurlGetter } from '../../../helpers/apiCurlGetter';
+import AppInfoSection from '../../layout/AppInfoSection';
 
 export type AppDetailsAPIsProps = {
 	apis: IApiEndpointMetadata[];
@@ -16,36 +18,31 @@ const AppDetailsAPIs = ({ apis }: AppDetailsAPIsProps) => {
 	const getApiCurl = apiCurlGetter(absoluteUrl);
 
 	return (
-		<>
-			<Box display='flex' flexDirection='column'>
-				<Box fontScale='h4' marginBlock={12}>
-					{t('APIs')}
-				</Box>
+		<AppInfoSection title={<Text fontScale='h4'>{t('APIs')}</Text>}>
+			<Stack gap='x16'>
 				{apis.map((api) => (
-					<Box key={api.path} marginBlock={8}>
-						<Box fontScale='p2m'>
+					<Stack key={api.path} gap='x8'>
+						<Text fontScale='p2m'>
 							{api.methods.join(' | ').toUpperCase()} {api.path}
-						</Box>
+						</Text>
 						{api.methods.map((method, index) => (
-							<Box key={index}>
-								<Box withRichContent>
-									<pre>
-										<code>
-											{getApiCurl(method, api).map((curlAddress, index) => (
-												<Fragment key={index}>
-													{curlAddress}
-													<br />
-												</Fragment>
-											))}
-										</code>
-									</pre>
-								</Box>
-							</Box>
+							<RichContent key={index}>
+								<pre>
+									<code>
+										{getApiCurl(method, api).map((curlAddress, index) => (
+											<Fragment key={index}>
+												{curlAddress}
+												<br />
+											</Fragment>
+										))}
+									</code>
+								</pre>
+							</RichContent>
 						))}
-					</Box>
+					</Stack>
 				))}
-			</Box>
-		</>
+			</Stack>
+		</AppInfoSection>
 	);
 };
 

@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -42,13 +43,6 @@ const { TeamService } = proxyquire.noCallThru().load('./service', {
 		ServiceClassInternal: class {},
 		api: {},
 	},
-	'@rocket.chat/models': {
-		Team,
-		Rooms,
-		Subscriptions: {},
-		Users,
-		TeamMember,
-	},
 	'@rocket.chat/tools': {
 		escapeRegExp: (value: string) => value,
 	},
@@ -85,6 +79,13 @@ const { TeamService } = proxyquire.noCallThru().load('./service', {
 const service = new TeamService();
 
 describe('Team service', () => {
+	before(() => {
+		mockModel('Team', Team);
+		mockModel('Rooms', Rooms);
+		mockModel('Users', Users);
+		mockModel('TeamMember', TeamMember);
+	});
+
 	beforeEach(() => {
 		addUserToRoom.reset();
 		Rooms.findDefaultRoomsForTeam.reset();

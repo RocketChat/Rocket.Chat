@@ -1,5 +1,4 @@
 import { cronJobs } from '@rocket.chat/cron';
-import { Meteor } from 'meteor/meteor';
 
 import { connectWorkspace } from './connectWorkspace';
 import { CloudWorkspaceAccessTokenEmptyError, getWorkspaceAccessToken } from './getWorkspaceAccessToken';
@@ -10,7 +9,7 @@ import { SystemLogger } from '../logger/system';
 
 const licenseCronName = 'Cloud Workspace Sync';
 
-Meteor.startup(async () => {
+export const startCloudWorkspaceSync = async (): Promise<void> => {
 	const { workspaceRegistered } = await retrieveRegistrationStatus();
 
 	if (process.env.REG_TOKEN && process.env.REG_TOKEN !== '' && !workspaceRegistered) {
@@ -54,6 +53,6 @@ Meteor.startup(async () => {
 			SystemLogger.error({ msg: 'An error occurred syncing workspace.', err });
 		}
 	});
-});
+};
 
 export { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope };

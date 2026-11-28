@@ -1,5 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import p from 'proxyquire';
 import sinon from 'sinon';
@@ -12,8 +13,6 @@ const replyMock = sinon.stub();
 const callbacksRunAsyncMock = sinon.stub();
 
 const { processThreads } = p.noCallThru().load('./processThreads.ts', {
-	'@rocket.chat/models': modelsMock,
-	'meteor/meteor': { Meteor: { startup: sinon.stub() } },
 	'./notifyUsersOnMessage': { updateThreadUsersSubscriptions: sinon.stub(), getMentions: getMentionsMock },
 	'./sendNotificationsOnMessage': { sendMessageNotifications: sinon.stub() },
 	'../../lib/callbacks': {
@@ -31,6 +30,10 @@ describe('processThreads', () => {
 
 	const threadReply = (overrides: Record<string, unknown> = {}) =>
 		createFakeMessage({ rid: room._id, tmid: parentMessage._id, u: author, ...overrides });
+
+	before(() => {
+		mockModel('Messages', modelsMock.Messages);
+	});
 
 	beforeEach(() => {
 		callbacksRunAsyncMock.reset();

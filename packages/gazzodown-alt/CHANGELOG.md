@@ -1,5 +1,14 @@
 # @rocket.chat/gazzodown-alt
 
+## 1.0.1-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [fb49d8906cdd4d36825b87ae7d6cf962647c12e6, b096d6a2fbdabccbabc62b03d662c45f68d2e076]:</summary>
+  - @rocket.chat/message-parser@0.33.1-rc.0
+
+  </details>
+
 ## 1.0.0
 
 ### Patch Changes

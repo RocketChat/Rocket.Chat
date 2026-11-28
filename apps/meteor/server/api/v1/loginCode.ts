@@ -1,8 +1,8 @@
 import { LoginCodes } from '@rocket.chat/models';
 import { ajv, validateBadRequestErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
 import type { JSONSchemaType } from 'ajv';
-import { Accounts } from 'meteor/accounts-base';
 
+import { issueLoginToken } from '../../lib/auth/issueLoginToken';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
@@ -53,8 +53,7 @@ const loginCodeEndpoints = API.v1.post(
 
 		const { userId } = loginCode;
 
-		const stampedToken = Accounts._generateStampedLoginToken();
-		await Accounts._insertLoginToken(userId, stampedToken);
+		const stampedToken = await issueLoginToken(userId);
 
 		return API.v1.success({
 			loginToken: stampedToken.token,

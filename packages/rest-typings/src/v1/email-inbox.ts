@@ -5,7 +5,7 @@ import { paginationQueryProperties } from './pagination';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
-type EmailInboxListProps = PaginatedRequest<{}>;
+type EmailInboxListProps = PaginatedRequest<Record<never, never>>;
 
 const EmailInboxListPropsSchema = {
 	type: 'object',

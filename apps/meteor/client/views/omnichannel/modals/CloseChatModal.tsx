@@ -1,35 +1,36 @@
 import type { ILivechatDepartment, Serialized } from '@rocket.chat/core-typings';
 import {
-	Field,
-	FieldGroup,
 	Button,
-	TextInput,
-	Modal,
-	Box,
 	CheckBox,
 	Divider,
 	EmailInput,
+	Field,
+	FieldError,
+	FieldGroup,
+	FieldHint,
 	FieldLabel,
 	FieldRow,
-	FieldError,
-	FieldHint,
+	Modal,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
 	ModalHeader,
 	ModalIcon,
 	ModalTitle,
-	ModalClose,
-	ModalFooter,
-	ModalFooterControllers,
-	ModalContent,
 	Stack,
+	Text,
+	TextInput,
 } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { usePermission, useSetting, useUserPreference, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useCallback, useState, useEffect, useMemo } from 'react';
+import { useSetting, useUserPreference, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import Tags from '../components/Tags';
+import { useCloseChatEntitlements } from '../hooks/useCloseChatEntitlements';
+import { getCloseChatTranscriptChoice } from '../lib/closeChat';
 
 type CloseChatModalFormData = {
 	comment: string;
@@ -66,9 +67,10 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 	} = useForm<CloseChatModalFormData>();
 
 	const commentRequired = useSetting('Livechat_request_comment_when_closing_conversation', true);
-	const alwaysSendTranscript = useSetting('Livechat_transcript_send_always', false);
 	const customSubject = useSetting('Livechat_transcript_email_subject', '');
-	const [tagRequired, setTagRequired] = useState(false);
+
+	// The department decides it, so there is nothing to keep in state.
+	const tagRequired = Boolean(department?.requestTagBeforeClosingChat);
 
 	const tags = watch('tags');
 	const comment = watch('comment');
@@ -77,13 +79,8 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 
 	const userTranscriptEmail = useUserPreference<boolean>('omnichannelTranscriptEmail') ?? false;
 	const userTranscriptPDF = useUserPreference<boolean>('omnichannelTranscriptPDF') ?? false;
-	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
-	const transcriptPDFPermission = usePermission('request-pdf-transcript');
-	const transcriptEmailPermission = usePermission('send-omnichannel-chat-transcript');
 
-	const canSendTranscriptEmail = transcriptEmailPermission && visitorEmail && !alwaysSendTranscript;
-	const canSendTranscriptPDF = transcriptPDFPermission && hasLicense;
-	const canSendTranscript = canSendTranscriptEmail || canSendTranscriptPDF;
+	const { canSendTranscriptEmail, canSendTranscriptPDF, canSendTranscript, alwaysSendTranscript } = useCloseChatEntitlements(visitorEmail);
 
 	const handleTags = (value: string[]): void => {
 		setValue('tags', value);
@@ -91,11 +88,13 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 
 	const onSubmit = useCallback(
 		({ comment, tags, transcriptPDF, transcriptEmail, subject }: CloseChatModalFormData) => {
-			const preferences = {
-				omnichannelTranscriptPDF: !!transcriptPDF,
-				omnichannelTranscriptEmail: alwaysSendTranscript ? true : !!transcriptEmail,
-			};
-			const requestData = transcriptEmail && visitorEmail ? { email: visitorEmail, subject } : undefined;
+			const { preferences, requestData } = getCloseChatTranscriptChoice({
+				alwaysSendTranscript,
+				transcriptPDF: !!transcriptPDF,
+				transcriptEmail: !!transcriptEmail,
+				visitorEmail,
+				subject,
+			});
 
 			if (!comment?.trim() && commentRequired) {
 				setError('comment', { type: 'custom', message: t('Required_field', { field: t('Comment') }) });
@@ -125,12 +124,6 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 	}, [comment, commentRequired, errors, tagRequired, tags, transcriptEmail, visitorEmail, subject]);
 
 	useEffect(() => {
-		if (department?.requestTagBeforeClosingChat) {
-			setTagRequired(true);
-		}
-	}, [department]);
-
-	useEffect(() => {
 		if (commentRequired) {
 			setFocus('comment');
 		}
@@ -155,17 +148,14 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 	if (commentRequired || tagRequired || canSendTranscript) {
 		return (
 			// TODO: Replace Modal with GenericModal
-			<Modal
-				aria-label={t('Wrap_up_conversation')}
-				wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} />}
-			>
+			<Modal aria-label={t('Wrap_up_conversation')} onSubmit={handleSubmit(onSubmit)}>
 				<ModalHeader>
 					<ModalIcon name='baloon-close-top-right' />
 					<ModalTitle>{t('Wrap_up_conversation')}</ModalTitle>
 					<ModalClose onClick={onCancel} />
 				</ModalHeader>
 				<ModalContent>
-					<Box color='annotation'>{t('Close_room_description')}</Box>
+					<Text color='annotation'>{t('Close_room_description')}</Text>
 					<FieldGroup>
 						<Field>
 							<FieldLabel required={commentRequired}>{t('Comment')}</FieldLabel>
@@ -220,7 +210,6 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 														<FieldRow>
 															<TextInput
 																{...register('subject', { required: true })}
-																className='active'
 																error={errors.subject && t('Required_field', { field: t('Subject') })}
 															/>
 														</FieldRow>

@@ -3,7 +3,7 @@ import { Box, Item, ItemContent, ItemGroupHeader, ItemGroupTitle, ItemTitle, Pop
 import { Random } from '@rocket.chat/random';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ForwardedRef, ReactNode } from 'react';
-import { forwardRef, useEffect, useId, useImperativeHandle } from 'react';
+import { forwardRef, useId, useImperativeHandle } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { ComposerBoxPopupProps } from './ComposerBoxPopup';
@@ -17,6 +17,8 @@ const optionsStyle = css`
 		flex-shrink: 0;
 	}
 `;
+
+const scrollIntoViewNearest = (element: HTMLElement | null) => element?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
 export type ComposerBoxPopupPreviewProps = ComposerBoxPopupProps<ComposerBoxPopupPreviewItem> & {
 	title?: ReactNode;
@@ -100,15 +102,6 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 
 	const isLoading = items.some((item) => item.isLoading && item.fetchStatus !== 'idle');
 
-	useEffect(() => {
-		if (focused) {
-			const element = document.getElementById(`popup-item-${focused._id}`);
-			if (element) {
-				element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-			}
-		}
-	}, [focused]);
-
 	if (suspended) {
 		return null;
 	}
@@ -145,6 +138,7 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 							<Item
 								key={item._id}
 								id={`popup-item-${item._id}`}
+								ref={item === focused ? scrollIntoViewNearest : undefined}
 								role='option'
 								{...getActiveDescendantOptionProps(item === focused, focusVisible, () => hover?.(item))}
 								onClick={() => select(item)}

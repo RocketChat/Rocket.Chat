@@ -7,7 +7,7 @@ import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
 import { notifyOnSettingChangedById } from '../../../lib/notifyListener';
 import { settings } from '../../../settings';
 import { updateAuditedByUser } from '../../../settings/lib/auditedSettingUpdates';
-import Bridge from '../irc-bridge';
+import { startIrcBridge } from '../startIrcBridge';
 
 declare module '@rocket.chat/ddp-client' {
 	interface ServerMethods {
@@ -56,25 +56,7 @@ Meteor.methods<ServerMethods>({
 			};
 		}
 
-		setTimeout(async () => {
-			// Normalize the config values
-			const config = {
-				server: {
-					protocol: settings.get('IRC_Protocol'),
-					host: settings.get('IRC_Host'),
-					port: settings.get('IRC_Port'),
-					name: settings.get('IRC_Name'),
-					description: settings.get('IRC_Description'),
-				},
-				passwords: {
-					local: settings.get('IRC_Local_Password'),
-					peer: settings.get('IRC_Peer_Password'),
-				},
-			};
-			// TODO: is this the best way to do this? is this really necessary?
-			Meteor.ircBridge = new Bridge(config);
-			await Meteor.ircBridge.init();
-		}, 300);
+		setTimeout(() => void startIrcBridge(), 300);
 
 		return {
 			message: 'Connection_Reset',
@@ -82,10 +64,3 @@ Meteor.methods<ServerMethods>({
 		};
 	},
 });
-
-declare module 'meteor/meteor' {
-	// oxlint-disable-next-line @typescript-eslint/no-namespace
-	namespace Meteor {
-		export let ircBridge: Bridge;
-	}
-}

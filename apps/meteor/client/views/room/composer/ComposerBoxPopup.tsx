@@ -14,10 +14,12 @@ import { ITEM_MEDIA_SIZE } from '@rocket.chat/ui-avatar';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import { useEffect, memo, useMemo, useRef, useId } from 'react';
+import { memo, useMemo, useRef, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getActiveDescendantOptionProps } from '../../../hooks/getActiveDescendantOptionProps';
+
+const scrollIntoViewNearest = (element: HTMLElement | null) => element?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
 export type ComposerBoxPopupProps<
 	T extends {
@@ -94,17 +96,8 @@ function ComposerBoxPopup<
 
 	const isLoading = items.some((item) => item.isLoading && item.fetchStatus !== 'idle');
 
-	useEffect(() => {
-		if (focused) {
-			const element = document.getElementById(`popup-item-${focused._id}`);
-			if (element) {
-				element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-			}
-		}
-	}, [focused]);
-
 	return (
-		<Box position='relative' marginBlockEnd={8}>
+		<Box display='flex' flexDirection='column' minHeight={0} marginBlockEnd={8}>
 			<PopoverSurface elevation='1' flush ref={composerBoxPopupRef}>
 				{title && (
 					<Box backgroundColor='tint'>
@@ -134,6 +127,7 @@ function ComposerBoxPopup<
 								<Item
 									key={index}
 									id={`popup-item-${item._id}`}
+									ref={item === focused ? scrollIntoViewNearest : undefined}
 									role='option'
 									inset='md'
 									title={getOptionTitle(item)}

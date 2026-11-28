@@ -1296,7 +1296,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		options?: { offset?: number; count?: number; sort?: { [k: string]: SortDirection } };
 		extraQuery?: Filter<IOmnichannelRoom>;
 	}) {
-		const isRoomNameExactTerm = roomName?.startsWith(`"`) && roomName?.endsWith(`"`);
+		const isRoomNameExactTerm = roomName?.startsWith(`"`) && roomName.endsWith(`"`);
 		const roomNameQuery = isRoomNameExactTerm ? roomName?.slice(1, -1) : roomName;
 
 		const query: Filter<IOmnichannelRoom> = {
@@ -1706,7 +1706,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			if (!room) {
 				return false;
 			}
-			if (room.livechatData && typeof room.livechatData[key] !== 'undefined') {
+			if (typeof room.livechatData?.[key] !== 'undefined') {
 				return true;
 			}
 		}
@@ -1730,7 +1730,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		_id: string;
 		topic?: string;
 		tags?: string[];
-		livechatData?: Record<string, any>;
+		livechatData?: Record<string, string>;
 	} & Record<string, any>) {
 		const setData: DeepWritable<UpdateFilter<IOmnichannelRoom>['$set']> = { ...extra };
 		const unsetData: DeepWritable<UpdateFilter<IOmnichannelRoom>['$unset']> = {};

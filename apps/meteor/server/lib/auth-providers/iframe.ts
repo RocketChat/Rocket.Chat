@@ -1,13 +1,15 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
-import { check } from 'meteor/check';
 
 Accounts.registerLoginHandler('iframe', async (result) => {
 	if (!result.iframe) {
 		return;
 	}
 
-	check(result.token, String);
+	if (typeof result.token !== 'string') {
+		throw new ClientSafeError('error-invalid-arguments', 'Invalid arguments');
+	}
 
 	const user = await Users.findOne({
 		'services.iframe.token': result.token,

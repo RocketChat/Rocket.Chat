@@ -40,7 +40,6 @@ const AdminUserInfoActions = ({
 				title={t('More')}
 				sections={menuOptions}
 				placement='bottom-end'
-				small={false}
 			/>
 		);
 	}, [t, menuOptions]);

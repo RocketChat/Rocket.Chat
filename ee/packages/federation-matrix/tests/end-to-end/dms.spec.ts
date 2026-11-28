@@ -428,8 +428,7 @@ const waitForRoomEvent = async (
 						async () => {
 							const room = await hs1User.matrixClient.getRoom(rcRoom.federation.mrid);
 
-							expect(room).toBeDefined();
-							expect(room!.getMyMembership()).toBe('invite');
+							expect(room?.getMyMembership()).toBe('invite');
 						},
 						{ retries: 5, delayMs: 1000 },
 					);

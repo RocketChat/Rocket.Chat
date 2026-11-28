@@ -4,7 +4,3 @@ export { default as MessageSystemBody, type MessageSystemBodyProps } from './Mes
 export { default as MessageSystemContainer, type MessageSystemContainerProps } from './MessageSystemContainer';
 export { default as MessageSystemName, type MessageSystemNameProps } from './MessageSystemName';
 export { default as MessageSystemTimestamp, type MessageSystemTimestampProps } from './MessageSystemTimestamp';
-export {
-	default as MessageSystemLeftContainer,
-	type MessageLeftContainerProps as MessageSystemLeftContainerProps,
-} from '../MessageLeftContainer';

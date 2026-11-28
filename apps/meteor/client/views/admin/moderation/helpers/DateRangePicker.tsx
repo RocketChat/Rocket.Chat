@@ -1,4 +1,4 @@
-import { Select, Box, type SelectOption } from '@rocket.chat/fuselage';
+import { Select, type SelectOption } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { endOfMonth } from 'date-fns/endOfMonth';
 import { format } from 'date-fns/format';
@@ -87,19 +87,17 @@ const DateRangePicker = ({ onChange, defaultSelectedKey = 'alldates', value, onP
 
 	useEffect(() => {
 		handleOptionClick(defaultSelectedKey);
-	}, []);
+	}, [defaultSelectedKey, handleOptionClick]);
 
 	return (
-		<Box flexGrow={0}>
-			<Select
-				aria-label={t('Select_period')}
-				placeholder={t('Custom')}
-				defaultSelectedKey={defaultSelectedKey}
-				value={value}
-				options={timeOptions}
-				onChange={handleOptionClick}
-			/>
-		</Box>
+		<Select
+			aria-label={t('Select_period')}
+			placeholder={t('Custom')}
+			defaultSelectedKey={defaultSelectedKey}
+			value={value}
+			options={timeOptions}
+			onChange={handleOptionClick}
+		/>
 	);
 };
 

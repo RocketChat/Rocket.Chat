@@ -76,7 +76,6 @@ export class ModifyCreator implements IModifyCreator {
 
 	startRoom(data?: IRoom) {
 		if (data) {
-			// @ts-ignore - this has been imported from the Apps-Engine
 			delete data.id;
 		}
 

@@ -1,9 +1,10 @@
 import type { IHttp, IModify, IPersistence, IRead } from '../accessors';
 import type { AppMethod } from '../metadata';
-import type { IUIKitResponse } from './IUIKitInteractionType';
+import type { IUIKitBlockSuggestionResponse, IUIKitResponse } from './IUIKitInteractionType';
 import type {
 	UIKitActionButtonInteractionContext,
 	UIKitBlockInteractionContext,
+	UIKitBlockSuggestionInteractionContext,
 	UIKitViewCloseInteractionContext,
 	UIKitViewSubmitInteractionContext,
 } from './UIKitInteractionContext';
@@ -25,6 +26,22 @@ export interface IUIKitInteractionHandler {
 		persistence: IPersistence,
 		modify: IModify,
 	): Promise<IUIKitResponse>;
+
+	/**
+	 * Method called while the user types in an external select, to get the options to offer.
+	 *
+	 * @param context
+	 * @param read An accessor to the environment
+	 * @param http An accessor to the outside world
+	 * @param persistence An accessor to the App's persistence
+	 */
+	[AppMethod.UIKIT_BLOCK_SUGGESTION]?(
+		context: UIKitBlockSuggestionInteractionContext,
+		read: IRead,
+		http: IHttp,
+		persistence: IPersistence,
+		modify: IModify,
+	): Promise<IUIKitBlockSuggestionResponse>;
 
 	/**
 	 * Method called when a modal is submitted.

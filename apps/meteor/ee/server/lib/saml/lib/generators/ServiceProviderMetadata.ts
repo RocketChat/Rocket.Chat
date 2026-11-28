@@ -1,5 +1,4 @@
-import { Meteor } from 'meteor/meteor';
-
+import { getWorkspaceURL } from '../../../../../../server/lib/utils/getURL';
 import type { IMetadataVariables } from '../../definition/IMetadataVariables';
 import type { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
 import { SAMLUtils } from '../Utils';
@@ -47,7 +46,7 @@ export class ServiceProviderMetadata {
 			certificate: SAMLUtils.normalizeCert(serviceProviderOptions.privateCert),
 			identifierFormat: serviceProviderOptions.identifierFormat || defaultIdentifierFormat,
 			callbackUrl: serviceProviderOptions.callbackUrl,
-			sloLocation: `${Meteor.absoluteUrl()}_saml/logout/${serviceProviderOptions.provider}/`,
+			sloLocation: `${getWorkspaceURL(`_saml/logout/${serviceProviderOptions.provider}`)}/`,
 		};
 	}
 }

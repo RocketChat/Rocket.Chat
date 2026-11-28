@@ -1,5 +1,18 @@
 # Change Log
 
+## 0.35.0-rc.0
+
+### Minor Changes
+
+- ([#43538](https://github.com/RocketChat/Rocket.Chat/pull/43538)) Ships only an ES module build. The CommonJS build and `dist/index.module.js` are gone: `dist/index.js` is now the ES module, and the package declares an `exports` map, so deep imports into `dist` no longer resolve. CommonJS consumers need a Node.js version that can `require()` ES modules (20.19 or 22.12 and later), and read the `styled` function from `require('@rocket.chat/styled').default`.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [be88a0ba4a3a72f9a606f054d5c2d051650140ee]:</summary>
+  - @rocket.chat/css-in-js@0.34.0-rc.0
+
+  </details>
+
 ## 0.34.2
 
 ### Patch Changes

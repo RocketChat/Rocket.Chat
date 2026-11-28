@@ -212,6 +212,22 @@ async function getDepartment({ department }: any) {
 	return dept?._id;
 }
 
+function mapAppRoomBaseFields(room: any): Record<string, unknown> {
+	return {
+		...(room.id && { _id: room.id }),
+		...(typeof room.type !== 'undefined' && { t: room.type }),
+		...(typeof room.createdAt !== 'undefined' && { ts: room.createdAt }),
+		...(typeof room.messageCount !== 'undefined' && { msgs: room.messageCount || 0 }),
+		...(typeof room.updatedAt !== 'undefined' && { _updatedAt: room.updatedAt }),
+		...(room.displayName && { fname: room.displayName }),
+		...(room.type !== 'd' && room.slugifiedName && { name: room.slugifiedName }),
+		...(room.members && { members: room.members }),
+		...(typeof room.isDefault !== 'undefined' && { default: room.isDefault }),
+		...(typeof room.isReadOnly !== 'undefined' && { ro: room.isReadOnly }),
+		...(typeof room.displaySystemMessages !== 'undefined' && { sysMes: room.displaySystemMessages }),
+	};
+}
+
 /**
  * Apps-Engine -> Rocket.Chat room transform. Mirrors the legacy `convertAppRoom`, including the
  * `isPartial` behaviour (skip `_unmappedProperties_` merge). Cross-converter independent — it reads
@@ -231,17 +247,7 @@ export async function appRoomToRocketChat(room: any, isPartial = false): Promise
 	const contactId = await getContactId(room);
 
 	const newRoom = {
-		...(room.id && { _id: room.id }),
-		...(typeof room.type !== 'undefined' && { t: room.type }),
-		...(typeof room.createdAt !== 'undefined' && { ts: room.createdAt }),
-		...(typeof room.messageCount !== 'undefined' && { msgs: room.messageCount || 0 }),
-		...(typeof room.updatedAt !== 'undefined' && { _updatedAt: room.updatedAt }),
-		...(room.displayName && { fname: room.displayName }),
-		...(room.type !== 'd' && room.slugifiedName && { name: room.slugifiedName }),
-		...(room.members && { members: room.members }),
-		...(typeof room.isDefault !== 'undefined' && { default: room.isDefault }),
-		...(typeof room.isReadOnly !== 'undefined' && { ro: room.isReadOnly }),
-		...(typeof room.displaySystemMessages !== 'undefined' && { sysMes: room.displaySystemMessages }),
+		...mapAppRoomBaseFields(room),
 		...(u && { u }),
 		...(v && { v }),
 		...(departmentId && { departmentId }),

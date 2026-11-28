@@ -1,5 +1,5 @@
-import { copyArray } from './arrays';
-import { SBMAX_l, SBMAX_s } from './constants';
+import { copyArray } from './arrays.js';
+import { SBMAX_l, SBMAX_s } from './constants.js';
 
 export class III_psy_xmin {
 	l = new Float32Array(SBMAX_l);

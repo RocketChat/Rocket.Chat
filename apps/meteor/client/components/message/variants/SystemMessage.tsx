@@ -2,7 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import {
 	MessageSystem,
 	MessageSystemContainer,
-	MessageSystemLeftContainer,
+	MessageLeftContainer,
 	MessageSystemName,
 	MessageSystemTimestamp,
 	MessageSystemBlock,
@@ -75,12 +75,11 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 			data-system-message-type={message.t}
 			{...props}
 		>
-			<MessageSystemLeftContainer>
+			<MessageLeftContainer>
 				{!isSelecting && showUserAvatar && (
 					<UserAvatar
 						username={message.u.username}
 						size='x18'
-						title=''
 						style={{ cursor: 'pointer' }}
 						onMouseEnter={openUserCardOnHover}
 						onClick={() => openUserInfo(user.username)}
@@ -89,13 +88,12 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 					/>
 				)}
 				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} aria-label={checkboxLabel} />}
-			</MessageSystemLeftContainer>
+			</MessageLeftContainer>
 			<MessageSystemContainer>
 				<MessageSystemBlock>
 					<MessageNameContainer
 						{...(!isSelecting && {
 							...buttonProps,
-							style: { cursor: 'pointer' },
 							onMouseEnter: openUserCardOnHover,
 						})}
 					>

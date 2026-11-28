@@ -9,6 +9,7 @@ withResizeObserverMock();
 describe('[Banner Component]', () => {
 	it('renders without crashing', () => {
 		render(<Banner />);
+		expect(screen.getByRole('banner')).toHaveClass('rcx-banner');
 	});
 
 	it('renders with link', () => {

@@ -1,4 +1,4 @@
-import type { AppliedFilter, SearchFilterKey, SearchFilterMeta } from './clientSearch';
+import type { AppliedFilter, SearchFilterKey, SearchFilterMeta } from './clientSearch.js';
 import {
 	buildFilterSuggestions,
 	buildRoomSearchQuery,
@@ -14,8 +14,8 @@ import {
 	removeDraftFilter,
 	serializeSearchQuery,
 	toAISearchParams,
-} from './clientSearch';
-import { AI_SEARCH_FILTER_SUGGESTION_LIMIT, MAX_SEARCH_FILTER_VALUES } from './constants';
+} from './clientSearch.js';
+import { AI_SEARCH_FILTER_SUGGESTION_LIMIT, MAX_SEARCH_FILTER_VALUES } from './constants.js';
 
 const appliedFilter = (key: SearchFilterKey, value: string, meta?: SearchFilterMeta): AppliedFilter => {
 	const filter = createAppliedFilter(key, value, meta);
@@ -345,7 +345,7 @@ describe('AI Search client helpers', () => {
 					{ _id: 'sub-b', rid: 'discussion-b', prid: 'parent-id', name: 'rAnd0mIdB', fname: 'Standup' },
 				],
 				t,
-			).map(({ filterKey, value, meta }) => createAppliedFilter(filterKey, value, meta)!);
+			).flatMap(({ filterKey, value, meta }) => createAppliedFilter(filterKey, value, meta) ?? []);
 
 			expect(mergeAppliedFilters([first], [second])).toEqual([first, second]);
 			expect(toAISearchParams({ text: '', filters: [first, second] })).toEqual({ query: '', rids: 'discussion-a,discussion-b' });

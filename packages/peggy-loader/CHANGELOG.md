@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.32.0-rc.0
+
+### Minor Changes
+
+- ([#43512](https://github.com/RocketChat/Rocket.Chat/pull/43512)) Declares itself an ES module and adds an `exports` map, so deep imports into `dist` no longer resolve. Webpack and CommonJS consumers need a Node.js version that can `require()` ES modules (20.19 or 22.12 and later).
+
 ## 0.31.28
 
 ### Patch Changes

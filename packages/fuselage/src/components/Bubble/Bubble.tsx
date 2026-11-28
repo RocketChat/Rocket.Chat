@@ -15,9 +15,11 @@ export type BubbleProps = {
 	dismissProps?: Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'>;
 } & Omit<AllHTMLAttributes<HTMLDivElement>, 'onClick'>;
 
-const Bubble = ({ secondary, children, onClick, icon, onDismiss, small, contentProps, dismissProps, ...props }: BubbleProps) => (
+const Bubble = ({ secondary, children, onClick, icon, onDismiss, small, contentProps, dismissProps, className, ...props }: BubbleProps) => (
 	<div
-		className={['rcx-bubble', 'rcx-box', 'rcx-box--full', onDismiss && 'rcx-bubble__group', small && 'rcx-bubble--small'].join(' ')}
+		className={['rcx-bubble', 'rcx-box', 'rcx-box--full', onDismiss && 'rcx-bubble__group', small && 'rcx-bubble--small', className]
+			.filter(Boolean)
+			.join(' ')}
 		{...props}
 	>
 		{onClick ? (
@@ -30,7 +32,8 @@ const Bubble = ({ secondary, children, onClick, icon, onDismiss, small, contentP
 				onClick={onDismiss}
 				secondary={secondary}
 				icon='cross-small'
-				{...{ 'aria-label': `Dismiss ${children}`, ...dismissProps }}
+				// oxlint-disable-next-line typescript/no-base-to-string -- children is a string label in practice; labelling other node types differently is a behavior change
+				{...{ 'aria-label': `Dismiss ${String(children)}`, ...dismissProps }}
 			/>
 		)}
 	</div>

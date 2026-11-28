@@ -1,7 +1,7 @@
-import type { LameGlobalFlags } from './LameGlobalFlags';
-import type { Quality } from './Quality';
-import { VbrMode } from './VbrMode';
-import { equals } from './math';
+import type { LameGlobalFlags } from './LameGlobalFlags.js';
+import type { Quality } from './Quality.js';
+import { VbrMode } from './VbrMode.js';
+import { equals } from './math.js';
 
 interface VBRPreset {
 	readonly vbr_q: Quality;

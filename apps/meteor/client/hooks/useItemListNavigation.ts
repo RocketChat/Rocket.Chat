@@ -4,8 +4,12 @@ import { useCallback, useRef } from 'react';
 
 const isItemLink = (node: Element) => node.classList.contains('rcx-item__link');
 
-const isTextField = (element: HTMLElement) =>
+export const isTextField = (element: HTMLElement) =>
 	element.isContentEditable || element.tagName === 'INPUT' || element.tagName === 'TEXTAREA' || element.tagName === 'SELECT';
+
+// The arrows with these modifiers move the focused row instead of the focus.
+export const isMoveRowShortcut = (e: KeyboardEvent) =>
+	(e.key === 'ArrowUp' || e.key === 'ArrowDown') && e.shiftKey && (e.metaKey || e.ctrlKey) && !e.altKey;
 
 const isMediaWithControls = (element: HTMLElement) =>
 	(element instanceof HTMLVideoElement || element instanceof HTMLAudioElement) && element.controls;
@@ -189,6 +193,10 @@ export const useItemListNavigation = ({
 				mediaTab = null;
 
 				if (!(e instanceof KeyboardEvent) || !(e.target instanceof HTMLElement) || !node.contains(e.target) || isTextField(e.target)) {
+					return;
+				}
+
+				if (isMoveRowShortcut(e)) {
 					return;
 				}
 

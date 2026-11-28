@@ -1,5 +1,5 @@
 import { UserStatus as Status } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Text } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericMenu, GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
@@ -54,9 +54,9 @@ const UserPresenceTabRow = ({ user, onClick }: UserPresenceTabRowProps) => {
 						<Box marginInlineEnd={8}>
 							<UserStatus status={presenceDisabledByAdmin ? Status.OFFLINE : status || Status.OFFLINE} />
 						</Box>
-						<Box fontScale='p2' withTruncatedText color='default'>
+						<Text fontScale='p2' truncate color='default'>
 							{name || username}
-						</Box>
+						</Text>
 					</Box>
 				</Box>
 			</GenericTableCell>

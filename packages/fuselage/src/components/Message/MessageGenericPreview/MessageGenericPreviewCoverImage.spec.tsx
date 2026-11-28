@@ -6,6 +6,7 @@ import { render } from '../../../testing';
 describe('MessageGenericPreviewCoverImage', () => {
 	it('renders without crashing', () => {
 		render(<MessageGenericPreviewCoverImage url='' width={200} height={200} />);
+		expect(screen.getByTestId('preview-image')).toHaveClass('rcx-message-generic-preview__preview');
 	});
 
 	it('should render div with background image', () => {

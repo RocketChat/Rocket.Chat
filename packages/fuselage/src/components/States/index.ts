@@ -1,7 +1,7 @@
 export { default as States, type StatesProps } from './States';
 export { default as StatesIcon, type StatesIconProps } from './StatesIcon';
 export { default as StatesAction, type StatesActionProps } from './StatesAction';
-export { default as StatesActions, type StatesActionsProps } from './StatesActions';
+export { ButtonGroup as StatesActions, type ButtonGroupProps as StatesActionsProps } from '../ButtonGroup';
 export { default as StatesLink, type StatesLinkProps } from './StatesLink';
 export { default as StatesSubtitle, type StatesSubtitleProps } from './StatesSubtitle';
 export { default as StatesSuggestion, type StatesSuggestionProps } from './StatesSuggestion';

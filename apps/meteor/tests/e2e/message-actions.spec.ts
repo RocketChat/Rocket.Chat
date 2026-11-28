@@ -25,7 +25,7 @@ test.describe.serial('message-actions', () => {
 	test('expect reply the message', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('this is a message for reply');
 		await poHomeChannel.content.openReplyInThread();
-		await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetChannel}"]`).type('this is a reply message');
+		await poHomeChannel.threadComposer.inputMessage.type('this is a reply message');
 		await page.keyboard.press('Enter');
 
 		await expect(poHomeChannel.content.lastUserThreadMessage).toHaveText('this is a reply message');
@@ -61,7 +61,7 @@ test.describe.serial('message-actions', () => {
 		await test.step('start thread', async () => {
 			await poHomeChannel.content.sendMessage('this is a message for reply');
 			await poHomeChannel.content.openReplyInThread();
-			await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetChannel}"]`).fill('this is a reply message');
+			await poHomeChannel.threadComposer.inputMessage.fill('this is a reply message');
 			await page.keyboard.press('Enter');
 			await expect(poHomeChannel.content.lastUserThreadMessage).toHaveText('this is a reply message');
 		});
@@ -97,10 +97,12 @@ test.describe.serial('message-actions', () => {
 	});
 
 	test('should delete message ', async () => {
+		const messageToDelete = poHomeChannel.content.getMessageByText('Message to delete');
 		await poHomeChannel.content.sendMessage('Message to delete');
+		await expect(messageToDelete).toBeVisible();
 		await poHomeChannel.content.deleteLastMessage();
 
-		await expect(poHomeChannel.content.lastUserMessageBody).not.toHaveText('Message to delete');
+		await expect(messageToDelete).toHaveCount(0);
 	});
 
 	test('expect quote the message', async ({ page }) => {

@@ -1,7 +1,6 @@
 import type { SAMLConfiguration } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LoginServiceConfiguration } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { SAMLUtils } from './Utils';
 import {
@@ -20,6 +19,7 @@ import {
 	notifyOnLoginServiceConfigurationChanged,
 	notifyOnLoginServiceConfigurationChangedByService,
 } from '../../../../../server/lib/notifyListener';
+import { getWorkspaceURL } from '../../../../../server/lib/utils/getURL';
 import { settings, settingsRegistry } from '../../../../../server/settings';
 import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 
@@ -125,7 +125,7 @@ const configureSamlService = function (samlConfigs: Record<string, any>): IServi
 		logoutRequestTemplate: samlConfigs.logoutRequestTemplate,
 		metadataCertificateTemplate: samlConfigs.metadataCertificateTemplate,
 		metadataTemplate: samlConfigs.metadataTemplate,
-		callbackUrl: Meteor.absoluteUrl(`_saml/validate/${samlConfigs.clientConfig.provider}`),
+		callbackUrl: getWorkspaceURL(`_saml/validate/${samlConfigs.clientConfig.provider}`),
 	};
 };
 

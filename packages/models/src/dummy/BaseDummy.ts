@@ -28,7 +28,8 @@ import type {
 	WithId,
 } from 'mongodb';
 
-import { getCollectionName, UpdaterImpl } from '../index';
+import { getCollectionName } from '../getCollectionName';
+import { UpdaterImpl } from '../updater';
 import type { Updater } from '../updater';
 
 export class BaseDummy<
@@ -94,6 +95,7 @@ export class BaseDummy<
 		_query?: Filter<T>,
 		_options?: O,
 	): FindCursor<DocumentWithProjection<P, O>> {
+		// oxlint-disable-next-line typescript/no-unsafe-return -- a stand-in for a model this edition lacks has no collection to open a cursor on
 		return undefined as any;
 	}
 
@@ -195,6 +197,7 @@ export class BaseDummy<
 		_query?: Filter<TDeleted>,
 		_options?: FindOptions<P extends TDeleted ? TDeleted : P>,
 	): FindCursor<WithId<TDeleted>> {
+		// oxlint-disable-next-line typescript/no-unsafe-return -- a stand-in for a model this edition lacks has no collection to open a cursor on
 		return undefined as any;
 	}
 
@@ -210,6 +213,7 @@ export class BaseDummy<
 	}
 
 	watch(_pipeline?: object[]): ChangeStream<T> {
+		// oxlint-disable-next-line typescript/no-unsafe-return -- a stand-in for a model this edition lacks has no collection to watch
 		return undefined as any;
 	}
 

@@ -1,8 +1,8 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
-import { Box, Throbber, States, StatesIcon, StatesTitle, Select } from '@rocket.chat/fuselage';
+import { Box, Select, States, StatesIcon, StatesTitle, Text, Throbber } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import { VirtualizedScrollbars, ContextualbarContent, ContextualbarEmptyContent } from '@rocket.chat/ui-client';
+import { VirtualizedScrollbars, ContextualbarContent, ContextualbarEmptyContent, useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { Key } from 'react';
@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import ContactInfoHistoryItem from './ContactInfoHistoryItem';
-import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
+import ListViewport from '../../../../../components/ListViewport';
 import { useItemListNavigation } from '../../../../../hooks/useItemListNavigation';
 import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 import AdvancedContactModal from '../../AdvancedContactModal';
@@ -108,11 +108,11 @@ const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => 
 			{!isError && data?.history && data.history.length > 0 && (
 				<>
 					<Box paddingInline={24} paddingBlock={12}>
-						<Box is='span' color='hint' fontScale='p2'>
+						<Text is='span' color='hint' fontScale='p2'>
 							{t('Showing_current_of_total', { current: data?.history.length, total: data?.total })}
-						</Box>
+						</Text>
 					</Box>
-					<Box role='list' height='100%' overflow='hidden' flexShrink={1} ref={historyListRef}>
+					<ListViewport role='list' ref={historyListRef}>
 						<VirtualizedScrollbars>
 							<Virtuoso
 								totalCount={data.history.length}
@@ -121,7 +121,7 @@ const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => 
 								itemContent={(index, data) => <ContactInfoHistoryItem key={index} onClick={() => setChatId(data._id)} {...data} />}
 							/>
 						</VirtualizedScrollbars>
-					</Box>
+					</ListViewport>
 				</>
 			)}
 		</ContextualbarContent>

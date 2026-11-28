@@ -1,5 +1,4 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
-import { Meteor } from 'meteor/meteor';
 
 import type { SaveUserData } from './saveUser';
 import { settings } from '../../../settings';
@@ -7,14 +6,12 @@ import * as Mailer from '../../notifications/email/api';
 
 let html = '';
 let passwordChangedHtml = '';
-Meteor.startup(() => {
-	Mailer.getTemplate('Accounts_UserAddedEmail_Email', (template) => {
-		html = template;
-	});
+Mailer.getTemplate('Accounts_UserAddedEmail_Email', (template) => {
+	html = template;
+});
 
-	Mailer.getTemplate('Password_Changed_Email', (template) => {
-		passwordChangedHtml = template;
-	});
+Mailer.getTemplate('Password_Changed_Email', (template) => {
+	passwordChangedHtml = template;
 });
 
 export async function sendUserEmail(subject: string, html: string, userData: SaveUserData): Promise<void> {

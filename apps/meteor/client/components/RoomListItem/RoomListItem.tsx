@@ -13,7 +13,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { ITEM_MEDIA_SIZE, RoomAvatar } from '@rocket.chat/ui-avatar';
 import type { ItemMediaSizeName } from '@rocket.chat/ui-avatar';
-import { useDeferredMenuMount, useShortTimeAgo } from '@rocket.chat/ui-client';
+import { useDeferredMenuMount } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import type { AriaAttributes, HTMLAttributes, MouseEventHandler, ReactElement, ReactNode } from 'react';
 import { memo } from 'react';
@@ -40,13 +40,15 @@ export type RoomListItemProps = {
 	'href'?: string;
 	'onClick'?: MouseEventHandler<HTMLElement>;
 	'subtitle'?: ReactNode;
-	'time'?: Date | string;
+	/** The time of the latest message, already formatted for the reader; shown in the `extended` view mode. */
+	'timeLabel'?: string;
 	'titleIcon'?: ReactNode;
 	'badges'?: ReactNode;
 	'actions'?: ReactNode;
 	'menu'?: ReactNode;
 	'selected'?: boolean;
 	'highlighted'?: boolean;
+	'dragging'?: boolean;
 	'aria-label'?: string;
 	'aria-current'?: AriaAttributes['aria-current'];
 } & RoomListItemIconProps &
@@ -60,7 +62,7 @@ const RoomListItem = ({
 	href,
 	onClick,
 	subtitle,
-	time,
+	timeLabel,
 	icon,
 	iconLabel,
 	titleIcon,
@@ -73,7 +75,6 @@ const RoomListItem = ({
 	'aria-current': ariaCurrent,
 	...props
 }: RoomListItemProps) => {
-	const formatDate = useShortTimeAgo();
 	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 
 	const isExtended = viewMode === 'extended';
@@ -112,7 +113,7 @@ const RoomListItem = ({
 					<SidebarItemRow>
 						{itemIcon}
 						{itemTitle}
-						{time && <SidebarItemTimestamp>{formatDate(time)}</SidebarItemTimestamp>}
+						{timeLabel && <SidebarItemTimestamp>{timeLabel}</SidebarItemTimestamp>}
 					</SidebarItemRow>
 					<SidebarItemRow>
 						<SidebarItemContent>{subtitle}</SidebarItemContent>

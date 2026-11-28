@@ -1,8 +1,10 @@
 {
 	"extends": "@rocket.chat/tsconfig/client.json",
 	"compilerOptions": {
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
 		"rootDir": "./src",
-		"outDir": "./dist/esm"
+		"outDir": "./dist"
 	},
 	// Deliberately empty: it clears the `**/*.spec.ts` exclusion inherited from
 	// @rocket.chat/tsconfig, so `tsc --noEmit` covers the specs as well. Nothing

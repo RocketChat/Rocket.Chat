@@ -52,7 +52,7 @@ export const registerAppLogsDistinctInstanceHandler = ({ api, _orch }: AppsRestA
 			},
 		},
 		async function action() {
-			const app = await _orch.getManager()?.getOneById(this.urlParams.id);
+			const app = _orch.getManager()?.getOneById(this.urlParams.id);
 
 			if (!app) {
 				return api.notFound(`No app found with id: ${this.urlParams.id}`);

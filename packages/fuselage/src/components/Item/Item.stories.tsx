@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 
@@ -230,7 +230,7 @@ const RoomBadge = ({ room }: { room: Room }) =>
 	) : null;
 
 const RoomMenu = ({ room }: { room: Room }) => (
-	<Menu mini aria-label={`Options for ${room.name}`} title='Options'>
+	<Menu size='mini' aria-label={`Options for ${room.name}`} title='Options'>
 		<MenuItem key='hide'>Hide</MenuItem>
 		<MenuItem key='read'>Mark as read</MenuItem>
 		<MenuItem key='favorite'>Favorite</MenuItem>
@@ -352,6 +352,29 @@ export const Heights: Story = {
 							<RoomRow room={rooms[4]} viewMode={viewMode} />
 						</ItemGroup>
 					</SidebarSurface>
+				</div>
+			))}
+		</Box>
+	),
+};
+
+export const DescriptionSizes: Story = {
+	render: () => (
+		<Box display='flex' flexDirection='column'>
+			{(['default', 'large'] as const).map((size) => (
+				<div key={size}>
+					<Caption>{size}</Caption>
+					<ItemGroup is='ul' aria-label={`${size} description`}>
+						<Item is='li'>
+							<ItemMedia>
+								<Avatar size='x36' url={leterAvatarUrls[1]} alt='' />
+							</ItemMedia>
+							<ItemContent>
+								<ItemTitle>Michael</ItemTitle>
+								<ItemDescription size={size}>Away</ItemDescription>
+							</ItemContent>
+						</Item>
+					</ItemGroup>
 				</div>
 			))}
 		</Box>

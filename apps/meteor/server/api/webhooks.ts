@@ -1,12 +1,10 @@
 import { isClientSafeError } from '@rocket.chat/core-services';
 import type { IIncomingIntegration, IIntegration, IOutgoingIntegration, IUser, RequiredField } from '@rocket.chat/core-typings';
+import { mountRouter } from '@rocket.chat/http-router';
 import { Integrations, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { isIntegrationsHooksAddSchema, isIntegrationsHooksRemoveSchema } from '@rocket.chat/rest-typings';
-import type express from 'express';
-import { Meteor } from 'meteor/meteor';
 import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
-import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
 
 import { APIClass, refusalErrorCodes } from './ApiClass';
@@ -24,6 +22,7 @@ import type {
 import type { APIActionContext } from './router';
 import { isPlainObject } from '../../lib/utils/isPlainObject';
 import { hasPermissionAsync } from '../lib/authorization/hasPermission';
+import { httpApp } from '../lib/http/httpServer';
 import { IsolatedVMScriptEngine } from '../lib/integrations/lib/isolated-vm/isolated-vm';
 import { metrics } from '../lib/metrics';
 import { settings } from '../settings';
@@ -163,6 +162,54 @@ function getBodyParams(bodyParams: unknown, request: Request): Record<string, un
 	return bodyParams;
 }
 
+async function buildIntegrationScriptRequest(
+	context: IntegrationThis,
+	body: ReadableStream<Uint8Array>,
+	bodyParams: Record<string, unknown>,
+) {
+	const buffers = [];
+	const reader = body.getReader();
+	for (let result = await reader.read(); !result.done; result = await reader.read()) {
+		buffers.push(result.value);
+	}
+	const contentRaw = Buffer.concat(buffers).toString('utf8');
+	const url = new URL(context.request.url);
+	const query = isPlainObject(context.queryParams) ? context.queryParams : {};
+
+	return {
+		url: {
+			query,
+			hash: url.hash,
+			search: url.search,
+			pathname: url.pathname,
+			path: context.request.url,
+		},
+		url_raw: context.request.url,
+		url_params: context.urlParams,
+		content: bodyParams,
+		content_raw: contentRaw,
+		headers: Object.fromEntries(context.request.headers.entries()),
+		body: bodyParams,
+		user: {
+			_id: context.user._id,
+			name: context.user.name || '',
+			username: context.user.username,
+		},
+	};
+}
+
+function getWebhookMessageErrorResult(err: any) {
+	incomingLogger.error({ msg: 'Error processing webhook message', err });
+	const code = err?.error || err?.message || 'Unknown error';
+	if (code === 'error-invalid-room') {
+		return API.v1.notFound(code);
+	}
+	if (refusalErrorCodes.has(code)) {
+		return API.v1.forbidden(isClientSafeError(err) ? err.reason : code);
+	}
+	return API.v1.failure(code);
+}
+
 async function executeIntegrationRest(
 	this: IntegrationThis,
 ): Promise<
@@ -210,36 +257,7 @@ async function executeIntegrationRest(
 	let scriptResponse: Record<string, any> | undefined;
 
 	if (scriptEngine.integrationHasValidScript(this.request.integration) && this.request.body) {
-		const buffers = [];
-		const reader = this.request.body.getReader();
-		for (let result = await reader.read(); !result.done; result = await reader.read()) {
-			buffers.push(result.value);
-		}
-		const contentRaw = Buffer.concat(buffers).toString('utf8');
-		const protocol = `${this.request.headers.get('x-forwarded-proto')}:` || 'http:';
-		const url = new URL(this.request.url, `${protocol}//${this.request.headers.get('host')}`);
-		const query = isPlainObject(this.queryParams) ? this.queryParams : {};
-
-		const request = {
-			url: {
-				query,
-				hash: url.hash,
-				search: url.search,
-				pathname: url.pathname,
-				path: this.request.url,
-			},
-			url_raw: this.request.url,
-			url_params: this.urlParams,
-			content: bodyParams,
-			content_raw: contentRaw,
-			headers: Object.fromEntries(this.request.headers.entries()),
-			body: bodyParams,
-			user: {
-				_id: this.user._id,
-				name: this.user.name || '',
-				username: this.user.username,
-			},
-		};
+		const request = await buildIntegrationScriptRequest(this, this.request.body, bodyParams);
 
 		try {
 			const result = await scriptEngine.processIncomingRequest({
@@ -314,15 +332,7 @@ async function executeIntegrationRest(
 		}
 		return API.v1.success();
 	} catch (err: any) {
-		incomingLogger.error({ msg: 'Error processing webhook message', err });
-		const code = err?.error || err?.message || 'Unknown error';
-		if (code === 'error-invalid-room') {
-			return API.v1.notFound(code);
-		}
-		if (refusalErrorCodes.has(code)) {
-			return API.v1.forbidden(isClientSafeError(err) ? err.reason : code);
-		}
-		return API.v1.failure(code);
+		return getWebhookMessageErrorResult(err);
 	}
 }
 
@@ -427,9 +437,8 @@ class WebHookAPI extends APIClass<'/hooks'> {
 		response: Response,
 		userId: string,
 	): Promise<void> {
-		const { method, url } = request;
-		const route = url.replace(`/${this.apiPath}`, '');
-		const nameRoute = this.getFullRouteName(route, method.toLowerCase());
+		const route = new URL(request.url).pathname.replace(`/${this.apiPath}`, '');
+		const nameRoute = this.getFullRouteName(route, request.method.toLowerCase());
 		if (!this.getRateLimiter(nameRoute)) {
 			this.addRateLimiterRuleForRoutes({
 				routes: [route],
@@ -568,6 +577,4 @@ Api.addRoute(
 	},
 );
 
-Meteor.startup(() => {
-	(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(Api.router.router);
-});
+mountRouter(httpApp, Api.router);

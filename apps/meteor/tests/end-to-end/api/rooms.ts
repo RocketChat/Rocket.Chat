@@ -21,6 +21,7 @@ import { assert, expect } from 'chai';
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { sendSimpleMessage, sendMessage, deleteMessage } from '../../data/chat.helper';
+import { withDatabase } from '../../data/database.helper';
 import { imgURL } from '../../data/interactions';
 import {
 	getSettingValueById,
@@ -1235,6 +1236,129 @@ describe('[Rooms]', () => {
 				});
 		});
 
+		describe('with a discussion started from a message with a file', () => {
+			let originId: IMessage['_id'];
+			let drid: IRoom['_id'];
+
+			const startDiscussionFromOrigin = () =>
+				request
+					.post(api('rooms.createDiscussion'))
+					.set(credentials)
+					.send({ prid: publicChannel._id, pmid: originId, t_name: `discussion-${Random.id()}` })
+					.expect(200);
+
+			const pruneAll = (options: Record<string, boolean>) =>
+				request
+					.post(api('rooms.cleanHistory'))
+					.set(credentials)
+					.send({ roomId: publicChannel._id, latest: '9999-12-31T23:59:59.000Z', oldest: '0001-01-01T00:00:00.000Z', ...options })
+					.expect(200);
+
+			const getMessages = async (roomId: IRoom['_id']): Promise<IMessage[]> =>
+				(await request.get(api('channels.messages')).set(credentials).query({ roomId }).expect(200)).body.messages;
+
+			const getFiles = async (): Promise<unknown[]> =>
+				(await request.get(api('channels.files')).set(credentials).query({ roomId: publicChannel._id }).expect(200)).body.files;
+
+			beforeEach(async () => {
+				const mediaResponse = await request
+					.post(api(`rooms.media/${publicChannel._id}`))
+					.set(credentials)
+					.attach('file', imgURL)
+					.expect(200);
+				originId = (
+					await request
+						.post(api(`rooms.mediaConfirm/${publicChannel._id}/${mediaResponse.body.file._id}`))
+						.set(credentials)
+						.send({ msg: 'discussion origin' })
+						.expect(200)
+				).body.message._id;
+				drid = (await startDiscussionFromOrigin()).body.discussion._id;
+			});
+
+			it('should keep the origin message and its file when ignoreDiscussion and ignoreDiscussionOrigin are set', async () => {
+				await startDiscussionFromOrigin();
+				await sendSimpleMessage({ roomId: publicChannel._id });
+
+				const res = await pruneAll({ ignoreDiscussion: true, ignoreDiscussionOrigin: true });
+
+				expect(res.body).to.have.property('count', 1);
+				expect((await getMessages(publicChannel._id)).map(({ _id }) => _id)).to.include(originId);
+				expect(await getFiles()).to.have.lengthOf(1);
+			});
+
+			it('should delete the origin message when only ignoreDiscussion is set', async () => {
+				await pruneAll({ ignoreDiscussion: true });
+
+				expect((await getMessages(publicChannel._id)).map(({ _id }) => _id)).not.to.include(originId);
+			});
+
+			it('should delete the origin message when ignoreDiscussionOrigin is set without ignoreDiscussion', async () => {
+				await pruneAll({ ignoreDiscussion: false, ignoreDiscussionOrigin: true });
+
+				expect((await getMessages(publicChannel._id)).map(({ _id }) => _id)).not.to.include(originId);
+			});
+
+			it('should keep the origin file when filesOnly, ignoreDiscussion and ignoreDiscussionOrigin are set', async () => {
+				await pruneAll({ filesOnly: true, ignoreDiscussion: true, ignoreDiscussionOrigin: true });
+
+				expect(await getFiles()).to.have.lengthOf(1);
+			});
+
+			it('should show the deleted file in the discussion post and in the discussion room when the origin is pruned', async () => {
+				await pruneAll({ ignoreDiscussion: true });
+
+				const getQuote = (message: IMessage) => message.attachments?.find(isQuoteAttachment);
+				const post = (await getMessages(publicChannel._id)).find((message) => message.drid === drid);
+				const copy = (await getMessages(drid)).find((message) => getQuote(message)?.message_link.endsWith(`?msg=${originId}`));
+				expect(post && getQuote(post)?.attachments?.[0]).to.have.property('type', 'removed-file');
+				expect(copy && getQuote(copy)?.attachments?.[0]).to.have.property('type', 'removed-file');
+			});
+
+			it('should show the deleted file in a discussion that survives a prune of discussion messages', async () => {
+				const post = (await getMessages(publicChannel._id)).find((message) => message.drid === drid);
+				await request.post(api('chat.pinMessage')).set(credentials).send({ messageId: post?._id }).expect(200);
+
+				await pruneAll({ ignoreDiscussion: false, excludePinned: true });
+
+				const prunedPost = (await getMessages(publicChannel._id)).find((message) => message.drid === drid);
+				expect(prunedPost?.attachments?.find(isQuoteAttachment)?.attachments?.[0]).to.have.property('type', 'removed-file');
+			});
+
+			it('should keep the file of another quote in a message that also quotes the pruned origin', async () => {
+				const siteUrl = (await getSettingValueById('Site_Url')) as string;
+				const mediaResponse = await request
+					.post(api(`rooms.media/${drid}`))
+					.set(credentials)
+					.attach('file', imgURL)
+					.expect(200);
+				const otherId = (
+					await request
+						.post(api(`rooms.mediaConfirm/${drid}/${mediaResponse.body.file._id}`))
+						.set(credentials)
+						.send({ msg: 'other' })
+						.expect(200)
+				).body.message._id;
+				const quoteBoth = (
+					await sendMessage({
+						message: {
+							rid: drid,
+							msg: `${new URL(`/channel/x?msg=${originId}`, siteUrl)} ${new URL(`/channel/x?msg=${otherId}`, siteUrl)}`,
+						},
+					})
+				).body.message;
+
+				await pruneAll({ ignoreDiscussion: true });
+
+				const quotes = (await getMessages(drid)).find(({ _id }) => _id === quoteBoth._id)?.attachments?.filter(isQuoteAttachment);
+				expect(quotes?.find(({ message_link }) => message_link.endsWith(otherId))?.attachments?.[0]).to.have.property('type', 'file');
+				expect(quotes?.find(({ message_link }) => message_link.endsWith(originId))?.attachments?.[0]).to.have.property(
+					'type',
+					'removed-file',
+				);
+			});
+		});
+
 		it('should return success when send a valid private channel', async () => {
 			const res = await request
 				.post(api('rooms.cleanHistory'))
@@ -2037,6 +2161,7 @@ describe('[Rooms]', () => {
 			expect(res.body).to.have.property('discussion').and.to.be.an('object');
 			expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
 			expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${testChannel.name}`);
+			expect(res.body.discussion).to.not.have.property('pmid');
 		});
 		it('should create a discussion successfully when send the required parameters plus the optional parameter "reply"', async () => {
 			const res = await request
@@ -2088,6 +2213,7 @@ describe('[Rooms]', () => {
 			expect(res.body).to.have.property('discussion').and.to.be.an('object');
 			expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
 			expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${testChannel.name}`);
+			expect(res.body.discussion).to.have.property('pmid', messageSent._id);
 		});
 
 		describe('when the user is not a member of the parent room', () => {
@@ -3366,6 +3492,306 @@ describe('[Rooms]', () => {
 					expect(res.body.room).to.not.have.property('favorite');
 				});
 		});
+
+		describe('limits on who changes what', () => {
+			let owner: TestUser<IUser>;
+			let member: TestUser<IUser>;
+			let ownerCredentials: Credentials;
+			let memberCredentials: Credentials;
+			const createdRooms: { type: 'c' | 'p' | 'd'; roomId: string }[] = [];
+
+			const createOwnedRoom = async (type: 'c' | 'p', extraData?: Record<string, unknown>): Promise<IRoom> => {
+				const { body } = await createRoom({
+					type,
+					name: `room-settings-${Date.now()}-${Random.id()}`,
+					members: [member.username],
+					credentials: ownerCredentials,
+					extraData,
+				});
+				const room: IRoom = type === 'c' ? body.channel : body.group;
+				createdRooms.push({ type, roomId: room._id });
+				return room;
+			};
+
+			const saveSettings = (rid: IRoom['_id'], settings: Record<string, unknown>, userCredentials: Credentials = ownerCredentials) =>
+				request
+					.post(api('rooms.saveRoomSettings'))
+					.set(userCredentials)
+					.send({ rid, ...settings });
+
+			const expectRefused = async (rid: IRoom['_id'], settings: Record<string, unknown>, userCredentials?: Credentials) => {
+				const { body } = await saveSettings(rid, settings, userCredentials).expect(400);
+
+				expect(body).to.have.property('errorType', 'error-action-not-allowed');
+			};
+
+			const getRoom = async (roomId: IRoom['_id']): Promise<IRoom & { retention?: Record<string, unknown> }> => {
+				const { body } = await request.get(api('rooms.info')).set(ownerCredentials).query({ roomId }).expect(200);
+				return body.room;
+			};
+
+			before(async () => {
+				[owner, member] = await Promise.all([createUser(), createUser()]);
+				[ownerCredentials, memberCredentials] = await Promise.all([login(owner.username, password), login(member.username, password)]);
+			});
+
+			after(async () => {
+				await Promise.all(createdRooms.map(deleteRoom));
+				await Promise.all([deleteUser(owner, { confirmRelinquish: true }), deleteUser(member)]);
+			});
+
+			it('should refuse a member who cannot edit the room', async () => {
+				const room = await createOwnedRoom('c');
+
+				await expectRefused(room._id, { roomTopic: 'from a member' }, memberCredentials);
+
+				expect((await getRoom(room._id)).topic).to.be.undefined;
+			});
+
+			it('should save nothing when one setting of the request is refused', async () => {
+				const room = await createOwnedRoom('c');
+
+				await expectRefused(room._id, { roomTopic: 'new topic', featured: true });
+
+				expect((await getRoom(room._id)).topic).to.be.undefined;
+			});
+
+			describe('broadcast rooms', () => {
+				it('should refuse setting read-only', async () => {
+					const room = await createOwnedRoom('c', { broadcast: true });
+
+					await expectRefused(room._id, { readOnly: true });
+				});
+
+				it('should let an owner turn read-only off', async () => {
+					const room = await createOwnedRoom('c', { broadcast: true });
+
+					await saveSettings(room._id, { readOnly: false }).expect(200);
+
+					expect((await getRoom(room._id)).ro).to.be.false;
+				});
+			});
+
+			describe('retention policy', () => {
+				it('should refuse an owner without the retention permission', async () => {
+					const room = await createOwnedRoom('c');
+
+					await expectRefused(room._id, { retentionMaxAge: 30 });
+
+					expect((await getRoom(room._id)).retention).to.be.undefined;
+				});
+
+				it('should save the policy for a user with the retention permission', async () => {
+					const room = await createOwnedRoom('c');
+
+					await saveSettings(room._id, { retentionMaxAge: 30 }, credentials).expect(200);
+
+					expect((await getRoom(room._id)).retention).to.have.property('maxAge', 30);
+				});
+
+				it('should let an owner without the retention permission change the global override', async () => {
+					const room = await createOwnedRoom('c');
+
+					await saveSettings(room._id, { retentionOverrideGlobal: true }).expect(200);
+
+					expect((await getRoom(room._id)).retention).to.have.property('overrideGlobal', true);
+				});
+			});
+
+			describe('encryption', () => {
+				before(() => updateSetting('E2E_Enable', true));
+
+				after(() => updateSetting('E2E_Enable', false));
+
+				describe('without the encryption permission', () => {
+					before(() => updatePermission('toggle-room-e2e-encryption', ['admin']));
+
+					after(() => restorePermissionToRoles('toggle-room-e2e-encryption'));
+
+					it('should refuse an owner of a private room', async () => {
+						const room = await createOwnedRoom('p');
+
+						await expectRefused(room._id, { encrypted: true });
+
+						expect((await getRoom(room._id)).encrypted).to.not.equal(true);
+					});
+				});
+
+				it('should let a member of a direct message turn encryption on, and change nothing else', async () => {
+					const { body } = await createRoom({ type: 'd', username: member.username, credentials: ownerCredentials });
+					createdRooms.push({ type: 'd', roomId: body.room._id });
+
+					await saveSettings(body.room._id, { encrypted: true, roomTopic: 'new topic' }).expect(200);
+
+					const room = await getRoom(body.room._id);
+					expect(room.encrypted).to.be.true;
+					expect(room.topic).to.be.undefined;
+				});
+			});
+
+			describe('without the avatar permission', () => {
+				before(() => updatePermission('edit-room-avatar', ['admin']));
+
+				after(() => restorePermissionToRoles('edit-room-avatar'));
+
+				it('should refuse a new avatar', async () => {
+					const room = await createOwnedRoom('c');
+					const roomAvatar = `data:image/png;base64,${fs.readFileSync(path.join(process.cwd(), imgURL)).toString('base64')}`;
+
+					await expectRefused(room._id, { roomAvatar });
+				});
+			});
+		});
+	});
+
+	describe('access to rooms', () => {
+		let outsider: TestUser<IUser>;
+		let outsiderCredentials: Credentials;
+		let privateRoom: IRoom;
+
+		before(async () => {
+			outsider = await createUser();
+			outsiderCredentials = await login(outsider.username, password);
+			privateRoom = (await createRoom({ type: 'p', name: `rooms.access.${Date.now()}` })).body.group;
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'p', roomId: privateRoom._id });
+			await deleteUser(outsider);
+		});
+
+		const expectRefusal = (endpoint: 'rooms.history' | 'rooms.getDiscussions' | 'rooms.bannedUsers') => async () => {
+			await request.get(api(endpoint)).set(outsiderCredentials).query({ roomId: privateRoom._id }).expect(403);
+		};
+
+		it('should refuse the history of a room the user is not in', expectRefusal('rooms.history'));
+
+		it('should refuse the discussions of a room the user is not in', expectRefusal('rooms.getDiscussions'));
+
+		it('should refuse the banned users of a room the user is not in', expectRefusal('rooms.bannedUsers'));
+
+		it('should refuse the pinned messages of a room the user is not in', async () => {
+			await request.get(api('chat.getPinnedMessages')).set(outsiderCredentials).query({ roomId: privateRoom._id }).expect(403);
+		});
+
+		it('should refuse an upload to a room the user is not in', async () => {
+			await request
+				.post(api(`rooms.media/${privateRoom._id}`))
+				.set(outsiderCredentials)
+				.attach('file', imgURL)
+				.expect(403);
+		});
+
+		it('should refuse to confirm an upload to a room the user is not in', async () => {
+			await request
+				.post(api(`rooms.mediaConfirm/${privateRoom._id}/unknown-file`))
+				.set(outsiderCredentials)
+				.send({})
+				.expect(403);
+		});
+
+		describe('without the permission to preview channels', () => {
+			let channel: IRoom;
+
+			before(async () => {
+				channel = (await createRoom({ type: 'c', name: `rooms.preview.${Date.now()}` })).body.channel;
+				await updatePermission('preview-c-room', []);
+			});
+
+			after(async () => {
+				await restorePermissionToRoles('preview-c-room');
+				await deleteRoom({ type: 'c', roomId: channel._id });
+			});
+
+			it('should refuse the history of a public channel the user did not join', async () => {
+				await request.get(api('rooms.history')).set(outsiderCredentials).query({ roomId: channel._id }).expect(403);
+			});
+		});
+
+		describe('broadcast rooms', () => {
+			let broadcastRoom: IRoom;
+
+			before(async () => {
+				broadcastRoom = (
+					await createRoom({
+						type: 'c',
+						name: `rooms.broadcast.${Date.now()}`,
+						members: [outsider.username],
+						extraData: { broadcast: true },
+					})
+				).body.channel;
+			});
+
+			after(() => deleteRoom({ type: 'c', roomId: broadcastRoom._id }));
+
+			it('should refuse the member list to a member without the permission', async () => {
+				await request.get(api('rooms.membersOrderedByRole')).set(outsiderCredentials).query({ roomId: broadcastRoom._id }).expect(403);
+			});
+		});
+	});
+
+	describe('/rooms.changeArchivationState', () => {
+		let owner: TestUser<IUser>;
+		let member: TestUser<IUser>;
+		let ownerCredentials: Credentials;
+		let memberCredentials: Credentials;
+		let channel: IRoom;
+
+		const changeState = (rid: IRoom['_id'], action: 'archive' | 'unarchive', userCredentials: Credentials) =>
+			request.post(api('rooms.changeArchivationState')).set(userCredentials).send({ rid, action });
+
+		const isArchived = async () => {
+			const { body } = await request.get(api('rooms.info')).set(credentials).query({ roomId: channel._id }).expect(200);
+			return Boolean(body.room.archived);
+		};
+
+		before(async () => {
+			[owner, member] = await Promise.all([createUser(), createUser()]);
+			[ownerCredentials, memberCredentials] = await Promise.all([login(owner.username, password), login(member.username, password)]);
+		});
+
+		beforeEach(async () => {
+			channel = (
+				await createRoom({
+					type: 'c',
+					name: `rooms.archive.${Date.now()}-${Random.id()}`,
+					members: [member.username],
+					credentials: ownerCredentials,
+				})
+			).body.channel;
+		});
+
+		afterEach(() => deleteRoom({ type: 'c', roomId: channel._id }));
+
+		after(() => Promise.all([deleteUser(owner, { confirmRelinquish: true }), deleteUser(member)]));
+
+		it('should let the owner archive the room', async () => {
+			await changeState(channel._id, 'archive', ownerCredentials).expect(200);
+
+			expect(await isArchived()).to.be.true;
+		});
+
+		it('should refuse a member', async () => {
+			await changeState(channel._id, 'archive', memberCredentials).expect(403);
+
+			expect(await isArchived()).to.be.false;
+		});
+
+		it('should refuse the owner who tries to unarchive the room', async () => {
+			await changeState(channel._id, 'archive', ownerCredentials).expect(200);
+
+			await changeState(channel._id, 'unarchive', ownerCredentials).expect(403);
+
+			expect(await isArchived()).to.be.true;
+		});
+
+		it('should let an admin unarchive the room', async () => {
+			await changeState(channel._id, 'archive', ownerCredentials).expect(200);
+
+			await changeState(channel._id, 'unarchive', credentials).expect(200);
+
+			expect(await isArchived()).to.be.false;
+		});
 	});
 
 	describe('rooms.images', () => {
@@ -3494,6 +3920,101 @@ describe('[Rooms]', () => {
 				});
 
 			await deleteRoom({ type: 'p', roomId });
+		});
+		describe('with an image that was uploaded but never sent', () => {
+			let roomId: IRoom['_id'];
+			let sentFileId: string;
+			let unsentFileId: string;
+
+			before(async () => {
+				const { body } = await createRoom({ type: 'p', name: `test-${Date.now()}` });
+				roomId = body.group._id;
+
+				const { title_link } = await uploadFile({
+					roomId,
+					file: fs.createReadStream(path.join(process.cwd(), imgURL)),
+				});
+				sentFileId = getIdFromImgPath(title_link);
+
+				const res = await request
+					.post(api(`rooms.media/${roomId}`))
+					.set(credentials)
+					.attach('file', fs.createReadStream(path.join(process.cwd(), imgURL)))
+					.expect(200);
+				unsentFileId = res.body.file._id;
+			});
+
+			after(() => deleteRoom({ type: 'p', roomId }));
+
+			it('should not return the unsent image', async () => {
+				await request
+					.get(api('rooms.images'))
+					.set(credentials)
+					.query({ roomId })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('files').and.to.be.an('array').and.to.have.lengthOf(1);
+						expect(res.body.files[0]).to.have.property('_id', sentFileId);
+						expect(res.body).to.have.property('total', 1);
+					});
+			});
+
+			it('should ignore the unsent image when passed as startingFromId', async () => {
+				await request
+					.get(api('rooms.images'))
+					.set(credentials)
+					.query({ roomId, startingFromId: unsentFileId })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('files').and.to.be.an('array').and.to.have.lengthOf(1);
+						expect(res.body.files[0]).to.have.property('_id', sentFileId);
+						expect(res.body).to.have.property('total', 1);
+					});
+			});
+		});
+		describe('with an encrypted image', () => {
+			let roomId: IRoom['_id'];
+			let encryptedFileId: string;
+
+			before(async () => {
+				const { body } = await createRoom({ type: 'p', name: `test-${Date.now()}` });
+				roomId = body.group._id;
+				const content = { algorithm: 'rc.v1.aes-sha2', ciphertext: 'something' };
+
+				const res = await request
+					.post(api(`rooms.media/${roomId}`))
+					.set(credentials)
+					.attach('file', fs.createReadStream(path.join(__dirname, '../../mocks/files/diagram.drawio')), {
+						contentType: 'application/octet-stream',
+					})
+					.field({ content: JSON.stringify(content) })
+					.expect(200);
+				encryptedFileId = res.body.file._id;
+
+				await request
+					.post(api(`rooms.mediaConfirm/${roomId}/${encryptedFileId}`))
+					.set(credentials)
+					.send({ t: 'e2e', content })
+					.expect(200);
+			});
+
+			after(() => deleteRoom({ type: 'p', roomId }));
+
+			it('should return the encrypted file passed as startingFromId', async () => {
+				await request
+					.get(api('rooms.images'))
+					.set(credentials)
+					.query({ roomId, startingFromId: encryptedFileId })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('files').and.to.be.an('array').and.to.have.lengthOf(1);
+						expect(res.body.files[0]).to.have.property('_id', encryptedFileId);
+						expect(res.body.files[0]).to.have.property('typeGroup', 'application');
+					});
+			});
 		});
 		it('should allow to filter images passing the startingFromId parameter', async () => {
 			const { body } = await createRoom({ type: 'p', name: `test-${Date.now()}` });
@@ -5828,5 +6349,68 @@ describe('[/rooms.history]', () => {
 
 	it('should fail for a room that does not exist', async () => {
 		await request.get(api('rooms.history')).set(credentials).query({ roomId: 'does-not-exist' }).expect(404);
+	});
+});
+
+describe('[/uploads.delete]', () => {
+	let member: TestUser<IUser>;
+	let memberCredentials: Credentials;
+	let room: IRoom;
+
+	const uploadFile = async (as: Credentials = credentials) => {
+		const res = await request
+			.post(api(`rooms.media/${room._id}`))
+			.set(as)
+			.attach('file', imgURL)
+			.expect(200);
+		return res.body.file._id as string;
+	};
+
+	const sendFile = async (as: Credentials = credentials) => {
+		const fileId = await uploadFile(as);
+		const res = await request
+			.post(api(`rooms.mediaConfirm/${room._id}/${fileId}`))
+			.set(as)
+			.send({})
+			.expect(200);
+		return { fileId, messageId: res.body.message._id as string };
+	};
+
+	before((_t, done) => getCredentials(done));
+
+	before(async () => {
+		member = await createUser();
+		memberCredentials = await login(member.username, password);
+		room = (await createRoom({ type: 'c', name: `uploads-delete-${Date.now()}`, members: [member.username] })).body.channel;
+	});
+
+	after(() => Promise.all([deleteRoom({ type: 'c', roomId: room._id }), deleteUser(member)]));
+
+	it('should delete a file its uploader has not sent yet', async () => {
+		const fileId = await uploadFile();
+
+		const res = await request.post(api('uploads.delete')).set(credentials).send({ fileId }).expect(200);
+
+		expect(res.body.deletedFiles).to.include(fileId);
+		await request.post(api('uploads.delete')).set(credentials).send({ fileId }).expect(404);
+	});
+
+	it('should fail if a member deletes a file another user sent', async () => {
+		const { fileId, messageId } = await sendFile();
+
+		await request.post(api('uploads.delete')).set(memberCredentials).send({ fileId }).expect(403);
+
+		const res = await request.get(api('chat.getMessage')).set(credentials).query({ msgId: messageId }).expect(200);
+		expect(res.body.message.files.map(({ _id }: { _id: string }) => _id)).to.include(fileId);
+	});
+
+	it('should remove the file from its message when the sender deletes it', async () => {
+		const { fileId, messageId } = await sendFile(memberCredentials);
+
+		await request.post(api('uploads.delete')).set(memberCredentials).send({ fileId }).expect(200);
+
+		const message = await withDatabase((db) => db.collection<IMessage>('rocketchat_message').findOne({ _id: messageId }));
+		expect(message?.files?.map(({ _id }) => _id)).to.not.include(fileId);
+		expect(message?.attachments).to.deep.include({ type: 'removed-file', color: '#FD745E', text: '_File removed_', fileId });
 	});
 });

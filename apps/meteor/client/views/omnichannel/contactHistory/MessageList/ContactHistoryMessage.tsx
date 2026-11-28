@@ -9,7 +9,6 @@ import {
 	MessageTimestamp,
 	MessageHeader as MessageHeaderTemplate,
 	MessageSystem,
-	MessageSystemLeftContainer,
 	MessageSystemContainer,
 	MessageSystemBlock,
 	MessageSystemName,
@@ -52,7 +51,7 @@ const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }
 	if (message.t === 'livechat-close') {
 		return (
 			<MessageSystem>
-				<MessageSystemLeftContainer>
+				<MessageLeftContainer>
 					{showUserAvatar && (
 						<UserAvatar
 							url={message.avatar}
@@ -64,7 +63,7 @@ const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }
 							{...triggerProps}
 						/>
 					)}
-				</MessageSystemLeftContainer>
+				</MessageLeftContainer>
 				<MessageSystemContainer>
 					<MessageSystemBlock>
 						<MessageSystemName data-username={message.u.username} data-qa-type='username'>

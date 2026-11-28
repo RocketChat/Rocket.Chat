@@ -2,7 +2,7 @@ import { route } from 'preact-router';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { Livechat } from '../../api';
 import { Button } from '../../components/Button';
 import { ButtonGroup } from '../../components/ButtonGroup';
@@ -76,7 +76,7 @@ const SwitchDepartment = (_: SwitchDepartmentProps) => {
 			const { success } = result;
 
 			if (!success) {
-				throw t('no_available_agents_to_transfer');
+				throw new Error(t('no_available_agents_to_transfer'));
 			}
 
 			dispatch({ iframe: { ...iframe, guest: { ...guest, department } }, loading: false });

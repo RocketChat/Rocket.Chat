@@ -1,5 +1,15 @@
 # @rocket.chat/license
 
+## 1.2.3-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [46cba6391140d334aecbe764a0fc3341feb27ce9, 25a232e58bd49fa2cbad86f13a8e935c0a703170, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809]:</summary>
+  - @rocket.chat/core-typings@9.1.0-rc.0
+  - @rocket.chat/logger@1.0.3-rc.0
+
+  </details>
+
 ## 1.2.2
 
 ### Patch Changes

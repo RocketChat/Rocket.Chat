@@ -10,7 +10,7 @@ callbacks.add(
 			return message;
 		}
 
-		await LivechatRooms.getVisitorLastMessageTsUpdateQueryByRoomId(message.ts, roomUpdater);
+		LivechatRooms.getVisitorLastMessageTsUpdateQueryByRoomId(message.ts, roomUpdater);
 
 		return message;
 	},

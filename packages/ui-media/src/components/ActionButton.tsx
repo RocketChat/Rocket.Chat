@@ -1,4 +1,4 @@
-import { Icon, IconButton, SplitButtonTrigger, type IconButtonSize } from '@rocket.chat/fuselage';
+import { Icon, IconButton, SplitButtonTrigger } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
 import type { ComponentProps, ReactElement } from 'react';
 import { forwardRef } from 'react';
@@ -19,10 +19,7 @@ export type ActionButtonProps = {
 	splitButtonTrigger?: boolean;
 	disabled?: boolean;
 	onClick?: () => void;
-} & Omit<
-	ComponentProps<typeof IconButton>,
-	'icon' | 'aria-label' | 'disabled' | 'onClick' | 'variant' | 'primary' | 'info' | 'warning' | 'success' | keyof IconButtonSize
->;
+} & Omit<ComponentProps<typeof IconButton>, 'icon' | 'aria-label' | 'disabled' | 'onClick' | 'variant'>;
 
 const ActionButton = forwardRef<HTMLButtonElement, ActionButtonProps>(function ActionButton(
 	{ disabled, label, icon, onClick, title, secondary = true, danger, size = 'medium', splitButtonTrigger = false, ...props },

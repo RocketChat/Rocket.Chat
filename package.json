@@ -1,6 +1,6 @@
 {
 	"name": "rocket.chat",
-	"version": "9.0.0",
+	"version": "9.1.0-rc.4",
 	"private": true,
 	"description": "Rocket.Chat Monorepo",
 	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
@@ -23,7 +23,6 @@
 	"scripts": {
 		"build": "turbo run build",
 		"dev": "turbo run dev --env-mode=loose --parallel --filter=@rocket.chat/meteor...",
-		"dev:next": "yarn workspace @rocket.chat/meteor dev:next",
 		"docs:check-links": "node scripts/check-docs-links.mjs docs",
 		"dsv": "turbo run dsv --env-mode=loose --filter=@rocket.chat/meteor...",
 		"ms": "turbo run ms --env-mode=loose",
@@ -136,7 +135,7 @@
 		"ws@npm:^7.5.3": "7.5.11",
 		"ws@npm:^8": "^8.20.1",
 		"ws@npm:^8.18.0": "^8.20.1",
-		"websocket-driver@npm:>=0.5.1": "0.7.5",
+		"websocket-driver": "0.7.5",
 		"undici@npm:^6.19.5": "6.29.1",
 		"undici@npm:^6.23.0": "6.29.1",
 		"webpack": "~5.104.0",
@@ -153,7 +152,6 @@
 		"@react-aria/toolbar@npm:^3.0.0-nightly.5042": "3.0.0-nightly-fb28ab3b4-241024",
 		"xml-crypto/@xmldom/xmldom": "0.8.15",
 		"@react-aria/overlays@npm:^3.25.0": "patch:@react-aria/overlays@npm%3A3.25.0#~/.yarn/patches/@react-aria-overlays-npm-3.25.0-2628866e6e.patch",
-		"overlayscrollbars@npm:~2.11.5": "patch:overlayscrollbars@npm%3A2.11.5#~/.yarn/patches/overlayscrollbars-npm-2.11.5-182f9ae72b.patch",
 		"xml-encryption/@xmldom/xmldom": "0.8.15",
 		"form-data@npm:^2.5.0": "2.5.6",
 		"form-data@npm:^4.0.0": "4.0.6",
@@ -215,7 +213,12 @@
 		"moment-timezone/moment": "^2.31.0",
 		"@types/chart.js/moment": "^2.31.0",
 		"@react-pdf/layout@npm:^4.6.1": "patch:@react-pdf/layout@npm%3A4.6.1#~/.yarn/patches/@react-pdf-layout-npm-4.6.1-b12fdb71f4.patch",
-		"cookie@npm:^2.0.1": "patch:cookie@npm%3A2.0.1#~/.yarn/patches/cookie-npm-2.0.1-2aea16e44e.patch"
+		"cookie@npm:^2.0.1": "patch:cookie@npm%3A2.0.1#~/.yarn/patches/cookie-npm-2.0.1-2aea16e44e.patch",
+		"playwright-core": "patch:playwright-core@npm%3A1.52.0#~/.yarn/patches/playwright-core-npm-1.52.0-keep-cache.patch",
+		"@tamagui/compose-refs@npm:3.0.18": "patch:@tamagui/compose-refs@npm%3A3.0.18#~/.yarn/patches/@tamagui-compose-refs-npm-3.0.18-59cbb88350.patch",
+		"@tamagui/web@npm:3.0.18": "patch:@tamagui/web@npm%3A3.0.18#~/.yarn/patches/@tamagui-web-npm-3.0.18-f8fb3ca22a.patch",
+		"@tamagui/static@npm:3.0.18": "patch:@tamagui/static@npm%3A3.0.18#~/.yarn/patches/@tamagui-static-npm-3.0.18-189ad8b0b3.patch",
+		"@tamagui/vite-plugin@npm:3.0.18": "patch:@tamagui/vite-plugin@npm%3A3.0.18#~/.yarn/patches/@tamagui-vite-plugin-npm-3.0.18-97da028e24.patch"
 	},
 	"dependencies": {
 		"@types/stream-buffers": "^3.0.8",
@@ -241,7 +244,7 @@
 		"yarn": "4.18.1"
 	},
 	"volta": {
-		"node": "24.15.0",
+		"node": "24.22.3",
 		"yarn": "4.18.1"
 	},
 	"houston": {

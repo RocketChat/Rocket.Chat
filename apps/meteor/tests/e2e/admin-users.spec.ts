@@ -1,9 +1,10 @@
 import { Users } from './fixtures/userStates';
 import { AdminUsers } from './page-objects';
+import { preserveSettings } from './utils/preserveSettings';
 import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
 import type { ITestUser } from './utils/user-helpers';
-import { createTestUser } from './utils/user-helpers';
+import { createTestUser, createTestUsers } from './utils/user-helpers';
 
 let user: ITestUser;
 let admin: AdminUsers;
@@ -33,6 +34,7 @@ test.describe('Admin > Users', () => {
 		});
 
 		await test.step('should be visible in the Pending tab', async () => {
+			await expect(admin.getTabByName('Pending')).toHaveAccessibleName(/^Pending \d+$/);
 			await admin.getTabByName('Pending').click();
 			await expect(admin.getUserRowByUsername(user.data.username)).toBeVisible();
 		});
@@ -61,6 +63,27 @@ test.describe('Admin > Users', () => {
 			await expect(admin.getUserRowByUsername(user.data.username)).not.toBeVisible();
 			await admin.getTabByName('Deactivated').click();
 			await expect(admin.getUserRowByUsername(user.data.username)).toBeVisible();
+		});
+	});
+
+	test.describe('with a capped page size', () => {
+		let users: ITestUser[];
+
+		preserveSettings(['API_Upper_Count_Limit']);
+
+		test.beforeAll(async ({ api }) => {
+			users = await createTestUsers(api, 3);
+			await setSettingValueById(api, 'API_Upper_Count_Limit', 2);
+		});
+
+		test.afterAll(async () => {
+			await Promise.all(users.map((user) => user.delete()));
+		});
+
+		test('should fill the page past the server limit', async ({ page, api }) => {
+			const { total } = await (await api.get('/users.listByStatus', { count: 1 })).json();
+
+			await expect(page.getByRole('main').getByRole('table').locator('tbody tr')).toHaveCount(Math.min(total, 25));
 		});
 	});
 });

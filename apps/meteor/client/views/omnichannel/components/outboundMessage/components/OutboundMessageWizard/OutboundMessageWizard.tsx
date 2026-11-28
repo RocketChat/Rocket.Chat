@@ -1,20 +1,25 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
-import { Wizard, useWizard, WizardContent, WizardTabs } from '@rocket.chat/ui-client';
-import { usePermission } from '@rocket.chat/ui-contexts';
+import {
+	Wizard,
+	useWizard,
+	WizardContent,
+	WizardTabs,
+	useHasLicenseModule,
+	GenericError,
+	useEndpointMutation,
+} from '@rocket.chat/ui-client';
+import { usePermission, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useLayoutEffect, useState } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 
 import OutboundMessageWizardErrorState from './components/OutboundMessageWizardErrorState';
 import OutboubdMessageWizardSkeleton from './components/OutboundMessageWizardSkeleton';
 import type { SubmitPayload } from './forms/SubmitPayload';
 import { ReviewStep, MessageStep, RecipientStep, RepliesStep } from './steps';
-import GenericError from '../../../../../../components/GenericError';
-import { useEndpointMutation } from '../../../../../../hooks/useEndpointMutation';
-import { useHasLicenseModule } from '../../../../../../hooks/useHasLicenseModule';
+import ReportableErrorBoundary from '../../../../../../components/ErrorReport/ReportableErrorBoundary';
 import { formatPhoneNumber } from '../../../../../../lib/formatPhoneNumber';
 import { omnichannelQueryKeys } from '../../../../../../lib/queryKeys';
 import { useOmnichannelEnabled } from '../../../../hooks/useOmnichannelEnabled';
@@ -42,6 +47,7 @@ const OutboundMessageWizard = ({ defaultValues = {}, onSuccess, onError }: Outbo
 	const hasOmnichannelModule = useHasLicenseModule('livechat-enterprise');
 	const hasOutboundModule = useHasLicenseModule('outbound-messaging');
 	const hasOutboundPermission = usePermission('outbound.send-messages');
+	const debug = useSearchParameter('debug');
 
 	const isLoadingModule = hasOutboundModule.isPending || hasOmnichannelModule.isPending;
 
@@ -133,10 +139,7 @@ const OutboundMessageWizard = ({ defaultValues = {}, onSuccess, onError }: Outbo
 			dispatchToastMessage({ type: 'error', message: t('Outbound_message_not_sent') });
 
 			// only console.error when in debug mode
-			const urlParams = new URLSearchParams(window.location.search);
-			const debug = urlParams.get('debug') === 'true';
-
-			if (debug) {
+			if (debug === 'true') {
 				console.error(error);
 			}
 
@@ -167,7 +170,9 @@ const OutboundMessageWizard = ({ defaultValues = {}, onSuccess, onError }: Outbo
 	}
 
 	return (
-		<ErrorBoundary fallbackRender={() => <GenericError icon='circle-exclamation' />}>
+		<ReportableErrorBoundary
+			fallbackRender={({ error, componentStack }) => <GenericError icon='circle-exclamation' errorReport={{ error, componentStack }} />}
+		>
 			<Wizard api={wizardApi} display='flex' flexDirection='column' height='100%'>
 				<WizardTabs />
 
@@ -200,7 +205,7 @@ const OutboundMessageWizard = ({ defaultValues = {}, onSuccess, onError }: Outbo
 					</WizardContent>
 				</Box>
 			</Wizard>
-		</ErrorBoundary>
+		</ReportableErrorBoundary>
 	);
 };
 

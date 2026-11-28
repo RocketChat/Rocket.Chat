@@ -1,4 +1,4 @@
-import { Icon, IconButton, type IconButtonSize } from '@rocket.chat/fuselage';
+import { Icon, IconButton } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
 import type { ComponentProps } from 'react';
 
@@ -30,10 +30,7 @@ export type ToggleButtonProps = {
 	/** `large` is the size used by the conference UI. The widget keeps its original size by default. */
 	size?: 'tiny' | 'medium' | 'large';
 	onToggle?: () => void;
-} & Omit<
-	ComponentProps<typeof IconButton>,
-	'icon' | 'title' | 'aria-label' | 'disabled' | 'onClick' | 'variant' | 'primary' | 'warning' | 'success' | keyof IconButtonSize
->;
+} & Omit<ComponentProps<typeof IconButton>, 'icon' | 'title' | 'aria-label' | 'disabled' | 'onClick' | 'variant'>;
 
 const pressedGlyphStatus = ({
 	pressed,

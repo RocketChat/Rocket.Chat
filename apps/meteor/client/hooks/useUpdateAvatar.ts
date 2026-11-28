@@ -1,10 +1,8 @@
 import type { AvatarObject, AvatarServiceObject, AvatarReset, AvatarUrlObj, IUser } from '@rocket.chat/core-typings';
+import { useEndpointMutation, useEndpointUploadMutation } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { useEndpointMutation } from './useEndpointMutation';
-import { useEndpointUploadMutation } from './useEndpointUploadMutation';
 
 const isAvatarReset = (avatarObj: AvatarObject): avatarObj is AvatarReset => avatarObj === 'reset';
 const isServiceObject = (avatarObj: AvatarObject): avatarObj is AvatarServiceObject =>
@@ -67,7 +65,7 @@ export const useUpdateAvatar = (avatarObj: AvatarObject, userId: IUser['_id']) =
 			avatarObj.set('userId', userId);
 			await saveAvatarAction(avatarObj);
 		}
-	}, [avatarObj, avatarUrl, resetAvatarAction, saveAvatarAction, saveAvatarUrlAction, successMessage, userId]);
+	}, [avatarObj, avatarUrl, resetAvatarAction, saveAvatarAction, saveAvatarUrlAction, userId]);
 
 	return updateAvatar;
 };

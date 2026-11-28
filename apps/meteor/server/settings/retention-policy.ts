@@ -1,4 +1,5 @@
 import { settingsRegistry } from '.';
+import { validCron } from './functions/validationRuleBuilders';
 
 const THIRTY_DAYS = 2592000000;
 
@@ -59,6 +60,7 @@ export const createRetentionSettings = () =>
 
 		await this.add('RetentionPolicy_Advanced_Precision_Cron', '*/30 * * * *', {
 			type: 'string',
+			validation: [validCron()],
 			public: true,
 			i18nLabel: 'RetentionPolicy_Advanced_Precision_Cron',
 			i18nDescription: 'RetentionPolicy_Advanced_Precision_Cron_Description',
@@ -189,6 +191,13 @@ export const createRetentionSettings = () =>
 				i18nLabel: 'RetentionPolicy_DoNotPruneDiscussion',
 				i18nDescription: 'RetentionPolicy_DoNotPruneDiscussion_Description',
 				enableQuery: globalQuery,
+			});
+			await this.add('RetentionPolicy_DeleteDiscussionOrigin', true, {
+				group: 'RetentionPolicy',
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'RetentionPolicy_DeleteDiscussionOrigin',
+				enableQuery: [{ _id: 'RetentionPolicy_DoNotPruneDiscussion', value: true }, globalQuery],
 			});
 			await this.add('RetentionPolicy_DoNotPruneThreads', true, {
 				group: 'RetentionPolicy',

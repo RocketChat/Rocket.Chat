@@ -251,7 +251,7 @@ export class E2ERoom extends Emitter {
 		}
 
 		const keys = [];
-		for await (const key of sub.oldRoomKeys) {
+		for (const key of sub.oldRoomKeys) {
 			try {
 				const k = await this.decryptSessionKey(key.E2EKey);
 				keys.push({
@@ -278,7 +278,7 @@ export class E2ERoom extends Emitter {
 		}
 
 		const keys = [];
-		for await (const key of oldKeys) {
+		for (const key of oldKeys) {
 			try {
 				if (!key.E2EKey) {
 					continue;
@@ -530,7 +530,7 @@ export class E2ERoom extends Emitter {
 					oldKeys: ISubscription['suggestedOldRoomKeys'];
 				}[]
 			> = { [this.roomId]: [] };
-			for await (const user of users) {
+			for (const user of users) {
 				const encryptedGroupKey = await this.encryptGroupKeyForParticipant(user.e2e!.public_key);
 				if (!encryptedGroupKey) {
 					span.warn(`Could not encrypt group key for user ${user._id}`);
@@ -569,7 +569,7 @@ export class E2ERoom extends Emitter {
 
 		try {
 			const keys = [];
-			for await (const oldRoomKey of oldRoomKeys) {
+			for (const oldRoomKey of oldRoomKeys) {
 				if (!oldRoomKey.E2EKey) {
 					continue;
 				}

@@ -6,9 +6,9 @@ export type StatesIconProps = {
 
 const StatesIcon = ({ variation, className, ...props }: StatesIconProps) => (
 	<Icon
+		size='x32'
 		{...props}
 		className={['rcx-states__icon', variation && `rcx-states__icon--${variation}`, className].filter(Boolean).join(' ')}
-		size='x32'
 	/>
 );
 

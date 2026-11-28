@@ -1,8 +1,8 @@
 import { ButtonGroup, Button, Box, Accordion } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter, getDirtyFields } from '@rocket.chat/ui-client';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import PreferencesGlobalSection from './PreferencesGlobalSection';
 import PreferencesHighlightsSection from './PreferencesHighlightsSection';
@@ -19,7 +19,7 @@ export type PreferencesViewProps = {
 };
 
 const PreferencesView = ({ vm }: PreferencesViewProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const methods = useForm({ defaultValues: vm.values });
 

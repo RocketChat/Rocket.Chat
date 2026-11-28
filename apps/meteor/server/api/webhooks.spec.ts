@@ -1,6 +1,8 @@
-import express from 'express';
-import { WebApp } from 'meteor/webapp';
+import { createNodeServer } from '@rocket.chat/http-router';
+import { mockModel } from '@rocket.chat/models/testing';
 import request from 'supertest';
+
+import { httpApp } from '../lib/http/httpServer';
 
 const mockIntegrations = {
 	findOneByIdAndToken: jest.fn(),
@@ -51,16 +53,8 @@ class MockRateLimiter {
 	}
 }
 
-jest.mock(
-	'meteor/meteor',
-	() => ({
-		Meteor: {
-			startup: (callback: () => void) => callback(),
-		},
-	}),
-	{ virtual: true },
-);
-jest.mock('meteor/webapp', () => ({ WebApp: { rawConnectHandlers: { use: jest.fn() } } }), { virtual: true });
+jest.mock('meteor/meteor', () => ({ Meteor: {} }), { virtual: true });
+jest.mock('../lib/http/httpServer', () => ({ httpApp: jest.requireActual('@rocket.chat/http-router').createRootApp() }));
 jest.mock('meteor/rate-limit', () => ({ RateLimiter: MockRateLimiter }), { virtual: true });
 jest.mock('meteor/accounts-base', () => ({ Accounts: { _accountData: {} as Record<string, unknown> } }), { virtual: true });
 jest.mock('meteor/ddp', () => ({ DDP: {} }), { virtual: true });
@@ -80,12 +74,7 @@ jest.mock('../settings', () => ({
 
 jest.mock('meteor/facts-base', () => ({ Facts: { incrementServerFact: () => undefined } }), { virtual: true });
 
-jest.mock('@rocket.chat/models', () => ({
-	Integrations: mockIntegrations,
-	Users: mockUsers,
-}));
-
-jest.mock('meteor/email', () => ({ Email: {} }), { virtual: true });
+jest.mock('../lib/notifications/email/transport', () => ({ sendMail: jest.fn() }));
 jest.mock('../lib/authorization/hasPermission', () => ({ hasPermissionAsync: mockHasPermissionAsync }));
 jest.mock('../lib/messages/processWebhookMessage', () => ({ processWebhookMessage: mockProcessWebhookMessage }));
 jest.mock('../meteor-methods/integrations/outgoing/addOutgoingIntegration', () => ({
@@ -119,9 +108,18 @@ jest.requireActual('./webhooks');
 
 const { ClientSafeError } = jest.requireActual<typeof import('@rocket.chat/core-services')>('@rocket.chat/core-services');
 
-const app = express().use(jest.mocked(WebApp.rawConnectHandlers.use).mock.calls[0][0] as unknown as express.RequestHandler);
+const app = createNodeServer(httpApp).listen(0);
+
+afterAll(() => {
+	app.close();
+});
 
 describe('Webhooks API', () => {
+	beforeAll(() => {
+		mockModel('Integrations', mockIntegrations);
+		mockModel('Users', mockUsers);
+	});
+
 	beforeEach(() => {
 		jest.clearAllMocks();
 		rateLimiterCounters.clear();
@@ -830,6 +828,26 @@ describe('Webhooks API', () => {
 			expect(firstOnB.statusCode).toBe(200);
 			expect(firstOnLegacy.statusCode).toBe(200);
 			expect(secondOnA.statusCode).toBe(429);
+		});
+
+		it('counts a webhook url against one budget whatever host it is called on', async () => {
+			enableRateLimiter();
+
+			const first = await request(app).post(HOOK_URL).set('Host', 'chat.example.com').send({ text: 'a' });
+			const second = await request(app).post(HOOK_URL).set('Host', 'internal.example.com:3000').send({ text: 'b' });
+
+			expect(first.statusCode).toBe(200);
+			expect(second.statusCode).toBe(429);
+		});
+
+		it('counts a webhook url against one budget whatever query string it carries', async () => {
+			enableRateLimiter();
+
+			const first = await post(`${HOOK_URL}?attempt=1`, 'a');
+			const second = await post(`${HOOK_URL}?attempt=2`, 'b');
+
+			expect(first.statusCode).toBe(200);
+			expect(second.statusCode).toBe(429);
 		});
 	});
 });

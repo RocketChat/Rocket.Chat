@@ -1,5 +1,15 @@
 # Change Log
 
+## 0.33.4-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [fb1d4217d8c56957fe49310308f95b8a2cd6c926, 25a57072d42d76566eb34d086c3ae09060d09e86, be88a0ba4a3a72f9a606f054d5c2d051650140ee]:</summary>
+  - @rocket.chat/fuselage-tokens@0.37.0-rc.0
+  - @rocket.chat/styled@0.35.0-rc.0
+
+  </details>
+
 ## 0.33.3
 
 ### Patch Changes

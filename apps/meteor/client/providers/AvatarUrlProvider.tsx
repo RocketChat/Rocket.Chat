@@ -31,6 +31,8 @@ const AvatarUrlProvider = ({ children }: AvatarUrlProviderProps) => {
 			getUserPathAvatar,
 			getRoomPathAvatar: ({ type, ...room }: any): string =>
 				roomCoordinator.getRoomDirectives(type || room.t).getAvatarPath({ username: room._id, ...room }) || '',
+			getContactPathAvatar: ({ contactId, etag }: { contactId: string; etag?: string | null }): string =>
+				getURL(`/avatar/contact/${encodeURIComponent(contactId)}${etag ? `?etag=${etag}` : ''}`),
 		};
 	}, []);
 

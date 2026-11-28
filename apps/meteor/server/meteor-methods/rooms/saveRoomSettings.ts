@@ -2,7 +2,6 @@ import { Team, ClientSafeError } from '@rocket.chat/core-services';
 import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues, ITeam, RequiredField } from '@rocket.chat/core-typings';
 import { TeamType } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
-import { Match } from 'meteor/check';
 
 import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
@@ -168,7 +167,7 @@ const validators: RoomSettingsValidators = {
 	},
 	async encrypted({ userId, value, room, rid }) {
 		if (value !== room.encrypted) {
-			if (!(await roomCoordinator.getRoomDirectives(room.t).allowRoomSettingChange(room, RoomSettingsEnum.E2E))) {
+			if (!roomCoordinator.getRoomDirectives(room.t).allowRoomSettingChange(room, RoomSettingsEnum.E2E)) {
 				throw new ClientSafeError('error-action-not-allowed', 'Only groups or direct channels can enable encryption', {
 					method: 'saveRoomSettings',
 					action: 'Change_Room_Encrypted',
@@ -448,12 +447,6 @@ export async function saveRoomSettings(
 			method: 'saveRoomSettings',
 		});
 	}
-	if (!Match.test(rid, String)) {
-		throw new ClientSafeError('error-invalid-room', 'Invalid room', {
-			method: 'saveRoomSettings',
-		});
-	}
-
 	if (typeof settings !== 'object') {
 		settings = {
 			[settings]: value,

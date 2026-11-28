@@ -1,4 +1,5 @@
 import './tracing';
+import './lib/http/httpServer';
 import './models';
 
 /**
@@ -6,6 +7,7 @@ import './models';
  * and the startup should be done in parallel
  */
 import './settings/definitions';
+import './lib/http/baseMiddlewares';
 
 import { startRestAPI } from './api/api';
 import { configureServer } from './configuration';
@@ -18,6 +20,7 @@ import { startupApp } from '../ee/server';
 import { startRocketChat } from '../startRocketChat';
 
 import './routes';
+import './lib/realtime/routes';
 import './startup/rateLimiter';
 import './startup/robots';
 import './importPackages';
@@ -38,7 +41,10 @@ try {
 	});
 
 	await startupApp();
-	await startRestAPI();
+	startRestAPI();
+	// not a static import: it would evaluate the modules it needs ahead of importPackages and reorder their side effects
+	const { runStartupTasks } = await import('./startup/startupTasks');
+	await runStartupTasks();
 } catch (err) {
 	// a server that failed to boot would otherwise stay up without ever listening
 	SystemLogger.fatal({ msg: 'Server failed to start', err });

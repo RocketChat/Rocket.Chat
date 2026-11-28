@@ -19,10 +19,9 @@ export const useViewModeItems = (): GenericMenuItemProps[] => {
 	const setToMedium = useHandleChange('medium');
 	const setToCondensed = useHandleChange('condensed');
 
-	const handleChangeSidebarDisplayAvatar = useCallback(
-		() => saveUserPreferences({ data: { sidebarDisplayAvatar: !sidebarDisplayAvatar } }),
-		[saveUserPreferences, sidebarDisplayAvatar],
-	);
+	const handleChangeSidebarDisplayAvatar = useCallback(() => {
+		void saveUserPreferences({ data: { sidebarDisplayAvatar: !sidebarDisplayAvatar } });
+	}, [saveUserPreferences, sidebarDisplayAvatar]);
 
 	return [
 		{

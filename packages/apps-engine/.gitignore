@@ -51,6 +51,7 @@ jspm_packages
 /tests/test-data/dbs
 /client
 /definition
+/esm
 /server
 /lib
 

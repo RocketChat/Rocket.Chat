@@ -1,6 +1,6 @@
 import { AI_LICENSE_MODULE, MAX_SEARCH_ANSWER_MESSAGES } from '@rocket.chat/ai-search';
 import { Box, Button, Callout, Skeleton } from '@rocket.chat/fuselage';
-import { Page, PageScrollableContentWithShadow, useDocumentTitle, useFeaturePreview } from '@rocket.chat/ui-client';
+import { Page, PageScrollableContentWithShadow, useDocumentTitle, useFeaturePreview, useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useSearchParameter, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useMemo } from 'react';
@@ -13,7 +13,30 @@ import { useAISearchAnswer } from './hooks/useAISearchAnswer';
 import { useAISearchResults } from './hooks/useAISearchResults';
 import AISearchErrorCallout from '../../components/AISearchErrorCallout';
 import ResultsLiveRegion from '../../components/ResultsLiveRegion';
-import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
+
+const getSearchCalloutFlags = ({
+	hasIntelligentSearchLicense,
+	aiSearchFeatureEnabled,
+	intelligentSearchEnabled,
+	canUseAISearch,
+	meta,
+	searchError,
+}: {
+	hasIntelligentSearchLicense: ReturnType<typeof useHasLicenseModule>['data'];
+	aiSearchFeatureEnabled: boolean;
+	intelligentSearchEnabled: boolean;
+	canUseAISearch: boolean;
+	meta: ReturnType<typeof useAISearchResults>['meta'];
+	searchError: ReturnType<typeof useAISearchResults>['error'];
+}) => {
+	const showUpsell = hasIntelligentSearchLicense === false;
+	const showFeatureDisabled = Boolean(hasIntelligentSearchLicense && !aiSearchFeatureEnabled);
+	const showSearchDisabled = canUseAISearch && !intelligentSearchEnabled;
+	const showNotConfigured = Boolean(canUseAISearch && intelligentSearchEnabled && meta && !meta.intelligentSearchConfigured);
+	const showCallouts = showUpsell || showFeatureDisabled || showSearchDisabled || showNotConfigured || !!searchError;
+
+	return { showUpsell, showFeatureDisabled, showSearchDisabled, showNotConfigured, showCallouts };
+};
 
 const SearchPage = (): ReactElement => {
 	const { t } = useTranslation();
@@ -44,11 +67,14 @@ const SearchPage = (): ReactElement => {
 		[intelligent],
 	);
 
-	const showUpsell = hasIntelligentSearchLicense === false;
-	const showFeatureDisabled = Boolean(hasIntelligentSearchLicense && !aiSearchFeatureEnabled);
-	const showSearchDisabled = canUseAISearch && !intelligentSearchEnabled;
-	const showNotConfigured = Boolean(canUseAISearch && intelligentSearchEnabled && meta && !meta.intelligentSearchConfigured);
-	const showCallouts = showUpsell || showFeatureDisabled || showSearchDisabled || showNotConfigured || !!searchError;
+	const { showUpsell, showFeatureDisabled, showSearchDisabled, showNotConfigured, showCallouts } = getSearchCalloutFlags({
+		hasIntelligentSearchLicense,
+		aiSearchFeatureEnabled,
+		intelligentSearchEnabled,
+		canUseAISearch,
+		meta,
+		searchError,
+	});
 
 	const canGenerateAnswer = Boolean(meta?.answerGenerationConfigured && !isPlaceholderData && debouncedQuery && intelligent.length > 0);
 	const answerResult = useAISearchAnswer(debouncedQuery, answerMessages, canGenerateAnswer);

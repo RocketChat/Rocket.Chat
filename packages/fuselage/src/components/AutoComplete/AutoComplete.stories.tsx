@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 
@@ -13,6 +13,7 @@ import AutoComplete from './AutoComplete';
 export default {
 	title: 'Inputs/AutoComplete',
 	component: AutoComplete,
+	tags: ['status:deprecated'],
 	parameters: {
 		layout: 'centered',
 	},

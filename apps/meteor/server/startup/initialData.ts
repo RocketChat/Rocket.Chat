@@ -1,14 +1,15 @@
+import { hashPassword } from '@rocket.chat/account-utils';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { UserStatus, type IUser } from '@rocket.chat/core-typings';
 import { Settings, Rooms, Users, Roles } from '@rocket.chat/models';
 import { validateEmail } from '@rocket.chat/tools';
 import colors from 'colors/safe';
-import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import { addCallHistoryTestData } from './callHistoryTestData';
 import { FileUpload } from '../lib/media/file-upload';
 import { notifyOnSettingChangedById } from '../lib/notifyListener';
+import { readPrivateAsset } from '../lib/privateAssets';
 import { addUserRolesAsync } from '../lib/roles/addUserRoles';
 import { addUserToDefaultChannels } from '../lib/rooms/addUserToDefaultChannels';
 import { checkUsernameAvailability } from '../lib/users/checkUsernameAvailability';
@@ -75,7 +76,7 @@ export async function insertAdminUserFromEnv() {
 
 			const { insertedId: userId } = await Users.create(adminUser);
 
-			await Accounts.setPasswordAsync(userId, process.env.ADMIN_PASS);
+			await Users.setPasswordHash(userId, await hashPassword(process.env.ADMIN_PASS));
 
 			await addUserRolesAsync(userId, ['admin']);
 		} else {
@@ -84,7 +85,7 @@ export async function insertAdminUserFromEnv() {
 	}
 }
 
-Meteor.startup(async () => {
+export const insertInitialData = async (): Promise<void> => {
 	const dynamicImport = {
 		'dynamic-import': {
 			useLocationOrigin: true,
@@ -143,22 +144,19 @@ Meteor.startup(async () => {
 		if (createdRocketCat) {
 			await addUserRolesAsync('rocket.cat', ['bot']);
 
-			const asset = await Assets.getBinaryAsync('avatars/rocketcat.png');
-			if (asset) {
-				const buffer = Buffer.from(asset);
+			const buffer = await readPrivateAsset('avatars/rocketcat.png');
 
-				const fileStore = FileUpload.getStore('Avatars');
-				await fileStore.deleteByName('rocket.cat');
+			const fileStore = FileUpload.getStore('Avatars');
+			await fileStore.deleteByName('rocket.cat');
 
-				const file = {
-					userId: 'rocket.cat',
-					type: 'image/png',
-					size: buffer.length,
-				};
+			const file = {
+				userId: 'rocket.cat',
+				type: 'image/png',
+				size: buffer.length,
+			};
 
-				const upload = await fileStore.insert(file, buffer);
-				await Users.setAvatarData('rocket.cat', 'local', upload.etag);
-			}
+			const upload = await fileStore.insert(file, buffer);
+			await Users.setAvatarData('rocket.cat', 'local', upload.etag);
 		}
 	} catch (error) {
 		console.log(
@@ -242,7 +240,7 @@ Meteor.startup(async () => {
 
 		await Users.create(adminUser);
 
-		await Accounts.setPasswordAsync(adminUser._id, adminUser._id);
+		await Users.setPasswordHash(adminUser._id, await hashPassword(adminUser._id));
 
 		await addUserRolesAsync(adminUser._id, ['admin']);
 
@@ -256,4 +254,4 @@ Meteor.startup(async () => {
 		// Create sample call history for API tests
 		return addCallHistoryTestData('rocketchat.internal.admin.test', 'rocket.cat');
 	}
-});
+};

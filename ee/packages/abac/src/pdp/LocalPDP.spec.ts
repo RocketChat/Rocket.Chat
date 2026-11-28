@@ -153,7 +153,7 @@ describe('LocalPDP.assertCreatorMayAssign', () => {
 	];
 
 	it('refuses the values the creator does not hold, naming only those', async () => {
-		await expect(new LocalPDP(true).assertCreatorMayAssign(requested, { _id: 'partial' })).rejects.toMatchObject({
+		await expect(new LocalPDP(true).assertCreatorMayAssign(requested, { _id: 'partial', username: 'partial' })).rejects.toMatchObject({
 			code: 'error-invalid-attribute-values',
 			details: {
 				attributes: [
@@ -165,18 +165,22 @@ describe('LocalPDP.assertCreatorMayAssign', () => {
 	});
 
 	it('allows values the creator holds, without admitting them to the room', async () => {
-		await expect(new LocalPDP(true).assertCreatorMayAssign(requested, { _id: 'holder' })).resolves.toEqual({ creatorAdmitted: false });
+		await expect(new LocalPDP(true).assertCreatorMayAssign(requested, { _id: 'holder', username: 'holder' })).resolves.toEqual({
+			creatorAdmitted: false,
+		});
 	});
 
 	it('allows values the creator does not hold while restricting to owned attributes is off', async () => {
-		await expect(new LocalPDP(false).assertCreatorMayAssign(requested, { _id: 'none' })).resolves.toEqual({ creatorAdmitted: false });
+		await expect(new LocalPDP(false).assertCreatorMayAssign(requested, { _id: 'none', username: 'none' })).resolves.toEqual({
+			creatorAdmitted: false,
+		});
 	});
 
 	it('applies a changed restriction setting', async () => {
 		const restricting = new LocalPDP(false);
 		restricting.setRestrictToOwnedAttributes(true);
 
-		await expect(restricting.assertCreatorMayAssign(requested, { _id: 'none' })).rejects.toMatchObject({
+		await expect(restricting.assertCreatorMayAssign(requested, { _id: 'none', username: 'none' })).rejects.toMatchObject({
 			code: 'error-invalid-attribute-values',
 		});
 	});
@@ -189,7 +193,7 @@ describe('LocalPDP.filterAssignableAttributes', () => {
 			{ key: 'region', values: ['emea', 'apac'] },
 		];
 
-		await expect(new LocalPDP(true).filterAssignableAttributes(definitions, { _id: 'partial' })).resolves.toEqual([
+		await expect(new LocalPDP(true).filterAssignableAttributes(definitions, { _id: 'partial', username: 'partial' })).resolves.toEqual([
 			{ key: 'dept', values: ['eng'] },
 		]);
 	});
@@ -198,7 +202,9 @@ describe('LocalPDP.filterAssignableAttributes', () => {
 		const definitions = [{ key: 'dept', values: ['eng', 'sales', 'hr'] }];
 
 		await expect(
-			new LocalPDP(true).filterAssignableAttributes(definitions, { _id: 'partial' }, [{ key: 'dept', values: ['hr'] }]),
+			new LocalPDP(true).filterAssignableAttributes(definitions, { _id: 'partial', username: 'partial' }, [
+				{ key: 'dept', values: ['hr'] },
+			]),
 		).resolves.toEqual([{ key: 'dept', values: ['eng', 'hr'] }]);
 	});
 });
@@ -206,9 +212,11 @@ describe('LocalPDP.filterAssignableAttributes', () => {
 describe('LocalPDP.findUnassignableValues', () => {
 	it('keeps values already on the room assignable to an editor who does not hold them', async () => {
 		await expect(
-			new LocalPDP(true).findUnassignableValues([{ key: 'dept', values: ['eng', 'hr', 'sales'] }], { _id: 'partial' }, [
-				{ key: 'dept', values: ['hr'] },
-			]),
+			new LocalPDP(true).findUnassignableValues(
+				[{ key: 'dept', values: ['eng', 'hr', 'sales'] }],
+				{ _id: 'partial', username: 'partial' },
+				[{ key: 'dept', values: ['hr'] }],
+			),
 		).resolves.toEqual([{ key: 'dept', values: ['sales'] }]);
 	});
 });

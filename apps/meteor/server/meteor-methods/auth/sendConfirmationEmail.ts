@@ -1,11 +1,8 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
-import { check } from 'meteor/check';
 
 export const sendConfirmationEmail = async (to: string): Promise<boolean> => {
-	check(to, String);
-
 	const email = to.trim();
 
 	const user = await Users.findOneByEmailAddress(email, { projection: { emails: 1 } });

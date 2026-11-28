@@ -13,7 +13,7 @@ export function renderHook<
 	BaseElement extends RendererableContainer = Container,
 >(render: (initialProps: Props) => Result, options?: RenderHookOptions<Props, Q, Container, BaseElement>): RenderHookResult<Result, Props> {
 	if (typeof document === 'undefined') {
-		let current: Result;
+		let current!: Result;
 		const TestComponent = () => {
 			current = render(options?.initialProps as any);
 			return null;
@@ -23,7 +23,7 @@ export function renderHook<
 		renderToString(Wrapper ? createElement(Wrapper, null, createElement(TestComponent)) : createElement(TestComponent));
 
 		return {
-			result: { current: current! },
+			result: { current },
 			rerender: () => undefined,
 			unmount: () => undefined,
 		};

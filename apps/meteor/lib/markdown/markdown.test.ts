@@ -11,7 +11,7 @@ import {
 	original,
 	code,
 	filterMarkdown,
-	createMarkdownMessageRenderer,
+	createMarkdownMessageRenderer as createMarkdownMessageFormatter,
 	createMarkdownNotificationRenderer,
 	markup,
 } from '../../tests/mocks/lib/markdown/markdown.mocks';
@@ -40,6 +40,10 @@ describe('Markdown entry points', () => {
 		expect(message.tokens).to.have.lengthOf(1);
 		expect(message.tokens?.[0].type).to.equal('inlinecode');
 		expect(message.html).to.equal(message.tokens?.[0].token);
+	});
+
+	it('should leave links unparsed', () => {
+		expect(Markdown.parseNotEscaped('[Home](http://example.com/)')).to.equal('[Home](http://example.com/)');
 	});
 
 	it('should expose the code parser', () => {
@@ -99,7 +103,7 @@ describe('Markdown token restoration', () => {
 });
 
 describe('Markdown renderers', () => {
-	const renderMessage = createMarkdownMessageRenderer({
+	const renderMessage = createMarkdownMessageFormatter({
 		rootUrl: 'http://localhost:3000/',
 		supportSchemesForLink: 'http,https',
 		headers: true,

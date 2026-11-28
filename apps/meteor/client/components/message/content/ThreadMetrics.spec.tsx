@@ -222,6 +222,18 @@ describe('Thread Metrics', () => {
 			const badge = screen.getByTitle('Mentions_you');
 			expect(badge).toBeVisible();
 		});
+		it('names the unread state in the follow button, as its badge is hidden from assistive technology', () => {
+			render(<ThreadMetricsFollow unread={true} mention={true} all={false} mid='mid' rid='rid' following={true} />, {
+				wrapper: mockAppRoot().build(),
+			});
+			expect(screen.getByRole('button', { name: 'Following, Mentions_you' })).toBeInTheDocument();
+		});
+		it('names only the follow state when nothing is unread', () => {
+			render(<ThreadMetricsFollow unread={false} mention={false} all={false} mid='mid' rid='rid' following={false} />, {
+				wrapper: mockAppRoot().build(),
+			});
+			expect(screen.getByRole('button', { name: 'Not_following' })).toBeInTheDocument();
+		});
 	});
 	describe('ThreadMetricsParticipants', () => {
 		it('should render 1 avatars', () => {
@@ -307,6 +319,42 @@ describe('Thread Metrics', () => {
 			expect(follower.querySelector('.rcx-icon--name-user')).toBeVisible();
 
 			expect(screen.getByText('5')).toBeVisible();
+		});
+	});
+
+	describe('Reply button', () => {
+		const renderThreadMetrics = (unread: boolean) =>
+			render(
+				<ThreadMetrics
+					lm={new Date(2024, 6, 1, 0, 0, 0)}
+					counter={5}
+					participants={[]}
+					unread={unread}
+					mention={false}
+					all={false}
+					mid='mid'
+					rid='rid'
+					following={false}
+				/>,
+				{
+					wrapper: mockRoot()
+						.withTranslations(...mockedTranslations)
+						.buildWithRouter(() => undefined),
+				},
+			);
+
+		it('should be primary while the thread has unread replies', () => {
+			renderThreadMetrics(true);
+
+			expect(screen.getByRole('button', { name: 'View_thread' })).toHaveClass('rcx-button--primary');
+		});
+
+		it('should be secondary once the thread is read', () => {
+			renderThreadMetrics(false);
+
+			const replyButton = screen.getByRole('button', { name: 'View_thread' });
+			expect(replyButton).toHaveClass('rcx-button--secondary');
+			expect(replyButton).not.toHaveClass('rcx-button--primary');
 		});
 	});
 });

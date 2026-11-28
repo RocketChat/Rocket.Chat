@@ -1,4 +1,5 @@
-import type { Decorator } from '@storybook/react-webpack5';
+/* oxlint-disable react/no-multi-comp -- shared story fixtures; splitting creates an import cycle with the fixture data */
+import type { Decorator } from '@storybook/react';
 
 import {
 	Sidebar,
@@ -50,16 +51,16 @@ export const names = [
 ];
 
 export const MenuTemplate = () => (
-	<Menu mini aria-label='Options' title='Options'>
+	<Menu size='mini' aria-label='Options' title='Options'>
 		<MenuItem key='hide'>Hide</MenuItem>
 		<MenuItem key='discussion'>Mark unread</MenuItem>
 		<MenuItem key='unfavorite'>Unfavorite</MenuItem>
 	</Menu>
 );
 
-export const GenericCondensedItem = ({ i = 0 }: { i: number }) => (
+export const GenericCondensedItem = ({ i = 0, selected = i === 2 }: { i: number; selected?: boolean }) => (
 	<SidebarListItem>
-		<SidebarItem selected={i === 2} href='#'>
+		<SidebarItem selected={selected} href='#'>
 			<SidebarItemAvatarWrapper>
 				<Avatar size='x20' url={leterAvatarUrls[i % 4]} alt='avatar' />
 			</SidebarItemAvatarWrapper>

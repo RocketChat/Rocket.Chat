@@ -1,4 +1,4 @@
-import { AccordionItem, Box } from '@rocket.chat/fuselage';
+import { AccordionItem, Stack, Text } from '@rocket.chat/fuselage';
 import { useTimeAgo } from '@rocket.chat/ui-client';
 import DOMPurify from 'dompurify';
 import { useTranslation } from 'react-i18next';
@@ -23,22 +23,25 @@ const AppReleasesItem = ({ release, ...props }: ReleaseItemProps) => {
 	const formatDate = useTimeAgo();
 
 	const title = (
-		<Box display='flex' flexDirection='row'>
-			<Box is='h4' fontScale='p1b' color='default' marginInlineEnd={24}>
+		<Stack direction='row' gap='x24'>
+			<Text is='h4' fontScale='p1b' color='default'>
 				{release.version}
-			</Box>
-			<Box is='p' fontScale='p1' color='hint'>
+			</Text>
+			<Text is='p' fontScale='p1' color='hint'>
 				{formatDate(release.createdDate)}
-			</Box>
-		</Box>
+			</Text>
+		</Stack>
 	);
 
 	return (
 		<AccordionItem title={title} {...props}>
 			{release.detailedChangelog?.rendered ? (
-				<Box dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(release.detailedChangelog?.rendered, purifyOptions) }} color='default' />
+				<Text
+					color='default'
+					dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(release.detailedChangelog?.rendered, purifyOptions) }}
+				/>
 			) : (
-				<Box color='default'>{t('No_release_information_provided')}</Box>
+				<Text color='default'>{t('No_release_information_provided')}</Text>
 			)}
 		</AccordionItem>
 	);

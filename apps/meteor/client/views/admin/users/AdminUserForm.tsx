@@ -2,30 +2,29 @@ import type { AvatarObject, IRole, IUser, IUserPhoneNumber, Serialized } from '@
 import {
 	Accordion,
 	AccordionItem,
-	Field,
-	FieldLabel,
-	FieldRow,
-	FieldError,
-	FieldHint,
-	TextInput,
-	TextAreaInput,
-	MultiSelectFiltered,
 	Box,
-	ToggleSwitch,
-	Icon,
-	FieldGroup,
 	Button,
 	ButtonGroup,
 	Callout,
-	Skeleton,
-	Stack,
 	Divider,
+	Field,
+	FieldError,
+	FieldGroup,
+	FieldHint,
+	FieldLabel,
+	FieldRow,
+	Icon,
+	MultiSelectFiltered,
+	Skeleton,
+	Text,
+	TextAreaInput,
+	TextInput,
+	ToggleSwitch,
 } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UserCreateParamsPOST } from '@rocket.chat/rest-typings';
-import { validateEmail } from '@rocket.chat/tools';
-import { CustomFieldsForm, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
+import { CustomFieldsForm, ContextualbarScrollableContent, ContextualbarFooter, useEndpointMutation } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
 	useSetting,
@@ -40,6 +39,7 @@ import { useId, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Trans } from 'react-i18next';
 
+import AdminUserEmailField from './AdminUserEmailField';
 import AdminUserSetRandomPasswordContent from './AdminUserSetRandomPasswordContent';
 import AdminUserSetRandomPasswordRadios from './AdminUserSetRandomPasswordRadios';
 import PasswordFieldSkeleton from './PasswordFieldSkeleton';
@@ -50,7 +50,6 @@ import PhoneNumberFieldList, { getInitialPhones, getPersistedPhones } from '../.
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useCanManageUserStatus } from '../../../hooks/useCanManageUserStatus';
-import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
 import { managedPresenceQueryKeys } from '../../../lib/queryKeys';
@@ -72,6 +71,19 @@ export type UserFormProps = UserCreateParamsPOST & {
 	phones?: IUserPhoneNumber[];
 };
 
+const getInitialEmailValues = ({
+	data,
+	isSmtpEnabled,
+	isVerificationNeeded,
+}: {
+	data?: Serialized<IUser>;
+	isSmtpEnabled?: boolean;
+	isVerificationNeeded?: boolean;
+}) => ({
+	email: (data?.emails?.length && data.emails[0].address) || '',
+	verified: isSmtpEnabled && isVerificationNeeded && ((data?.emails?.length && data.emails[0].verified) || false),
+});
+
 const getInitialValue = ({
 	data,
 	defaultUserRoles,
@@ -91,8 +103,7 @@ const getInitialValue = ({
 	username: data?.username ?? '',
 	bio: data?.bio ?? '',
 	nickname: data?.nickname ?? '',
-	email: (data?.emails?.length && data.emails[0].address) || '',
-	verified: isSmtpEnabled && isVerificationNeeded && ((data?.emails?.length && data.emails[0].verified) || false),
+	...getInitialEmailValues({ data, isSmtpEnabled, isVerificationNeeded }),
 	setRandomPassword: isNewUserPage && isSmtpEnabled,
 	requirePasswordChange: isNewUserPage && isSmtpEnabled && (data?.requirePasswordChange ?? true),
 	customFields: data?.customFields ?? {},
@@ -223,8 +234,6 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	const nameId = useId();
 	const usernameId = useId();
 	const voiceExtensionId = useId();
-	const emailId = useId();
-	const verifiedId = useId();
 	const statusTextId = useId();
 	const userStatusId = useId();
 	const hiddenFromId = useId();
@@ -263,82 +272,14 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							/>
 						</Field>
 					)}
-					{isNewUserPage && <Box color='hint'>{t('Manually_created_users_briefing')}</Box>}
-					<Field>
-						<FieldLabel htmlFor={emailId}>{t('Email')}</FieldLabel>
-						<FieldRow>
-							<Controller
-								control={control}
-								name='email'
-								rules={{
-									required: t('Required_field', { field: t('Email') }),
-									validate: (email) => (validateEmail(email) ? undefined : t('error-invalid-email-address')),
-								}}
-								render={({ field }) => (
-									<TextInput
-										{...field}
-										id={emailId}
-										aria-invalid={errors.email ? 'true' : 'false'}
-										aria-describedby={`${emailId}-error`}
-										error={errors.email?.message}
-									/>
-								)}
-							/>
-						</FieldRow>
-						{errors?.email && (
-							<FieldError aria-live='assertive' id={`${emailId}-error`}>
-								{errors.email.message}
-							</FieldError>
-						)}
-						{isLoadingSmtpStatus ? (
-							<Skeleton width='full' height={26} />
-						) : (
-							<>
-								<FieldRow>
-									<Stack direction='row' align='center' gap={4}>
-										<FieldLabel htmlFor={verifiedId} disabled={!isSmtpEnabled || !isVerificationNeeded}>
-											{t('Mark_email_as_verified')}
-										</FieldLabel>
-										<Icon name='info-circled' size='x20' title={t('Enable_to_bypass_email_verification')} />
-									</Stack>
-									<Controller
-										control={control}
-										name='verified'
-										render={({ field: { onChange, value } }) => (
-											<ToggleSwitch
-												id={verifiedId}
-												checked={value}
-												onChange={onChange}
-												disabled={!isSmtpEnabled || !isVerificationNeeded}
-											/>
-										)}
-									/>
-								</FieldRow>
-								{isVerificationNeeded && !isSmtpEnabled && (
-									<FieldHint id={`${verifiedId}-hint`}>
-										<Trans
-											i18nKey='Send_Email_SMTP_Warning'
-											components={{
-												// oxlint-disable-next-line jsx-a11y/anchor-has-content
-												a: <a href='/admin/settings/Email' />,
-											}}
-										/>
-									</FieldHint>
-								)}
-								{!isVerificationNeeded && (
-									<FieldHint id={`${verifiedId}-hint`}>
-										<Trans
-											i18nKey='Email_verification_isnt_required'
-											components={{
-												// oxlint-disable-next-line jsx-a11y/anchor-has-content
-												a: <a href='/admin/settings/Accounts' />,
-											}}
-										/>
-									</FieldHint>
-								)}
-							</>
-						)}
-					</Field>
+					{isNewUserPage && <Text color='hint'>{t('Manually_created_users_briefing')}</Text>}
+					<AdminUserEmailField
+						control={control}
+						errors={errors}
+						isLoadingSmtpStatus={isLoadingSmtpStatus}
+						isSmtpEnabled={isSmtpEnabled}
+						isVerificationNeeded={isVerificationNeeded}
+					/>
 					<Field>
 						<FieldLabel htmlFor={nameId}>{t('Name')}</FieldLabel>
 						<FieldRow>
@@ -357,7 +298,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 								)}
 							/>
 						</FieldRow>
-						{errors?.name && (
+						{errors.name && (
 							<FieldError aria-live='assertive' id={`${nameId}-error`}>
 								{errors.name.message}
 							</FieldError>
@@ -381,7 +322,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 								)}
 							/>
 						</FieldRow>
-						{errors?.username && (
+						{errors.username && (
 							<FieldError aria-live='assertive' id={`${usernameId}-error`}>
 								{errors.username.message}
 							</FieldError>
@@ -442,7 +383,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 								/>
 							)}
 						</FieldRow>
-						{errors?.roles && <FieldError>{errors.roles.message}</FieldError>}
+						{errors.roles && <FieldError>{errors.roles.message}</FieldError>}
 					</Field>
 					{isNewUserPage && (
 						<Field>
@@ -517,14 +458,14 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 											{...field}
 											id={statusTextId}
 											disabled={statusFieldsDisabled}
-											error={errors?.statusText?.message}
+											error={errors.statusText?.message}
 											aria-invalid={errors.statusText ? 'true' : 'false'}
 											aria-describedby={`${statusTextId}-error ${statusTextId}-hint`}
 										/>
 									)}
 								/>
 							</FieldRow>
-							{errors?.statusText && (
+							{errors.statusText && (
 								<FieldError aria-live='assertive' id={`${statusTextId}-error`}>
 									{errors.statusText.message}
 								</FieldError>
@@ -544,7 +485,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										{...field}
 										id={bioId}
 										rows={3}
-										error={errors?.bio?.message}
+										error={errors.bio?.message}
 										aria-invalid={errors.bio ? 'true' : 'false'}
 										aria-describedby={`${bioId}-error`}
 										endAddon={<Icon name='edit' size='x20' />}
@@ -552,7 +493,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 								)}
 							/>
 						</FieldRow>
-						{errors?.bio && (
+						{errors.bio && (
 							<FieldError aria-live='assertive' id={`${bioId}-error`}>
 								{errors.bio.message}
 							</FieldError>
@@ -630,14 +571,14 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 													{...field}
 													id={statusTextId}
 													disabled={statusFieldsDisabled}
-													error={errors?.statusText?.message}
+													error={errors.statusText?.message}
 													aria-invalid={errors.statusText ? 'true' : 'false'}
 													aria-describedby={`${statusTextId}-error ${statusTextId}-hint`}
 												/>
 											)}
 										/>
 									</FieldRow>
-									{errors?.statusText && (
+									{errors.statusText && (
 										<FieldError aria-live='assertive' id={`${statusTextId}-error`}>
 											{errors.statusText.message}
 										</FieldError>

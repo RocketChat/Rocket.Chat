@@ -1,5 +1,6 @@
-import { after, beforeEach, describe, it } from 'node:test';
+import { after, before, beforeEach, describe, it } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -22,36 +23,30 @@ const models = {
 		findOneByEmailAddress: sinon.stub(),
 		setAvatarData: sinon.stub(),
 		removeById: sinon.stub(),
+		setPasswordHash: sinon.stub(),
 	},
 	Roles: {
 		countUsersInRole: sinon.stub(),
 	},
 };
-const setPasswordAsync = sinon.stub();
 const settingsGet = sinon.stub();
-const meteorStartup = sinon.stub();
 const avatarStore = {
 	deleteByName: sinon.stub(),
 	insert: sinon.stub(),
 };
 
-(globalThis as unknown as { Assets: { getBinaryAsync: sinon.SinonStub } }).Assets = {
-	getBinaryAsync: sinon.stub().resolves(new Uint8Array([1])),
-};
-
-const { insertAdminUserFromEnv } = proxyquire.noCallThru().load('./initialData', {
-	'meteor/accounts-base': {
-		Accounts: {
-			setPasswordAsync,
-		},
+const { insertAdminUserFromEnv, insertInitialData } = proxyquire.noCallThru().load('./initialData', {
+	'@rocket.chat/account-utils': {
+		hashPassword: async (password: string) => `hashed=${password}`,
 	},
 	'meteor/meteor': {
-		Meteor: {
-			startup: meteorStartup,
-		},
+		Meteor: {},
 	},
 	'../lib/media/file-upload': {
 		FileUpload: { getStore: () => avatarStore },
+	},
+	'../lib/privateAssets': {
+		readPrivateAsset: sinon.stub().resolves(Buffer.from('png')),
 	},
 	'../lib/rooms/addUserToDefaultChannels': {},
 	'../lib/users/checkUsernameAvailability': {
@@ -66,17 +61,21 @@ const { insertAdminUserFromEnv } = proxyquire.noCallThru().load('./initialData',
 	'../lib/roles/addUserRoles': {
 		addUserRolesAsync,
 	},
-	'@rocket.chat/models': models,
 });
 
 describe('insertAdminUserFromEnv', () => {
+	before(() => {
+		mockModel('Users', models.Users);
+		mockModel('Roles', models.Roles);
+	});
+
 	beforeEach(() => {
 		checkUsernameAvailability.reset();
 		validateEmail.reset();
 		addUserRolesAsync.reset();
 		models.Users.create.reset();
 		models.Users.findOneByEmailAddress.reset();
-		setPasswordAsync.reset();
+		models.Users.setPasswordHash.reset();
 		settingsGet.reset();
 		process.env.ADMIN_PASS = 'pass';
 		models.Roles.countUsersInRole.reset();
@@ -106,7 +105,7 @@ describe('insertAdminUserFromEnv', () => {
 		expect(validateEmail.called).to.be.true;
 		expect(validateEmail.calledWith('email')).to.be.true;
 		expect(models.Users.create.called).to.be.true;
-		expect(setPasswordAsync.called).to.be.true;
+		sinon.assert.calledOnceWithExactly(models.Users.setPasswordHash, 'newuserid', 'hashed=pass');
 		expect(result).to.be.undefined;
 	});
 	it('should override the admins name when process.env.ADMIN_NAME is set', async () => {
@@ -222,7 +221,7 @@ describe('insertAdminUserFromEnv', () => {
 		await insertAdminUserFromEnv();
 
 		expect(addUserRolesAsync.called).to.be.true;
-		expect(setPasswordAsync.called).to.be.true;
+		expect(models.Users.setPasswordHash.called).to.be.true;
 		expect(models.Users.create.calledWith(sinon.match({ name: 'name', username: '1234', emails: [{ address: 'email', verified: true }] })))
 			.to.be.true;
 	});
@@ -253,8 +252,15 @@ describe('insertAdminUserFromEnv', () => {
 });
 
 describe('initial data startup', () => {
-	const runStartup = meteorStartup.firstCall.args[0];
+	const runStartup = insertInitialData;
 	const { TEST_MODE } = process.env;
+
+	before(() => {
+		mockModel('Settings', models.Settings);
+		mockModel('Rooms', models.Rooms);
+		mockModel('Users', models.Users);
+		mockModel('Roles', models.Roles);
+	});
 
 	beforeEach(() => {
 		delete process.env.TEST_MODE;

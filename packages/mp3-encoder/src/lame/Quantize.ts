@@ -1,20 +1,20 @@
-import type { BitStream } from './BitStream';
-import { CalcNoiseData } from './CalcNoiseData';
-import { CalcNoiseResult } from './CalcNoiseResult';
-import { GrInfo } from './GrInfo';
-import type { IIISideInfo } from './IIISideInfo';
-import type { LameGlobalFlags } from './LameGlobalFlags';
-import type { LameInternalFlags } from './LameInternalFlags';
-import { PsyModel } from './PsyModel';
-import { QuantizePVT } from './QuantizePVT';
-import { Reservoir } from './Reservoir';
-import { StartLine } from './StartLine';
-import { Takehiro } from './Takehiro';
-import { VbrMode } from './VbrMode';
-import { copyArray, fillArray, sortArray } from './arrays';
-import { assert, assertDefined } from './assert';
-import { PSFB12, PSFB21, SBMAX_l, SBMAX_s, SBPSY_l, SBPSY_s, SFBMAX, SHORT_TYPE } from './constants';
-import { isCloseToEachOther } from './math';
+import type { BitStream } from './BitStream.js';
+import { CalcNoiseData } from './CalcNoiseData.js';
+import { CalcNoiseResult } from './CalcNoiseResult.js';
+import { GrInfo } from './GrInfo.js';
+import type { IIISideInfo } from './IIISideInfo.js';
+import type { LameGlobalFlags } from './LameGlobalFlags.js';
+import type { LameInternalFlags } from './LameInternalFlags.js';
+import { PsyModel } from './PsyModel.js';
+import { QuantizePVT } from './QuantizePVT.js';
+import { Reservoir } from './Reservoir.js';
+import { StartLine } from './StartLine.js';
+import { Takehiro } from './Takehiro.js';
+import { VbrMode } from './VbrMode.js';
+import { copyArray, fillArray, sortArray } from './arrays.js';
+import { assert, assertDefined } from './assert.js';
+import { PSFB12, PSFB21, SBMAX_l, SBMAX_s, SBPSY_l, SBPSY_s, SFBMAX, SHORT_TYPE } from './constants.js';
+import { isCloseToEachOther } from './math.js';
 
 export class Quantize {
 	readonly rv: Reservoir;
@@ -799,7 +799,7 @@ export class Quantize {
 				cod_info.subblock_gain[cod_info.window[sfb]] * 8;
 			let noise = 0.0;
 
-			if (prev_noise !== null && prev_noise.step[sfb] === s) {
+			if (prev_noise?.step[sfb] === s) {
 				noise = prev_noise.noise[sfb];
 				j += cod_info.width[sfb];
 				distort[distortPos++] = noise / l3_xmin[l3_xminPos++];

@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Box, Select, Throbber, ButtonGroup, Button, Text } from '@rocket.chat/fuselage';
 import { useStableCallback, useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -20,7 +20,9 @@ import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import TeamsChannelItem from './TeamsChannelItem';
+import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../../components/FilterBar';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
+import ListViewport from '../../../../components/ListViewport';
 
 export type TeamsChannelsProps = {
 	loading: boolean;
@@ -88,16 +90,12 @@ const TeamsChannels = ({
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
 			<ContextualbarSection>
-				<TextInput
-					placeholder={t('Search')}
-					value={text}
-					ref={inputRef}
-					onChange={setText}
-					endAddon={<Icon name='magnifier' size='x20' />}
-				/>
-				<Box width='x144' marginInlineStart={8}>
-					<Select aria-label={t('Filter')} onChange={(val) => setType(val)} value={type} options={options} />
-				</Box>
+				<FilterBar compact>
+					<FilterBarSearch placeholder={t('Search')} value={text} ref={inputRef} onChange={setText} />
+					<FilterBarFilters>
+						<Select aria-label={t('Filter')} onChange={(val) => setType(val)} value={type} options={options} />
+					</FilterBarFilters>
+				</FilterBar>
 			</ContextualbarSection>
 			<ContextualbarContent flush spaced>
 				{loading && (
@@ -109,11 +107,11 @@ const TeamsChannels = ({
 				{!loading && channels.length > 0 && (
 					<>
 						<Box paddingInline={24} paddingBlockStart={4} paddingBlockEnd={8}>
-							<Box is='span' color='hint' fontScale='p2'>
+							<Text is='span' color='hint' fontScale='p2'>
 								{t('Showing_current_of_total', { current: channels.length, total })}
-							</Box>
+							</Text>
 						</Box>
-						<Box width='full' height='full' role='list' overflow='hidden' flexShrink={1}>
+						<ListViewport role='list'>
 							<VirtualizedScrollbars>
 								<Virtuoso
 									totalCount={total}
@@ -124,7 +122,7 @@ const TeamsChannels = ({
 									)}
 								/>
 							</VirtualizedScrollbars>
-						</Box>
+						</ListViewport>
 					</>
 				)}
 			</ContextualbarContent>

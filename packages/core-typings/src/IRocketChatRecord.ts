@@ -8,7 +8,7 @@ export const IRocketChatRecordSchema = z.object({
 	_updatedAt: TimestampSchema,
 });
 
-export interface IRocketChatRecord extends z.infer<typeof IRocketChatRecordSchema> {}
+export type IRocketChatRecord = z.infer<typeof IRocketChatRecordSchema>;
 
 export type RocketChatRecordDeleted<T> = WithId<T> & {
 	_updatedAt: Date;

@@ -74,6 +74,7 @@ export interface IMediaCallServerSettings {
 
 	permissionCheck: (uid: IUser['_id'], callType: 'internal' | 'external' | 'any') => Promise<boolean>;
 	isFeatureAvailableForUser: (uid: IUser['_id'], feature: CallFeature) => boolean;
+	resolveCallerName: (uid: IUser['_id'], number: string) => Promise<string | undefined>;
 }
 
 export interface IMediaCallServer {
@@ -102,4 +103,5 @@ export interface IMediaCallServer {
 	permissionCheck(uid: IUser['_id'], callType: 'internal' | 'external' | 'any'): Promise<boolean>;
 	isFeatureAvailableForUser(uid: IUser['_id'], feature: CallFeature): boolean;
 	getIceServersForUser(uid: IUser['_id']): RTCIceServer[];
+	resolveCallerName(uid: IUser['_id'], number: string): Promise<string | undefined>;
 }

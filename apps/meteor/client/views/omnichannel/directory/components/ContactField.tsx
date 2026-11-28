@@ -1,10 +1,10 @@
 import type { IOmnichannelGenericRoom, IVisitor } from '@rocket.chat/core-typings';
 import { Avatar, Box } from '@rocket.chat/fuselage';
+import { FormSkeleton } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import { FormSkeleton } from './FormSkeleton';
 import { UserStatus } from '../../../../components/UserStatus';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import AgentInfoDetails from '../../components/AgentInfoDetails';
@@ -34,7 +34,7 @@ const ContactField = ({ contact, room }: ContactFieldProps) => {
 	}
 
 	if (isError || !data?.visitor) {
-		return <Box marginBlockStart={16}>{t('Contact_not_found')}</Box>;
+		return <Box marginBlock='x4'>{t('Contact_not_found')}</Box>;
 	}
 
 	const {

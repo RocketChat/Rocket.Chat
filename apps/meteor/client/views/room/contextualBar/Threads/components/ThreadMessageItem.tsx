@@ -1,7 +1,8 @@
 import type { IThreadMainMessage, IThreadMessage } from '@rocket.chat/core-typings';
-import { Box, Bubble, MessageDivider } from '@rocket.chat/fuselage';
+import { Bubble, MessageDivider } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
+import ListRow from '../../../../../components/ListRow';
 import SystemMessage from '../../../../../components/message/variants/SystemMessage';
 import ThreadMessage from '../../../../../components/message/variants/ThreadMessage';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
@@ -41,8 +42,7 @@ export const ThreadMessageItem = ({
 	return (
 		<>
 			{showDivider && (
-				<Box
-					role='listitem'
+				<ListRow
 					ref={ref}
 					data-id={message.ts}
 					{...(newDay && {
@@ -59,7 +59,7 @@ export const ThreadMessageItem = ({
 							</Bubble>
 						)}
 					</MessageDivider>
-				</Box>
+				</ListRow>
 			)}
 			{system ? (
 				<SystemMessage message={message} showUserAvatar={showUserAvatar} />

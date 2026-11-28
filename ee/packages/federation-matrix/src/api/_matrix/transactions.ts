@@ -1,5 +1,4 @@
-import type { EventID } from '@rocket.chat/federation-sdk';
-import { federationSDK } from '@rocket.chat/federation-sdk';
+import { ROOM_ID_REGEX, federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
@@ -200,7 +199,7 @@ const BackfillParamsSchema = {
 	properties: {
 		roomId: {
 			type: 'string',
-			pattern: '^![A-Za-z0-9_=\\/.+-]+:(.+)$',
+			pattern: ROOM_ID_REGEX.source,
 			description: 'Matrix room ID',
 		},
 	},
@@ -357,7 +356,7 @@ export const getMatrixTransactionsRoutes = () => {
 						};
 					}
 
-					const stateIds = await federationSDK.getStateIds(roomId, eventId as EventID);
+					const stateIds = await federationSDK.getStateIds(roomId, eventId);
 
 					return {
 						body: stateIds,
@@ -389,7 +388,7 @@ export const getMatrixTransactionsRoutes = () => {
 							statusCode: 404,
 						};
 					}
-					const state = await federationSDK.getState(roomId, eventId as EventID);
+					const state = await federationSDK.getState(roomId, eventId);
 					return {
 						statusCode: 200,
 						body: state,
@@ -410,7 +409,7 @@ export const getMatrixTransactionsRoutes = () => {
 				},
 				canAccessResourceMiddleware('event'),
 				async (c) => {
-					const eventData = await federationSDK.getEventById(c.req.param('eventId') as EventID);
+					const eventData = await federationSDK.getEventById(c.req.param('eventId'));
 					if (!eventData) {
 						return {
 							body: {
@@ -473,7 +472,7 @@ export const getMatrixTransactionsRoutes = () => {
 					}
 
 					try {
-						const result = await federationSDK.getBackfillEvents(roomId, eventIds as EventID[], limit);
+						const result = await federationSDK.getBackfillEvents(roomId, eventIds, limit);
 
 						return {
 							body: result,

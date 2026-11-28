@@ -27,7 +27,7 @@ import type {
 	OptionalId,
 } from 'mongodb';
 
-import { getCollectionName } from '../index';
+import { getCollectionName } from '../getCollectionName';
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 

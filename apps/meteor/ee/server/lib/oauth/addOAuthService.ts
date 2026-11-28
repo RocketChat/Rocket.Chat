@@ -2,6 +2,134 @@ import { capitalize } from '@rocket.chat/tools';
 
 import { settingsRegistry } from '../../../../server/settings';
 
+async function addOAuthServiceUserMappingSettings(name: string, values: { [k: string]: string | boolean | undefined }): Promise<void> {
+	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-username_field`, values.usernameField || '', {
+		type: 'string',
+		group: 'OAuth',
+		section: `Custom OAuth: ${name}`,
+		i18nLabel: 'Accounts_OAuth_Custom_Username_Field',
+		persistent: true,
+	});
+	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-email_field`, values.emailField || '', {
+		type: 'string',
+		group: 'OAuth',
+		section: `Custom OAuth: ${name}`,
+		i18nLabel: 'Accounts_OAuth_Custom_Email_Field',
+		persistent: true,
+	});
+	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-name_field`, values.nameField || '', {
+		type: 'string',
+		group: 'OAuth',
+		section: `Custom OAuth: ${name}`,
+		i18nLabel: 'Accounts_OAuth_Custom_Name_Field',
+		persistent: true,
+	});
+	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-avatar_field`, values.avatarField || '', {
+		type: 'string',
+		group: 'OAuth',
+		section: `Custom OAuth: ${name}`,
+		i18nLabel: 'Accounts_OAuth_Custom_Avatar_Field',
+		persistent: true,
+	});
+	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-roles_claim`, values.rolesClaim || 'roles', {
+		type: 'string',
+		group: 'OAuth',
+		section: `Custom OAuth: ${name}`,
+		i18nLabel: 'Accounts_OAuth_Custom_Roles_Claim',
+		enterprise: true,
+		invalidValue: 'roles',
+		modules: ['oauth-enterprise'],
+	});
+	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-groups_claim`, values.groupsClaim || 'groups', {
+		type: 'string',
+		group: 'OAuth',
+		section: `Custom OAuth: ${name}`,
+		i18nLabel: 'Accounts_OAuth_Custom_Groups_Claim',
+		enterprise: true,
+		invalidValue: 'groups',
+		modules: ['oauth-enterprise'],
+	});
+
+	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-channels_admin`, values.channelsAdmin || 'rocket.cat', {
+		type: 'string',
+		group: 'OAuth',
+		section: `Custom OAuth: ${name}`,
+		i18nLabel: 'Accounts_OAuth_Custom_Channel_Admin',
+		persistent: true,
+	});
+	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-map_channels`, values.mapChannels || false, {
+		type: 'boolean',
+		group: 'OAuth',
+		section: `Custom OAuth: ${name}`,
+		i18nLabel: 'Accounts_OAuth_Custom_Map_Channels',
+		enterprise: true,
+		invalidValue: false,
+		modules: ['oauth-enterprise'],
+	});
+	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-merge_roles`, values.mergeRoles || false, {
+		type: 'boolean',
+		group: 'OAuth',
+		section: `Custom OAuth: ${name}`,
+		i18nLabel: 'Accounts_OAuth_Custom_Merge_Roles',
+		enterprise: true,
+		invalidValue: false,
+		modules: ['oauth-enterprise'],
+	});
+	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-roles_to_sync`, values.rolesToSync || '', {
+		type: 'string',
+		group: 'OAuth',
+		section: `Custom OAuth: ${name}`,
+		i18nLabel: 'Accounts_OAuth_Custom_Roles_To_Sync',
+		i18nDescription: 'Accounts_OAuth_Custom_Roles_To_Sync_Description',
+		enterprise: true,
+		enableQuery: {
+			_id: `Accounts_OAuth_Custom-${name}-merge_roles`,
+			value: true,
+		},
+		invalidValue: '',
+		modules: ['oauth-enterprise'],
+	});
+	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-merge_users`, values.mergeUsers || false, {
+		type: 'boolean',
+		group: 'OAuth',
+		section: `Custom OAuth: ${name}`,
+		i18nLabel: 'Accounts_OAuth_Custom_Merge_Users',
+		persistent: true,
+	});
+	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-merge_users_distinct_services`, values.mergeUsersDistinctServices || false, {
+		type: 'boolean',
+		group: 'OAuth',
+		section: `Custom OAuth: ${name}`,
+		i18nLabel: 'Accounts_OAuth_Custom_Merge_Users_Distinct_Services',
+		i18nDescription: 'Accounts_OAuth_Custom_Merge_Users_Distinct_Services_Description',
+		enableQuery: {
+			_id: `Accounts_OAuth_Custom-${name}-merge_users`,
+			value: true,
+		},
+		persistent: true,
+	});
+	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-show_button`, values.showButton || true, {
+		type: 'boolean',
+		group: 'OAuth',
+		section: `Custom OAuth: ${name}`,
+		i18nLabel: 'Accounts_OAuth_Custom_Show_Button_On_Login_Page',
+		persistent: true,
+	});
+	await settingsRegistry.add(
+		`Accounts_OAuth_Custom-${name}-groups_channel_map`,
+		values.channelsMap || '{\n\t"rocket-admin": "admin",\n\t"tech-support": "support"\n}',
+		{
+			type: 'code',
+			multiline: true,
+			code: 'application/json',
+			group: 'OAuth',
+			section: `Custom OAuth: ${name}`,
+			i18nLabel: 'Accounts_OAuth_Custom_Channel_Map',
+			persistent: true,
+		},
+	);
+}
+
 export async function addOAuthService(name: string, values: { [k: string]: string | boolean | undefined } = {}): Promise<void> {
 	name = name.toLowerCase().replace(/[^a-z0-9_]/g, '');
 	name = capitalize(name);
@@ -140,129 +268,5 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 			{ key: 'email', i18nLabel: 'Email' },
 		],
 	});
-	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-username_field`, values.usernameField || '', {
-		type: 'string',
-		group: 'OAuth',
-		section: `Custom OAuth: ${name}`,
-		i18nLabel: 'Accounts_OAuth_Custom_Username_Field',
-		persistent: true,
-	});
-	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-email_field`, values.emailField || '', {
-		type: 'string',
-		group: 'OAuth',
-		section: `Custom OAuth: ${name}`,
-		i18nLabel: 'Accounts_OAuth_Custom_Email_Field',
-		persistent: true,
-	});
-	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-name_field`, values.nameField || '', {
-		type: 'string',
-		group: 'OAuth',
-		section: `Custom OAuth: ${name}`,
-		i18nLabel: 'Accounts_OAuth_Custom_Name_Field',
-		persistent: true,
-	});
-	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-avatar_field`, values.avatarField || '', {
-		type: 'string',
-		group: 'OAuth',
-		section: `Custom OAuth: ${name}`,
-		i18nLabel: 'Accounts_OAuth_Custom_Avatar_Field',
-		persistent: true,
-	});
-	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-roles_claim`, values.rolesClaim || 'roles', {
-		type: 'string',
-		group: 'OAuth',
-		section: `Custom OAuth: ${name}`,
-		i18nLabel: 'Accounts_OAuth_Custom_Roles_Claim',
-		enterprise: true,
-		invalidValue: 'roles',
-		modules: ['oauth-enterprise'],
-	});
-	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-groups_claim`, values.groupsClaim || 'groups', {
-		type: 'string',
-		group: 'OAuth',
-		section: `Custom OAuth: ${name}`,
-		i18nLabel: 'Accounts_OAuth_Custom_Groups_Claim',
-		enterprise: true,
-		invalidValue: 'groups',
-		modules: ['oauth-enterprise'],
-	});
-
-	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-channels_admin`, values.channelsAdmin || 'rocket.cat', {
-		type: 'string',
-		group: 'OAuth',
-		section: `Custom OAuth: ${name}`,
-		i18nLabel: 'Accounts_OAuth_Custom_Channel_Admin',
-		persistent: true,
-	});
-	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-map_channels`, values.mapChannels || false, {
-		type: 'boolean',
-		group: 'OAuth',
-		section: `Custom OAuth: ${name}`,
-		i18nLabel: 'Accounts_OAuth_Custom_Map_Channels',
-		enterprise: true,
-		invalidValue: false,
-		modules: ['oauth-enterprise'],
-	});
-	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-merge_roles`, values.mergeRoles || false, {
-		type: 'boolean',
-		group: 'OAuth',
-		section: `Custom OAuth: ${name}`,
-		i18nLabel: 'Accounts_OAuth_Custom_Merge_Roles',
-		enterprise: true,
-		invalidValue: false,
-		modules: ['oauth-enterprise'],
-	});
-	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-roles_to_sync`, values.rolesToSync || '', {
-		type: 'string',
-		group: 'OAuth',
-		section: `Custom OAuth: ${name}`,
-		i18nLabel: 'Accounts_OAuth_Custom_Roles_To_Sync',
-		i18nDescription: 'Accounts_OAuth_Custom_Roles_To_Sync_Description',
-		enterprise: true,
-		enableQuery: {
-			_id: `Accounts_OAuth_Custom-${name}-merge_roles`,
-			value: true,
-		},
-		invalidValue: '',
-		modules: ['oauth-enterprise'],
-	});
-	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-merge_users`, values.mergeUsers || false, {
-		type: 'boolean',
-		group: 'OAuth',
-		section: `Custom OAuth: ${name}`,
-		i18nLabel: 'Accounts_OAuth_Custom_Merge_Users',
-		persistent: true,
-	});
-	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-merge_users_distinct_services`, values.mergeUsersDistinctServices || false, {
-		type: 'boolean',
-		group: 'OAuth',
-		section: `Custom OAuth: ${name}`,
-		i18nLabel: 'Accounts_OAuth_Custom_Merge_Users_Distinct_Services',
-		i18nDescription: 'Accounts_OAuth_Custom_Merge_Users_Distinct_Services_Description',
-		enableQuery: {
-			_id: `Accounts_OAuth_Custom-${name}-merge_users`,
-			value: true,
-		},
-		persistent: true,
-	});
-	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-show_button`, values.showButton || true, {
-		type: 'boolean',
-		group: 'OAuth',
-		section: `Custom OAuth: ${name}`,
-		i18nLabel: 'Accounts_OAuth_Custom_Show_Button_On_Login_Page',
-		persistent: true,
-	});
-	await settingsRegistry.add(
-		`Accounts_OAuth_Custom-${name}-groups_channel_map`,
-		values.channelsMap || '{\n\t"rocket-admin": "admin",\n\t"tech-support": "support"\n}',
-		{
-			type: 'code',
-			multiline: true,
-			code: 'application/json',
-			group: 'OAuth',
-			section: `Custom OAuth: ${name}`,
-			i18nLabel: 'Accounts_OAuth_Custom_Channel_Map',
-			persistent: true,
-		},
-	);
+	await addOAuthServiceUserMappingSettings(name, values);
 }

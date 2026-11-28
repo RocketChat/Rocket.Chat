@@ -1,11 +1,11 @@
+import { createNodeServer, createRootApp, mountRouter } from '@rocket.chat/http-router';
 import Ajv from 'ajv';
-import express from 'express';
 import request from 'supertest';
 
 const mockSettingsStore = new Map<string, unknown>([['API_Enable_Rate_Limiter', false]]);
 
-jest.mock('meteor/meteor', () => ({ Meteor: { startup: (callback: () => void) => callback() } }), { virtual: true });
-jest.mock('meteor/webapp', () => ({ WebApp: { rawConnectHandlers: { use: jest.fn() } } }), { virtual: true });
+jest.mock('meteor/meteor', () => ({ Meteor: {} }), { virtual: true });
+jest.mock('../lib/http/httpServer', () => ({ httpApp: jest.requireActual('@rocket.chat/http-router').createRootApp() }));
 jest.mock('meteor/rate-limit', () => ({ RateLimiter: jest.fn() }), { virtual: true });
 jest.mock('meteor/accounts-base', () => ({ Accounts: { _accountData: {} as Record<string, unknown> } }), { virtual: true });
 jest.mock('meteor/ddp', () => ({ DDP: {} }), { virtual: true });
@@ -24,8 +24,6 @@ jest.mock('../settings', () => ({
 		getByRegexp: jest.fn(() => []),
 	},
 }));
-
-jest.mock('@rocket.chat/models', () => ({}));
 
 const { ClientSafeError } = jest.requireActual<typeof import('@rocket.chat/core-services')>('@rocket.chat/core-services');
 jest.requireActual('./api');
@@ -67,7 +65,9 @@ const api = new APIClass({ apiPath: 'refusals/', useDefaultAuth: false, enableCo
 	},
 );
 
-const app = express().use(api.router.router);
+const rootApp = createRootApp();
+mountRouter(rootApp, api.router);
+const app = createNodeServer(rootApp);
 
 describe('APIClass refusals', () => {
 	beforeEach(() => {

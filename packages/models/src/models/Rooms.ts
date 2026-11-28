@@ -29,7 +29,7 @@ import type {
 	FindOneAndUpdateOptions,
 } from 'mongodb';
 
-import { Subscriptions } from '../index';
+import { Subscriptions } from '../proxies';
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 import type { Updater } from '../updater';
@@ -867,7 +867,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			federated: true,
 		};
 
-		const room = await (
+		const room = (
 			await this.find(query, options)
 				.sort({ usersCount: asc ? 1 : -1 })
 				.limit(1)
@@ -1229,6 +1229,13 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null> {
 		return this.findOne<T, O>({ _id, prid: { $exists: true } }, options);
+	}
+
+	findDiscussionsWithOriginMessageByParentRoomId<
+		T extends Document = IRoom,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(prid: IRoom['_id'], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>({ prid, pmid: { $exists: true } }, options);
 	}
 
 	findByType<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
@@ -2091,7 +2098,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	async getSubscribedRoomIdsWithoutE2EKeys(uid: IUser['_id']): Promise<IRoom['_id'][]> {
 		return (
 			await this.col
-				.aggregate([
+				.aggregate<Pick<IRoom, '_id'>>([
 					{ $match: { encrypted: true } },
 					{
 						$lookup: {

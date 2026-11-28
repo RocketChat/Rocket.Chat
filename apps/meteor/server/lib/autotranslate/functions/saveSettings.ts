@@ -1,6 +1,5 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
-import { check } from 'meteor/check';
 
 import { hasPermissionAsync } from '../../authorization/hasPermission';
 import { notifyOnSubscriptionChangedById } from '../../notifyListener';
@@ -17,10 +16,6 @@ export const saveAutoTranslateSettings = async (
 			method: 'autoTranslate.saveSettings',
 		});
 	}
-
-	check(rid, String);
-	check(field, String);
-	check(value, String);
 
 	if (['autoTranslate', 'autoTranslateLanguage'].indexOf(field) === -1) {
 		throw new ClientSafeError('error-invalid-settings', 'Invalid settings field', {

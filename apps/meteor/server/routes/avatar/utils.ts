@@ -128,8 +128,8 @@ const getFirstLetter = (name: string) => {
 const getInitials = (name: string) => name.split(' ').slice(0, MAX_SVG_AVATAR_INITIALS).map(getFirstLetter).join('');
 
 export const renderSVGLetters = (name: string, viewSize = 200, useAllInitials = false) => {
-	let color = '';
-	let initials = '';
+	let color: string;
+	let initials: string;
 
 	if (name === '?') {
 		color = '#000';
@@ -147,8 +147,8 @@ export const renderSVGLetters = (name: string, viewSize = 200, useAllInitials = 
 
 const getCacheTime = (cacheTime: number) => cacheTime || settings.get('Accounts_AvatarCacheTime');
 
-export function setCacheAndDispositionHeaders(req: IIncomingMessage, res: ServerResponse) {
+export function setCacheAndDispositionHeaders(req: IIncomingMessage, res: ServerResponse, visibility: 'public' | 'private' = 'public') {
 	const cacheTime = getCacheTime(req.query.cacheTime);
-	res.setHeader('Cache-Control', `public, max-age=${cacheTime}`);
+	res.setHeader('Cache-Control', `${visibility}, max-age=${cacheTime}`);
 	res.setHeader('Content-Disposition', 'inline');
 }

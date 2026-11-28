@@ -1,6 +1,7 @@
 import { Box, CardGroup } from '@rocket.chat/fuselage';
 import { PageScrollableContent, Page } from '@rocket.chat/ui-client';
-import { useAtLeastOnePermission, useSetting, useTranslation, useRole, usePermission } from '@rocket.chat/ui-contexts';
+import { useAtLeastOnePermission, useSetting, useRole, usePermission } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
 import HomePageHeader from './HomePageHeader';
 import AddUsersCard from './cards/AddUsersCard';
@@ -14,7 +15,7 @@ import MobileAppsCard from './cards/MobileAppsCard';
 const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];
 
 const DefaultHomePage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const canAddUsers = usePermission('view-user-administration');
 	const isAdmin = useRole('admin');
 	const canCreateChannel = useAtLeastOnePermission(CREATE_CHANNEL_PERMISSIONS);

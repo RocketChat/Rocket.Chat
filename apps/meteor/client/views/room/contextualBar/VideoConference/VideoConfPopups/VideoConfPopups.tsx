@@ -1,5 +1,5 @@
 import { FocusScope } from '@react-aria/focus';
-import { useCustomSound } from '@rocket.chat/ui-contexts';
+import { useCallSounds } from '@rocket.chat/ui-conference';
 import type { VideoConfPopupPayload } from '@rocket.chat/ui-video-conf';
 import {
 	VideoConfPopupBackdrop,
@@ -18,7 +18,7 @@ const VideoConfPopup = lazy(() => import('./VideoConfPopup'));
 export type VideoConfPopupsProps = { children?: VideoConfPopupPayload };
 
 const VideoConfPopups = ({ children }: VideoConfPopupsProps) => {
-	const { callSounds } = useCustomSound();
+	const callSounds = useCallSounds();
 	const incomingCalls = useVideoConfIncomingCalls();
 	const isRinging = useVideoConfIsRinging();
 	const isCalling = useVideoConfIsCalling();

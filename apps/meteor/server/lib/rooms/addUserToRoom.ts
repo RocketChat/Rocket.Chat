@@ -2,7 +2,7 @@ import { AbacContractError } from '@rocket.chat/abac';
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Message, Team, Room, ClientSafeError, isClientSafeError } from '@rocket.chat/core-services';
-import { isBannedSubscription, isRoomNativeFederated, type IUser } from '@rocket.chat/core-typings';
+import { isBannedSubscription, isRoomNativeFederated, type IRoom, type IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
@@ -12,6 +12,20 @@ import { beforeAddUserToRoom as beforeAddUserToRoomPatch } from '../../hooks/roo
 import { settings } from '../../settings';
 import { beforeAddUserToRoom } from '../callbacks/beforeAddUserToRoom';
 import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../notifyListener';
+
+const runBeforeAddUserToRoomHooks = async (userToBeAdded: IUser, room: IRoom, inviter?: Pick<IUser, '_id' | 'username'>) => {
+	try {
+		const inviterUser = inviter && ((await Users.findOneById(inviter._id)) || undefined);
+		// Not "duplicated": we're moving away from callbacks so this is a patch function. We should migrate the next one to be a patch or use this same patch, instead of calling both
+		await beforeAddUserToRoomPatch([userToBeAdded.username!], room, inviterUser);
+		await beforeAddUserToRoom.run({ user: userToBeAdded, inviter: inviterUser }, room);
+	} catch (error) {
+		if (error instanceof AbacContractError || isClientSafeError(error)) {
+			throw error;
+		}
+		throw new ClientSafeError((error as any)?.message);
+	}
+};
 
 /**
  * This function adds user to the given room.
@@ -55,17 +69,7 @@ export const addUserToRoom = async (
 		return;
 	}
 
-	try {
-		const inviterUser = inviter && ((await Users.findOneById(inviter._id)) || undefined);
-		// Not "duplicated": we're moving away from callbacks so this is a patch function. We should migrate the next one to be a patch or use this same patch, instead of calling both
-		await beforeAddUserToRoomPatch([userToBeAdded.username!], room, inviterUser);
-		await beforeAddUserToRoom.run({ user: userToBeAdded, inviter: inviterUser }, room);
-	} catch (error) {
-		if (error instanceof AbacContractError || isClientSafeError(error)) {
-			throw error;
-		}
-		throw new ClientSafeError((error as any)?.message);
-	}
+	await runBeforeAddUserToRoomHooks(userToBeAdded, room, inviter);
 
 	// TODO: are we calling this twice?
 

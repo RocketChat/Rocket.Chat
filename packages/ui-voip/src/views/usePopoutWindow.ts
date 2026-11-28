@@ -25,6 +25,13 @@ const replaceWithTranslationString = (t: TFunction, externalDocument: Document) 
 	});
 };
 
+// StaticBox rules live in the app's CSS bundle, not in voice-call-popup.html
+const copyParentStylesheets = (targetDocument: Document) => {
+	for (const sheet of document.querySelectorAll('link[rel="stylesheet"], style')) {
+		targetDocument.head.appendChild(sheet.cloneNode(true));
+	}
+};
+
 const changeTheme = (ownerDocument: Document, theme?: string) => {
 	if (theme) {
 		ownerDocument.documentElement.setAttribute('data-color-scheme', theme);
@@ -64,7 +71,7 @@ const openExternalWindow = async (callId: string, theme: string) => {
 			} catch (error) {
 				// arround ~ 5 seconds total timeout
 				if (attempt > 9) {
-					reject(error as Error);
+					reject(error instanceof Error ? error : new Error('Failed to create the popout window root'));
 					externalWindow.close();
 					return;
 				}
@@ -85,6 +92,8 @@ const openExternalWindow = async (callId: string, theme: string) => {
 			attemptCreateRoot();
 		}, 500);
 	});
+
+	copyParentStylesheets(externalWindow.document);
 
 	return { root, externalWindow };
 };

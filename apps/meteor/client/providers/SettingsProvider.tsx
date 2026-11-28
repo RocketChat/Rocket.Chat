@@ -3,39 +3,41 @@ import { isSettingCode } from '@rocket.chat/core-typings';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import { isTruthy } from '@rocket.chat/tools';
 import type { SettingsContextQuery, SettingsContextValue } from '@rocket.chat/ui-contexts';
-import { SettingsContext, useAtLeastOnePermission, useEndpoint } from '@rocket.chat/ui-contexts';
+import { SettingsContext, useAtLeastOnePermission, useEndpoint, SETTINGS_MANAGEMENT_PERMISSIONS } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 
 import { PublicSettingsCachedStore, PrivateSettingsCachedStore } from '../cachedStores';
 import { useShowSettingAlerts } from '../hooks/useShowSettingAlerts';
 import { PrivateCachedStore } from '../lib/cachedStores/CachedStore';
 import { applyQueryOptions } from '../lib/cachedStores/applyQueryOptions';
 import { getCodeSettingError } from '../lib/utils/getCodeSettingError';
-
-const settingsManagementPermissions = ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'];
+import PageLoading from '../views/root/PageLoading';
 
 export type SettingsProviderProps = {
 	children?: ReactNode;
 };
 
 const SettingsProvider = ({ children }: SettingsProviderProps) => {
-	const canManageSettings = useAtLeastOnePermission(settingsManagementPermissions);
+	const canManageSettings = useAtLeastOnePermission(SETTINGS_MANAGEMENT_PERMISSIONS);
 
 	const cachedCollection = canManageSettings ? PrivateSettingsCachedStore : PublicSettingsCachedStore;
 
-	const isLoading = !cachedCollection.useReady();
+	// waits for settings without suspending, see ../../../../docs/features/client-boot.md
+	const isReady = cachedCollection.useReady();
 
-	if (isLoading) {
-		throw (async () => {
-			if (cachedCollection instanceof PrivateCachedStore) {
-				cachedCollection.listen();
-			}
+	useEffect(() => {
+		if (isReady) {
+			return;
+		}
 
-			await cachedCollection.init();
-		})();
-	}
+		if (cachedCollection instanceof PrivateCachedStore) {
+			cachedCollection.listen();
+		}
+
+		void cachedCollection.init();
+	}, [cachedCollection, isReady]);
 
 	const querySetting = useMemo(
 		() =>
@@ -152,6 +154,10 @@ const SettingsProvider = ({ children }: SettingsProviderProps) => {
 		}),
 		[canManageSettings, querySetting, querySettings, dispatch],
 	);
+
+	if (!isReady) {
+		return <PageLoading />;
+	}
 
 	return <SettingsContext.Provider value={contextValue}>{children}</SettingsContext.Provider>;
 };
