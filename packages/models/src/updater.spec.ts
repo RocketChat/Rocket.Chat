@@ -189,3 +189,28 @@ test('it should getUpdateFilter only once', async () => {
 	expect(updater.getUpdateFilter()).toEqual({ $set: { a: { b: 'set' } } });
 	expect(() => updater.getUpdateFilter()).toThrow();
 });
+
+test('it should report pending changes only after one is made', () => {
+	const updater = new UpdaterImpl<{ _id: string; c?: number }>();
+
+	expect(updater.hasChanges()).toBe(false);
+	expect(() => updater.getUpdateFilter()).toThrow('No changes to update');
+
+	updater.inc('c', 1);
+
+	expect(updater.hasChanges()).toBe(true);
+});
+
+test('it should return the pending $set and $inc values', () => {
+	const updater = new UpdaterImpl<{ _id: string; a?: string; c?: number }>();
+
+	expect(updater.getSet('a')).toBeUndefined();
+	expect(updater.getInc('c')).toBeUndefined();
+
+	updater.set('a', 'value');
+	updater.inc('c', 2);
+	updater.inc('c', 3);
+
+	expect(updater.getSet('a')).toBe('value');
+	expect(updater.getInc('c')).toBe(5);
+});

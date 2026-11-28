@@ -1,5 +1,8 @@
 codecov:
   max_report_age: off
+ignore:
+  # model classes only send queries, and the API tests run them against a real database
+  - packages/models/src/models/**
 coverage:
   status:
     patch: off
