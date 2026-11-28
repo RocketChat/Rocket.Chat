@@ -12,8 +12,6 @@
 		"url": "git+https://github.com/RocketChat/Rocket.Chat.git"
 	},
 	"license": "MIT",
-	"author": "",
-	"main": "index.js",
 	"workspaces": [
 		"apps/*",
 		"packages/*",
