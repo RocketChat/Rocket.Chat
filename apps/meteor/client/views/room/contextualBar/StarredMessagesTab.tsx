@@ -1,6 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useEndpoint, useStream } from '@rocket.chat/ui-contexts';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MessageListTab from './MessageListTab';
@@ -11,8 +12,11 @@ import { useRoom } from '../contexts/RoomContext';
 
 const StarredMessagesTab = () => {
 	const getStarredMessages = useEndpoint('GET', '/v1/chat.getStarredMessages');
+	const subscribeToRoomMessages = useStream('room-messages');
 
 	const room = useRoom();
+	const queryClient = useQueryClient();
+	const hasMissedEvent = useRef(false);
 
 	const starredMessagesQueryResult = useQuery({
 		queryKey: roomsQueryKeys.starredMessages(room._id),
@@ -30,6 +34,49 @@ const StarredMessagesTab = () => {
 			return Promise.all(messages.map(onClientMessageReceived));
 		},
 	});
+
+	const { isFetching } = starredMessagesQueryResult;
+
+	useEffect(() => {
+		const queryKey = roomsQueryKeys.starredMessages(room._id);
+
+		// The list is only fetched once, so keep the messages it already shows in sync with realtime updates (e.g. edits)
+		return subscribeToRoomMessages(room._id, async (event) => {
+			// An event received mid-fetch may not be reflected in the response, so refetch once the fetch settles
+			if (queryClient.isFetching({ queryKey })) {
+				hasMissedEvent.current = true;
+				return;
+			}
+
+			const isListed = queryClient.getQueryData<IMessage[]>(queryKey)?.some((message) => message._id === event._id);
+
+			if (!isListed) {
+				return;
+			}
+
+			const updated = await onClientMessageReceived(event);
+
+			queryClient.setQueryData<IMessage[]>(queryKey, (messages) =>
+				messages?.map((message) => {
+					if (message._id !== updated._id) {
+						return message;
+					}
+
+					// Transforms are async, so ignore an older event that finished after a newer one
+					const isStale = new Date(updated._updatedAt).getTime() < new Date(message._updatedAt).getTime();
+
+					return isStale ? message : updated;
+				}),
+			);
+		});
+	}, [queryClient, room._id, subscribeToRoomMessages]);
+
+	useEffect(() => {
+		if (!isFetching && hasMissedEvent.current) {
+			hasMissedEvent.current = false;
+			queryClient.invalidateQueries({ queryKey: roomsQueryKeys.starredMessages(room._id) });
+		}
+	}, [isFetching, queryClient, room._id]);
 
 	const { t } = useTranslation();
 
