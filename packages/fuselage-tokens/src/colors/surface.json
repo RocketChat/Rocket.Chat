@@ -12,7 +12,9 @@
       "featured": { "value": "{colors.p700}" },
       "featuredHover": { "value": "{colors.p800}" },
       "sidebar": { "value": "{colors.n400}" },
-      "overlay": { "value": "rgba(47, 52, 61, 0.5)", "type": "color" }
+      "overlay": { "value": "rgba(47, 52, 61, 0.5)", "type": "color" },
+      "scrollbarThumb": { "value": "rgba(47, 52, 61, 0.05)", "type": "color" },
+      "scrollbarThumbHover": { "value": "rgba(47, 52, 61, 0.15)", "type": "color" }
     },
     "high-contrast": {
       "light": { "value": "{colors.white}" },
@@ -26,7 +28,9 @@
       "featured": { "value": "{colors.p700}" },
       "featuredHover": { "value": "{colors.p800}" },
       "sidebar": { "value": "{colors.n400}" },
-      "overlay": { "value": "rgba(47, 52, 61, 0.5)", "type": "color" }
+      "overlay": { "value": "rgba(47, 52, 61, 0.5)", "type": "color" },
+      "scrollbarThumb": { "value": "rgba(47, 52, 61, 0.05)", "type": "color" },
+      "scrollbarThumbHover": { "value": "rgba(47, 52, 61, 0.15)", "type": "color" }
     },
     "dark": {
       "light": { "value": "#262931", "type": "color" },
@@ -40,7 +44,9 @@
       "featured": { "value": "#5F1477", "type": "color" },
       "featuredHover": { "value": "#4A105D", "type": "color" },
       "sidebar": { "value": "#2F343D", "type": "color" },
-      "overlay": { "value": "rgba(0, 0, 0, 0.6)", "type": "color" }
+      "overlay": { "value": "rgba(0, 0, 0, 0.6)", "type": "color" },
+      "scrollbarThumb": { "value": "rgba(247, 248, 250, 0.05)", "type": "color" },
+      "scrollbarThumbHover": { "value": "rgba(247, 248, 250, 0.15)", "type": "color" }
     }
   }
 }

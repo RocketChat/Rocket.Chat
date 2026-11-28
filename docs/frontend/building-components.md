@@ -89,6 +89,9 @@ Simple components are atomic elements such as buttons or inputs.
   ```
 
 - Document every variation in Storybook, with a note on the non-obvious ones.
+- Look at every variation in the light, dark and high-contrast themes. The Theme menu of the Storybook toolbar switches
+  them, and `globals=theme:dark` (or `light`, `high-contrast`) in the URL opens a story in one, so a link reproduces
+  what you saw; Fuselage's Storybook also takes `direction:rtl`. The visual regression captures the light theme only.
 - Unit test every behavior: rendering, interactions, keyboard, and accessible names.
 
 ## Complex components
