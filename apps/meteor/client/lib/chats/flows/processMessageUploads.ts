@@ -42,7 +42,7 @@ const getAttachmentForFile = (fileToUpload: EncryptedUpload): FileAttachmentProp
 		[`${fileType}_type`]: fileToUpload.file.type,
 		[`${fileType}_size`]: fileToUpload.file.size,
 		...(fileType === 'image' && {
-			image_dimensions: fileToUpload.imageDimensions,
+			...(fileToUpload.imageDimensions && { image_dimensions: fileToUpload.imageDimensions }),
 			image_alt: fileToUpload.altText,
 		}),
 	};
