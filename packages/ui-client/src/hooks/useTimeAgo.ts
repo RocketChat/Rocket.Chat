@@ -1,8 +1,8 @@
-import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
+import { useLanguage, useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { formatTimeAgo } from '../lib/dateFormat';
+import { formatMonthDay, formatTimeAgo } from '../lib/dateFormat';
 
 const dayFormat = ['h:mm A', 'H:mm'] as const;
 
@@ -29,6 +29,7 @@ export const useTimeAgo = () => {
 
 export const useShortTimeAgo = () => {
 	const { t } = useTranslation();
+	const language = useLanguage();
 	const clockMode = useUserPreference<1 | 2>('clockMode');
 	const timeFormat = useSetting('Message_TimeFormat', 'LT');
 	const format = clockMode !== undefined ? dayFormat[clockMode - 1] : timeFormat;
@@ -39,9 +40,9 @@ export const useShortTimeAgo = () => {
 				sameDayFormat: format,
 				yesterdayLabel: t('Yesterday'),
 				lastWeekFormat: 'dddd',
-				otherFormat: 'MMM Do',
+				otherFormat: (date) => formatMonthDay(date, language),
 				otherYearFormat: 'LL',
 			}),
-		[format, t],
+		[format, language, t],
 	);
 };

@@ -15,9 +15,9 @@ export const useFormatDateAndTime = ({ withSeconds }: UseFormatDateAndTimeParams
 		(time: string | Date | number = new Date()) => {
 			switch (clockMode) {
 				case 1:
-					return formatDate(time, withSeconds ? 'MMMM D, YYYY h:mm:ss A' : 'MMMM D, YYYY h:mm A');
+					return formatDate(time, withSeconds ? 'LL h:mm:ss A' : 'LL h:mm A');
 				case 2:
-					return formatDate(time, withSeconds ? 'MMMM D, YYYY H:mm:ss' : 'MMMM D, YYYY H:mm');
+					return formatDate(time, withSeconds ? 'LL H:mm:ss' : 'LL H:mm');
 
 				default:
 					return formatDate(time, withSeconds ? 'L LTS' : format);
