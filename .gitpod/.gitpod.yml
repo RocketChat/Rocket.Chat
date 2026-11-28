@@ -1,6 +1,6 @@
 tasks:
   - init: |
-      nvm install $(jq -r .engines.node package.json) &&
+      nvm install "$(jq -r .volta.node package.json)" &&
       curl https://install.meteor.com/?release=$(
         curl -so- https://raw.githubusercontent.com/RocketChat/Rocket.Chat/develop/apps/meteor/.meteor/release | cut -d@ -f2
       ) | sh &&
