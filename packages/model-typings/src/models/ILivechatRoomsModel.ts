@@ -279,6 +279,13 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		extraQuery?: Filter<IOmnichannelRoom>,
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
+	claimAutoForward(
+		roomId: string,
+		assignment: NonNullable<IOmnichannelRoom['servedBy']>,
+		lock: NonNullable<IOmnichannelRoom['autoForwardLock']>,
+		now: Date,
+	): Promise<IOmnichannelRoom | null>;
+	releaseAutoForward(roomId: string, token: string): Promise<void>;
 	countOpenByAgent(userId: string, extraQuery?: Filter<IOmnichannelRoom>): Promise<number>;
 	changeAgentByRoomId(roomId: string, newAgent: { agentId: string; username: string }): Promise<UpdateResult>;
 	changeDepartmentIdByRoomId(roomId: string, departmentId: string): Promise<UpdateResult>;

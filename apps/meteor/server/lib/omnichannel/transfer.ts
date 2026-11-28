@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+
 import { Message } from '@rocket.chat/core-services';
 import type { ILivechatDepartment, ILivechatVisitor, IOmnichannelRoom, TransferData } from '@rocket.chat/core-typings';
 import { Users, LivechatRooms, LivechatVisitors, LivechatDepartment } from '@rocket.chat/models';
@@ -5,6 +7,9 @@ import { Users, LivechatRooms, LivechatVisitors, LivechatDepartment } from '@roc
 import { normalizeTransferredByData } from './Helper';
 import { RoutingManager } from './RoutingManager';
 import { livechatLogger } from './logger';
+
+// Allow another agent-leave event to retry if a worker exits without releasing its claim.
+const AUTO_FORWARD_LOCK_MS = 5 * 60 * 1000;
 
 export async function saveTransferHistory(room: IOmnichannelRoom, transferData: TransferData) {
 	const { departmentId: previousDepartment } = room;
@@ -38,17 +43,36 @@ export async function forwardOpenChats(userId: string) {
 	}
 
 	const { _id, username, name } = user;
-	for await (const room of LivechatRooms.findOpenByAgent(userId)) {
-		const guest = await LivechatVisitors.findOneEnabledById(room.v._id);
-		if (!guest) {
+	for await (const candidate of LivechatRooms.findOpenByAgent(userId)) {
+		if (!candidate.servedBy) {
+			continue;
+		}
+		const now = new Date();
+		const token = randomUUID();
+		const room = await LivechatRooms.claimAutoForward(
+			candidate._id,
+			candidate.servedBy,
+			{ token, expiresAt: new Date(now.getTime() + AUTO_FORWARD_LOCK_MS) },
+			now,
+		);
+		if (!room) {
 			continue;
 		}
 
-		const transferredBy = normalizeTransferredByData({ _id, username, name }, room);
-		await transfer(room, guest, {
-			transferredBy,
-			departmentId: guest.department,
-		});
+		try {
+			const guest = await LivechatVisitors.findOneEnabledById(room.v._id);
+			if (!guest) {
+				continue;
+			}
+
+			const transferredBy = normalizeTransferredByData({ _id, username, name }, room);
+			await transfer(room, guest, {
+				transferredBy,
+				departmentId: guest.department,
+			});
+		} finally {
+			await LivechatRooms.releaseAutoForward(room._id, token);
+		}
 	}
 }
 

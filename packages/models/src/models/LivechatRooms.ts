@@ -2323,6 +2323,31 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.find<T, O>(query, options);
 	}
 
+	claimAutoForward(
+		roomId: string,
+		assignment: NonNullable<IOmnichannelRoom['servedBy']>,
+		lock: NonNullable<IOmnichannelRoom['autoForwardLock']>,
+		now: Date,
+	): Promise<IOmnichannelRoom | null> {
+		return this.col.findOneAndUpdate(
+			{
+				'_id': roomId,
+				't': 'l',
+				'open': true,
+				'onHold': { $ne: true },
+				'servedBy._id': assignment._id,
+				'servedBy.ts': assignment.ts ?? { $exists: false },
+				'$or': [{ autoForwardLock: { $exists: false } }, { 'autoForwardLock.expiresAt': { $lte: now } }],
+			},
+			{ $set: { autoForwardLock: lock } },
+			{ returnDocument: 'before' },
+		);
+	}
+
+	async releaseAutoForward(roomId: string, token: string): Promise<void> {
+		await this.col.updateOne({ '_id': roomId, 'autoForwardLock.token': token }, { $unset: { autoForwardLock: 1 } });
+	}
+
 	changeAgentByRoomId(roomId: string, newAgent: { agentId: string; username: string; ts?: Date }) {
 		const query: Filter<IOmnichannelRoom> = {
 			_id: roomId,
