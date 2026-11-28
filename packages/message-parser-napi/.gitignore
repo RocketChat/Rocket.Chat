@@ -1,0 +1,4 @@
+target/
+*.node
+Cargo.lock
+index.d.ts
