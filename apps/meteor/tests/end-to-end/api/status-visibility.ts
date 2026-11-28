@@ -12,7 +12,7 @@ import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login, setUserStatus } from '../../data/users.helper';
-import { withTimeout } from '../../data/utils';
+import { waitFor, withTimeout } from '../../data/utils';
 import { IS_EE } from '../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('[Status Visibility] (Enterprise Only)', () => {
@@ -383,8 +383,11 @@ import { IS_EE } from '../../e2e/config/constants';
 
 			await setPresenceDisabled(bystander._id, true).expect(200);
 
-			expect(await statusSeenBy(viewerCredentials, bystander._id)).to.be.equal(UserStatus.OFFLINE);
-			expect(await statusSeenBy(hiderCredentials, bystander._id)).to.be.equal(UserStatus.OFFLINE);
+			const statuses = await waitFor(
+				() => Promise.all([statusSeenBy(viewerCredentials, bystander._id), statusSeenBy(hiderCredentials, bystander._id)]),
+				(seen) => seen.every((status) => status === UserStatus.OFFLINE),
+			);
+			expect(statuses).to.deep.equal([UserStatus.OFFLINE, UserStatus.OFFLINE]);
 		});
 
 		it('should keep the target visible to themselves', async () => {
@@ -434,7 +437,11 @@ import { IS_EE } from '../../e2e/config/constants';
 		it('should restore the real status once the admin re-enables it', async () => {
 			await setPresenceDisabled(bystander._id, false).expect(200);
 
-			expect(await statusSeenBy(viewerCredentials, bystander._id)).to.be.equal(UserStatus.ONLINE);
+			const status = await waitFor(
+				() => statusSeenBy(viewerCredentials, bystander._id),
+				(seen) => seen === UserStatus.ONLINE,
+			);
+			expect(status).to.be.equal(UserStatus.ONLINE);
 		});
 
 		it('should apply a status message sent in the same save that re-enables the status', async () => {

@@ -3,6 +3,7 @@ import type { Path } from '@rocket.chat/rest-typings';
 import { expect } from 'chai';
 
 import { api, request, type PathWithoutPrefix } from './api-data';
+import { sleep } from '../../lib/utils/sleep';
 
 export function withTimeout<T>(fn: (signal: AbortSignal) => Promise<T>, ms: number): Promise<T> {
 	const controller = new AbortController();
@@ -15,6 +16,17 @@ export function withTimeout<T>(fn: (signal: AbortSignal) => Promise<T>, ms: numb
 		clearTimeout(timeoutId);
 	});
 }
+
+export const waitFor = <T>(read: () => Promise<T>, isDone: (value: T) => boolean, ms = 5000): Promise<T> =>
+	withTimeout(async (signal) => {
+		for (;;) {
+			const value = await read();
+			if (isDone(value) || signal.aborted) {
+				return value;
+			}
+			await sleep(200);
+		}
+	}, ms);
 
 export const pagination = <TPath extends PathWithoutPrefix<Path>>(
 	apiEndpoint: TPath,
