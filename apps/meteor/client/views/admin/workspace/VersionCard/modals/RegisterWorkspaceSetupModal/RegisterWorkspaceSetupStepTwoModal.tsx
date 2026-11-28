@@ -1,8 +1,8 @@
 import {
-	Box,
 	Field,
 	FieldLabel,
 	FieldRow,
+	LinkButton,
 	Modal,
 	ModalClose,
 	ModalContent,
@@ -83,42 +83,33 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 				<ModalClose onClick={onClose} />
 			</ModalHeader>
 			<ModalContent>
-				<Box fontSize='p2'>
-					<Box>
-						<Trans i18nKey='cloud.RegisterWorkspace_Setup_Email_Confirmation'>
-							<Box is='p'>
-								Email sent to{' '}
-								<Text is='span' fontScale='p2b'>
-									{email}{' '}
-								</Text>
-								with a confirmation link.
-							</Box>
-						</Trans>
-					</Box>
-					<Stack gap='x8'>
-						<Box is='p'>{t('RegisterWorkspace_Setup_Email_Verification')}</Box>
-						<Field>
-							<FieldLabel>{t('Security_code')}</FieldLabel>
-							<FieldRow>
-								<TextInput defaultValue={intentData.user_code} disabled />
-							</FieldRow>
-						</Field>
-					</Stack>
-				</Box>
+				<Trans i18nKey='cloud.RegisterWorkspace_Setup_Email_Confirmation'>
+					<Text is='p'>
+						Email sent to{' '}
+						<Text is='span' fontScale='p2b'>
+							{email}{' '}
+						</Text>
+						with a confirmation link.
+					</Text>
+				</Trans>
+				<Stack gap='x8'>
+					<Text is='p'>{t('RegisterWorkspace_Setup_Email_Verification')}</Text>
+					<Field>
+						<FieldLabel>{t('Security_code')}</FieldLabel>
+						<FieldRow>
+							<TextInput defaultValue={intentData.user_code} disabled />
+						</FieldRow>
+					</Field>
+				</Stack>
 			</ModalContent>
-			<ModalFooter>
-				<Box is='div' display='flex' justifyContent='start' fontSize='c1' width='full'>
+			<ModalFooter justify='space-between'>
+				<Text fontScale='c1'>
 					<Trans i18nKey='RegisterWorkspace_Didnt_Receive_Email'>
-						Didn't receive email?{' '}
-						<Box is='a' paddingInline={4} onClick={handleResendRegistrationEmail}>
-							Resend
-						</Box>{' '}
-						or{' '}
-						<Box is='a' paddingInline={4} onClick={handleBackFromConfirmation}>
-							change email
-						</Box>
+						Didn&apos;t receive email? <LinkButton onClick={handleResendRegistrationEmail}>Resend</LinkButton>
+						{' or '}
+						<LinkButton onClick={handleBackFromConfirmation}>change email</LinkButton>
 					</Trans>
-				</Box>
+				</Text>
 			</ModalFooter>
 		</Modal>
 	);

@@ -52,7 +52,7 @@ export const handleResponse = async <T>(promise: Promise<Response>) => {
 				throw new Error(request.statusText);
 			}
 
-			return request.json();
+			return request.json() as Promise<T>;
 		})(),
 	);
 };
@@ -147,10 +147,10 @@ const getSupportedVersionsToken = async (retry = 0) => {
 	 * Gets the latest version
 	 * return the token
 	 */
-	const [versionsFromLicense, cloudResponse] = await Promise.all([
-		License.getLicense(),
-		License.hasOfflineLicense() ? ({ success: true, result: undefined } as const) : getSupportedVersionsFromCloud(),
-	]);
+	const versionsFromLicense = License.getLicense();
+	const cloudResponse = await (License.hasOfflineLicense()
+		? ({ success: true, result: undefined } as const)
+		: getSupportedVersionsFromCloud());
 
 	const supportedVersions = await supportedVersionsChooseLatest(
 		supportedVersionsFromBuild,

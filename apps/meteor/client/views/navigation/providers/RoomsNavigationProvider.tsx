@@ -8,6 +8,7 @@ import { useEffect, useMemo } from 'react';
 
 import { useSortQueryOptions } from '../../../hooks/useSortQueryOptions';
 import { RoomManager } from '../../../lib/RoomManager';
+import { getSubscriptionDraft } from '../../../lib/utils/getSubscriptionDraft';
 import { Rooms } from '../../../stores';
 import { useOmnichannelEnabled } from '../../omnichannel/hooks/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../omnichannel/hooks/useQueuedInquiries';
@@ -70,7 +71,9 @@ const useRoomsGroups = (): [RoomsNavigationGroup, UnreadGroupDataMap] => {
 	return useDebouncedValue(
 		useMemo(() => {
 			const groups: RoomsNavigationGroup = new Map();
-			showOmnichannel && groups.set('queue', new Set(queue));
+			if (showOmnichannel) {
+				groups.set('queue', new Set(queue));
+			}
 
 			const unreadGroupData: UnreadGroupDataMap = new Map();
 
@@ -97,6 +100,10 @@ const useRoomsGroups = (): [RoomsNavigationGroup, UnreadGroupDataMap] => {
 			rooms.forEach((room) => {
 				if (room.archived) {
 					return;
+				}
+
+				if (getSubscriptionDraft(room)) {
+					setGroupRoom('drafts', room);
 				}
 
 				if (isOmnichannelRoom(room) && showOmnichannel) {
@@ -170,7 +177,7 @@ const RoomsNavigationContextProvider = ({ children }: RoomsNavigationContextProv
 	const [groups, unreadGroupData] = useRoomsGroups();
 
 	const handleRoomOpened = useStableCallback((rid: string) => {
-		const room = Rooms.use.getState().find((r) => r._id === rid);
+		const room = Rooms.useStore.getState().find((r) => r._id === rid);
 
 		if (!room) {
 			return;
@@ -191,7 +198,7 @@ const RoomsNavigationContextProvider = ({ children }: RoomsNavigationContextProv
 		}
 
 		if (room.teamId && currentFilter === 'teams') {
-			const teamRid = Rooms.use.getState().find((r) => Boolean(r.teamId === room.teamId && r.teamMain))?._id;
+			const teamRid = Rooms.useStore.getState().find((r) => Boolean(r.teamId === room.teamId && r.teamMain))?._id;
 
 			/**
 			 * if the room is the parent rid is still the same, don't change the filter
@@ -205,7 +212,7 @@ const RoomsNavigationContextProvider = ({ children }: RoomsNavigationContextProv
 		}
 
 		if (room.prid) {
-			const parentRoom = Rooms.use.getState().find((r) => Boolean(r._id === room.prid));
+			const parentRoom = Rooms.useStore.getState().find((r) => Boolean(r._id === room.prid));
 			setFilter(parentRoom?.teamMain ? 'teams' : 'channels', unread, parentRoom?._id);
 			return;
 		}

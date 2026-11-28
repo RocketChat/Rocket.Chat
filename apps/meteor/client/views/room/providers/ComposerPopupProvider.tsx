@@ -56,7 +56,7 @@ export type ComposerPopupProviderProps = {
 	room: IRoom;
 };
 
-const getLastRecentUsers = (rid: string, uid: string) => {
+const getLastRecentUsers = (rid: string, uid: string | undefined) => {
 	const uniqueUsers = new Map<
 		string,
 		{
@@ -114,7 +114,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 					const filterRegex = filter && new RegExp(escapeRegExp(filter), 'i');
 					const items: ComposerBoxPopupUserProps[] = [];
 
-					const roomMessageUsers = getLastRecentUsers(rid, uid!)
+					const roomMessageUsers = getLastRecentUsers(rid, uid)
 						.filter((u) => {
 							if (!filterRegex) return true;
 							return filterRegex.test(u.username) || (u.name && filterRegex.test(u.name));
@@ -150,7 +150,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 				},
 				getItemsFromServer: async (filter: string) => {
 					const filterRegex = filter && new RegExp(escapeRegExp(filter), 'i');
-					const usernames = getLastRecentUsers(rid, uid!)
+					const usernames = getLastRecentUsers(rid, uid)
 						.filter((u) => {
 							if (!filterRegex) return true;
 							return filterRegex.test(u.username) || (u.name && filterRegex.test(u.name));

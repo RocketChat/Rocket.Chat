@@ -1,8 +1,8 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const sandbox = sinon.createSandbox();
@@ -13,18 +13,18 @@ const getStore = sandbox.stub();
 const UserDataFiles = { findOneById: sandbox.stub() };
 const Users = { findOneByIdAndLoginToken: sandbox.stub() };
 
-proxyquire.noCallThru().load('./userDataDownload', {
-	'@rocket.chat/account-utils': { hashLoginToken: (token: string) => `hashed:${token}` },
-	'@rocket.chat/models': { UserDataFiles, Users },
-	'meteor/webapp': { WebApp: { connectHandlers: { use: connectHandlersUse } } },
-	'../lib/media/file-upload': { FileUpload: { getStore } },
-	'../settings': { settings: { get: settingsGet } },
-});
+let routePath: string;
+let userDataDownloadHandler: (req: IncomingMessage, res: ServerResponse, next: () => void) => Promise<void>;
 
-const [routePath, userDataDownloadHandler] = connectHandlersUse.firstCall.args as [
-	string,
-	(req: IncomingMessage, res: ServerResponse, next: () => void) => Promise<void>,
-];
+before(async () => {
+	mock.module('@rocket.chat/account-utils', { exports: { hashLoginToken: (token: string) => `hashed:${token}` } });
+	mock.module(require.resolve('meteor/webapp'), { exports: { WebApp: { connectHandlers: { use: connectHandlersUse } } } });
+	mock.module('../lib/media/file-upload', { exports: { FileUpload: { getStore } } });
+	mock.module('../settings', { exports: { settings: { get: settingsGet } } });
+	await import('./userDataDownload');
+
+	[routePath, userDataDownloadHandler] = connectHandlersUse.firstCall.args;
+});
 
 const OWNER_ID = 'owner-id';
 const OWNER_TOKEN = 'owner-token';
@@ -69,6 +69,11 @@ const expectDelivered = (req: IncomingMessage, res: ReturnType<typeof createResp
 };
 
 describe('userDataDownload route', () => {
+	before(() => {
+		mockModel('UserDataFiles', UserDataFiles);
+		mockModel('Users', Users);
+	});
+
 	beforeEach(() => {
 		sandbox.reset();
 

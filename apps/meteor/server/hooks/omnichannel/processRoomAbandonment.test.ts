@@ -1,7 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 const settingsStub = sinon.stub();
@@ -24,20 +24,35 @@ const businessHourManagerMock = {
 	getBusinessHour: sinon.stub(),
 };
 
-const { getSecondsWhenOfficeHoursIsDisabled, parseDays, getSecondsSinceLastAgentResponse, onCloseRoom } = p
-	.noCallThru()
-	.load('./processRoomAbandonment.ts', {
-		'@rocket.chat/models': models,
-		'../../lib/callbacks': {
+let getSecondsWhenOfficeHoursIsDisabled: any;
+let parseDays: any;
+let getSecondsSinceLastAgentResponse: any;
+let onCloseRoom: any;
+
+before(async () => {
+	mock.module('../../lib/callbacks', {
+		exports: {
 			callbacks: { add: sinon.stub(), priority: { HIGH: 'high' } },
 		},
-		'../../settings': {
+	});
+	mock.module('../../settings', {
+		exports: {
 			settings: { get: settingsStub },
 		},
-		'../../lib/omnichannel/business-hour': { businessHourManager: businessHourManagerMock },
 	});
+	mock.module('../../lib/omnichannel/business-hour', { exports: { businessHourManager: businessHourManagerMock } });
+	({ getSecondsWhenOfficeHoursIsDisabled, parseDays, getSecondsSinceLastAgentResponse, onCloseRoom } =
+		await import('./processRoomAbandonment'));
+});
 
 describe('processRoomAbandonment', () => {
+	before(() => {
+		mockModel('LivechatDepartment', models.LivechatDepartment);
+		mockModel('LivechatBusinessHours', models.LivechatBusinessHours);
+		mockModel('Messages', models.Messages);
+		mockModel('LivechatRooms', models.LivechatRooms);
+	});
+
 	describe('getSecondsWhenOfficeHoursIsDisabled', () => {
 		it('should return the seconds since the agents last message till room was closed', () => {
 			const room = {

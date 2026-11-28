@@ -44,7 +44,7 @@ export const loginHandlerCAS = async (options: any): Promise<undefined | Account
 	// Import response attributes
 	if (casVersion >= 2.0) {
 		// Clean & import external attributes
-		for await (const [externalName, value] of Object.entries(credentialsAttributes)) {
+		for (const [externalName, value] of Object.entries(credentialsAttributes)) {
 			if (value) {
 				externalAttributes[externalName] = value[0];
 			}
@@ -55,18 +55,18 @@ export const loginHandlerCAS = async (options: any): Promise<undefined | Account
 	if (syncUserDataFieldMap) {
 		// Our mapping table: key(int_attr) -> value(ext_attr)
 		// Spoken: Source this internal attribute from these external attributes
-		const attributeMap = wrapExceptions(() => JSON.parse(syncUserDataFieldMap) as Record<string, any>).catch((err) => {
+		const attributeMap = wrapExceptions(() => JSON.parse(syncUserDataFieldMap) as Record<string, unknown>).catch((err) => {
 			logger.error({ msg: 'Invalid JSON for attribute mapping', err });
 			throw err;
 		});
 
-		for await (const [internalName, source] of Object.entries(attributeMap)) {
-			if (!source || typeof source.valueOf() !== 'string') {
+		for (const [internalName, source] of Object.entries(attributeMap)) {
+			if (!source || typeof source !== 'string') {
 				continue;
 			}
 
-			let replacedValue = source as string;
-			for await (const externalName of getObjectKeys(externalAttributes)) {
+			let replacedValue = source;
+			for (const externalName of getObjectKeys(externalAttributes)) {
 				replacedValue = replacedValue.replace(`%${externalName}%`, externalAttributes[externalName]);
 			}
 

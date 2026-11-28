@@ -13,10 +13,11 @@ import {
 } from '@rocket.chat/fuselage-forms';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useWatch, useFormState } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { useEncryptedRoomDescription } from '../../navbar/NavBarPagesGroup/actions/useEncryptedRoomDescription';
 import { useGoToRoom } from '../../views/room/hooks/useGoToRoom';
@@ -50,17 +51,11 @@ const CreateDiscussion = ({
 	nameSuggestion,
 	encryptedParentRoom = false,
 }: CreateDiscussionProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const [encryptedDisabled, setEncryptedDisabled] = useState(encryptedParentRoom);
 
-	const {
-		formState: { errors },
-		handleSubmit,
-		control,
-		watch,
-		setValue,
-	} = useForm({
+	const { handleSubmit, control, setValue } = useForm({
 		defaultValues: {
 			name: nameSuggestion || '',
 			parentRoom: '',
@@ -70,6 +65,7 @@ const CreateDiscussion = ({
 			topic: '',
 		},
 	});
+	const { errors } = useFormState({ control });
 
 	const onParentRoomChange = useStableCallback((room: IRoom | undefined) => {
 		if (!room) {
@@ -79,7 +75,7 @@ const CreateDiscussion = ({
 		setEncryptedDisabled(room.encrypted === true);
 	});
 
-	const { encrypted } = watch();
+	const encrypted = useWatch({ control, name: 'encrypted' });
 
 	const createDiscussion = useEndpoint('POST', '/v1/rooms.createDiscussion');
 
@@ -117,7 +113,7 @@ const CreateDiscussion = ({
 			icon={null}
 			title={t('Discussion_title')}
 			onCancel={onClose}
-			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}
+			onSubmit={handleSubmit(handleCreate)}
 			confirmText={t('Create')}
 			cancelText={t('Cancel')}
 			confirmLoading={createDiscussionMutation.isPending}

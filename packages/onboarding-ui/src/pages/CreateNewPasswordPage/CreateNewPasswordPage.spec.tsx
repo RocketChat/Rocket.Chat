@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react';
 
-import CreateNewPasswordPage from './CreateNewPasswordPage';
+import CreateNewPasswordPage from './CreateNewPasswordPage.js';
 
 it('renders without crashing', () => {
-	render(
+	const { container } = render(
 		<CreateNewPasswordPage
 			validatePassword={() => undefined}
 			validatePasswordConfirmation={() => undefined}
@@ -11,4 +11,6 @@ it('renders without crashing', () => {
 			onLogin={() => undefined}
 		/>,
 	);
+
+	expect(container).not.toBeEmptyDOMElement();
 });

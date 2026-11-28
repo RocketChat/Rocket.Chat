@@ -1,4 +1,4 @@
-import type { Decorator, Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Decorator, Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 
 import { Box } from '../Box';

@@ -3,23 +3,23 @@ import { Logger } from '@rocket.chat/logger';
 const logger = new Logger('TemplateVarHandler');
 
 export const templateVarHandler = function (variable: string, object: Record<string, any>): string | undefined {
-	const templateRegex = /#{([\w\-]+)}/gi;
+	const templateRegex = /#{([\w-]+)}/gi;
 	let match = templateRegex.exec(variable);
 	let tmpVariable = variable;
 
 	if (match == null) {
-		if (!object.hasOwnProperty(variable)) {
+		if (!Object.hasOwn(object, variable)) {
 			logger?.debug({ msg: 'User does not have attribute', attribute: variable });
 			return;
 		}
-		return object[variable];
+		return object[variable] as string | undefined;
 	}
 	logger?.debug('template found. replacing values');
 	while (match != null) {
 		const tmplVar = match[0];
 		const tmplAttrName = match[1];
 
-		if (!object.hasOwnProperty(tmplAttrName)) {
+		if (!Object.hasOwn(object, tmplAttrName)) {
 			logger?.debug({ msg: 'User does not have attribute', attribute: tmplAttrName });
 			return;
 		}

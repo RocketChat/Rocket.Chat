@@ -1,8 +1,7 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, beforeEach, describe, it, mock } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { expect } from 'chai';
-import mock from 'proxyquire';
 import Sinon from 'sinon';
 
 type SendUserEmailFn = (subject: string, html: string, user: { email?: string; password?: string; name?: string }) => Promise<void>;
@@ -31,19 +30,12 @@ const makeStubs = () => {
 		},
 	};
 
-	const MeteorStub = {
-		Meteor: {
-			startup: Sinon.stub(),
-		},
-	};
-
-	return { MailerStub, SettingsStub, MeteorStub };
+	return { MailerStub, SettingsStub };
 };
 
 describe('sendUserEmail', () => {
 	let MailerStub: { getTemplate: Sinon.SinonStub; send: Sinon.SinonStub };
 	let SettingsStub: { settings: { get: Sinon.SinonStub } };
-	let MeteorStub: { Meteor: { startup: Sinon.SinonStub } };
 
 	let sendUserEmail: SendUserEmailFn;
 	let sendWelcomeEmail: SendHelperFn;
@@ -53,13 +45,13 @@ describe('sendUserEmail', () => {
 		const stubs = makeStubs();
 		MailerStub = stubs.MailerStub as any;
 		SettingsStub = stubs.SettingsStub as any;
-		MeteorStub = stubs.MeteorStub as any;
 
-		const mod = mock.noCallThru().load('./sendUserEmail.ts', {
-			'../../notifications/email/api': MailerStub,
-			'../../../settings': SettingsStub,
-			'meteor/meteor': MeteorStub,
-		}) as any;
+		mock.module('../../notifications/email/api', { exports: MailerStub });
+		mock.module('../../../settings', { exports: SettingsStub });
+		delete require.cache[require.resolve('./sendUserEmail')];
+		// oxlint-disable-next-line @typescript-eslint/no-require-imports
+		const mod = require('./sendUserEmail');
+		mock.restoreAll();
 
 		sendUserEmail = mod.sendUserEmail as SendUserEmailFn;
 		sendWelcomeEmail = mod.sendWelcomeEmail as SendHelperFn;

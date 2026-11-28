@@ -1,9 +1,9 @@
-import type { ServerMediaSignalNewCall } from './new';
-import type { ServerMediaSignalNotification } from './notification';
-import type { ServerMediaSignalRegistered } from './registered';
-import type { ServerMediaSignalRejectedCallRequest } from './rejected-call-request';
-import type { ServerMediaSignalRemoteSDP } from './remote-sdp';
-import type { ServerMediaSignalRequestOffer } from './request-offer';
+import type { ServerMediaSignalNewCall } from './new.js';
+import type { ServerMediaSignalNotification } from './notification.js';
+import type { ServerMediaSignalRegistered } from './registered.js';
+import type { ServerMediaSignalRejectedCallRequest } from './rejected-call-request.js';
+import type { ServerMediaSignalRemoteSDP } from './remote-sdp.js';
+import type { ServerMediaSignalRequestOffer } from './request-offer.js';
 
 export type ServerMediaCallSignal =
 	| ServerMediaSignalNewCall

@@ -1,7 +1,7 @@
 import type { JSONSchemaType } from 'ajv';
 
-import type { CallFeature, CallService } from '../../call';
-import { callFeatureList } from '../../call/IClientMediaCall';
+import { callFeatureList } from '../../call/IClientMediaCall.js';
+import type { CallFeature, CallService } from '../../call/index.js';
 
 export type ClientMediaSignalRequestCall = {
 	/** the callId on this signal is temporary and is never propagated to other agents */

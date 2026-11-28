@@ -1,13 +1,15 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const readPrivateAssetText = sinon.stub();
 
-const { getMomentLocale } = proxyquire.noCallThru().load('./getMomentLocale', {
-	'./privateAssets': { readPrivateAssetText },
+let getMomentLocale: typeof import('./getMomentLocale').getMomentLocale;
+
+before(async () => {
+	mock.module('./privateAssets', { exports: { readPrivateAssetText } });
+	({ getMomentLocale } = await import('./getMomentLocale'));
 });
 
 describe('getMomentLocale', () => {

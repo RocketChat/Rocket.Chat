@@ -36,10 +36,10 @@ const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 
 		const pendingSentUrl = `v1/app-request/sent/pending`;
 		const result = await Apps.getMarketplaceClient().fetch(pendingSentUrl, options);
-		const { data } = await result.json();
+		const { data }: { data: string[] } = await result.json();
 		const filtered = installedApps.filter((app) => data.indexOf(app.getID()) !== -1);
 
-		for await (const app of filtered) {
+		for (const app of filtered) {
 			const appId = app.getID();
 			const appName = app.getName();
 
@@ -50,14 +50,14 @@ const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 					await Apps.getMarketplaceClient().fetch(`v1/app-request/markAsSent/${appId}`, { ...options, method: 'POST' });
 					return response;
 				})
-				.catch((err) => {
+				.catch((err): unknown => {
 					Apps.debugLog(`could not send app request notifications for app ${appId}. Error: ${err}`);
 					return err;
 				});
 
 			const errors = (usersNotified as (string | Error)[]).filter((batch) => batch instanceof Error);
 			if (errors.length > 0) {
-				Apps.debugLog(`Some batches of users could not be notified for app ${appId}. Errors: ${errors}`);
+				Apps.debugLog(`Some batches of users could not be notified for app ${appId}. Errors: ${errors.join(',')}`);
 			}
 		}
 	} catch (err) {

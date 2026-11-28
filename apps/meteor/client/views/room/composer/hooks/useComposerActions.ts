@@ -1,0 +1,60 @@
+import type { IMessage } from '@rocket.chat/core-typings';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+
+import { useChat } from '../../contexts/ChatContext';
+
+export type ComposerActionsOptions = {
+	tmid?: IMessage['_id'];
+	onSend?: () => void;
+};
+
+export type ComposerSendInput = {
+	value: string;
+	tshow?: boolean;
+	previewUrls?: string[];
+	isSlashCommandAllowed?: boolean;
+};
+
+export type ComposerActions = ReturnType<typeof useComposerActions>;
+
+/** The things a composer can do to a room, so a composer only has to decide when to do them. */
+export const useComposerActions = ({ tmid, onSend }: ComposerActionsOptions) => {
+	const chat = useChat();
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	return {
+		onJoin: async (): Promise<void> => {
+			try {
+				await chat?.data?.joinRoom();
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+				throw error;
+			}
+		},
+
+		onSend: async ({ value: text, tshow, previewUrls, isSlashCommandAllowed }: ComposerSendInput): Promise<void> => {
+			try {
+				chat?.action.stop('typing');
+				const newMessageSent = await chat?.flows.sendMessage({
+					text,
+					tshow,
+					previewUrls,
+					isSlashCommandAllowed,
+					tmid,
+				});
+				if (newMessageSent) onSend?.();
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+		},
+		onTyping: (): void => {
+			if (chat?.composer?.text?.trim() === '') {
+				chat?.action.stop('typing');
+				return;
+			}
+			chat?.action.start('typing');
+		},
+		onNavigateToPreviousMessage: () => chat?.messageEditing.toPreviousMessage(),
+		onNavigateToNextMessage: () => chat?.messageEditing.toNextMessage(),
+	};
+};

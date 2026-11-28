@@ -137,6 +137,10 @@ export class MucService {
 			this.logger.warn({ err, roomJid: invite.roomJid }, 'Dropping MUC invite with an invalid room JID');
 			return true;
 		}
+		if (this.isOnOurDomains(roomJid)) {
+			this.logger.warn({ roomJid, from: stanza.attrs.from }, 'Dropping MUC invite naming a room on our own domain');
+			return true;
+		}
 		this.deps.events.emit('muc.inviteReceived', { ...invite, roomJid, fromJid: this.inviterOf(invite.fromJid, roomJid) });
 		return true;
 	}
@@ -149,9 +153,13 @@ export class MucService {
 		} catch {
 			return roomJid;
 		}
-		const domain = inviter.slice(inviter.lastIndexOf('@') + 1);
-		const isOurs = domain === this.deps.config.domain || domain === this.deps.config.mucDomain;
-		return isOurs || normalizeRoomJid(inviter) === roomJid ? roomJid : inviter;
+		return this.isOnOurDomains(inviter) || normalizeRoomJid(inviter) === roomJid ? roomJid : inviter;
+	}
+
+	/** Whether a normalized bare JID belongs to this server rather than a remote one. */
+	private isOnOurDomains(bareJid: string): boolean {
+		const domain = bareJid.slice(bareJid.lastIndexOf('@') + 1);
+		return domain === this.deps.config.domain || domain === this.deps.config.mucDomain;
 	}
 
 	private forwardRoomEvent(roomId: string, event: string, args: unknown[]): void {

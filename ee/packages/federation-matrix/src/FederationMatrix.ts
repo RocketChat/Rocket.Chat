@@ -175,7 +175,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			// if no avatarETag is provided, it means the user removed his avatar, so we need to send an empty string to Matrix to remove the avatar from their side as well
 			const avatarUrl = avatarETag ? `mxc://${this.serverName}/${avatarETag}` : null;
 
-			const roomsUserIsMemberOf = await Subscriptions.findUserFederatedRoomIds(localUser._id);
+			const roomsUserIsMemberOf = Subscriptions.findUserFederatedRoomIds(localUser._id);
 
 			// TODO add user avatar update events to a fanout queue
 			for await (const { externalRoomId } of roomsUserIsMemberOf) {
@@ -890,7 +890,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	async verifyMatrixIds(matrixIds: string[]): Promise<{ [key: string]: string }> {
 		const results = Object.fromEntries(
 			await Promise.all(
-				matrixIds.map(async (matrixId) => {
+				matrixIds.map(async (matrixId): Promise<[string, string]> => {
 					// Split only on the first ':' (after the leading '@') so we keep any port in the homeserver
 					const separatorIndex = matrixId.indexOf(':', 1);
 					if (separatorIndex === -1) {
@@ -1135,7 +1135,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			}
 
 			if (quoteMessageEventId) {
-				const messageToReplyToUrl = await MeteorService.getMessageURLToReplyTo(room.t as string, room._id, originalMessage._id);
+				const messageToReplyToUrl = await MeteorService.getMessageURLToReplyTo(room.t, room._id, originalMessage._id);
 				const formatted = await toInternalQuoteMessageFormat({
 					messageToReplyToUrl,
 					formattedMessage: event.content.formatted_body || '',
@@ -1197,7 +1197,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				this.logger.error({ quoteMessageEventId, msg: 'Original message not found for quote' });
 				return;
 			}
-			const messageToReplyToUrl = await MeteorService.getMessageURLToReplyTo(room.t as string, room._id, originalMessage._id);
+			const messageToReplyToUrl = await MeteorService.getMessageURLToReplyTo(room.t, room._id, originalMessage._id);
 			const formatted = await toInternalQuoteMessageFormat({
 				messageToReplyToUrl,
 				formattedMessage: event.content.formatted_body || '',

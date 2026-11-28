@@ -4,7 +4,6 @@ import * as util from 'node:util';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ILivechatVisitor, AtLeast, IMessage, IUser, IOmnichannelRoomInfo, SelectedAgent } from '@rocket.chat/core-typings';
 import { LivechatDepartment, Messages } from '@rocket.chat/models';
-import { check, Match } from 'meteor/check';
 
 import type { ILivechatMessage } from './localTypes';
 import { getRoom } from './rooms';
@@ -96,8 +95,9 @@ export async function sendOfflineMessage(data: OfflineMessageData) {
 }
 
 export async function updateMessage({ guest, message }: { guest: ILivechatVisitor; message: AtLeast<IMessage, '_id' | 'msg' | 'rid'> }) {
-	// TODO: Remove check
-	check(message, Match.ObjectIncluding({ _id: String }));
+	if (typeof message?._id !== 'string') {
+		throw new Error('error-invalid-message');
+	}
 
 	const originalMessage = await Messages.findOneById<Pick<IMessage, 'u' | '_id'>>(message._id, { projection: { u: 1 } });
 	if (!originalMessage?._id) {
@@ -145,6 +145,7 @@ export async function sendMessage({
 	agent?: SelectedAgent;
 }) {
 	const { room, newRoom } = await getRoom(guest, message, roomInfo, agent);
+	// oxlint-disable-next-line typescript/no-unsafe-return -- spreads the any-typed result of the legacy sendMessage that callers rely on
 	return {
 		...(await sendMessageFunc(guest, { ...message, token: guest.token, ...(guest.name && { alias: guest.name }) }, room)),
 		newRoom,

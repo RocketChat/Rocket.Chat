@@ -4,11 +4,11 @@ import type { Logger } from '@rocket.chat/logger';
 import { Statistics } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { tracerSpan } from '@rocket.chat/tracing';
-import { Meteor } from 'meteor/meteor';
 
 import { Info } from '../../../../rocketchat.info';
 import { shouldReportStatistics } from '../../../cron/usageReport';
 import { getWorkspaceAccessToken } from '../../cloud';
+import { getWorkspaceURL } from '../../utils/getURL';
 import { statistics } from '../index';
 
 async function sendStats(logger: Logger, cronStatistics: IStats): Promise<string | undefined> {
@@ -20,14 +20,14 @@ async function sendStats(logger: Logger, cronStatistics: IStats): Promise<string
 			method: 'POST',
 			body: {
 				...cronStatistics,
-				host: Meteor.absoluteUrl(),
+				host: `${getWorkspaceURL()}/`,
 			},
 			headers,
 			// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 			ignoreSsrfValidation: true,
 		});
 
-		const { statsToken } = await response.json();
+		const { statsToken }: Pick<IStats, 'statsToken'> = await response.json();
 
 		if (statsToken != null) {
 			await Statistics.updateOne({ _id: cronStatistics._id }, { $set: { statsToken } });
@@ -50,7 +50,7 @@ export async function sendUsageReport(logger: Logger): Promise<string | undefine
 
 		const currentVersion = Info.version;
 
-		if (last && last.version === currentVersion) {
+		if (last?.version === currentVersion) {
 			const yesterday = new Date();
 			yesterday.setDate(yesterday.getDate() - 1);
 

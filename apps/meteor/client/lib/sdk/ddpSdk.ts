@@ -11,7 +11,7 @@ import {
 	resumeStoredSession,
 	subscribeLoggingIn,
 } from '../../meteor/accounts';
-import { userIdStore } from '../user';
+import { useUserIdStore } from '../user';
 
 const stripTrailingSlash = (value: string): string => (value.endsWith('/') ? value.slice(0, -1) : value);
 
@@ -141,7 +141,7 @@ export const isAuthError = (error: unknown): boolean => {
  * DDPSDK as `client.callAsync('login', ...)`. The result authenticates the
  * underlying DDP socket — server-side the session is now logged in — but
  * `sdk.account` is bypassed entirely (only `sdk.account.loginWithToken` populates
- * `account.uid` / `account.user`). Without this sync, our userIdStore subscriber
+ * `account.uid` / `account.user`). Without this sync, our useUserIdStore subscriber
  * sees uid set, calls ensureConnectedAndAuthenticated, finds `account.uid` empty,
  * and fires a SECOND login on the same socket. The server happily honours both,
  * issuing two different login tokens; whichever arrives second wins on the
@@ -233,7 +233,7 @@ if (typeof window !== 'undefined') {
 	// online while the other goes away, aggregating to online — auto-away
 	// never propagates).
 
-	userIdStore.subscribe((uid) => {
+	useUserIdStore.subscribe((uid) => {
 		if (uid) {
 			// Subsequent userId transitions (logout → login) still need to
 			// re-establish auth on the SDK socket; adopt only kicks in for

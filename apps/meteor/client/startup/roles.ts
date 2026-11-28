@@ -2,7 +2,7 @@ import type { IRole } from '@rocket.chat/core-typings';
 
 import { sdk } from '../lib/SDKClient';
 import { onLoggedIn } from '../lib/loggedIn';
-import { userIdStore } from '../lib/user';
+import { useUserIdStore } from '../lib/user';
 import { Roles } from '../stores';
 
 onLoggedIn(async () => {
@@ -31,10 +31,10 @@ const subscribeToRolesStream = () => {
 	});
 };
 
-if (userIdStore.getState()) {
+if (useUserIdStore.getState()) {
 	subscribeToRolesStream();
 } else {
-	const unsubscribe = userIdStore.subscribe((uid) => {
+	const unsubscribe = useUserIdStore.subscribe((uid) => {
 		if (!uid) return;
 		unsubscribe();
 		subscribeToRolesStream();

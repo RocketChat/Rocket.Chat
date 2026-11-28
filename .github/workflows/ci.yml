@@ -282,7 +282,7 @@ jobs:
           fi;
 
           curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
-              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"compatibleMongoVersions\": [\"8.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"draft\", \"draftAs\": \"$RC_RELEASE\"}" \
+              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"compatibleMongoVersions\": [\"8.0\", \"9.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"draft\", \"draftAs\": \"$RC_RELEASE\"}" \
               https://releases.rocket.chat/update
 
   packages-build:
@@ -623,6 +623,19 @@ jobs:
         run: |
           ./actionlint -color
 
+  lockfile:
+    name: 🔎 Code Check - Lockfile Duplicates
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+
+      - name: Check that no lockfile entry can be deduplicated
+        run: yarn dedupe --check
 
   # gating `checks` also skips every e2e test job (they all `need` it);
   # test-storybook and test-unit don't, so they carry the same gate below
@@ -652,6 +665,15 @@ jobs:
     if: needs.test-guard.outputs.skip-tests != 'true'
 
     uses: ./.github/workflows/ci-test-visual-regression.yml
+    with:
+      node-version: ${{ needs.release-versions.outputs.node-version }}
+
+  size-report:
+    name: 📏 Size Report
+    needs: [packages-build, release-versions, test-guard]
+    if: github.event_name == 'pull_request' && needs.test-guard.outputs.skip-tests != 'true'
+
+    uses: ./.github/workflows/ci-size-report.yml
     with:
       node-version: ${{ needs.release-versions.outputs.node-version }}
 
@@ -734,8 +756,8 @@ jobs:
       release: ee
       transporter: 'nats://nats:4222'
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
-      mongodb-version: "['8.0']"
-      coverage: '8.0'
+      mongodb-version: "['9.0']"
+      coverage: '9.0'
       node-version: ${{ needs.release-versions.outputs.node-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -754,8 +776,8 @@ jobs:
       release: ee
       transporter: 'nats://nats:4222'
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
-      mongodb-version: "['8.0']"
-      coverage: '8.0'
+      mongodb-version: "['9.0']"
+      coverage: '9.0'
       node-version: ${{ needs.release-versions.outputs.node-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -776,8 +798,8 @@ jobs:
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
       shard: '[1, 2, 3, 4, 5]'
       total-shard: 5
-      mongodb-version: "['8.0']"
-      coverage: '8.0'
+      mongodb-version: "['9.0']"
+      coverage: '9.0'
       node-version: ${{ needs.release-versions.outputs.node-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -804,7 +826,7 @@ jobs:
       fips: true
       transporter: 'nats://nats:4222'
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
-      mongodb-version: "['8.0']"
+      mongodb-version: "['9.0']"
       node-version: ${{ needs.release-versions.outputs.node-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -825,7 +847,7 @@ jobs:
       fips: true
       transporter: 'nats://nats:4222'
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
-      mongodb-version: "['8.0']"
+      mongodb-version: "['9.0']"
       node-version: ${{ needs.release-versions.outputs.node-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -848,7 +870,7 @@ jobs:
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
       shard: '[1, 2, 3, 4, 5]'
       total-shard: 5
-      mongodb-version: "['8.0']"
+      mongodb-version: "['9.0']"
       node-version: ${{ needs.release-versions.outputs.node-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -965,7 +987,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Use Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
 
@@ -1015,7 +1037,7 @@ jobs:
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-24.04-arm
-    needs: [test-guard, checks, test-unit, test-visual-regression, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-api-fips, test-api-livechat-fips, test-ui-fips, test-federation-matrix]
+    needs: [test-guard, checks, test-unit, test-visual-regression, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-api-fips, test-api-livechat-fips, test-ui-fips, test-federation-matrix, lockfile]
     if: always() && needs.test-guard.outputs.skip-tests != 'true'
     steps:
       - name: Test finish aggregation
@@ -1072,6 +1094,10 @@ jobs:
           fi
 
           if [[ '${{ needs.test-federation-matrix.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.lockfile.result }}' != 'success' ]]; then
             exit 1
           fi
 
@@ -1298,7 +1324,7 @@ jobs:
           fi;
 
           curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
-              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"compatibleMongoVersions\": [\"8.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
+              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"compatibleMongoVersions\": [\"8.0\", \"9.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
               https://releases.rocket.chat/update
 
           # Makes build fail if the release isn't there

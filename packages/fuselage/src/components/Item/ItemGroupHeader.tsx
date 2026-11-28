@@ -15,7 +15,11 @@ export type ItemGroupHeaderProps = {
 	 */
 	inset?: ItemInset;
 	/**
-	 * Pins the header to the top of its scroll container.
+	 * Adds space above and below the title, as `Item`'s `insetBlock` does for a row.
+	 */
+	insetBlock?: ItemInset;
+	/**
+	 * Pins the header to the top of its scroll container, painted with the surface it sits on so rows that scroll under it stay hidden.
 	 */
 	sticky?: boolean;
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is'> &
@@ -24,12 +28,13 @@ export type ItemGroupHeaderProps = {
 /**
  * The label row of a group, such as Favorites, Recent or Moderators. It holds an `ItemGroupTitle` and optional trailing content.
  */
-const ItemGroupHeader = ({ is: Tag = 'div', inset = 'none', sticky, className, ...props }: ItemGroupHeaderProps) => (
+const ItemGroupHeader = ({ is: Tag = 'div', inset = 'none', insetBlock = 'none', sticky, className, ...props }: ItemGroupHeaderProps) => (
 	<Tag
 		{...props}
 		className={cx(
 			cxx('rcx-item-group-header')({
 				[`inset-${inset}`]: inset !== 'none',
+				[`inset-block-${insetBlock}`]: insetBlock !== 'none',
 				sticky: !!sticky,
 			}),
 			className,

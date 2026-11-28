@@ -1,31 +1,25 @@
 import type { ILivechatInquiryRecord, ISidebarCategory } from '@rocket.chat/core-typings';
 import { SIDEBAR_SYSTEM_GROUP_KEYS } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useIsEnterprise } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useVideoConfIncomingCalls, useVideoConfWindowEnabled } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
 import { filterGroupVisibility, getRoomCategory, useCategoryList } from './useCategoryList';
-import { useIsEnterprise } from '../../hooks/useIsEnterprise';
 import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../views/omnichannel/hooks/useQueuedInquiries';
 import { useToggleUnreads } from '../categories/hooks/useToggleUnreads';
 import { useUserSidebarCategories } from '../categories/hooks/useUserSidebarCategories';
+import type { GroupUnreadInfo } from '../lib/unreadRooms';
+import { buildUnreadInfo, emptyUnreadInfo, isUnreadRoom } from '../lib/unreadRooms';
 
 const query = { open: { $ne: false } };
 
 const emptyQueue: ILivechatInquiryRecord[] = [];
-
-type GroupUnreadInfo = {
-	userMentions: number;
-	groupMentions: number;
-	tunread: string[];
-	tunreadUser: string[];
-	unread: number;
-};
 
 export type SidebarRoomListGroup = {
 	key: string;
@@ -42,14 +36,22 @@ export type SidebarRoomListGroup = {
 
 type useRoomListReturnType = {
 	groups: SidebarRoomListGroup[];
+	groupKeys: string[];
+	filtering: boolean;
 	groupsCount: number[];
 	totalCount: number;
 };
 
-export const isUnreadRoom = (room: SubscriptionWithRoom): boolean =>
-	!room.hideUnreadStatus && Boolean(room.alert || room.unread || room.tunread?.length);
+const matchesFilter = (room: { fname?: string; name?: string }, text: string) =>
+	[room.fname, room.name].some((name) => name?.toLocaleLowerCase().includes(text));
 
-export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] }): useRoomListReturnType => {
+export const useRoomList = ({
+	collapsedGroups,
+	filterText = '',
+}: {
+	collapsedGroups?: string[];
+	filterText?: string;
+}): useRoomListReturnType => {
 	const showOmnichannel = useOmnichannelEnabled();
 
 	const { data: { isEnterprise = false } = {} } = useIsEnterprise();
@@ -76,9 +78,11 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 	const queue = inquiries.enabled ? inquiries.queue : emptyQueue;
 
-	const groups = useDebouncedValue(
+	const { groups, groupKeys, filtering } = useDebouncedValue(
 		useMemo(() => {
-			const isCollapsed = (key: string) => collapsedGroups?.includes(key) ?? false;
+			const text = filterText.trim().toLocaleLowerCase();
+			const activeCollapsedGroups = text ? undefined : collapsedGroups;
+			const isCollapsed = (key: string) => activeCollapsedGroups?.includes(key) ?? false;
 
 			const unfilteredGroups = new Map<string, Set<SubscriptionWithRoom>>();
 			categoryList.forEach((category) => {
@@ -86,6 +90,10 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			});
 
 			rooms.forEach((room) => {
+				if (text && !matchesFilter(room, text)) {
+					return;
+				}
+
 				const roomCategory = getRoomCategory(room, {
 					groups: unfilteredGroups,
 					hasIncomingCalls: (rid: SubscriptionWithRoom['rid']) => {
@@ -107,29 +115,9 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			});
 
 			if (unfilteredGroups.has('Incoming_Livechats')) {
-				unfilteredGroups.set('Incoming_Livechats', new Set(queue) as unknown as Set<SubscriptionWithRoom>);
+				const matchingQueue = text ? queue.filter((inquiry) => matchesFilter(inquiry, text)) : queue;
+				unfilteredGroups.set('Incoming_Livechats', new Set(matchingQueue) as unknown as Set<SubscriptionWithRoom>);
 			}
-
-			const emptyUnreadInfo = (): GroupUnreadInfo => ({ userMentions: 0, groupMentions: 0, tunread: [], tunreadUser: [], unread: 0 });
-
-			const buildUnreadInfo = (roomsToCount: SubscriptionWithRoom[]): GroupUnreadInfo =>
-				roomsToCount.reduce<GroupUnreadInfo>((counter, room) => {
-					if (room.hideUnreadStatus) {
-						return counter;
-					}
-
-					counter.userMentions += room.userMentions || 0;
-					counter.groupMentions += room.groupMentions || 0;
-					counter.tunread = [...counter.tunread, ...(room.tunread || [])];
-					counter.tunreadUser = [...counter.tunreadUser, ...(room.tunreadUser || [])];
-					counter.unread += room.unread || 0;
-
-					if (!room.unread && !room.tunread?.length && room.alert) {
-						counter.unread += 1;
-					}
-
-					return counter;
-				}, emptyUnreadInfo());
 
 			const makeGroup = (key: string, set: Set<SubscriptionWithRoom>): SidebarRoomListGroup => {
 				const category = customCategories.find(({ _id }) => _id === key);
@@ -137,10 +125,11 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 				const title = category ? category.name : key;
 				const translateTitle = SIDEBAR_SYSTEM_GROUP_KEYS.includes(key as any);
 				const collapsed = isCollapsed(key);
-				const showUnreadsForGroup = isEnterprise ? isShowUnreads(key) : false;
-				const showUnreads = category ? Boolean(category.showUnreads) : showUnreadsForGroup;
-				const keepUnreadsOnTopForGroup = isEnterprise ? isKeepUnreadsOnTop(key) : false;
-				const keepUnreadsOnTop = category ? Boolean(category.keepUnreadsOnTop) : keepUnreadsOnTopForGroup;
+				// Whatever is stored for the Unread group stays off: it offers no unread options, so an enabled
+				// flag would keep it from ever collapsing with nothing left to turn it off.
+				const hasUnreadOptions = isEnterprise && key !== 'Unread';
+				const showUnreads = hasUnreadOptions && Boolean(category ? category.showUnreads : isShowUnreads(key));
+				const keepUnreadsOnTop = hasUnreadOptions && Boolean(category ? category.keepUnreadsOnTop : isKeepUnreadsOnTop(key));
 				const allRooms = [...set];
 				// A collapsed group still shows the room currently open, so the user can locate themselves in the
 				// sidebar, plus its unread rooms when "Show unreads" is enabled.
@@ -172,7 +161,11 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 			const groups = filterGroupVisibility(unfilteredGroups, isEnterprise, makeGroup);
 
-			return groups;
+			return {
+				groups: text ? groups.filter((group) => group.rooms.length > 0) : groups,
+				groupKeys: groups.map((group) => group.key),
+				filtering: Boolean(text),
+			};
 		}, [
 			categoryList,
 			rooms,
@@ -185,6 +178,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			isShowUnreads,
 			isKeepUnreadsOnTop,
 			openedRoom,
+			filterText,
 		]),
 		50,
 	);
@@ -195,6 +189,8 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 	return {
 		groups,
+		groupKeys,
+		filtering,
 		groupsCount,
 		totalCount: useMemo(() => groupsCount.reduce((acc, count) => acc + count, 0), [groupsCount]),
 	};

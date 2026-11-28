@@ -1,4 +1,5 @@
-import { Box, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
+import { Box, Field, FieldLabel, FieldRow, FieldError, Stack } from '@rocket.chat/fuselage';
+import type { ReactNode } from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 import { useController } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -9,9 +10,10 @@ import VisitorAutoComplete from '../forms/VisitorAutoComplete';
 
 export type OmnichannelTabProps = {
 	form: UseFormReturn<AuditFields>;
+	actions?: ReactNode;
 };
 
-const OmnichannelTab = ({ form: { control } }: OmnichannelTabProps) => {
+const OmnichannelTab = ({ form: { control }, actions }: OmnichannelTabProps) => {
 	const { t } = useTranslation();
 
 	const { field: visitorField, fieldState: visitorFieldState } = useController({
@@ -46,18 +48,21 @@ const OmnichannelTab = ({ form: { control } }: OmnichannelTabProps) => {
 				<Field>
 					<FieldLabel>{t('Agent')}</FieldLabel>
 					<FieldRow>
-						<AutoCompleteAgent
-							error={(() => {
-								if (agentFieldState.error?.type === 'required') {
-									return t('Required_field', { field: t('Agent') });
-								}
+						<Stack direction='row' align='center' grow gap='x8'>
+							<AutoCompleteAgent
+								error={(() => {
+									if (agentFieldState.error?.type === 'required') {
+										return t('Required_field', { field: t('Agent') });
+									}
 
-								return agentFieldState.error?.message;
-							})()}
-							value={agentField.value}
-							onChange={agentField.onChange}
-							placeholder={t('Username_Placeholder')}
-						/>
+									return agentFieldState.error?.message;
+								})()}
+								value={agentField.value}
+								onChange={agentField.onChange}
+								placeholder={t('Username_Placeholder')}
+							/>
+							{actions}
+						</Stack>
 					</FieldRow>
 					{agentFieldState.error?.type === 'required' && <FieldError>{t('Required_field', { field: t('Agent') })}</FieldError>}
 					{agentFieldState.error?.type === 'validate' && <FieldError>{agentFieldState.error.message}</FieldError>}

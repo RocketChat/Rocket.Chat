@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react';
 
-import AwaitConfirmationForm from './AwaitConfirmationForm';
+import AwaitConfirmationForm from './AwaitConfirmationForm.js';
 
 it('renders without crashing', () => {
-	render(
+	const { container } = render(
 		<AwaitConfirmationForm
 			currentStep={4}
 			stepCount={4}
@@ -13,4 +13,6 @@ it('renders without crashing', () => {
 			onChangeEmailRequest={() => true}
 		/>,
 	);
+
+	expect(container).not.toBeEmptyDOMElement();
 });

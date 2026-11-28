@@ -2,7 +2,6 @@ import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IOmnichannelBusinessUnit, IOmnichannelServiceLevelAgreements, IUser, ILivechatTag } from '@rocket.chat/core-typings';
 import { Users, OmnichannelServiceLevelAgreements, LivechatTag, LivechatUnitMonitors, LivechatUnit } from '@rocket.chat/models';
 import { getUnitsFromUser } from '@rocket.chat/omni-core-ee';
-import { Match, check } from 'meteor/check';
 
 import { updateSLAInquiries } from './Helper';
 import { removeSLAFromRooms } from './SlaHelper';
@@ -66,32 +65,10 @@ export const LivechatEnterprise = {
 	async saveUnit(
 		_id: string | null,
 		unitData: Omit<IOmnichannelBusinessUnit, '_id'>,
-		unitMonitors: { monitorId: string; username: string },
+		unitMonitors: { monitorId: string; username: string }[],
 		unitDepartments: { departmentId: string }[],
 		userId: string,
 	) {
-		check(unitData, {
-			name: String,
-			visibility: String,
-			enabled: Match.Optional(Boolean),
-			description: Match.Optional(String),
-			email: Match.Optional(String),
-			showOnOfflineForm: Match.Optional(Boolean),
-		});
-
-		check(unitMonitors, [
-			Match.ObjectIncluding({
-				monitorId: String,
-				username: String,
-			}),
-		]);
-
-		check(unitDepartments, [
-			Match.ObjectIncluding({
-				departmentId: String,
-			}),
-		]);
-
 		let ancestors: string[] = [];
 		if (_id) {
 			const unitsFromUser = await getUnitsFromUser(userId);
@@ -117,10 +94,7 @@ export const LivechatEnterprise = {
 			{ projection: { _id: 1, username: 1 } },
 		).toArray();
 
-		const monitors = validUserMonitors.map(({ _id: monitorId, username }) => ({
-			monitorId,
-			username: username!,
-		}));
+		const monitors = validUserMonitors.flatMap(({ _id: monitorId, username }) => (username ? [{ monitorId, username }] : []));
 
 		return LivechatUnit.createOrUpdateUnit(_id, unitData, ancestors, monitors, unitDepartments);
 	},
@@ -172,7 +146,7 @@ export const LivechatEnterprise = {
 
 	async removeSLA(executedBy: string, _id: string) {
 		const removedResult = await OmnichannelServiceLevelAgreements.removeById(_id);
-		if (!removedResult || removedResult.deletedCount !== 1) {
+		if (removedResult?.deletedCount !== 1) {
 			throw new Error(`SLA with id ${_id} not found`);
 		}
 

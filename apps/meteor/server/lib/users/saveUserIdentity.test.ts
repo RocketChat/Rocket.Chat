@@ -1,7 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 // Create stubs for dependencies
@@ -19,50 +19,54 @@ const stubs = {
 	FileUpload: sinon.stub(),
 };
 
-const { saveUserIdentity } = proxyquire.noCallThru().load('./saveUserIdentity', {
-	'@rocket.chat/models': {
-		Users: {
-			findOneById: stubs.findOneUserById,
+let saveUserIdentity: any;
+
+before(async () => {
+	mock.module('../../database/utils', { exports: { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() } });
+	mock.module('../media/file-upload', {
+		exports: {
+			FileUpload: stubs.FileUpload,
 		},
-		Messages: {
-			updateUsernameAndMessageOfMentionByIdAndOldUsername: stubs.updateUsernameAndMessageOfMentionByIdAndOldUsername,
-			updateUsernameOfEditByUserId: stubs.updateUsernameOfEditByUserId,
-			updateAllUsernamesByUserId: stubs.updateAllUsernamesByUserId,
+	});
+	mock.module('./setUsername', {
+		exports: {
+			_setUsername: stubs.setUsername,
+			_setUsernameWithSession: () => stubs.setUsername,
 		},
-		Subscriptions: {
-			updateDirectNameAndFnameByName: stubs.updateDirectNameAndFnameByName,
+	});
+	mock.module('./setRealName', {
+		exports: {
+			setRealName: stubs.setRealName,
 		},
-		VideoConference: {
-			updateUserReferences: stubs.updateUserReferences,
+	});
+	mock.module('../rooms/updateGroupDMsName', {
+		exports: {
+			updateGroupDMsName: sinon.stub(),
 		},
-		CallHistory: {
-			updateUserReferences: stubs.updateHistoryReferences,
+	});
+	mock.module('../shared/validateName', {
+		exports: {
+			validateName: stubs.validateName,
 		},
-	},
-	'meteor/meteor': {
-		'Meteor': sinon.stub(),
-		'@global': true,
-	},
-	'../../database/utils': { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() },
-	'../media/file-upload': {
-		FileUpload: stubs.FileUpload,
-	},
-	'./setUsername': {
-		_setUsername: stubs.setUsername,
-		_setUsernameWithSession: () => stubs.setUsername,
-	},
-	'./setRealName': {
-		setRealName: stubs.setRealName,
-	},
-	'../rooms/updateGroupDMsName': {
-		updateGroupDMsName: sinon.stub(),
-	},
-	'../shared/validateName': {
-		validateName: stubs.validateName,
-	},
+	});
+	({ saveUserIdentity } = await import('./saveUserIdentity'));
 });
 
 describe('Users - saveUserIdentity', () => {
+	before(() => {
+		mockModel('Users', { findOneById: stubs.findOneUserById });
+		mockModel('Messages', {
+			updateUsernameAndMessageOfMentionByIdAndOldUsername: stubs.updateUsernameAndMessageOfMentionByIdAndOldUsername,
+			updateUsernameOfEditByUserId: stubs.updateUsernameOfEditByUserId,
+			updateAllUsernamesByUserId: stubs.updateAllUsernamesByUserId,
+		});
+		mockModel('Subscriptions', {
+			updateDirectNameAndFnameByName: stubs.updateDirectNameAndFnameByName,
+		});
+		mockModel('VideoConference', { updateUserReferences: stubs.updateUserReferences });
+		mockModel('CallHistory', { updateUserReferences: stubs.updateHistoryReferences });
+	});
+
 	beforeEach(() => {
 		// Reset stubs before each test
 		Object.values(stubs).forEach((stub) => stub.reset());

@@ -1,5 +1,4 @@
 import { escapeHTML } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 
 import { ltrim } from '../../../../lib/utils/stringUtils';
 import { settings } from '../../../settings';
@@ -12,17 +11,15 @@ import * as Mailer from '../email/api';
 
 let advice = '';
 let goToMessage = '';
-Meteor.startup(() => {
-	settings.watch('email_style', () => {
-		goToMessage = Mailer.inlinecss('<p><a class=\'btn\' href="[room_path]">{Offline_Link_Message}</a></p>');
-	});
-	Mailer.getTemplate('Email_Footer_Direct_Reply', (value) => {
-		advice = value;
-	});
+settings.watch('email_style', () => {
+	goToMessage = Mailer.inlinecss('<p><a class=\'btn\' href="[room_path]">{Offline_Link_Message}</a></p>');
+});
+Mailer.getTemplate('Email_Footer_Direct_Reply', (value) => {
+	advice = value;
 });
 
 export async function getEmailContent({ message, user, room }) {
-	const lng = (user && user.language) || settings.get('Language') || 'en';
+	const lng = user?.language || settings.get('Language') || 'en';
 
 	const roomName = escapeHTML(`#${await roomCoordinator.getRoomName(room.t, room)}`);
 	const userName = escapeHTML(settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username);
@@ -69,7 +66,7 @@ export async function getEmailContent({ message, user, room }) {
 		message = await callbacks.run('renderMessage', message);
 		if (message.tokens && message.tokens.length > 0) {
 			message.tokens.forEach((token) => {
-				token.text = token.text.replace(/([^\$])(\$[^\$])/gm, '$1$$$2');
+				token.text = token.text.replace(/([^$])(\$[^$])/gm, '$1$$$2');
 				messageContent = messageContent.replace(token.token, token.text);
 			});
 		}
@@ -111,7 +108,7 @@ export async function getEmailContent({ message, user, room }) {
 }
 
 const getButtonUrl = (room, subscription, message) => {
-	const basePath = roomCoordinator.getRouteLink(room.t, subscription).replace(Meteor.absoluteUrl(), '');
+	const basePath = roomCoordinator.getRouteLink(room.t, subscription);
 
 	const path = `${ltrim(basePath, '/')}?msg=${message._id}`;
 	return getURL(

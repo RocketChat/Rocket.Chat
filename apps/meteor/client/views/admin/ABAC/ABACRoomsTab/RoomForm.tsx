@@ -1,8 +1,8 @@
-import { Box, Callout, Field, FieldLabel, FieldRow, FieldError, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Callout, Field, FieldLabel, FieldRow, FieldError, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { ContextualbarFooter, ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import type { Dispatch, SetStateAction } from 'react';
 import { useId } from 'react';
-import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
+import { Controller, useFieldArray, useFormContext, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import RoomFormAttributeFields from './RoomFormAttributeFields';
@@ -24,11 +24,8 @@ export type RoomFormData = {
 };
 
 const RoomForm = ({ onClose, onSave, roomInfo, hasAttributeChanges = false, setSelectedRoomLabel, redacted = false }: RoomFormProps) => {
-	const {
-		control,
-		handleSubmit,
-		formState: { isValid, errors, isDirty },
-	} = useFormContext<RoomFormData>();
+	const { control, handleSubmit } = useFormContext<RoomFormData>();
+	const { isValid, errors, isDirty } = useFormState({ control });
 
 	const { t } = useTranslation();
 	const formId = useId();
@@ -80,11 +77,9 @@ const RoomForm = ({ onClose, onSave, roomInfo, hasAttributeChanges = false, setS
 					)}
 				</Field>
 				{redacted && (
-					<Box marginBlockEnd={16}>
-						<Callout type='warning' title={t('ABAC_Attributes_Redacted')}>
-							{t('ABAC_Attributes_Redacted_Description')}
-						</Callout>
-					</Box>
+					<Callout type='warning' title={t('ABAC_Attributes_Redacted')}>
+						{t('ABAC_Attributes_Redacted_Description')}
+					</Callout>
 				)}
 				<RoomFormAttributeFields fields={fields} remove={remove} disabled={redacted} />
 				<Button

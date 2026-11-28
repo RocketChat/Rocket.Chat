@@ -290,10 +290,10 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		return discussion;
 	};
 
-	const createStrictGetter = <TFind extends (...args: any[]) => Promise<any>>(
-		find: TFind,
+	const createStrictGetter = <TArgs extends unknown[], TResult>(
+		find: (...args: TArgs) => Promise<TResult | undefined>,
 		errorMessage: string,
-	): ((...args: Parameters<TFind>) => Promise<Exclude<Awaited<ReturnType<TFind>>, undefined>>) => {
+	): ((...args: TArgs) => Promise<TResult>) => {
 		return async (...args) => {
 			const result = await find(...args);
 
@@ -310,12 +310,6 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const getSubscription = createStrictGetter(findSubscription, 'Subscription not found');
-
-	const findSubscriptionFromMessage = async (message: IMessage): Promise<ISubscription | undefined> => {
-		return Subscriptions.state.find((record) => record.rid === message.rid);
-	};
-
-	const getSubscriptionFromMessage = createStrictGetter(findSubscriptionFromMessage, 'Subscription not found');
 
 	return {
 		composeMessage,
@@ -343,7 +337,5 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		getDiscussionByID,
 		findSubscription,
 		getSubscription,
-		findSubscriptionFromMessage,
-		getSubscriptionFromMessage,
 	};
 };

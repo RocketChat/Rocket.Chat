@@ -58,6 +58,12 @@ export class LocalServiceRegistry {
 			return undefined;
 		}
 
-		return async (args: unknown[]): Promise<unknown> => (service.instance as any)[name](...args);
+		return async (args: unknown[]): Promise<unknown> => {
+			const handler: unknown = Reflect.get(service.instance, name);
+			if (typeof handler !== 'function') {
+				throw new TypeError(`${method} is not a function`);
+			}
+			return handler.call(service.instance, ...args);
+		};
 	}
 }

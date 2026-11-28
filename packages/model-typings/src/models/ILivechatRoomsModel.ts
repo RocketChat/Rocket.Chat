@@ -62,15 +62,15 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 
 	countAllQueuedChatsBetweenDate(params: Period & WithDepartment): any;
 
-	countAllOpenChatsByAgentBetweenDate(params: Period & WithDepartment): any;
+	countAllOpenChatsByAgentBetweenDate(params: Period & WithDepartment): Promise<{ _id: string | null; chats: number }[]>;
 
-	countAllOnHoldChatsByAgentBetweenDate(params: Period & WithDepartment): any;
+	countAllOnHoldChatsByAgentBetweenDate(params: Period & WithDepartment): Promise<{ _id: string | null; chats: number }[]>;
 
-	countAllClosedChatsByAgentBetweenDate(params: Period & WithDepartment): any;
+	countAllClosedChatsByAgentBetweenDate(params: Period & WithDepartment): Promise<{ _id: string | null; chats: number }[]>;
 
-	countAllOpenChatsByDepartmentBetweenDate(params: Period & WithDepartment): any;
+	countAllOpenChatsByDepartmentBetweenDate(params: Period & WithDepartment): Promise<{ _id?: string; name?: string; chats: number }[]>;
 
-	countAllClosedChatsByDepartmentBetweenDate(params: Period & WithDepartment): any;
+	countAllClosedChatsByDepartmentBetweenDate(params: Period & WithDepartment): Promise<{ _id?: string; name?: string; chats: number }[]>;
 
 	calculateResponseTimingsBetweenDates(params: Period & WithDepartment): any;
 
@@ -80,9 +80,17 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 
 	findAllAverageOfServiceTime(params: Period & WithDepartment & WithOnlyCount & WithOptions): any;
 
-	findByVisitorId(visitorId: any, options: any, extraQuery?: any): any;
+	findByVisitorId(
+		visitorId: string,
+		options: FindOptions<IOmnichannelRoom>,
+		extraQuery?: Filter<IOmnichannelRoom>,
+	): FindCursor<IOmnichannelRoom>;
 
-	findPaginatedByVisitorId(visitorId: any, options: any, extraQuery?: any): any;
+	findPaginatedByVisitorId(
+		visitorId: string,
+		options: FindOptions<IOmnichannelRoom>,
+		extraQuery?: Filter<IOmnichannelRoom>,
+	): FindPaginated<FindCursor<IOmnichannelRoom>>;
 
 	findRoomsByVisitorIdAndMessageWithCriteria(params: {
 		visitorId: any;
@@ -147,7 +155,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	updateSurveyFeedbackById(_id: string, surveyFeedback: unknown): Promise<UpdateResult>;
 	updateDataByToken(token: string, key: string, value: string, overwrite?: boolean): Promise<UpdateResult | Document | boolean>;
 	saveRoomById(
-		data: { _id: string; topic?: string; tags?: string[]; livechatData?: Record<string, any> } & Record<string, unknown>,
+		data: { _id: string; topic?: string; tags?: string[]; livechatData?: Record<string, string> } & Record<string, unknown>,
 	): Promise<UpdateResult | undefined>;
 	findByIds(
 		ids: string[],

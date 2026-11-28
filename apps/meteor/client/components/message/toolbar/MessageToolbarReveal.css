@@ -1,0 +1,32 @@
+/* A message shows its toolbar while the pointer is over it or the keyboard focus is inside it. */
+
+.message-toolbar-reveal {
+	pointer-events: none;
+	opacity: 0;
+}
+
+/* Any focus inside lays the toolbar out, still unseen, so the keyboard reaches its buttons after a click on the message. */
+.message-toolbar-scope:hover .message-toolbar-reveal,
+.message-toolbar-scope:focus-within .message-toolbar-reveal {
+	display: inline-block;
+}
+
+.message-toolbar-scope:hover .message-toolbar-reveal,
+.message-toolbar-scope:focus-visible .message-toolbar-reveal {
+	pointer-events: auto;
+	opacity: 1;
+}
+
+/* Keep keyboard-focused toolbar actions visible when focus moves into the toolbar. */
+.message-toolbar-scope:has(:focus-visible) .message-toolbar-reveal {
+	pointer-events: auto;
+	opacity: 1;
+}
+
+/* Without `:has()` any focus inside reveals the toolbar, so keyboard users can still see and operate it. */
+@supports not selector(:has(*)) {
+	.message-toolbar-scope:focus-within .message-toolbar-reveal {
+		pointer-events: auto;
+		opacity: 1;
+	}
+}

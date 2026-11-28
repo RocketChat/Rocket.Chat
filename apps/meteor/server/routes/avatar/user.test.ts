@@ -1,8 +1,8 @@
-import { afterEach, describe, it } from 'node:test';
+import { afterEach, before, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import { Headers } from 'node-fetch';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const mocks = {
@@ -20,27 +20,36 @@ const mocks = {
 	avatarFindOneByUserId: sinon.stub(),
 };
 
-const { userAvatarById, userAvatarByUsername } = proxyquire.noCallThru().load('./user', {
-	'@rocket.chat/models': {
-		Users: {
-			findOneByUsernameIgnoringCase: mocks.findOneByUsernameIgnoringCase,
-			findOneById: mocks.findOneById,
+let userAvatarById: any;
+let userAvatarByUsername: any;
+
+before(async () => {
+	mock.module('../../settings', {
+		exports: {
+			settings: {
+				get: mocks.settingsGet,
+			},
 		},
-		Avatars: {
-			findOneByName: mocks.avatarFindOneByName,
-			findOneByUserId: mocks.avatarFindOneByUserId,
+	});
+	mock.module('./utils', { exports: { default: mocks.utils } });
+	mock.module('@rocket.chat/server-fetch', {
+		exports: {
+			serverFetch: mocks.serverFetch,
 		},
-	},
-	'../../settings': {
-		settings: {
-			get: mocks.settingsGet,
-		},
-	},
-	'./utils': mocks.utils,
-	'@rocket.chat/server-fetch': {
-		serverFetch: mocks.serverFetch,
-	},
+	});
+	({ userAvatarById, userAvatarByUsername } = await import('./user'));
 });
+
+const registerModels = () => {
+	mockModel('Users', {
+		findOneByUsernameIgnoringCase: mocks.findOneByUsernameIgnoringCase,
+		findOneById: mocks.findOneById,
+	});
+	mockModel('Avatars', {
+		findOneByName: mocks.avatarFindOneByName,
+		findOneByUserId: mocks.avatarFindOneByUserId,
+	});
+};
 
 describe('#userAvatarById()', () => {
 	const response = {
@@ -49,6 +58,8 @@ describe('#userAvatarById()', () => {
 		end: sinon.spy(),
 	};
 	const next = sinon.spy();
+
+	before(registerModels);
 
 	afterEach(() => {
 		mocks.settingsGet.reset();
@@ -183,6 +194,8 @@ describe('#userAvatarByUsername()', () => {
 		end: sinon.spy(),
 	};
 	const next = sinon.spy();
+
+	before(registerModels);
 
 	afterEach(() => {
 		mocks.settingsGet.reset();

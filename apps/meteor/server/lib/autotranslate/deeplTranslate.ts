@@ -99,7 +99,6 @@ class DeeplAutoTranslate extends AutoTranslate {
 		if (this.supportedLanguages[target]) {
 			return this.supportedLanguages[target];
 		}
-		let result: (ISupportedLanguage & { supports_formality?: boolean })[] = [];
 
 		// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 		const request = await fetch(this.supportedLanguageEndpointUrl, {
@@ -113,7 +112,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 			throw new Error('Failed to fetch supported languages');
 		}
 
-		result = (await request.json()) as typeof result;
+		const result = (await request.json()) as (ISupportedLanguage & { supports_formality?: boolean })[];
 
 		if (this.supportedLanguages[target]) {
 			return this.supportedLanguages[target];
@@ -156,7 +155,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 					throw new Error(result.statusText);
 				}
 
-				const body = await result.json();
+				const body: { translations?: IDeepLTranslation[] } = await result.json();
 
 				if (result.status === 200 && body.translations && Array.isArray(body.translations) && body.translations.length > 0) {
 					// store translation only when the source and target language are different.
@@ -204,7 +203,9 @@ class DeeplAutoTranslate extends AutoTranslate {
 				}
 				const body = await result.json();
 				if (result.status === 200 && body.translations && Array.isArray(body.translations) && body.translations.length > 0) {
+					// oxlint-disable-next-line typescript/no-unsafe-call -- body left untyped: the assignment below stores a string[] where ITranslationResult expects a string
 					if (body.translations.map((translation: IDeepLTranslation) => translation.detected_source_language).join() !== language) {
+						// oxlint-disable-next-line typescript/no-unsafe-call -- body left untyped: the assignment below stores a string[] where ITranslationResult expects a string
 						translations[language] = body.translations.map((translation: IDeepLTranslation) => translation.text);
 					}
 				}

@@ -1,12 +1,12 @@
 import * as fs from 'fs';
-import { after, before, beforeEach, describe, it } from 'node:test';
+import { after, before, beforeEach, describe, it, mock } from 'node:test';
 import * as os from 'os';
 import * as path from 'path';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import AdmZip from 'adm-zip';
 import { expect } from 'chai';
 import { parse } from 'csv-parse/sync';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { ProgressStep } from '../../../../lib/importer/ImporterProgressStep';
@@ -70,18 +70,13 @@ class MockImporter {
 	}
 }
 
-const { CsvImporter } = proxyquire.noCallThru().load('./CsvImporter', {
-	'@rocket.chat/models': {
-		Settings: { incrementValueById },
-		Users: { findOneByUsername, addImportIds },
-	},
-	'csv-parse/lib/sync': { parse },
-	'..': {
-		Importer: MockImporter,
-		ProgressStep,
-		ImporterWebsocket: { progressUpdated },
-	},
-	'../../notifyListener': { notifyOnSettingChanged },
+let CsvImporter: any;
+
+before(async () => {
+	mock.module('../csvParser', { exports: { parse } });
+	mock.module('..', { exports: { Importer: MockImporter, ProgressStep, ImporterWebsocket: { progressUpdated } } });
+	mock.module('../../notifyListener', { exports: { notifyOnSettingChanged } });
+	({ CsvImporter } = await import('./CsvImporter'));
 });
 
 const allStubs = [
@@ -103,6 +98,8 @@ describe('CsvImporter', () => {
 	let zipCount = 0;
 
 	before(() => {
+		mockModel('Settings', { incrementValueById });
+		mockModel('Users', { findOneByUsername, addImportIds });
 		tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'rc-csv-importer-'));
 	});
 

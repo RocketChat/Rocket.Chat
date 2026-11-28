@@ -1,4 +1,5 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import {
 	useSetModal,
 	useToastMessageDispatch,
@@ -14,12 +15,13 @@ import { useCallback, useState, useEffect } from 'react';
 
 import { usePutChatOnHoldMutation } from './usePutChatOnHoldMutation';
 import { useReturnChatToQueueMutation } from './useReturnChatToQueueMutation';
-import { useHasLicenseModule } from '../../../../../../hooks/useHasLicenseModule';
 import { useLivechatInquiryStore } from '../../../../../../hooks/useLivechatInquiryStore';
 import { LegacyRoomManager } from '../../../../../../lib/LegacyRoomManager';
 import { quickActionHooks } from '../../../../../../ui';
+import { useForwardChat } from '../../../../../omnichannel/hooks/useForwardChat';
 import { useIsRoomOverMacLimit } from '../../../../../omnichannel/hooks/useIsRoomOverMacLimit';
 import { useOmnichannelRouteConfig } from '../../../../../omnichannel/hooks/useOmnichannelRouteConfig';
+import { buildCloseChatRequest } from '../../../../../omnichannel/lib/closeChat';
 import CloseChatModal from '../../../../../omnichannel/modals/CloseChatModal';
 import CloseChatModalData from '../../../../../omnichannel/modals/CloseChatModalData';
 import ForwardChatModal from '../../../../../omnichannel/modals/ForwardChatModal';
@@ -32,8 +34,10 @@ import { QuickActionsEnum } from '../../../../lib/quickActions';
 
 export const useQuickActions = (): {
 	quickActions: QuickActionsActionConfig[];
-	actionDefault: (actionId: string) => void;
+	actionDefault: (actionId: QuickActionsEnum) => void;
 } => {
+	'use no memo';
+
 	const room = useOmnichannelRoom();
 	const setModal = useSetModal();
 	const router = useRouter();
@@ -47,6 +51,9 @@ export const useQuickActions = (): {
 	const rid = room._id;
 	const uid = useUserId();
 	const roomLastMessage = room.lastMessage;
+
+	const forwardChat = useForwardChat(room);
+	const idleAgentsAllowedForForwarding = useSetting('Livechat_enabled_when_agent_idle', true);
 
 	const getVisitorInfo = useEndpoint('GET', '/v1/livechat/visitors.info');
 
@@ -145,20 +152,7 @@ export const useQuickActions = (): {
 			requestData?: { email: string; subject: string },
 		) => {
 			try {
-				await closeChat({
-					rid,
-					...(comment && { comment }),
-					...(tags && { tags }),
-					...(preferences?.omnichannelTranscriptPDF && { generateTranscriptPdf: true }),
-					...(preferences?.omnichannelTranscriptEmail && requestData
-						? {
-								transcriptEmail: {
-									sendToVisitor: preferences?.omnichannelTranscriptEmail,
-									requestData,
-								},
-							}
-						: { transcriptEmail: { sendToVisitor: false } }),
-				});
+				await closeChat(buildCloseChatRequest({ rid, comment, tags, preferences, requestData }));
 				discardForRoom(rid);
 				closeModal();
 				dispatchToastMessage({ type: 'success', message: t('Chat_closed_successfully') });
@@ -194,7 +188,7 @@ export const useQuickActions = (): {
 		},
 	});
 
-	const handleAction = useStableCallback(async (id: string) => {
+	const handleAction = useStableCallback(async (id: QuickActionsEnum) => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
 				setModal(
@@ -209,7 +203,7 @@ export const useQuickActions = (): {
 			case QuickActionsEnum.TranscriptPDF:
 				handleSendTranscriptPDF();
 				break;
-			case QuickActionsEnum.TranscriptEmail:
+			case QuickActionsEnum.TranscriptEmail: {
 				const visitorEmail = await getVisitorEmail();
 
 				if (!visitorEmail) {
@@ -228,10 +222,13 @@ export const useQuickActions = (): {
 					/>,
 				);
 				break;
+			}
 			case QuickActionsEnum.ChatForward:
-				setModal(<ForwardChatModal room={room} onCancel={closeModal} />);
+				setModal(
+					<ForwardChatModal room={room} showIdleAgents={idleAgentsAllowedForForwarding} onForward={forwardChat} onCancel={closeModal} />,
+				);
 				break;
-			case QuickActionsEnum.CloseChat:
+			case QuickActionsEnum.CloseChat: {
 				const email = await getVisitorEmail();
 				setModal(
 					room.departmentId ? (
@@ -241,6 +238,7 @@ export const useQuickActions = (): {
 					),
 				);
 				break;
+			}
 			case QuickActionsEnum.OnHoldChat:
 				setModal(
 					<PlaceChatOnHoldModal
@@ -279,7 +277,7 @@ export const useQuickActions = (): {
 	const canPlaceChatOnHold = Boolean(manualOnHoldAllowed && canRoomBePlacedOnHold && (!restrictedOnHold || canAgentPlaceOnHold));
 	const isRoomOverMacLimit = useIsRoomOverMacLimit(room);
 
-	const hasPermissionButtons = (id: string): boolean => {
+	const hasPermissionButtons = (id: QuickActionsEnum): boolean => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
 				return !isRoomOverMacLimit && !!roomOpen && canMoveQueue;
@@ -314,7 +312,7 @@ export const useQuickActions = (): {
 		})
 		.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
-	const actionDefault = useStableCallback((actionId: string) => {
+	const actionDefault = useStableCallback((actionId: QuickActionsEnum) => {
 		handleAction(actionId);
 	});
 

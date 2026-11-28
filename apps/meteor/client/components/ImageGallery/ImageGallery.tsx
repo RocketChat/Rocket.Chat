@@ -98,15 +98,16 @@ const swiperStyle = css`
 	}
 `;
 
-export const ImageGallery = ({
-	images,
-	onClose,
-	loadMore,
-}: {
+type ImageGalleryProps = {
+	/** The images in the order they are shown, left to right. */
 	images: Pick<IUpload, '_id' | 'path' | 'url' | 'description'>[];
+	/** The image shown first; the last one when it is not given. */
+	initialImageId?: string;
 	onClose: () => void;
 	loadMore?: () => void;
-}) => {
+};
+
+export const ImageGallery = ({ images, initialImageId, onClose, loadMore }: ImageGalleryProps) => {
 	const { t } = useTranslation();
 	const swiperRef = useRef<SwiperRef>(null);
 	const [, setSwiperInst] = useState<SwiperClass>();
@@ -115,7 +116,7 @@ export const ImageGallery = ({
 
 	const handleZoom = (ratio: number) => {
 		if (swiperRef.current?.swiper.zoom) {
-			const { scale, in: zoomIn } = swiperRef.current?.swiper.zoom;
+			const { scale, in: zoomIn } = swiperRef.current.swiper.zoom;
 			setZoomScale(scale + ratio);
 			return zoomIn(scale + ratio);
 		}
@@ -126,6 +127,8 @@ export const ImageGallery = ({
 	const handleResize = () => handleZoom(-(zoomScale - 1));
 
 	const preventPropagation = usePreventPropagation();
+
+	const initialIndex = images.findIndex(({ _id }) => _id === initialImageId);
 
 	return createPortal(
 		<>
@@ -165,15 +168,15 @@ export const ImageGallery = ({
 							/>
 						</ButtonGroup>
 						<IconButton
-							icon='chevron-right'
-							aria-label={t('Next_image')}
+							icon='chevron-left'
+							aria-label={t('Previous_image')}
 							className='rcx-swiper-prev-button'
 							variant='secondary'
 							onClick={preventPropagation}
 						/>
 						<IconButton
-							icon='chevron-left'
-							aria-label={t('Previous_image')}
+							icon='chevron-right'
+							aria-label={t('Next_image')}
 							className='rcx-swiper-next-button'
 							variant='secondary'
 							onClick={preventPropagation}
@@ -196,9 +199,9 @@ export const ImageGallery = ({
 								setGridSize(images.length);
 							}}
 							onReachBeginning={loadMore}
-							initialSlide={images.length - 1}
+							initialSlide={initialIndex === -1 ? images.length - 1 : initialIndex}
 						>
-							{[...images].reverse().map(({ _id, path, url, description }) => (
+							{images.map(({ _id, path, url, description }) => (
 								<SwiperSlide key={_id}>
 									<div className='swiper-zoom-container'>
 										{/* oxlint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events */}

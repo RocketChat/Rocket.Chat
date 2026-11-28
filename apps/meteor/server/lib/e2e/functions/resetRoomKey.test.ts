@@ -1,7 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { generateMultipleSubs } from '../../../../tests/mocks/data/subscriptions';
@@ -27,12 +27,18 @@ const models = {
 	},
 };
 
-const { resetRoomKey, pushToLimit, replicateMongoSlice } = proxyquire.noCallThru().load('./resetRoomKey', {
-	'@rocket.chat/models': models,
-	'../../notifyListener': {
-		notifyOnRoomChanged: sinon.stub(),
-		notifyOnSubscriptionChanged: sinon.stub(),
-	},
+let resetRoomKey: any;
+let pushToLimit: any;
+let replicateMongoSlice: any;
+
+before(async () => {
+	mock.module('../../notifyListener', {
+		exports: {
+			notifyOnRoomChanged: sinon.stub(),
+			notifyOnSubscriptionChanged: sinon.stub(),
+		},
+	});
+	({ resetRoomKey, pushToLimit, replicateMongoSlice } = await import('./resetRoomKey'));
 });
 
 describe('pushToLimit', () => {
@@ -90,6 +96,12 @@ describe('replicateMongoSlice', () => {
 });
 
 describe('resetRoomKey', () => {
+	before(() => {
+		mockModel('Users', models.Users);
+		mockModel('Rooms', models.Rooms);
+		mockModel('Subscriptions', models.Subscriptions);
+	});
+
 	beforeEach(() => {
 		models.Users.findOneById.reset();
 		models.Rooms.findOneById.reset();

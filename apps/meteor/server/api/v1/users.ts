@@ -1,6 +1,7 @@
 import { hashLoginToken } from '@rocket.chat/account-utils';
 import { ClientSafeError, Presence, Team, isClientSafeError } from '@rocket.chat/core-services';
-import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
+import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions, OAuthAccessTokens, OAuthRefreshTokens, OAuthAuthCodes } from '@rocket.chat/models';
 import {
 	ajv,
@@ -33,7 +34,6 @@ import {
 } from '@rocket.chat/rest-typings';
 import { isHiddenFor } from '@rocket.chat/streamer';
 import { escapeRegExp, getLoginExpirationInMs } from '@rocket.chat/tools';
-import { Match, check } from 'meteor/check';
 import type { Filter } from 'mongodb';
 
 import { generatePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/generateToken';
@@ -187,7 +187,7 @@ API.v1
 			userWithoutUsername: true,
 			body: isUsersUpdateOwnBasicInfoParamsPOST,
 			rateLimiterOptions: {
-				numRequestsAllowed: 1,
+				numRequestsAllowed: 5,
 				intervalTimeInMS: 60000,
 			},
 			response: {
@@ -1223,7 +1223,7 @@ API.v1.get(
 	async function action() {
 		const user = await Users.findOneById(this.userId);
 		if (user?.settings) {
-			const { preferences = {} } = user?.settings;
+			const { preferences = {} } = user.settings;
 			preferences.language = user?.language;
 
 			return API.v1.success({
@@ -2089,19 +2089,9 @@ API.v1
 			},
 		},
 		async function action() {
-			check(
-				this.bodyParams,
-				Match.OneOf(
-					Match.ObjectIncluding({
-						status: Match.Maybe(String),
-						message: String,
-					}),
-					Match.ObjectIncluding({
-						status: String,
-						message: Match.Maybe(String),
-					}),
-				),
-			);
+			if (typeof this.bodyParams.status !== 'string' && typeof this.bodyParams.message !== 'string') {
+				return API.v1.failure("The 'status' or 'message' param is required");
+			}
 
 			const user = await (async () => {
 				if (isUserFromParams(this.bodyParams, this.userId, this.user)) {
@@ -2139,9 +2129,9 @@ API.v1
 
 			// If status is missing (message-only update), keep the user's chosen status (statusDefault),
 			// not the computed status — otherwise a transient auto-away/offline gets pinned as a manual claim.
-			const effectiveStatus = status || user.statusDefault || ('online' as UserStatus);
+			const effectiveStatus = status || user.statusDefault || UserStatus.ONLINE;
 
-			if (effectiveStatus === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
+			if (effectiveStatus === UserStatus.OFFLINE && !settings.get('Accounts_AllowInvisibleStatusOption')) {
 				throw new ClientSafeError('error-status-not-allowed', 'Invisible status is disabled', {
 					method: 'users.setStatus',
 				});
@@ -2400,6 +2390,6 @@ settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
 type UsersEndpoints = ExtractRoutesFromAPI<typeof usersEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line typescript/no-empty-interface, typescript/no-empty-object-type
 	interface Endpoints extends UsersEndpoints {}
 }

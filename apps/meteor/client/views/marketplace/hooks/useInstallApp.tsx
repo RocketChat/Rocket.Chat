@@ -1,10 +1,11 @@
+/* oxlint-disable typescript/no-unsafe-return -- the upload response is untyped; it will be typed in a separate change */
 import type { App, AppPermission } from '@rocket.chat/core-typings';
+import { useIsEnterprise } from '@rocket.chat/ui-client';
 import { useRouter, useSetModal, useUpload } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 
 import { useAppsReload } from './useAppsReload';
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import { AppClientOrchestratorInstance } from '../../../lib/apps/orchestrator';
 import AppExemptModal from '../AppExemptModal';
 import AppPermissionsReviewModal from '../AppPermissionsReviewModal';
@@ -134,5 +135,10 @@ export const useInstallApp = (file: File): { install: () => void; isInstalling: 
 		return uploadFile(appFile, manifest);
 	};
 
-	return { install, isInstalling };
+	return {
+		install: () => {
+			void install();
+		},
+		isInstalling,
+	};
 };

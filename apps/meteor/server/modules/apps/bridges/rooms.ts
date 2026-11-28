@@ -238,7 +238,7 @@ export class AppRoomBridge extends RoomBridge {
 
 	protected async getMembers(roomId: string, appId: string): Promise<Array<IUser>> {
 		this.orch.debugLog(`The App ${appId} is getting the room's members by room id: "${roomId}"`);
-		const subscriptions = await Subscriptions.findByRoomId(roomId, {});
+		const subscriptions = Subscriptions.findByRoomId(roomId, {});
 		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
 		const promises: Promise<(IUser | undefined)[]> = Promise.all(
 			(await subscriptions.toArray()).map((sub: ISubscription) => this.orch.getConverters()?.get('users').convertById(sub.u?._id)),
@@ -279,7 +279,7 @@ export class AppRoomBridge extends RoomBridge {
 	}
 
 	protected async getDirectByUsernames(usernames: Array<string>, appId: string): Promise<IRoom | undefined> {
-		this.orch.debugLog(`The App ${appId} is getting direct room by usernames: "${usernames}"`);
+		this.orch.debugLog(`The App ${appId} is getting direct room by usernames: "${usernames.join(',')}"`);
 		const room = await Rooms.findDirectRoomContainingAllUsernames(usernames, {});
 		if (!room) {
 			return undefined;
@@ -433,7 +433,7 @@ export class AppRoomBridge extends RoomBridge {
 	}
 
 	protected async removeUsers(roomId: string, usernames: Array<string>, appId: string): Promise<void> {
-		this.orch.debugLog(`The App ${appId} is removing users ${usernames} from room id: ${roomId}`);
+		this.orch.debugLog(`The App ${appId} is removing users ${usernames.join(',')} from room id: ${roomId}`);
 		if (!roomId) {
 			throw new Error('roomId was not provided.');
 		}

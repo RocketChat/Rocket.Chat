@@ -1,18 +1,19 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
-import type { RemoteParticipantInfo } from './context';
-import { useActiveSpeakerId } from './hooks/useActiveSpeakerId';
-import { useElementSize } from './hooks/useElementSize';
-import { useFeaturedScreen } from './hooks/useFeaturedScreen';
-import type { TileReaction } from './lib/reactions';
-import type { StageSelf } from './lib/stageTiles';
-import { buildStageTiles, pickFeaturedTile, spotlightOrientation } from './lib/stageTiles';
-import GridLayout from './stage/GridLayout';
-import ScreenShareLayout from './stage/ScreenShareLayout';
-import SidebarLayout from './stage/SidebarLayout';
-import SpotlightLayout from './stage/SpotlightLayout';
-import { stageStyles } from './stage/stageStyles';
+import type { RemoteParticipantInfo } from './context.js';
+import { useActiveSpeakerId } from './hooks/useActiveSpeakerId.js';
+import { useElementSize } from './hooks/useElementSize.js';
+import { PinFocusProvider, usePinFocusScope } from './hooks/usePinFocus.js';
+import type { TileReaction } from './lib/reactions.js';
+import type { ScreenShare } from './lib/screenShares.js';
+import type { StageSelf } from './lib/stageTiles.js';
+import { buildStageTiles, pinnedOrFeaturedTile, spotlightOrientation } from './lib/stageTiles.js';
+import GridLayout from './stage/GridLayout.js';
+import ScreenShareLayout from './stage/ScreenShareLayout.js';
+import SidebarLayout from './stage/SidebarLayout.js';
+import SpotlightLayout from './stage/SpotlightLayout.js';
+import { stageStyles } from './stage/stageStyles.js';
 
 export type StageLayout = 'grid' | 'spotlight' | 'sidebar';
 
@@ -24,11 +25,14 @@ export type CallStageProps = {
 	handPositions?: Record<string, number>;
 	/** Map from participantId → their latest reaction, shown on their tile. */
 	reactions?: Record<string, TileReaction>;
-	/** Which layout to use when no screen share is active. Defaults to `'grid'`. */
+	/** Which layout to use when no screen share is on the stage. Defaults to `'grid'`. */
 	layout?: StageLayout;
+	pinnedId: string | null;
+	shares: ScreenShare[];
+	screenOnStage: ScreenShare | null;
 };
 
-/** Everyone's tiles in the chosen layout, or, while anyone shares a screen, that screen with the tiles beside it. */
+/** Everyone's tiles in the chosen layout, or the shared screen on the stage with the tiles beside it. */
 const CallStage = ({
 	localParticipant,
 	remoteParticipants,
@@ -36,13 +40,14 @@ const CallStage = ({
 	handPositions,
 	reactions,
 	layout = 'grid',
+	pinnedId,
+	shares,
+	screenOnStage,
 }: CallStageProps) => {
 	const tiles = useMemo(
 		() => buildStageTiles(localParticipant, remoteParticipants, handPositions, reactions),
 		[localParticipant, remoteParticipants, handPositions, reactions],
 	);
-
-	const screens = useFeaturedScreen(localParticipant, remoteParticipants);
 
 	const audioParticipants = useMemo(() => remoteParticipants.map((p) => ({ id: p.id, audioStream: p.audioStream })), [remoteParticipants]);
 	const activeSpeakerId = useActiveSpeakerId(audioParticipants, remoteParticipants[0]?.id ?? localParticipant.id);
@@ -50,27 +55,37 @@ const CallStage = ({
 	const [stageRef, stageSize] = useElementSize();
 	const orientation = spotlightOrientation(stageSize);
 
+	const [pinFocus, pinFocusFallbackRef] = usePinFocusScope();
+	const ref = useCallback(
+		(node: HTMLElement) => {
+			const stopMeasuring = stageRef(node);
+			pinFocusFallbackRef(node);
+			return () => {
+				if (typeof stopMeasuring === 'function') stopMeasuring();
+				pinFocusFallbackRef(null);
+			};
+		},
+		[stageRef, pinFocusFallbackRef],
+	);
+
 	const renderLayout = () => {
-		if (screens.featured) {
+		if (screenOnStage) {
 			return (
 				<ScreenShareLayout
-					featured={screens.featured}
-					others={screens.others}
+					featured={screenOnStage}
+					others={shares.filter(({ id }) => id !== screenOnStage.id)}
 					tiles={tiles}
 					orientation={orientation}
-					onPin={screens.pin}
 					onStopLocalScreenShare={onStopLocalScreenShare}
 				/>
 			);
 		}
 
-		const featured = pickFeaturedTile(tiles, activeSpeakerId, localParticipant.id);
+		const featured = pinnedOrFeaturedTile(tiles, pinnedId, activeSpeakerId, localParticipant.id);
+		// The grid has no large view and Spotlight no thumbnails for the shares.
+		const pinNeedsSidebar = featured.id === pinnedId && (layout === 'grid' || shares.length > 0);
 
-		if (layout === 'spotlight') {
-			return <SpotlightLayout featured={featured} self={tiles.find((t) => t.id === localParticipant.id)} />;
-		}
-
-		if (layout === 'sidebar') {
+		if (layout === 'sidebar' || pinNeedsSidebar) {
 			return (
 				<SidebarLayout
 					featured={featured}
@@ -79,16 +94,21 @@ const CallStage = ({
 					selfId={localParticipant.id}
 					stageSize={stageSize}
 					orientation={orientation}
+					screens={shares}
 				/>
 			);
 		}
 
-		return <GridLayout tiles={tiles} activeSpeakerId={activeSpeakerId} selfId={localParticipant.id} />;
+		if (layout === 'spotlight') {
+			return <SpotlightLayout featured={featured} self={tiles.find((t) => t.id === localParticipant.id)} />;
+		}
+
+		return <GridLayout tiles={tiles} activeSpeakerId={activeSpeakerId} selfId={localParticipant.id} screens={shares} />;
 	};
 
 	return (
-		<Box className={stageStyles} ref={stageRef}>
-			{renderLayout()}
+		<Box className={stageStyles} ref={ref} tabIndex={-1}>
+			<PinFocusProvider value={pinFocus}>{renderLayout()}</PinFocusProvider>
 		</Box>
 	);
 };

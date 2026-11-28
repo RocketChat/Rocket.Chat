@@ -1,7 +1,7 @@
-import type { Actionable } from '../Actionable';
-import type { Option } from '../Option';
-import type { OptionGroup } from '../OptionGroup';
-import type { TextObject } from '../TextObject';
+import type { Actionable } from '../Actionable.js';
+import type { Option } from '../Option.js';
+import type { OptionGroup } from '../OptionGroup.js';
+import type { TextObject } from '../TextObject.js';
 
 export type MultiStaticSelectElement = Actionable<{
 	type: 'multi_static_select';
@@ -11,4 +11,5 @@ export type MultiStaticSelectElement = Actionable<{
 	maxSelectItems?: number;
 	initialValue?: Option['value'][];
 	initialOption?: Option[];
+	focus_on_load?: boolean;
 }>;

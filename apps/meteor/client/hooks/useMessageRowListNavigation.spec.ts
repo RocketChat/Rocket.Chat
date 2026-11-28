@@ -1,4 +1,5 @@
-import { renderHook, act, fireEvent } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { useMessageRowListNavigation } from './useMessageRowListNavigation';
 
@@ -38,11 +39,11 @@ const setup = () => {
 	return { user, system };
 };
 
-it('moves between user and system messages', () => {
+it('moves between user and system messages', async () => {
 	const { user, system } = setup();
 	user.message.focus();
 
-	fireEvent.keyDown(user.message, { key: 'ArrowDown' });
+	await userEvent.keyboard('{ArrowDown}');
 
-	expect(document.activeElement).toBe(system.message);
+	expect(system.message).toHaveFocus();
 });

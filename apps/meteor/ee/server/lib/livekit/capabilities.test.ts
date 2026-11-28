@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import type { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
@@ -11,14 +11,13 @@ import { LIVEKIT_CAPABILITIES } from './capabilities';
  *
  * The registry reads `server/settings`, whose top-level await this runner cannot load, hence the stub.
  */
-const proxyquire = require('proxyquire');
+let videoConfProviders: typeof import('../../../../server/lib/videoConfProviders').videoConfProviders;
+let CORE_PROVIDER_APP_ID: typeof import('../../../../server/lib/videoConfProviders').CORE_PROVIDER_APP_ID;
 
-const { videoConfProviders, CORE_PROVIDER_APP_ID } = proxyquire
-	.noCallThru()
-	.noPreserveCache()
-	.load('../../../../server/lib/videoConfProviders', {
-		'../settings': { settings: { get: () => undefined } },
-	});
+before(async () => {
+	mock.module('../../../../server/settings', { exports: { settings: { get: () => undefined } } });
+	({ videoConfProviders, CORE_PROVIDER_APP_ID } = await import('../../../../server/lib/videoConfProviders'));
+});
 
 const registered = (): VideoConferenceCapabilities | undefined => videoConfProviders.getProviderCapabilities('livekit');
 

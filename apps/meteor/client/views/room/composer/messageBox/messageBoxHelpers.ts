@@ -4,16 +4,15 @@ import type { ClipboardEvent, MouseEvent } from 'react';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
 import type { FormattingButton } from '../../../../lib/messageBoxFormatting';
+import { isMacOS } from '../../../../lib/utils/isMacOS';
 
 export const emptySubscribe = () => () => undefined;
 export const getEmptyFalse = () => false;
-const a: any[] = [];
+const a: FormattingButton[] = [];
 export const getEmptyArray = () => a;
 
 export const isCmdOrCtrlPressed = (event: { metaKey: boolean; ctrlKey: boolean }) => {
-	const isMacOS = navigator.platform.indexOf('Mac') !== -1;
-
-	return (isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey);
+	return isMacOS() ? event.metaKey : event.ctrlKey;
 };
 
 export const getClickedLink = (event: MouseEvent<HTMLElement>): HTMLAnchorElement | null => (event.target as HTMLElement).closest('a');

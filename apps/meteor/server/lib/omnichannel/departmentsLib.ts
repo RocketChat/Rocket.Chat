@@ -3,7 +3,6 @@ import { ClientSafeError } from '@rocket.chat/core-services';
 import type { LivechatDepartmentDTO, ILivechatDepartment, ILivechatDepartmentAgents, ILivechatAgent } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, LivechatVisitors, LivechatRooms, Users } from '@rocket.chat/models';
 import { isDepartmentCreationAvailable } from '@rocket.chat/omni-core';
-import { check, Match } from 'meteor/check';
 
 import { updateDepartmentAgents } from './Helper';
 import { afterDepartmentArchived, afterDepartmentUnarchived } from './hooks';
@@ -11,6 +10,22 @@ import { livechatLogger } from './logger';
 import { settings } from '../../settings';
 import { callbacks } from '../callbacks';
 import { notifyOnLivechatDepartmentAgentChangedByDepartmentId, notifyOnLivechatDepartmentAgentChanged } from '../notifyListener';
+
+async function ensureUnitKeepsADepartment(
+	departmentUnit: { _id?: string } | undefined,
+	department: Pick<ILivechatDepartment, '_id' | 'archived' | 'enabled' | 'parentId'> | null,
+): Promise<void> {
+	if (!departmentUnit || departmentUnit._id || !department?.parentId) {
+		return;
+	}
+
+	if ((await LivechatDepartment.countDepartmentsInUnit(department.parentId)) === 1) {
+		throw new ClientSafeError('error-unit-cant-be-empty', "The last department in a unit can't be removed", {
+			method: 'livechat:saveDepartment',
+		});
+	}
+}
+
 /**
  * @param {string|null} _id - The department id
  * @param {Partial<import('@rocket.chat/core-typings').ILivechatDepartment>} departmentData
@@ -39,14 +54,7 @@ export async function saveDepartment(
 			})
 		: null;
 
-	if (departmentUnit && !departmentUnit._id && department && department.parentId) {
-		const isLastDepartmentInUnit = (await LivechatDepartment.countDepartmentsInUnit(department.parentId)) === 1;
-		if (isLastDepartmentInUnit) {
-			throw new ClientSafeError('error-unit-cant-be-empty', "The last department in a unit can't be removed", {
-				method: 'livechat:saveDepartment',
-			});
-		}
-	}
+	await ensureUnitKeepsADepartment(departmentUnit, department);
 
 	if (!department && !(await isDepartmentCreationAvailable())) {
 		throw new ClientSafeError('error-max-departments-number-reached', 'Maximum number of departments reached', {
@@ -59,30 +67,6 @@ export async function saveDepartment(
 			method: 'livechat:saveDepartment',
 		});
 	}
-
-	// TODO: Use AJV or Zod for validation (or the lib we are using rn)
-	const defaultValidations: Record<string, Match.Matcher<any> | BooleanConstructor | StringConstructor> = {
-		enabled: Boolean,
-		name: String,
-		description: Match.Optional(String),
-		showOnRegistration: Boolean,
-		email: String,
-		showOnOfflineForm: Boolean,
-		requestTagBeforeClosingChat: Match.Optional(Boolean),
-		chatClosingTags: Match.Optional([String]),
-		fallbackForwardDepartment: Match.Optional(String),
-		departmentsAllowedToForward: Match.Optional([String]),
-		allowReceiveForwardOffline: Match.Optional(Boolean),
-	};
-
-	// The Livechat Form department support addition/custom fields, so those fields need to be added before validating
-	Object.keys(departmentData).forEach((field) => {
-		if (!defaultValidations.hasOwnProperty(field)) {
-			defaultValidations[field] = Match.OneOf(String, Match.Integer, Boolean);
-		}
-	});
-
-	check(departmentData, defaultValidations);
 
 	const { requestTagBeforeClosingChat, chatClosingTags, fallbackForwardDepartment } = departmentData;
 	if (requestTagBeforeClosingChat && (!chatClosingTags || chatClosingTags.length === 0)) {

@@ -1,10 +1,9 @@
 import type { ISidebarCategory } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
 import { Field, FieldError, FieldGroup, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useEffect, useRef } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useEffect, useState } from 'react';
+import { Controller, useForm, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useCategoryRoomIds } from './hooks/useCategoryRoomIds';
@@ -23,19 +22,16 @@ const ManageCategoryModal = ({ category, onClose }: ManageCategoryModalProps) =>
 	const updateCategory = useUpdateCategory();
 	const validateName = useValidateCategoryName();
 
-	const initialRoomsRef = useRef(useCategoryRoomIds(category._id));
+	const categoryRoomIds = useCategoryRoomIds(category._id);
+	const [initialRooms] = useState(() => categoryRoomIds);
 
-	const {
-		handleSubmit,
-		control,
-		setFocus,
-		formState: { errors, isSubmitting },
-	} = useForm({
+	const { handleSubmit, control, setFocus } = useForm({
 		defaultValues: {
 			name: category.name,
-			rooms: initialRoomsRef.current,
+			rooms: initialRooms,
 		},
 	});
+	const { errors, isSubmitting } = useFormState({ control });
 
 	useEffect(() => {
 		setFocus('name');
@@ -45,10 +41,10 @@ const ManageCategoryModal = ({ category, onClose }: ManageCategoryModalProps) =>
 		const trimmed = name.trim();
 		const nameUnchanged = trimmed === category.name.trim();
 
-		const initialSet = new Set(initialRoomsRef.current);
+		const initialSet = new Set(initialRooms);
 		const newSet = new Set(rooms);
 		const addedRoomIds = rooms.filter((rid) => !initialSet.has(rid));
-		const removedRoomIds = initialRoomsRef.current.filter((rid) => !newSet.has(rid));
+		const removedRoomIds = initialRooms.filter((rid) => !newSet.has(rid));
 		const roomsUnchanged = addedRoomIds.length === 0 && removedRoomIds.length === 0;
 
 		if (nameUnchanged && roomsUnchanged) {
@@ -73,7 +69,7 @@ const ManageCategoryModal = ({ category, onClose }: ManageCategoryModalProps) =>
 			confirmText={t('Save')}
 			confirmLoading={isSubmitting}
 			onCancel={onClose}
-			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleConfirm)} {...props} />}
+			onSubmit={handleSubmit(handleConfirm)}
 		>
 			<FieldGroup>
 				<Field>

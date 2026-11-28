@@ -1,4 +1,4 @@
-import { LDAP, ClientSafeError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser, OAuthConfiguration } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
@@ -15,6 +15,7 @@ import { settings } from '../../../settings/cached';
 import { callbacks } from '../../callbacks';
 import { notifyOnUserChange } from '../../notifyListener';
 import { saveUserIdentity } from '../../users/saveUserIdentity';
+import { validateUsername } from '../../users/validateUsername';
 
 const logger = new Logger('CustomOAuth');
 const BeforeUpdateOrCreateUserFromExternalService = new Map<
@@ -22,6 +23,18 @@ const BeforeUpdateOrCreateUserFromExternalService = new Map<
 	(serviceName: string, serviceData: Record<string, any>) => Promise<void>
 >();
 const CustomOAuthInstances = new Map<string, CustomOAuthStrategy>();
+
+const resolveEndpoint = (serverURL: string, path: string): string => {
+	if (isAbsoluteURL(path)) {
+		return path;
+	}
+
+	if (path.startsWith('?')) {
+		return serverURL + path;
+	}
+
+	return `${serverURL.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`;
+};
 
 export class CustomOAuthStrategy extends Strategy {
 	options: StrategyOptions;
@@ -63,9 +76,11 @@ export class CustomOAuthStrategy extends Strategy {
 			throw new ClientSafeError('customOAuth: serverURL is required and must be String');
 		}
 
+		const tokenURL = resolveEndpoint(config.serverURL, config.tokenPath || '/oauth/token');
+
 		const options: StrategyOptions = {
-			authorizationURL: config.serverURL + config.authorizePath,
-			tokenURL: config.serverURL + config.tokenPath,
+			authorizationURL: resolveEndpoint(config.serverURL, config.authorizePath || '/oauth/authorize'),
+			tokenURL,
 			clientID: config.clientId,
 			clientSecret: config.clientSecret,
 			callbackURL: `${settings.get<string>('Site_Url').replace(/\/$/, '')}/_oauth/${name}`,
@@ -77,8 +92,8 @@ export class CustomOAuthStrategy extends Strategy {
 		super(options, verify);
 
 		this.serverURL = config.serverURL;
-		this.tokenPath = config.tokenPath || '/oauth/token';
-		this.identityPath = config.identityPath || '/me';
+		this.tokenPath = tokenURL;
+		this.identityPath = resolveEndpoint(config.serverURL, config.identityPath || '/me');
 		this.tokenSentVia = config.tokenSentVia;
 		this.identityTokenSentVia = config.identityTokenSentVia;
 		this.keyField = config.keyField;
@@ -93,14 +108,6 @@ export class CustomOAuthStrategy extends Strategy {
 
 		if (this.identityTokenSentVia == null || this.identityTokenSentVia === 'default') {
 			this.identityTokenSentVia = this.tokenSentVia;
-		}
-
-		if (!isAbsoluteURL(this.tokenPath)) {
-			this.tokenPath = this.serverURL + this.tokenPath;
-		}
-
-		if (!isAbsoluteURL(this.identityPath)) {
-			this.identityPath = this.serverURL + this.identityPath;
 		}
 
 		if (this.emailPath && !isAbsoluteURL(this.emailPath)) {
@@ -221,6 +228,9 @@ export class CustomOAuthStrategy extends Strategy {
 			identity.name = this.getName(identity);
 		}
 
+		identity.displayName = identity.name || identity.displayName;
+
+		// oxlint-disable-next-line typescript/no-unsafe-return -- transform_helpers is untyped JavaScript
 		return renameInvalidProperties(identity);
 	}
 
@@ -243,9 +253,10 @@ export class CustomOAuthStrategy extends Strategy {
 				const normalizedIdentity = this.normalizeIdentity(result);
 				//Nextcloud URL needed on addWebdavServer
 				normalizedIdentity.serverURL = this.serverURL;
+				normalizedIdentity._OAuthCustom = true;
 				return done(null, normalizedIdentity);
 			} catch (e) {
-				return done(new Error(`Failed to parse identity from ${this.name} at ${this.identityPath}. ${e}`));
+				return done(new Error(`Failed to parse identity from ${this.name} at ${this.identityPath}. ${String(e)}`));
 			}
 		});
 	}
@@ -256,7 +267,9 @@ export class CustomOAuthStrategy extends Strategy {
 				return;
 			}
 
-			if (serviceData.username) {
+			const lookupValue = this.keyField === 'email' ? serviceData.email : serviceData.username;
+
+			if (lookupValue) {
 				let user: IUser | null = null;
 
 				if (this.keyField === 'username') {
@@ -345,7 +358,7 @@ export class CustomOAuthStrategy extends Strategy {
 	}
 }
 
-Accounts.validateNewUser((user: IUser & { email: string }) => {
+export const applyCustomOAuthUserFields = (user: Partial<IUser> & { email?: string }) => {
 	for (const [name, instance] of CustomOAuthInstances) {
 		const service = user.services?.[name as keyof NonNullable<IUser['services']>];
 		if (!service?.id) {
@@ -353,6 +366,9 @@ Accounts.validateNewUser((user: IUser & { email: string }) => {
 		}
 
 		if (instance.usernameField) {
+			if (!validateUsername(service.username)) {
+				throw new ClientSafeError('error-invalid-username', `${service.username} is not a valid username`);
+			}
 			user.username = service.username;
 		}
 
@@ -364,45 +380,14 @@ Accounts.validateNewUser((user: IUser & { email: string }) => {
 			user.name = service.name;
 		}
 	}
+};
 
-	return true;
-});
+// only admin-created services have this setting (built-in providers reuse this class); covers the window before services reload
+export const isCustomOAuthServiceAllowed = (serviceName: string) =>
+	settings.get(`Accounts_OAuth_Custom-${capitalize(serviceName)}`) === undefined || License.hasModule('oauth-enterprise');
 
-const { updateOrCreateUserFromExternalService } = Accounts;
-
-Accounts.updateOrCreateUserFromExternalService = async function (...args) {
-	// only admin-created services have this setting (built-in providers reuse this class); covers the window before services reload
-	if (settings.get(`Accounts_OAuth_Custom-${capitalize(args[0])}`) !== undefined && !License.hasModule('oauth-enterprise')) {
-		return undefined;
-	}
-
+export const processCustomOAuthUser = async (serviceName: string, serviceData: Record<string, any>) => {
 	for (const hook of BeforeUpdateOrCreateUserFromExternalService.values()) {
-		await hook.apply(this, args as unknown as [string, Record<string, any>]);
+		await hook(serviceName, serviceData);
 	}
-
-	const [serviceName, serviceData] = args;
-
-	const user = await updateOrCreateUserFromExternalService.apply(this, args);
-
-	if (!user?.userId) {
-		return undefined;
-	}
-
-	const fullUser = await Users.findOneById(user.userId as string);
-
-	if (!fullUser) {
-		return undefined;
-	}
-
-	if (settings.get('LDAP_Update_Data_On_OAuth_Login') && fullUser.username) {
-		await LDAP.loginAuthenticatedUserRequest(fullUser.username);
-	}
-
-	await callbacks.run('afterValidateNewOAuthUser', {
-		identity: serviceData,
-		serviceName,
-		user: fullUser,
-	});
-
-	return user;
 };

@@ -1,7 +1,7 @@
 import type { StoryFn, Meta } from '@storybook/react-webpack5';
 import { action } from 'storybook/actions';
 
-import CreateFirstMemberPage from './CreateFirstMemberPage';
+import CreateFirstMemberPage from './CreateFirstMemberPage.js';
 
 export default {
 	title: 'pages/CreateFirstMemberPage',

@@ -5,12 +5,10 @@ import type { RadioDropDownItem, RadioDropDownOnSelected, RadioDropDownSetData }
 export const useRadioToggle = (setData: RadioDropDownSetData): RadioDropDownOnSelected => {
 	const onSelected = useCallback(
 		(item: RadioDropDownItem) => {
-			setData((prevState) => {
-				prevState.items.forEach((currentItem) => {
-					currentItem.checked = currentItem === item;
-				});
-				return { ...prevState };
-			});
+			setData((prevState) => ({
+				...prevState,
+				items: prevState.items.map((currentItem) => ({ ...currentItem, checked: currentItem.id === item.id })),
+			}));
 		},
 		[setData],
 	);

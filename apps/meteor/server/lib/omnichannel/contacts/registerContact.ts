@@ -21,6 +21,28 @@ type RegisterContactProps = {
 	};
 };
 
+async function renameVisitorRooms(rooms: IOmnichannelRoom[], name: string) {
+	for (const { _id: rid } of rooms) {
+		const responses = await Promise.all([
+			Rooms.setFnameById(rid, name),
+			LivechatInquiry.setNameByRoomId(rid, name),
+			Subscriptions.updateDisplayNameByRoomId(rid, name),
+		]);
+
+		if (responses[0]?.modifiedCount) {
+			void notifyOnRoomChangedById(rid);
+		}
+
+		if (responses[1]?.modifiedCount) {
+			void notifyOnLivechatInquiryChangedByRoom(rid, 'updated', { name });
+		}
+
+		if (responses[2]?.modifiedCount) {
+			void notifyOnSubscriptionChangedByRoomId(rid);
+		}
+	}
+}
+
 export async function registerContact(
 	{ token, name, email = '', phone, username, customFields = {}, contactManager }: RegisterContactProps,
 	userId: string,
@@ -90,31 +112,9 @@ export async function registerContact(
 	await LivechatVisitors.updateOne({ _id: visitorId }, updateUser);
 
 	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId });
-	const rooms: IOmnichannelRoom[] = await LivechatRooms.findByVisitorId(visitorId, {}, extraQuery).toArray();
+	const rooms: IOmnichannelRoom[] = await LivechatRooms.findByVisitorId(visitorId as string, {}, extraQuery).toArray();
 
-	if (rooms?.length) {
-		for (const room of rooms) {
-			const { _id: rid } = room;
-
-			const responses = await Promise.all([
-				Rooms.setFnameById(rid, name),
-				LivechatInquiry.setNameByRoomId(rid, name),
-				Subscriptions.updateDisplayNameByRoomId(rid, name),
-			]);
-
-			if (responses[0]?.modifiedCount) {
-				void notifyOnRoomChangedById(rid);
-			}
-
-			if (responses[1]?.modifiedCount) {
-				void notifyOnLivechatInquiryChangedByRoom(rid, 'updated', { name });
-			}
-
-			if (responses[2]?.modifiedCount) {
-				void notifyOnSubscriptionChangedByRoomId(rid);
-			}
-		}
-	}
+	await renameVisitorRooms(rooms, name);
 
 	return visitorId as string;
 }

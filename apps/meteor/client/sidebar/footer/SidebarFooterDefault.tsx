@@ -7,29 +7,38 @@ import { useMemo } from 'react';
 
 import { SidebarFooterWatermark } from './SidebarFooterWatermark';
 
+const sidebarFooterStyle = css`
+	& img {
+		max-width: 100%;
+		height: 100%;
+	}
+
+	& a:any-link {
+		color: ${Palette.text['font-info']};
+	}
+`;
+
 const SidebarFooterDefault = () => {
 	const theme = useThemeMode();
 	const logo = useSetting(theme === 'dark' ? 'Layout_Sidenav_Footer_Dark' : 'Layout_Sidenav_Footer', '').trim();
 
 	const dangerousLogo = useMemo(() => ({ __html: DOMPurify.sanitize(logo) }), [logo]);
 
-	const sidebarFooterStyle = css`
-		& img {
-			max-width: 100%;
-			height: 100%;
-		}
-
-		& a:any-link {
-			color: ${Palette.text['font-info']};
-		}
-	`;
-
 	return (
-		<Footer>
+		<>
 			<SidebarDivider />
-			<Box paddingBlock={12} height='x48' width='auto' className={sidebarFooterStyle} dangerouslySetInnerHTML={dangerousLogo} />
-			<SidebarFooterWatermark />
-		</Footer>
+			<Footer>
+				<Box
+					paddingBlockStart='x4'
+					paddingBlockEnd='x12'
+					height='x40'
+					width='auto'
+					className={sidebarFooterStyle}
+					dangerouslySetInnerHTML={dangerousLogo}
+				/>
+				<SidebarFooterWatermark />
+			</Footer>
+		</>
 	);
 };
 

@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { act, renderHook } from '@testing-library/react';
 
-import { useRevealDeviceLabels } from './useRevealDeviceLabels';
+import { useRevealDeviceLabels } from './useRevealDeviceLabels.js';
 
 const stop = jest.fn();
 const getUserMedia = jest.fn();
@@ -20,7 +20,7 @@ beforeEach(() => {
 
 const mic = (label: string) => ({ deviceId: 'yeti', kind: 'audioinput', label, groupId: 'usb' }) as MediaDeviceInfo;
 
-const renderReveal = () =>
+const mountReveal = () =>
 	renderHook(() => useRevealDeviceLabels(), {
 		wrapper: mockAppRoot()
 			.withMicrophonePermissionState({ state: 'granted' } as PermissionStatus)
@@ -28,7 +28,7 @@ const renderReveal = () =>
 	}).result.current;
 
 it('asks nothing once the devices are named', async () => {
-	const reveal = renderReveal();
+	const reveal = mountReveal();
 
 	await act(() => reveal(['audioinput'], [mic('Yeti Stereo Microphone')]));
 
@@ -36,7 +36,7 @@ it('asks nothing once the devices are named', async () => {
 });
 
 it('opens and releases the microphone when the devices are unnamed', async () => {
-	const reveal = renderReveal();
+	const reveal = mountReveal();
 
 	await act(() => reveal(['audioinput', 'audiooutput'], [mic('')]));
 

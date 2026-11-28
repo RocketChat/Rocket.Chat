@@ -2,10 +2,11 @@ import type { UserStatus } from '@rocket.chat/core-typings';
 
 import 'highlight.js/styles/github.css';
 import { sdk } from '../lib/SDKClient';
+import { forgetOtherUsersSavedUploads } from '../lib/chats/uploads';
 import { onLoggedIn } from '../lib/loggedIn';
 import { clearStoredCredentials, ensureConnectedAndAuthenticated, getDdpSdk, isAuthError } from '../lib/sdk/ddpSdk';
 import { STORAGE_KEYS, getStoredItem } from '../lib/sdk/storage';
-import { userIdStore } from '../lib/user';
+import { useUserIdStore } from '../lib/user';
 import { removeLocalUserData, synchronizeUserData } from '../lib/userData';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 import { Users } from '../stores';
@@ -23,7 +24,7 @@ const runUserDataSync = async (uid: string) => {
 	// over DDPSDK. The server rejects that sub with "not-allowed" until
 	// DDPSDK has completed loginWithToken on its own socket. Both
 	// runUserDataSync and ensureConnectedAndAuthenticated are subscribers
-	// of userIdStore, so without sequencing the sub races the auth and
+	// of useUserIdStore, so without sequencing the sub races the auth and
 	// hits the rejection on every re-login. Await the SDK auth here so
 	// the sub fires authenticated.
 	const tokenBeforeSync = getStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
@@ -63,7 +64,7 @@ const runUserDataSync = async (uid: string) => {
 	emitStatusChange(user.status);
 };
 
-// Both `onLoggedIn` (the DDP SDK account's login event) and `userIdStore.subscribe` fire for the same uid on a
+// Both `onLoggedIn` (the DDP SDK account's login event) and `useUserIdStore.subscribe` fire for the same uid on a
 // successful login. runUserDataSync calls userSetUtcOffset which is
 // rate-limited on CI/prod, so without a shared guard the second call
 // returns 400 too-many-requests and downstream REST calls (sessions/list
@@ -77,7 +78,7 @@ const runUserDataSync = async (uid: string) => {
 let lastSyncedUid: string | undefined;
 const syncOnce = (uid: string | undefined): void => {
 	// Reset on logout so a later login (same uid or another) runs a fresh sync. A logout clears the stored token and
-	// sets `userIdStore` to undefined without going through the account's logout event, so without this branch
+	// sets `useUserIdStore` to undefined without going through the account's logout event, so without this branch
 	// lastSyncedUid stays set, the next login is deduped and the page stays on PageLoading.
 	if (!uid) {
 		lastSyncedUid = undefined;
@@ -92,23 +93,23 @@ const syncOnce = (uid: string | undefined): void => {
 };
 
 onLoggedIn(() => {
-	syncOnce(userIdStore.getState());
+	syncOnce(useUserIdStore.getState());
 });
 
-userIdStore.subscribe((uid) => {
+useUserIdStore.subscribe((uid) => {
 	syncOnce(uid);
 });
 
-syncOnce(userIdStore.getState());
+syncOnce(useUserIdStore.getState());
 
 getDdpSdk().account.onLogout(() => {
 	lastSyncedUid = undefined;
 });
 
-Users.use.subscribe(() => {
-	const uid = userIdStore.getState();
+Users.useStore.subscribe(() => {
+	const uid = useUserIdStore.getState();
 	if (!uid) return;
-	const user = Users.use.getState().get(uid);
+	const user = Users.useStore.getState().get(uid);
 	if (!user) return;
 	emitStatusChange(user.status);
 });
@@ -118,12 +119,15 @@ getDdpSdk().account.onLogout(() => {
 	status = undefined;
 });
 
+// Follows the app's user rather than the account's logout, which a session refused while resuming never reaches.
+useUserIdStore.subscribe((uid) => forgetOtherUsersSavedUploads(uid));
+
 // Session-resume failure (expired stored token on page load): Meteor has already
 // cleared Meteor.loginToken before this module runs, userId stays null, and no
 // Accounts.onLogout callback fires for this scenario. Detect via the combination
 // of missing token and missing uid at module init and clean up residual keys
-// (e.g. E2EE public_key / private_key). Do NOT subscribe to userIdStore for this —
+// (e.g. E2EE public_key / private_key). Do NOT subscribe to useUserIdStore for this —
 // the valid-session resume path is async and would clobber a valid token mid-flight.
-if (!userIdStore.getState() && localStorage.getItem('Meteor.loginToken') === null) {
+if (!useUserIdStore.getState() && localStorage.getItem('Meteor.loginToken') === null) {
 	removeLocalUserData();
 }

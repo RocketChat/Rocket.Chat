@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react';
 
-import NewAccountForm from './NewAccountForm';
+import NewAccountForm from './NewAccountForm.js';
 
 it('renders without crashing', () => {
-	render(
+	const { container } = render(
 		<NewAccountForm
 			validateEmail={() => undefined}
 			validatePassword={() => undefined}
@@ -11,4 +11,6 @@ it('renders without crashing', () => {
 			onSubmit={() => undefined}
 		/>,
 	);
+
+	expect(container).not.toBeEmptyDOMElement();
 });

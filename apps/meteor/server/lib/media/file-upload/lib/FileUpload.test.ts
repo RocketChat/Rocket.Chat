@@ -1,10 +1,10 @@
 import { once } from 'node:events';
 import { PassThrough, Readable } from 'node:stream';
 import { text } from 'node:stream/consumers';
-import { before, beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { createFakeMessageWithAttachment } from '../../../../../tests/mocks/data';
@@ -15,12 +15,6 @@ const settingsGetMap = new Map();
 const messagesModelStub = {
 	find: sinon.stub(),
 };
-const usersModelStub = {
-	findOneByIdAndLoginToken: sinon.stub(),
-};
-const subscriptionsModelStub = {
-	findOneByRoomIdAndUserId: sinon.stub(),
-};
 const validateAndDecodeJWTStub = sinon.stub();
 const systemLoggerStub = {
 	error: sinon.stub(),
@@ -29,36 +23,35 @@ const roomCoordinatorStub = {
 	getRoomDirectives: sinon.stub(),
 };
 
-const { FileUpload, FileUploadClass } = proxyquire.noCallThru().load('./FileUpload', {
-	'@rocket.chat/models': {
-		Messages: messagesModelStub,
-		Users: usersModelStub,
-		Subscriptions: subscriptionsModelStub,
-	},
-	'meteor/check': sinon.stub(),
-	'meteor/meteor': sinon.stub(),
-	'sharp': sinon.stub(),
-	'stream-buffers': sinon.stub(),
-	'@rocket.chat/tools': sinon.stub(),
-	'../../../i18n': sinon.stub(),
-	'../../../logger/system': { SystemLogger: systemLoggerStub },
-	'../../../rooms/roomCoordinator': { roomCoordinator: roomCoordinatorStub },
-	'../../../../ufs': sinon.stub(),
-	'../../../../ufs/ufs-methods': sinon.stub(),
-	'../../../../settings': { settings: settingsStub },
-	'../../../../../lib/mimeTypes': sinon.stub(),
-	'../../../utils/getURL': { getURL: sinon.stub() },
-	'../../../utils/lib/JWTHelper': {
-		validateAndDecodeJWT: validateAndDecodeJWTStub,
-		generateJWT: sinon.stub(),
-	},
-	'../../../utils/restrictions': sinon.stub(),
-	'../../../../api/lib/MultipartUploadHandler': sinon.stub(),
-	'@rocket.chat/account-utils': { hashLoginToken: sinon.stub().callsFake((token) => `hashed_${token}`) },
+let FileUpload: any;
+let FileUploadClass: any;
+
+before(async () => {
+	mock.module('sharp', { exports: { default: sinon.stub() } });
+	mock.module('stream-buffers', { exports: { default: sinon.stub() } });
+	mock.module('@rocket.chat/tools', { exports: {} });
+	mock.module('../../../i18n', { exports: {} });
+	mock.module('../../../logger/system', { exports: { SystemLogger: systemLoggerStub } });
+	mock.module('../../../rooms/roomCoordinator', { exports: { roomCoordinator: roomCoordinatorStub } });
+	mock.module('../../../../ufs', { exports: {} });
+	mock.module('../../../../ufs/ufs-methods', { exports: {} });
+	mock.module('../../../../settings', { exports: { settings: settingsStub } });
+	mock.module('../../../../../lib/mimeTypes', { exports: {} });
+	mock.module('../../../utils/getURL', { exports: { getURL: sinon.stub() } });
+	mock.module('../../../utils/lib/JWTHelper', {
+		exports: { validateAndDecodeJWT: validateAndDecodeJWTStub, generateJWT: sinon.stub() },
+	});
+	mock.module('../../../utils/restrictions', { exports: {} });
+	mock.module('../../../../api/lib/MultipartUploadHandler', { exports: {} });
+	mock.module('@rocket.chat/account-utils', {
+		exports: { hashLoginToken: sinon.stub().callsFake((token) => `hashed_${token}`) },
+	});
+	({ FileUpload, FileUploadClass } = await import('./FileUpload'));
 });
 
 describe('FileUpload', () => {
 	before(() => {
+		mockModel('Messages', messagesModelStub);
 		new FileUploadClass({ name: 'fakeStorage:Uploads', model: fakeStorageModel, store: {} });
 		settingsGetMap.set('FileUpload_Storage_Type', 'fakeStorage');
 		settingsStub.get.callsFake((settingName) => settingsGetMap.get(settingName));
@@ -68,8 +61,6 @@ describe('FileUpload', () => {
 		messagesModelStub.find.reset();
 		fakeStorageModel.findOneById.reset();
 		fakeStorageModel.deleteFile.reset();
-		usersModelStub.findOneByIdAndLoginToken.reset();
-		subscriptionsModelStub.findOneByRoomIdAndUserId.reset();
 		validateAndDecodeJWTStub.reset();
 		systemLoggerStub.error.reset();
 		roomCoordinatorStub.getRoomDirectives.reset();

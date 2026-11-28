@@ -11,16 +11,19 @@ import {
 	FieldError,
 	IconButton,
 } from '@rocket.chat/fuselage';
-import { GenericModal, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
+import {
+	GenericModal,
+	ContextualbarScrollableContent,
+	ContextualbarFooter,
+	useEndpointMutation,
+	useEndpointUploadMutation,
+	useSingleFileInput,
+} from '@rocket.chat/ui-client';
 import { useSetModal, useAbsoluteUrl, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
 import { useCallback, useId, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
-import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutation';
-import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
 export type EditCustomEmojiProps = {
 	close: () => void;
@@ -92,7 +95,9 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 		}
 
 		const formData = new FormData();
-		emojiFile && formData.append('emoji', emojiFile);
+		if (emojiFile) {
+			formData.append('emoji', emojiFile);
+		}
 		formData.append('_id', _id);
 		formData.append('name', name);
 		formData.append('aliases', aliases);

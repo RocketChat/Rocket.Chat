@@ -1,7 +1,14 @@
 {
 	"name": "@rocket.chat/ui-avatar",
-	"version": "31.0.0",
+	"version": "33.0.0-rc.0",
 	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
@@ -31,7 +38,7 @@
 		"typescript": "~7.0.2"
 	},
 	"peerDependencies": {
-		"@rocket.chat/fuselage": "*",
+		"@rocket.chat/fuselage": "2.0.0-rc.0",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"react": "*"
 	},

@@ -1,7 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 const sandbox = sinon.createSandbox();
@@ -23,34 +23,32 @@ const modelsMock = {
 	},
 };
 
-const { createDirectMessage } = p.noCallThru().load('./createDirectMessage', {
-	'meteor/meteor': {
-		Meteor: {
-			userId: sandbox.stub(),
-			methods: sandbox.stub(),
+let createDirectMessage: any;
+
+before(async () => {
+	mock.module('@rocket.chat/federation-matrix', { exports: { validateFederatedUsername: validateFederatedUsernameMock } });
+	mock.module('../../lib/authorization/hasPermission', { exports: { hasPermissionAsync: hasPermissionMock } });
+	mock.module('../../lib/callbacks', { exports: { callbacks: { run: sandbox.stub() } } });
+	mock.module('../../lib/rooms/createRoom', { exports: { createRoom: createRoomMock } });
+	mock.module('../../services/federation/utils', {
+		exports: {
+			isFederationEnabled: isFederationEnabledMock,
+			isXMPPServerEnabled: isXMPPServerEnabledMock,
 		},
-	},
-	'meteor/check': {
-		check: sandbox.stub(),
-		Match: { Optional: sandbox.stub() },
-	},
-	'@rocket.chat/models': modelsMock,
-	'@rocket.chat/federation-matrix': { validateFederatedUsername: validateFederatedUsernameMock },
-	'../../lib/RateLimiter': { RateLimiterClass: { limitMethod: sandbox.stub() } },
-	'../../lib/authorization/hasPermission': { hasPermissionAsync: hasPermissionMock },
-	'../../lib/callbacks': { callbacks: { run: sandbox.stub() } },
-	'../../lib/rooms/createRoom': { createRoom: createRoomMock },
-	'../../services/federation/utils': {
-		isFederationEnabled: isFederationEnabledMock,
-		isXMPPServerEnabled: isXMPPServerEnabledMock,
-	},
-	'../../settings': { settings: { get: settingsGetMock } },
+	});
+	mock.module('../../settings', { exports: { settings: { get: settingsGetMock } } });
+	({ createDirectMessage } = await import('./createDirectMessage'));
 });
 
 const me = { _id: 'me', username: 'me' };
 const other = { _id: 'other', username: 'Other' };
 
 describe('createDirectMessage', () => {
+	before(() => {
+		mockModel('Users', modelsMock.Users);
+		mockModel('Rooms', modelsMock.Rooms);
+	});
+
 	beforeEach(() => {
 		sandbox.reset();
 		modelsMock.Users.findOneById.resolves(me);

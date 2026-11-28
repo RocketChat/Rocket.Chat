@@ -1,7 +1,6 @@
 import type { AtLeast, ILivechatCustomField } from '@rocket.chat/core-typings';
 
 import { i18n } from '../../../../lib/i18n';
-import { trim } from '../../../../lib/utils/stringUtils';
 
 export function validateCustomFields(
 	allowedCustomFields: AtLeast<ILivechatCustomField, '_id'>[],
@@ -14,13 +13,15 @@ export function validateCustomFields(
 	const validValues: Record<string, string> = {};
 
 	for (const cf of allowedCustomFields) {
-		if (!customFields.hasOwnProperty(cf._id)) {
+		if (!Object.hasOwn(customFields, cf._id)) {
 			if (cf.required && !ignoreValidationErrors) {
 				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label || cf._id }));
 			}
 			continue;
 		}
-		const cfValue: string = trim(customFields[cf._id]);
+		const rawValue = customFields[cf._id];
+		// oxlint-disable-next-line typescript/no-base-to-string -- TODO: reject non-string values on the next major; clients still send arrays (['VIP'] is saved as 'VIP')
+		const cfValue: string = rawValue ? String(rawValue).trim() : '';
 
 		if (!cfValue || typeof cfValue !== 'string') {
 			if (cf.required && !ignoreValidationErrors) {

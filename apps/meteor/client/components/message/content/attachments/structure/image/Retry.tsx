@@ -6,17 +6,18 @@ import ImageBox from './ImageBox';
 
 export type RetryProps = { retry: () => void };
 
+const clickable = css`
+	cursor: pointer;
+	background: ${Palette.surface['surface-tint']};
+
+	&:hover,
+	&:focus {
+		background: ${Palette.surface['surface-hover']};
+	}
+`;
+
 const Retry = ({ retry }: RetryProps) => {
 	const { t } = useTranslation();
-	const clickable = css`
-		cursor: pointer;
-		background: ${Palette.surface['surface-tint']};
-
-		&:hover,
-		&:focus {
-			background: ${Palette.surface['surface-hover']};
-		}
-	`;
 	return (
 		<ImageBox className={clickable} onClick={retry} size='x160' color='hint'>
 			<Icon name='refresh' size='x64' />

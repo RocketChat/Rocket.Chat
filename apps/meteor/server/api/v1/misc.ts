@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IDirectoryChannelResult, IDirectoryUserResult, IRoom, IUser } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import { Settings, Users, WorkspaceCredentials } from '@rocket.chat/models';
 import {
 	ajv,
@@ -21,12 +22,12 @@ import {
 import type { MeApiSuccessResponse } from '@rocket.chat/rest-typings';
 import { escapeHTML } from '@rocket.chat/tools';
 import EJSON from 'ejson';
-import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
 import { passwordPolicy } from '../../lib/auth/passwordPolicy';
 import { i18n } from '../../lib/i18n';
 import { notifyOnSettingChangedById } from '../../lib/notifyListener';
+import { checkDdpRateLimit } from '../../lib/utils/checkDdpRateLimit';
 import { getBaseUserFields } from '../../lib/utils/functions/getBaseUserFields';
 import { isSMTPConfigured } from '../../lib/utils/functions/isSMTPConfigured';
 import { getURL } from '../../lib/utils/getURL';
@@ -219,7 +220,8 @@ API.v1.get(
 	},
 	async function action() {
 		const { type, icon } = this.queryParams;
-		let { channel, name } = this.queryParams;
+		const { channel } = this.queryParams;
+		let { name } = this.queryParams;
 		if (!settings.get('API_Enable_Shields')) {
 			throw new ClientSafeError('error-endpoint-disabled', 'This endpoint is disabled', {
 				route: '/api/v1/shield.svg',
@@ -262,7 +264,7 @@ API.v1.get(
 
 				text = `#${channel}`;
 				break;
-			case 'user':
+			case 'user': {
 				if (settings.get('API_Shield_user_require_auth') && !this.user) {
 					return API.v1.failure('You must be logged in to do this.');
 				}
@@ -276,19 +278,20 @@ API.v1.get(
 				}
 
 				switch (user.status) {
-					case 'online':
+					case UserStatus.ONLINE:
 						backgroundColor = '#1fb31f';
 						break;
-					case 'away':
+					case UserStatus.AWAY:
 						backgroundColor = '#dc9b01';
 						break;
-					case 'busy':
+					case UserStatus.BUSY:
 						backgroundColor = '#bc2031';
 						break;
-					case 'offline':
+					case UserStatus.OFFLINE:
 						backgroundColor = '#a5a1a1';
 				}
 				break;
+			}
 			default:
 				text = i18n.t('Join_Chat').toUpperCase();
 		}
@@ -299,7 +302,6 @@ API.v1.get(
 		const width = leftSize + rightSize;
 		const height = 20;
 
-		channel = escapeHTML(channel);
 		text = escapeHTML(text);
 		name = escapeHTML(name);
 
@@ -331,7 +333,7 @@ API.v1.get(
 				</svg>
 			`
 			.trim()
-			.replace(/\>[\s]+\</gm, '><');
+			.replace(/>[\s]+</gm, '><');
 
 		return {
 			statusCode: 200 as const,
@@ -655,13 +657,7 @@ API.v1.post(
 		};
 
 		try {
-			DDPRateLimiter._increment(rateLimiterInput);
-			const rateLimitResult = DDPRateLimiter._check(rateLimiterInput);
-			if (!rateLimitResult.allowed) {
-				throw new ClientSafeError('too-many-requests', DDPRateLimiter.getErrorMessage(rateLimitResult), {
-					timeToReset: rateLimitResult.timeToReset,
-				});
-			}
+			checkDdpRateLimit(rateLimiterInput);
 
 			return API.v1.success(mountResult({ id, result: await Meteor.callAsync(method, ...params) }));
 		} catch (err) {
@@ -706,14 +702,7 @@ API.v1.post(
 		};
 
 		try {
-			DDPRateLimiter._increment(rateLimiterInput);
-
-			const rateLimitResult = DDPRateLimiter._check(rateLimiterInput);
-			if (!rateLimitResult.allowed) {
-				throw new ClientSafeError('too-many-requests', DDPRateLimiter.getErrorMessage(rateLimitResult), {
-					timeToReset: rateLimitResult.timeToReset,
-				});
-			}
+			checkDdpRateLimit(rateLimiterInput);
 
 			return API.v1.success(mountResult({ id, result: await Meteor.callAsync(method, ...params) }));
 		} catch (err) {

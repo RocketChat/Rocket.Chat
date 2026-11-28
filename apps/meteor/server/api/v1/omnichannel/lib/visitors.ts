@@ -118,6 +118,7 @@ export async function searchChats({
 		limit: count,
 	};
 
+	// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this aggregation as any
 	const [total] = await LivechatRooms.findRoomsByVisitorIdAndMessageWithCriteria({
 		visitorId,
 		open: closedChatsOnly !== 'true',
@@ -135,6 +136,7 @@ export async function searchChats({
 		source,
 	});
 
+	// oxlint-disable-next-line typescript/no-unsafe-call -- ILivechatRoomsModel types this aggregation as any
 	const history = await cursor.toArray();
 
 	return {

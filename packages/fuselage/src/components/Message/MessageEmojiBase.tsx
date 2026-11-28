@@ -1,6 +1,7 @@
 import type { HTMLAttributes } from 'react';
 
 export type MessageEmojiBaseProps = {
+	/** The emoji sprite's class name, added to the element as is. */
 	name: string;
 	image?: string;
 } & HTMLAttributes<HTMLSpanElement>;

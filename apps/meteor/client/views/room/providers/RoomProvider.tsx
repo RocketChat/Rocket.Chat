@@ -7,11 +7,12 @@ import ComposerPopupProvider from './ComposerPopupProvider';
 import RoomToolboxProvider from './RoomToolboxProvider';
 import UserCardProvider from './UserCardProvider';
 import { useRedirectOnSettingsChanged } from './hooks/useRedirectOnSettingsChanged';
+import { useSubscriptionFieldsOfRoom } from './hooks/useSubscriptionFieldsOfRoom';
 import { useUsersNameChanged } from './hooks/useUsersNameChanged';
 import { omit } from '../../../../lib/utils/omit';
 import { useFireGlobalEvent } from '../../../hooks/useFireGlobalEvent';
 import { useRoomRolesQuery } from '../../../hooks/useRoomRolesQuery';
-import { RoomHistoryManager, useRoomHistoryState } from '../../../lib/RoomHistoryManager';
+import { RoomHistoryManager } from '../../../lib/RoomHistoryManager';
 import { RoomManager } from '../../../lib/RoomManager';
 import { UserAction } from '../../../lib/UserAction';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
@@ -20,7 +21,7 @@ import { Rooms, Subscriptions } from '../../../stores';
 import RoomNotFound from '../RoomNotFound';
 import RoomSkeleton from '../RoomSkeleton';
 import type { IRoomWithFederationOriginalName } from '../contexts/RoomContext';
-import { RoomContext } from '../contexts/RoomContext';
+import { RoomContext, RoomSubscriptionContext } from '../contexts/RoomContext';
 
 export type RoomProviderProps = {
 	children: ReactNode;
@@ -45,15 +46,18 @@ const RoomProvider = ({ rid, children, embedded }: RoomProviderProps) => {
 	// site. A room in a panel beside a call has no use for it — `Header` reads exactly these two flags, and with
 	// the setting on the panel would have grown the full room header.
 	const embeddedLayout = useMemo(() => ({ ...layout, isEmbedded: true, showTopNavbarEmbeddedLayout: false }), [layout]);
-	const room = Rooms.use((state) => state.get(rid));
+	const room = Rooms.useStore((state) => state.get(rid));
 
 	const messageJumpParam = useSearchParameter('msg');
 
-	const subscritionFromLocal = Subscriptions.use((state) => state.find((record) => record.rid === rid));
+	const subscritionFromLocal = Subscriptions.useStore((state) => state.find((record) => record.rid === rid));
 
 	useRedirectOnSettingsChanged(subscritionFromLocal);
 
 	useUsersNameChanged();
+
+	const subscriptionFieldsOfRoom = useSubscriptionFieldsOfRoom(subscritionFromLocal);
+	const subscribed = !!subscritionFromLocal;
 
 	const pseudoRoom: IRoomWithFederationOriginalName | null = useMemo(() => {
 		if (!room) {
@@ -61,16 +65,12 @@ const RoomProvider = ({ rid, children, embedded }: RoomProviderProps) => {
 		}
 
 		return {
-			...subscritionFromLocal,
+			...subscriptionFieldsOfRoom,
 			...room,
 			name: roomCoordinator.getRoomName(room.t, room),
 			federationOriginalName: room.name,
 		};
-	}, [room, subscritionFromLocal]);
-
-	const hasMorePreviousMessages = useRoomHistoryState(rid, (state) => state.hasMore);
-	const hasMoreNextMessages = useRoomHistoryState(rid, (state) => state.hasMoreNext);
-	const isLoadingMoreMessages = useRoomHistoryState(rid, (state) => state.isLoading);
+	}, [room, subscriptionFieldsOfRoom]);
 
 	const context = useMemo((): ContextType<typeof RoomContext> => {
 		if (!pseudoRoom) {
@@ -80,12 +80,9 @@ const RoomProvider = ({ rid, children, embedded }: RoomProviderProps) => {
 		return {
 			rid,
 			room: pseudoRoom,
-			subscription: subscritionFromLocal ?? undefined,
-			hasMorePreviousMessages,
-			hasMoreNextMessages,
-			isLoadingMoreMessages,
+			subscribed,
 		};
-	}, [hasMoreNextMessages, hasMorePreviousMessages, isLoadingMoreMessages, pseudoRoom, rid, subscritionFromLocal]);
+	}, [pseudoRoom, rid, subscribed]);
 
 	const { mutate: fireRoomOpenedEvent } = useFireGlobalEvent('room-opened', rid);
 
@@ -114,8 +111,6 @@ const RoomProvider = ({ rid, children, embedded }: RoomProviderProps) => {
 	// Prefetch room roles alongside history so message rendering doesn't trigger a late fetch.
 	useRoomRolesQuery(rid, { enabled: !!room });
 
-	const subscribed = !!subscritionFromLocal;
-
 	useEffect(() => {
 		if (!subscribed) {
 			return;
@@ -124,19 +119,29 @@ const RoomProvider = ({ rid, children, embedded }: RoomProviderProps) => {
 		return UserAction.addStream(rid);
 	}, [rid, subscribed]);
 
+	// Built once per room value: a subscription update re-renders this provider, and recreating the tree would
+	// re-render the toolbox and every provider below it with it.
+	const providers = useMemo(
+		() =>
+			pseudoRoom && (
+				<RoomToolboxProvider>
+					<ImageGalleryProvider>
+						<UserCardProvider>
+							<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
+						</UserCardProvider>
+					</ImageGalleryProvider>
+				</RoomToolboxProvider>
+			),
+		[pseudoRoom, children],
+	);
+
 	if (!pseudoRoom) {
 		return !room && !subscritionFromLocal ? <RoomNotFound /> : <RoomSkeleton />;
 	}
 
 	const roomTree = (
 		<RoomContext.Provider value={context}>
-			<RoomToolboxProvider>
-				<ImageGalleryProvider>
-					<UserCardProvider>
-						<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
-					</UserCardProvider>
-				</ImageGalleryProvider>
-			</RoomToolboxProvider>
+			<RoomSubscriptionContext.Provider value={subscritionFromLocal ?? undefined}>{providers}</RoomSubscriptionContext.Provider>
 		</RoomContext.Provider>
 	);
 

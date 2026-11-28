@@ -14,7 +14,7 @@ export class OAuthEEManager {
 		user: IUser,
 		identity: Record<string, any>,
 		groupClaimName: string,
-		channelsMap: Record<string, any> | undefined,
+		channelsMap: Record<string, unknown> | undefined,
 		channelsAdmin: string,
 	): Promise<void> {
 		if (channelsMap && user && identity && groupClaimName) {
@@ -26,13 +26,14 @@ export class OAuthEEManager {
 				return;
 			}
 
-			for await (const ssoGroup of Object.keys(channelsMap)) {
+			for (const ssoGroup of Object.keys(channelsMap)) {
 				if (typeof ssoGroup === 'string') {
-					let channels = channelsMap[ssoGroup];
-					if (!Array.isArray(channels)) {
-						channels = [channels];
-					}
-					for await (const channel of channels) {
+					const mappedChannels = channelsMap[ssoGroup];
+					const channels: unknown[] = Array.isArray(mappedChannels) ? mappedChannels : [mappedChannels];
+					for (const channel of channels) {
+						if (typeof channel !== 'string') {
+							continue;
+						}
 						const name = await getValidRoomName(channel.trim(), undefined, { allowDuplicates: true });
 						let room = await Rooms.findOneByNonValidatedName(name);
 						if (!room) {
@@ -86,7 +87,7 @@ export class OAuthEEManager {
 
 		const filteredRoles = baseRoles.filter((val) => val !== 'offline_access' && val !== 'uma_authorization');
 		const validRoleList = [];
-		for await (const role of filteredRoles) {
+		for (const role of filteredRoles) {
 			if (await Roles.findOneByIdOrName(role)) {
 				validRoleList.push(role);
 			}

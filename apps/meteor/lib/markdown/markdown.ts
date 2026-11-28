@@ -1,9 +1,9 @@
+/* oxlint-disable typescript/no-unsafe-call, typescript/no-unsafe-return -- the legacy markdown parser is untyped; it will be typed in a separate change */
 /*
  * Markdown is a named function that will parse markdown syntax
  * @param {Object} message - The message object
  */
 import { escapeHTML } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 
 import { filtered } from './parser/filtered/filtered';
 import { code } from './parser/original/code';
@@ -30,11 +30,8 @@ class MarkdownClass {
 	}
 
 	parseMessageNotEscaped(message: any) {
-		const options = {
-			rootUrl: Meteor.absoluteUrl(),
-		};
-
-		return parsers.original(message, options);
+		// links stay unparsed: unlike omitting the options, an empty object enables no link schemes
+		return parsers.original(message, {});
 	}
 
 	mountTokensBackRecursively(message: any, tokenList: any[], useHtml = true) {
@@ -65,7 +62,7 @@ class MarkdownClass {
 		return message;
 	}
 
-	code(message: any) {
+	code<T extends { html?: string }>(message: T) {
 		return code(message);
 	}
 }
@@ -81,4 +78,4 @@ export const createMarkdownMessageRenderer =
 		return parsers.original(message, options);
 	};
 
-export const createMarkdownNotificationRenderer = () => (message: any) => parsers.filtered(message);
+export const createMarkdownNotificationRenderer = () => (message: string) => parsers.filtered(message);

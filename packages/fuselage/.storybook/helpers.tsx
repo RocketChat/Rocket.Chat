@@ -34,9 +34,9 @@ export function PropsVariationSection<TComponent extends ComponentType<any>>({
 						<Box is='th' color='hint' fontScale='c1'>
 							{yVariation}
 						</Box>
-						{Object.values(xAxis).map((xProps, x) => (
+						{Object.entries(xAxis).map(([xVariation, xProps], x) => (
 							<Box key={x} is='td' margin='none' paddingBlock={8} paddingInline={16}>
-								<Box display='flex' alignItems='center' justifyContent='center'>
+								<Box display='flex' alignItems='center' justifyContent='center' data-variation={`${xVariation} ${yVariation}`}>
 									<Component {...common} {...(xProps as typeof common)} {...(yProps as typeof common)} />
 								</Box>
 							</Box>
@@ -47,6 +47,22 @@ export function PropsVariationSection<TComponent extends ComponentType<any>>({
 		</Box>
 	);
 }
+
+const inVariation = (word: string) => `[data-variation~='${word}'] *`;
+
+/** Forces, through `storybook-addon-pseudo-states`, the state each `PropsVariationSection` cell names. */
+export const variationPseudoStates = {
+	hover: inVariation('hover'),
+	active: inVariation('active'),
+	focus: inVariation('focus'),
+	focusWithin: inVariation('focus'),
+};
+
+/** Like `variationPseudoStates`, with focus shown as keyboard focus. */
+export const variationPseudoStatesWithFocusVisible = {
+	...variationPseudoStates,
+	focusVisible: inVariation('focus'),
+};
 
 export const exampleAvatar = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAA
 AAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8

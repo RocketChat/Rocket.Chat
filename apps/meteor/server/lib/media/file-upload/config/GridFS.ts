@@ -28,7 +28,7 @@ class ExtractRange extends stream.Transform {
 		this.bytes_read = 0;
 	}
 
-	override _transform(chunk: any, _enc: BufferEncoding, cb: TransformCallback) {
+	override _transform(chunk: Buffer, _enc: BufferEncoding, cb: TransformCallback) {
 		if (this.bytes_read > this.stop) {
 			// done reading
 			this.end();
@@ -101,7 +101,8 @@ const readFromGridFS = async function (
 		return;
 	}
 
-	const accept = (Array.isArray(req.headers['accept-encoding']) ? req.headers['accept-encoding'][0] : req.headers['accept-encoding']) || '';
+	const accept: string =
+		(Array.isArray(req.headers['accept-encoding']) ? req.headers['accept-encoding'][0] : req.headers['accept-encoding']) || '';
 
 	// Compress data using gzip
 	if (accept.match(/\bgzip\b/)) {
@@ -162,7 +163,9 @@ new FileUploadClass({
 		file = FileUpload.addExtensionTo(file);
 
 		res.setHeader('Content-Disposition', `${getContentDisposition(req)}; filename*=UTF-8''${encodeURIComponent(file.name || '')}`);
-		file.uploadedAt && res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
+		if (file.uploadedAt) {
+			res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
+		}
 		res.setHeader('Content-Type', file.type || 'application/octet-stream');
 		res.setHeader('Content-Length', file.size || 0);
 
@@ -181,7 +184,9 @@ new FileUploadClass({
 		file = FileUpload.addExtensionTo(file);
 
 		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file.name || '')}`);
-		file.uploadedAt && res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
+		if (file.uploadedAt) {
+			res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
+		}
 		res.setHeader('Content-Type', file.type || '');
 		res.setHeader('Content-Length', file.size || 0);
 

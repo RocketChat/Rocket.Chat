@@ -5,6 +5,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
 
 import { DDPSDK } from '../DDPSDK';
+import type { Subscription } from '../types/Subscription';
 import type {
 	APILegacy,
 	DPPLegacy,
@@ -151,16 +152,16 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 		return this.client.subscribe(topic, ...args).ready();
 	}
 
-	subscribeRoom(rid: string): Promise<unknown> {
-		return Promise.all([
+	subscribeRoom(rid: string): Promise<Subscription[]> {
+		return Promise.resolve([
 			this.stream('room-messages', rid, (...args) => this.ev.emit('message', args)),
 			this.stream('notify-room', `${rid}/typing`, (...args) => this.ev.emit('typing', args)),
 			this.stream('notify-room', `${rid}/deleteMessage`, (...args) => this.ev.emit('deleteMessage', args)),
 		]);
 	}
 
-	subscribeNotifyAll(): Promise<any> {
-		return Promise.all([
+	subscribeNotifyAll(): Promise<Subscription[]> {
+		return Promise.resolve([
 			// this.stream('notify-all', 'roles-change', (...args) => this.ev.emit('roles-change', args)),
 			// this.stream('notify-all', 'updateEmojiCustom', (...args) => this.ev.emit('updateEmojiCustom', args)),
 			// this.stream('notify-all', 'deleteEmojiCustom', (...args) => this.ev.emit('deleteEmojiCustom', args)),
@@ -169,8 +170,8 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 		]);
 	}
 
-	subscribeLoggedNotify(): Promise<any> {
-		return Promise.all([
+	subscribeLoggedNotify(): Promise<Subscription[]> {
+		return Promise.resolve([
 			this.stream('notify-logged', 'Users:NameChanged', (...args) => this.ev.emit('Users:NameChanged', args)),
 			this.stream('notify-logged', 'Users:Deleted', (...args) => this.ev.emit('Users:Deleted', args)),
 			this.stream('notify-logged', 'updateAvatar', (...args) => this.ev.emit('updateAvatar', args)),
@@ -181,8 +182,8 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 		]);
 	}
 
-	subscribeNotifyUser = (): Promise<any> => {
-		return Promise.all([
+	subscribeNotifyUser = (): Promise<Subscription[]> => {
+		return Promise.resolve([
 			this.stream('notify-user', `${this.account.uid}/message`, (...args) => this.ev.emit('user-message', args)),
 			this.stream('notify-user', `${this.account.uid}/notification`, (...args) => this.ev.emit('notification', args)),
 			this.stream('notify-user', `${this.account.uid}/rooms-changed`, (...args) => this.ev.emit('rooms-changed', args)),

@@ -1,13 +1,14 @@
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
-import { Box, Callout } from '@rocket.chat/fuselage';
 import {
 	ContextualbarBack,
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarDialog,
+	ContextualbarEmptyContent,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
+	FormSkeleton,
 	UserCardRole,
 	UserInfo,
 } from '@rocket.chat/ui-client';
@@ -18,7 +19,6 @@ import { useTranslation } from 'react-i18next';
 
 import UserInfoActions from './UserInfoActions';
 import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
-import { FormSkeleton } from '../../../../components/Skeleton';
 import UserInfoPhoneNumberList from '../../../../components/UserInfoPhoneNumberList';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { ReactiveUserStatusText } from '../../../../components/UserStatusText';
@@ -111,13 +111,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 				</ContextualbarContent>
 			)}
 
-			{isError && !user && (
-				<ContextualbarContent>
-					<Box paddingBlock={16}>
-						<Callout type='danger'>{t('User_not_found')}</Callout>
-					</Box>
-				</ContextualbarContent>
-			)}
+			{isError && !user && <ContextualbarEmptyContent icon='circle-exclamation' iconVariation='danger' title={t('User_not_found')} />}
 
 			{!isPending && user && (
 				<UserInfo

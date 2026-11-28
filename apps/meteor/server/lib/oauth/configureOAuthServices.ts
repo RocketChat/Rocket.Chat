@@ -1,14 +1,14 @@
 import { Users } from '@rocket.chat/models';
-import { Accounts } from 'meteor/accounts-base';
 import passport from 'passport';
 import type { Profile, DoneCallback } from 'passport';
 
 import { allowPassportOAuthMiddleware } from './allowPassportOAuthMiddleware';
 import type { OAuthServiceConfig } from './createOAuthServiceConfig';
-import { passportOAuthCallback } from './passportOAuthCallback';
+import { passportOAuthCallback, passportOAuthErrorCallback } from './passportOAuthCallback';
 import { removeOAuthRoutes } from './removeOAuthRoutes';
 import { oAuthRouter } from '../../configuration/configurePassport';
 import type { ICachedSettings } from '../../settings/CachedSettings';
+import { updateOrCreateUserFromExternalService } from '../auth/updateOrCreateUserFromExternalService';
 
 export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[], settings: ICachedSettings) => {
 	oauthServiceConfig.forEach((config) => {
@@ -33,21 +33,26 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 					profileFields: ['id', 'displayName', 'emails'],
 				},
 				async (accessToken: string, refreshToken: string, profile: Profile, done: DoneCallback) => {
-					const profileWithRaw = profile as Profile & { _json?: Record<string, unknown>; _raw?: string };
+					const profileWithRaw = profile as Profile & { _json?: Record<string, unknown>; _raw?: string; email?: string };
 					const { _json, _raw, ...restProfile } = profileWithRaw;
 
-					const user = await Accounts.updateOrCreateUserFromExternalService(
-						config.provider,
-						{
-							accessToken,
-							refreshToken,
-							name: profile.displayName,
-							...restProfile,
-							..._json,
-							email: profile?.emails?.[0]?.value,
-						},
-						{},
-					);
+					let user;
+					try {
+						user = await updateOrCreateUserFromExternalService(
+							config.provider,
+							{
+								accessToken,
+								refreshToken,
+								name: profile.displayName,
+								...restProfile,
+								..._json,
+								email: profile?.emails?.[0]?.value ?? restProfile.email,
+							},
+							{},
+						);
+					} catch (error) {
+						return done(error);
+					}
 
 					if (!user?.userId || typeof user?.userId !== 'string') {
 						return done(new Error('User not found'));
@@ -85,8 +90,9 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 		oAuthRouter.get(
 			`/_oauth/${config.provider}`,
 			allowPassportOAuthMiddleware(config.provider),
-			passport.authenticate(config.provider, { failureRedirect: '/login', failWithError: true, keepSessionInfo: true }),
+			passport.authenticate(config.provider, { failureRedirect: `${siteUrl}/login`, failWithError: true, keepSessionInfo: true }),
 			passportOAuthCallback(siteUrl),
+			passportOAuthErrorCallback(siteUrl),
 		);
 	});
 };

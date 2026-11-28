@@ -33,7 +33,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		await sleep(SETTLE_MS);
 	};
 
-	let otherUser: IUser;
+	let otherUser: TestUser<IUser>;
 	let otherCredentials: Credentials;
 
 	before((_t, done) => getCredentials(done));
@@ -390,7 +390,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		let lockedRoomId: IRoom['_id'];
 
 		before(async () => {
-			const room = await createRoom({ type: 'p', name: `abac-locked-member-${Date.now()}`, members: [otherUser.username!] });
+			const room = await createRoom({ type: 'p', name: `abac-locked-member-${Date.now()}`, members: [otherUser.username] });
 			lockedRoomId = room.body.group._id;
 			await setEnforcement(true);
 		});

@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react';
 
-import RegisterOfflineForm from './RegisterOfflineForm';
+import RegisterOfflineForm from './RegisterOfflineForm.js';
 
 it('renders without crashing', () => {
-	render(
+	const { container } = render(
 		<RegisterOfflineForm
 			termsHref=''
 			policyHref=''
@@ -13,4 +13,6 @@ it('renders without crashing', () => {
 			onSubmit={() => undefined}
 		/>,
 	);
+
+	expect(container).not.toBeEmptyDOMElement();
 });

@@ -47,5 +47,6 @@ export const twoFactorRequired = <TFunction extends (this: any, ...args: any) =>
 			await checkCodeForUser({ user: this.userId, connection: this.connection || undefined, options });
 		}
 
+		// oxlint-disable-next-line typescript/no-unsafe-return -- generic passthrough: the wrapped function's return type is only known through the final assertion
 		return fn.apply(this, args);
 	} as (this: ThisParameterType<TFunction>, ...args: Parameters<TFunction>) => ReturnType<TFunction>;

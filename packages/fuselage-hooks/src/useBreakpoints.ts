@@ -1,7 +1,7 @@
-import breakpointsTokens from '@rocket.chat/fuselage-tokens/dist/breakpoints.json';
+import breakpointsTokens from '@rocket.chat/fuselage-tokens/dist/breakpoints.json' with { type: 'json' };
 import { useMemo } from 'react';
 
-import { useMediaQueries } from './useMediaQueries';
+import { useMediaQueries } from './useMediaQueries.js';
 
 const breakpoints = Object.entries(breakpointsTokens)
 	.map(([name, { minViewportWidth }]) => ({
@@ -22,7 +22,7 @@ export const useBreakpoints = (unit: 'px' | 'em' = 'em'): string[] => {
 			() =>
 				breakpoints
 					.slice(1)
-					.map(({ minViewportWidth }) => `(min-width: ${unit === 'px' ? `${minViewportWidth}px` : `${minViewportWidth! / 16}em`})`),
+					.map(({ minViewportWidth }) => `(min-width: ${unit === 'px' ? `${minViewportWidth}px` : `${(minViewportWidth ?? 0) / 16}em`})`),
 			[unit],
 		),
 	);

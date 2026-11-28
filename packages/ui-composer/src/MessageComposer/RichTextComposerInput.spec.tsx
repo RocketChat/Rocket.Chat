@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import RichTextComposerInput from './RichTextComposerInput';
+import RichTextComposerInput from './RichTextComposerInput.js';
 
 const setup = (props: Record<string, unknown> = {}) =>
 	render(<RichTextComposerInput aria-label='Message' placeholder='Type a message...' {...props} />);

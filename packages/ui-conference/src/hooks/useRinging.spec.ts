@@ -1,8 +1,8 @@
 import { VIDEO_CONF_RINGING_WINDOW_MS } from '@rocket.chat/core-typings';
 import { act, renderHook } from '@testing-library/react';
 
-import type { RingingCandidate } from './useRinging';
-import { useIsRinging, useRinging } from './useRinging';
+import type { RingingCandidate } from './useRinging.js';
+import { useIsRinging, useRinging } from './useRinging.js';
 
 /** Named, so that what comes back can be identified rather than only counted. */
 type Candidate = RingingCandidate & { name?: string };

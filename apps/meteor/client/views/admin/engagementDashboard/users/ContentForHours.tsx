@@ -1,5 +1,5 @@
 import { ResponsiveBar } from '@nivo/bar';
-import { Box, Button, Chevron, Skeleton, Tooltip } from '@rocket.chat/fuselage';
+import { Button, Chevron, Skeleton, Tooltip } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
 import { format } from 'date-fns/format';
@@ -7,6 +7,8 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useHourlyChatActivity } from './useHourlyChatActivity';
+import ChartDateNavigation from '../layout/ChartDateNavigation';
+import ChartFrame from '../layout/ChartFrame';
 
 export type ContentForHoursProps = {
 	displacement: number;
@@ -44,73 +46,73 @@ const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, t
 
 	return (
 		<>
-			<Box display='flex' alignItems='center' justifyContent='center'>
-				<Button square size='small' onClick={onPreviousDateClick}>
-					<Chevron left size='x20' style={{ verticalAlign: 'middle' }} />
-				</Button>
-				<Box marginInline={8} flexBasis='25%' is='span' style={{ textAlign: 'center' }}>
-					{data ? format(new Date(data.day), displacement < 7 ? 'EEEE' : 'P') : null}
-				</Box>
-				<Button square size='small' disabled={displacement === 0} onClick={onNextDateClick}>
-					<Chevron right size='x20' style={{ verticalAlign: 'middle' }} />
-				</Button>
-			</Box>
+			<ChartDateNavigation
+				dateWidth='25%'
+				previous={
+					<Button square size='small' onClick={onPreviousDateClick}>
+						<Chevron left size='x20' style={{ verticalAlign: 'middle' }} />
+					</Button>
+				}
+				next={
+					<Button square size='small' disabled={displacement === 0} onClick={onNextDateClick}>
+						<Chevron right size='x20' style={{ verticalAlign: 'middle' }} />
+					</Button>
+				}
+			>
+				{data ? format(new Date(data.day), displacement < 7 ? 'EEEE' : 'P') : null}
+			</ChartDateNavigation>
 			{data ? (
-				<Box display='flex' height='196px'>
-					<Box alignSelf='stretch' flexGrow={1} flexShrink={0} position='relative'>
-						<Box position='absolute' width='100%' height='100%'>
-							<ResponsiveBar
-								data={values}
-								indexBy='hour'
-								keys={['users']}
-								groupMode='grouped'
-								padding={0.25}
-								margin={{
-									// TODO: Get it from theme
-									bottom: 30,
-									right: 5,
-								}}
-								colors={[
-									// TODO: Get it from theme
-									colors.p500,
-								]}
-								enableLabel={false}
-								enableGridY={false}
-								axisTop={null}
-								axisRight={null}
-								axisBottom={{
-									tickSize: 0,
-									// TODO: Get it from theme
-									tickPadding: 4,
-									tickRotation: isLgScreen ? 0 : 25,
-									tickValues: 'every 2 hours',
-									format: (hour): string => format(new Date(2000, 0, 1, Number(hour), 0, 0), 'p'),
-								}}
-								axisLeft={null}
-								animate={true}
-								motionConfig='stiff'
-								theme={{
-									// TODO: Get it from theme
-									axis: {
-										ticks: {
-											text: {
-												fill: colors.n600,
-												fontFamily:
-													'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
-												fontSize: '10px',
-												fontStyle: 'normal',
-												fontWeight: 600,
-												letterSpacing: '0.2px',
-												lineHeight: '12px',
-											},
-										},
+				<ChartFrame height={196}>
+					<ResponsiveBar
+						data={values}
+						indexBy='hour'
+						keys={['users']}
+						groupMode='grouped'
+						padding={0.25}
+						margin={{
+							// TODO: Get it from theme
+							bottom: 30,
+							right: 5,
+						}}
+						colors={[
+							// TODO: Get it from theme
+							colors.p500,
+						]}
+						enableLabel={false}
+						enableGridY={false}
+						axisTop={null}
+						axisRight={null}
+						axisBottom={{
+							tickSize: 0,
+							// TODO: Get it from theme
+							tickPadding: 4,
+							tickRotation: isLgScreen ? 0 : 25,
+							tickValues: 'every 2 hours',
+							format: (hour): string => format(new Date(2000, 0, 1, Number(hour), 0, 0), 'p'),
+						}}
+						axisLeft={null}
+						animate={true}
+						motionConfig='stiff'
+						theme={{
+							// TODO: Get it from theme
+							axis: {
+								ticks: {
+									text: {
+										fill: colors.n600,
+										fontFamily:
+											'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
+										fontSize: '10px',
+										fontStyle: 'normal',
+										fontWeight: 600,
+										letterSpacing: '0.2px',
+										lineHeight: '12px',
 									},
-								}}
-								tooltip={({ value }) => <Tooltip>{t('Value_users', { value })}</Tooltip>}
-							/>
-						</Box>
-					</Box>
-				</Box>
+								},
+							},
+						}}
+						tooltip={({ value }) => <Tooltip>{t('Value_users', { value })}</Tooltip>}
+					/>
+				</ChartFrame>
 			) : (
 				<Skeleton variant='rect' height={196} />
 			)}

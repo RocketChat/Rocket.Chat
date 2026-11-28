@@ -1,5 +1,5 @@
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { usePagination } from '@rocket.chat/ui-client';
+import { PageContent, usePagination } from '@rocket.chat/ui-client';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -59,21 +59,19 @@ const AppsPageContent = () => {
 	});
 	const statusFilterOnSelected = useRadioToggle(setStatusFilterStructure);
 
-	const baseFilterStructureItems = [
-		{ id: 'az', label: 'A-Z', checked: false },
-		{ id: 'za', label: 'Z-A', checked: false },
-		{ id: 'mru', label: t('Most_recent_updated'), checked: true },
-		{ id: 'lru', label: t('Least_recent_updated'), checked: false },
-	];
-
-	const requestedFilterItems = [
-		{ id: 'urf', label: t('Unread_Requested_First'), checked: false },
-		{ id: 'url', label: t('Unread_Requested_Last'), checked: false },
-	];
-
-	const createFilterStructureItems = () => {
+	const createFilterStructureItems = useCallback(() => {
+		const baseFilterStructureItems = [
+			{ id: 'az', label: 'A-Z', checked: false },
+			{ id: 'za', label: 'Z-A', checked: false },
+			{ id: 'mru', label: t('Most_recent_updated'), checked: true },
+			{ id: 'lru', label: t('Least_recent_updated'), checked: false },
+		];
+		const requestedFilterItems = [
+			{ id: 'urf', label: t('Unread_Requested_First'), checked: false },
+			{ id: 'url', label: t('Unread_Requested_Last'), checked: false },
+		];
 		return isRequested ? [...requestedFilterItems, ...baseFilterStructureItems] : baseFilterStructureItems;
-	};
+	}, [isRequested, t]);
 
 	const [sortFilterStructure, setSortFilterStructure] = useState<RadioDropDownGroup>(() => {
 		return {
@@ -87,7 +85,7 @@ const AppsPageContent = () => {
 			label: t('Sort_By'),
 			items: createFilterStructureItems(),
 		});
-	}, [isRequested]);
+	}, [createFilterStructureItems, t]);
 
 	const sortFilterOnSelected = useRadioToggle(setSortFilterStructure);
 
@@ -139,23 +137,12 @@ const AppsPageContent = () => {
 	};
 
 	const toggleInitialSortOption = useCallback((isRequested: boolean) => {
-		setSortFilterStructure((prevState) => {
-			prevState.items.forEach((currentItem) => {
-				if (isRequested && currentItem.id === 'urf') {
-					currentItem.checked = true;
-					return;
-				}
+		const initialSortId = isRequested ? 'urf' : 'mru';
 
-				if (!isRequested && currentItem.id === 'mru') {
-					currentItem.checked = true;
-					return;
-				}
-
-				currentItem.checked = false;
-			});
-
-			return { ...prevState };
-		});
+		setSortFilterStructure((prevState) => ({
+			...prevState,
+			items: prevState.items.map((currentItem) => ({ ...currentItem, checked: currentItem.id === initialSortId })),
+		}));
 	}, []);
 
 	useEffect(() => {
@@ -166,22 +153,24 @@ const AppsPageContent = () => {
 		return (
 			<>
 				<MarketplaceHeader unsupportedVersion={false} title={t(`Apps_context_${context}`)} />
-				<AppsFilters
-					text={text}
-					setText={setText}
-					freePaidFilterStructure={freePaidFilterStructure}
-					freePaidFilterOnSelected={freePaidFilterOnSelected}
-					categories={categories}
-					selectedCategories={selectedCategories}
-					onSelected={onSelected}
-					sortFilterStructure={sortFilterStructure}
-					sortFilterOnSelected={sortFilterOnSelected}
-					categoryTagList={categoryTagList}
-					statusFilterStructure={statusFilterStructure}
-					statusFilterOnSelected={statusFilterOnSelected}
-					context={context}
-				/>
-				<AppsPageContentSkeleton />
+				<PageContent>
+					<AppsFilters
+						text={text}
+						setText={setText}
+						freePaidFilterStructure={freePaidFilterStructure}
+						freePaidFilterOnSelected={freePaidFilterOnSelected}
+						categories={categories}
+						selectedCategories={selectedCategories}
+						onSelected={onSelected}
+						sortFilterStructure={sortFilterStructure}
+						sortFilterOnSelected={sortFilterOnSelected}
+						categoryTagList={categoryTagList}
+						statusFilterStructure={statusFilterStructure}
+						statusFilterOnSelected={statusFilterOnSelected}
+						context={context}
+					/>
+					<AppsPageContentSkeleton />
+				</PageContent>
 			</>
 		);
 	}
@@ -194,6 +183,32 @@ const AppsPageContent = () => {
 		return (
 			<>
 				<MarketplaceHeader unsupportedVersion={unsupportedVersion} title={t(`Apps_context_${context}`)} />
+				<PageContent>
+					<AppsFilters
+						text={text}
+						setText={setText}
+						freePaidFilterStructure={freePaidFilterStructure}
+						freePaidFilterOnSelected={freePaidFilterOnSelected}
+						categories={categories}
+						selectedCategories={selectedCategories}
+						onSelected={onSelected}
+						sortFilterStructure={sortFilterStructure}
+						sortFilterOnSelected={sortFilterOnSelected}
+						categoryTagList={categoryTagList}
+						statusFilterStructure={statusFilterStructure}
+						statusFilterOnSelected={statusFilterOnSelected}
+						context={context}
+					/>
+					{unsupportedVersion ? <UnsupportedEmptyState /> : <AppsPageConnectionError onButtonClick={reload} />}
+				</PageContent>
+			</>
+		);
+	}
+
+	return (
+		<>
+			<MarketplaceHeader unsupportedVersion={false} title={t(`Apps_context_${context}`)} />
+			<PageContent>
 				<AppsFilters
 					text={text}
 					setText={setText}
@@ -209,51 +224,29 @@ const AppsPageContent = () => {
 					statusFilterOnSelected={statusFilterOnSelected}
 					context={context}
 				/>
-				{unsupportedVersion ? <UnsupportedEmptyState /> : <AppsPageConnectionError onButtonClick={reload} />}
-			</>
-		);
-	}
-
-	return (
-		<>
-			<MarketplaceHeader unsupportedVersion={false} title={t(`Apps_context_${context}`)} />
-			<AppsFilters
-				text={text}
-				setText={setText}
-				freePaidFilterStructure={freePaidFilterStructure}
-				freePaidFilterOnSelected={freePaidFilterOnSelected}
-				categories={categories}
-				selectedCategories={selectedCategories}
-				onSelected={onSelected}
-				sortFilterStructure={sortFilterStructure}
-				sortFilterOnSelected={sortFilterOnSelected}
-				categoryTagList={categoryTagList}
-				statusFilterStructure={statusFilterStructure}
-				statusFilterOnSelected={statusFilterOnSelected}
-				context={context}
-			/>
-			{(context === 'requested' && data.count === 0 && <NoAppRequestsEmptyState />) ||
-				((isMarketplace || isPremium) && data.count === 0 && (
-					<NoMarketplaceOrInstalledAppMatchesEmptyState shouldShowSearchText={!!data.shouldShowSearchText} text={text} />
-				)) ||
-				(context === 'installed' && data.totalAppsLength !== 0 && data.count === 0 && (
-					<NoInstalledAppMatchesEmptyState shouldShowSearchText={!!data.shouldShowSearchText} text={text} onButtonClick={handleReturn} />
-				)) ||
-				(context === 'private' && !isMarketplace && data.totalAppsLength === 0 && <PrivateEmptyState />) ||
-				(context !== 'private' && !isMarketplace && data.totalAppsLength === 0 && (
-					<NoInstalledAppsEmptyState onButtonClick={handleReturn} />
-				)) || (
-					<AppsPageContentBody
-						isMarketplace={isMarketplace}
-						isFiltered={isFiltered}
-						appsResult={data}
-						itemsPerPage={itemsPerPage}
-						current={current}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						paginationProps={paginationProps}
-					/>
-				)}
+				{(context === 'requested' && data.count === 0 && <NoAppRequestsEmptyState />) ||
+					((isMarketplace || isPremium) && data.count === 0 && (
+						<NoMarketplaceOrInstalledAppMatchesEmptyState shouldShowSearchText={!!data.shouldShowSearchText} text={text} />
+					)) ||
+					(context === 'installed' && data.totalAppsLength !== 0 && data.count === 0 && (
+						<NoInstalledAppMatchesEmptyState shouldShowSearchText={!!data.shouldShowSearchText} text={text} onButtonClick={handleReturn} />
+					)) ||
+					(context === 'private' && !isMarketplace && data.totalAppsLength === 0 && <PrivateEmptyState />) ||
+					(context !== 'private' && !isMarketplace && data.totalAppsLength === 0 && (
+						<NoInstalledAppsEmptyState onButtonClick={handleReturn} />
+					)) || (
+						<AppsPageContentBody
+							isMarketplace={isMarketplace}
+							isFiltered={isFiltered}
+							appsResult={data}
+							itemsPerPage={itemsPerPage}
+							current={current}
+							onSetItemsPerPage={onSetItemsPerPage}
+							onSetCurrent={onSetCurrent}
+							paginationProps={paginationProps}
+						/>
+					)}
+			</PageContent>
 		</>
 	);
 };

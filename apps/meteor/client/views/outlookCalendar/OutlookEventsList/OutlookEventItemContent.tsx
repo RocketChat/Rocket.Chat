@@ -1,5 +1,6 @@
-import { Box } from '@rocket.chat/fuselage';
 import DOMPurify from 'dompurify';
+
+import RichContent from '../../../components/RichContent';
 
 type SanitizeProps = {
 	html: string;
@@ -18,7 +19,7 @@ const OutlookEventItemContent = ({ html, options }: SanitizeProps) => {
 		__html: DOMPurify.sanitize(dirtyHTML, { ...defaultOptions, ...options }).toString(),
 	});
 
-	return <Box wordBreak='break-word' color='default' dangerouslySetInnerHTML={sanitize(html, options)} />;
+	return <RichContent dangerouslySetInnerHTML={sanitize(html, options)} />;
 };
 
 export default OutlookEventItemContent;

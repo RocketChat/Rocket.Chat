@@ -1,12 +1,17 @@
 import { webcrypto } from 'node:crypto';
 import { TextEncoder, TextDecoder } from 'node:util';
 
-import { toHaveNoViolations } from 'jest-axe';
+import type { IToHaveNoViolations } from 'jest-axe';
 import * as uuid from 'uuid';
 
 import '@testing-library/jest-dom';
 
-expect.extend(toHaveNoViolations);
+expect.extend({
+	toHaveNoViolations(...args: Parameters<IToHaveNoViolations>) {
+		const { toHaveNoViolations } = jest.requireActual<typeof import('jest-axe')>('jest-axe');
+		return toHaveNoViolations.toHaveNoViolations.apply(this, args);
+	},
+});
 
 const urlByBlob = new WeakMap<Blob, string>();
 const blobByUrl = new Map<string, Blob>();

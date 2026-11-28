@@ -7,7 +7,8 @@ import type { ReactNode } from 'react';
 import RoomListCollapser from './RoomListCollapser';
 import type { SidebarRoomListGroup } from '../hooks/useRoomList';
 
-jest.mock('../../hooks/useIsEnterprise', () => ({
+jest.mock('@rocket.chat/ui-client', () => ({
+	...jest.requireActual('@rocket.chat/ui-client'),
 	useIsEnterprise: () => ({ data: { isEnterprise: true } }),
 }));
 
@@ -20,10 +21,10 @@ jest.mock('../categories/CategoryMenu', () => ({
 	),
 }));
 
-const makeGroup = (collapsed: boolean, unread = 0) =>
+const makeGroup = (collapsed: boolean, unread = 0, key = 'Channels') =>
 	({
-		key: 'Channels',
-		title: 'Channels',
+		key,
+		title: key,
 		translateTitle: false,
 		showUnreads: false,
 		keepUnreadsOnTop: false,
@@ -98,6 +99,22 @@ describe('RoomListCollapser', () => {
 
 		const menu = await screen.findByRole('button', { name: 'Options' });
 		expect(screen.getByRole('button', { name: 'Channels' })).not.toContainElement(menu);
+	});
+
+	it('renders no category menu for the Unread group', async () => {
+		renderCollapser(makeGroup(false, 0, 'Unread'));
+
+		screen.getByRole('button', { name: 'Unread' }).focus();
+
+		await expect(screen.findByRole('button', { name: 'Options' }, { timeout: 200 })).rejects.toThrow();
+	});
+
+	it('keeps the category menu on the other dynamic groups', async () => {
+		renderCollapser(makeGroup(false, 0, 'Open_Livechats'));
+
+		screen.getByRole('button', { name: 'Open_Livechats' }).focus();
+
+		expect(await screen.findByRole('button', { name: 'Options' })).toBeInTheDocument();
 	});
 
 	it('does not toggle the group from the category menu', async () => {

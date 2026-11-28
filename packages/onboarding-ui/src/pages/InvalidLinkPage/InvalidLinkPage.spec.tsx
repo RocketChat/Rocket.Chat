@@ -1,7 +1,9 @@
 import { render } from '@testing-library/react';
 
-import InvalidLinkPage from './InvalidLinkPage';
+import InvalidLinkPage from './InvalidLinkPage.js';
 
 it('renders without crashing', () => {
-	render(<InvalidLinkPage onRequestNewLink={() => undefined} />);
+	const { container } = render(<InvalidLinkPage onRequestNewLink={() => undefined} />);
+
+	expect(container).not.toBeEmptyDOMElement();
 });

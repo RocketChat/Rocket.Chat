@@ -1,7 +1,6 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ITeam } from '@rocket.chat/core-typings';
 import { Users, Team } from '@rocket.chat/models';
-import { Match, check } from 'meteor/check';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { createRoom } from '../../lib/rooms/createRoom';
@@ -15,8 +14,6 @@ export const createChannelMethod = async (
 	extraData: Record<string, any> = {},
 	excludeSelf = false,
 ) => {
-	check(name, String);
-	check(members, Match.Optional([String]));
 	if (!userId) {
 		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', { method: 'createChannel' });
 	}

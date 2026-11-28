@@ -34,10 +34,12 @@ const OverflowElement = ({ block, context }: OverflowElementProps) => {
 
 	const handleSelection = useCallback(
 		([value, _label, _selected, _disabled, _type, url]: OptionType) => {
-			if (url && UiKit.isSafeUrl(url)) {
-				window.open(url, '_blank', 'noopener');
-			}
-			void action({ target: { value: String(value) } });
+			const openUrl = () => {
+				if (url && UiKit.isSafeUrl(url)) {
+					window.open(url, '_blank', 'noopener');
+				}
+			};
+			void action({ target: { value: String(value) }, onConfirmed: openUrl });
 			reset();
 			hide();
 		},

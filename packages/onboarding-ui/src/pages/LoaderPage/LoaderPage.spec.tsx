@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 
-import LoaderPage from './LoaderPage';
+import LoaderPage from './LoaderPage.js';
 
 const subtitles = [
 	'Bringing rocket to launch position',
@@ -12,5 +12,7 @@ const subtitles = [
 ];
 
 it('renders without crashing', () => {
-	render(<LoaderPage title='Kapai' subtitles={subtitles} isReady={false} />);
+	const { container } = render(<LoaderPage title='Kapai' subtitles={subtitles} isReady={false} />);
+
+	expect(container).not.toBeEmptyDOMElement();
 });

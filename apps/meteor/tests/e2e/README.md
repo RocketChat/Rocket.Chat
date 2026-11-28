@@ -34,12 +34,28 @@ We can also provide some env vars to `test:e2e` script:
 - Prefer Playwright web-first assertions such as `toBeVisible()` and `toHaveText()`. They retry until the expected condition is met.
 - Use Playwright's `expect` matchers instead of Node-style `assert` statements.
 - Rely on Playwright's built-in auto-waiting whenever possible.
-- When an explicit wait is necessary, wait for a specific condition with APIs such as `locator.waitFor()`, `page.waitForURL()`, or `page.waitForResponse()`.
+- When an explicit wait is necessary, wait for something the user can perceive: an element, `aria-busy` clearing, `page.waitForURL()`.
+- `page.waitForResponse()` and `page.waitForRequest()` are a last resort. If the test needs the network to know the screen is ready, a screen reader can't tell either - see [Lists that update in place](#lists-that-update-in-place).
 - Prefer waiting for observable conditions over fixed delays. If a fixed delay is unavoidable, document why no observable condition can be awaited.
 
 ```ts
  await expect(anyElement).toBeVisible();
  ```
+
+### Lists that update in place
+
+A search, a sort or a tab switch leaves the old rows on screen until the new ones arrive, and a debounced search box
+waits before it even asks the server. An assertion that already holds on the old rows passes at once, and the next
+action races the update: a menu opened on a row closes when the list re-renders, a click lands on a row that is about
+to go away.
+
+- Assert something that only holds once the list has changed, or wait for the list's `aria-busy` to clear -
+  `Table.waitForSettled()` does that. An empty state has no busy signal, so after a search that starts from
+  "No results", assert the new rows too.
+- If the list has no busy state, give it one: `aria-busy` while the search params and the request haven't caught up,
+  e.g. `params !== debouncedParams || isFetching`. Assistive technology needs the same signal.
+- If the UI fix is out of scope, wait for the response, then assert something only the new rows satisfy, and leave a
+  `TODO` in the page object naming the component that lacks the signal.
 
 # Playwright Locator Best Practices
 
@@ -408,3 +424,5 @@ Recipe for a single spec. Keep PRs to at most 5 files so reviews stay tractable.
 - `goto()` + `navbar.openChat(name)` to reach a room the test already knows — use `poHomeChannel.gotoChannel(name)` (see Pattern 3). Searching a just-created channel races the search index and hangs until timeout.
 - New non-serial suites whose tests still each carry >3s of UI setup.
 - Inline `api.post('/im.create', …)` / `api.post('/chat.sendMessage', …)` in a spec instead of extending the helpers in `utils/`.
+- `page.waitForResponse()` to know a list or page is ready, without a `TODO` naming the missing UI signal (see [Lists that update in place](#lists-that-update-in-place)).
+- `fill()` on a search box followed by an assertion that was already true before typing.

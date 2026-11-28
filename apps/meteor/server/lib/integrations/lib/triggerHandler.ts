@@ -24,7 +24,7 @@ import { notifyOnIntegrationChangedById } from '../../notifyListener';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../rooms/getRoomByNameOrIdWithOptionToJoin';
 import { outgoingLogger } from '../logger';
 
-type Trigger = Record<string, Record<string, any>>;
+type Trigger = Record<string, Record<string, IOutgoingIntegration>>;
 
 type MessageWithEditedAt = IMessage & { editedAt?: Date };
 type ArgumentsObject = {
@@ -70,7 +70,7 @@ class RocketChatIntegrationHandler {
 
 	addIntegration(record: IOutgoingIntegration): void {
 		outgoingLogger.debug({ msg: 'Adding integration', integrationName: record.name, event: record.event });
-		let channels = [];
+		let channels: string[];
 		if (record.event && !outgoingEvents[record.event].use.channel) {
 			outgoingLogger.debug('The integration doesnt rely on channels.');
 			// We don't use any channels, so it's special ;)
@@ -488,6 +488,7 @@ class RocketChatIntegrationHandler {
 
 	// Script engine errors are rethrown as client-safe ClientSafeError
 	async wrapScriptEngineCall(getter: () => Promise<any>) {
+		// oxlint-disable-next-line typescript/no-unsafe-return -- integration script results are untyped by design and callers read arbitrary fields
 		return wrapExceptions(getter).catch((error) => {
 			if (error instanceof Error) {
 				throw new ClientSafeError(error.message);
@@ -527,7 +528,7 @@ class RocketChatIntegrationHandler {
 			}
 		}
 
-		if (message && message.editedAt && !trigger.runOnEdits) {
+		if (message?.editedAt && !trigger.runOnEdits) {
 			outgoingLogger.debug({ msg: 'Trigger run on edits disabled and message was edited', triggerName: trigger.name });
 			return;
 		}
@@ -592,6 +593,7 @@ class RocketChatIntegrationHandler {
 
 		// based on HTTP.call implementation
 		if (opts.auth) {
+			// oxlint-disable-next-line typescript/no-unsafe-call -- wrapScriptEngineCall returns the script result untyped
 			if (opts.auth.indexOf(':') < 0) {
 				throw new Error('auth option should be of the form "username:password"');
 			}
@@ -639,6 +641,7 @@ class RocketChatIntegrationHandler {
 					}
 
 					try {
+						// oxlint-disable-next-line typescript/no-unsafe-return -- the webhook response body is arbitrary JSON consumed as a message
 						return JSON.parse(content);
 					} catch (_error) {
 						return null;
@@ -738,7 +741,7 @@ class RocketChatIntegrationHandler {
 									// 2 second, 4 seconds, 6 seconds, etc
 									waitTime = (tries + 1) * 2 * 1000;
 									break;
-								default:
+								default: {
 									const er = new Error("The integration's retryDelay setting is invalid.");
 									await updateHistory({
 										historyId,
@@ -747,6 +750,7 @@ class RocketChatIntegrationHandler {
 										errorStack: er.stack,
 									});
 									return;
+								}
 							}
 
 							outgoingLogger.info({ msg: 'Retrying integration', integrationName: trigger.name, url, waitTime });

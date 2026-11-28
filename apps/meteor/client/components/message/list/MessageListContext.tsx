@@ -3,7 +3,10 @@ import type { useFormatTime, useFormatDateAndTime } from '@rocket.chat/ui-client
 import type { KeyboardEvent, MouseEvent } from 'react';
 import { createContext, useContext } from 'react';
 
+import { normalizeUsername } from '../../../../lib/utils/normalizeUsername';
 import type { useFormatDate } from '../../../hooks/useFormatDate';
+import type { MessageNormalizer } from '../../../lib/createMessageNormalizer';
+import { createMessageNormalizer } from '../../../lib/createMessageNormalizer';
 
 export type MessageListContextValue = {
 	autoTranslate: {
@@ -11,26 +14,29 @@ export type MessageListContextValue = {
 		autoTranslateLanguage?: string;
 		autoTranslateEnabled: boolean;
 	};
-	autoLinkDomains: string;
-	useShowStarred: ({ message }: { message: IMessage }) => boolean;
-	useShowFollowing: ({ message }: { message: IMessage }) => boolean;
-	useMessageDateFormatter: () => (date: Date) => string;
-	useUserHasReacted: (message: IMessage) => (reaction: string) => boolean;
-	useOpenEmojiPicker: (message: IMessage) => (event: MouseEvent | KeyboardEvent) => void;
+	showStarred: ({ message }: { message: IMessage }) => boolean;
+	showFollowing: ({ message }: { message: IMessage }) => boolean;
+	messageDateFormatter: () => (date: Date) => string;
+	userHasReacted: (message: IMessage) => (reaction: string) => boolean;
+	openEmojiPicker: (message: IMessage) => (event: MouseEvent | KeyboardEvent) => void;
 	showRoles: boolean;
+	/** Whether the list's room is a broadcast room the user is subscribed to. */
+	isBroadcast: boolean;
+	/** Role labels of the authors of messages in room `rid`; absent when the list does not resolve them. */
+	userRoles?: {
+		rid: string;
+		get: (uid: string) => { workspaceRoles: string[]; roomRoles: string[] };
+	};
 	showRealName: boolean;
-	showUsername: boolean;
+	getAuthorUsername: (author: Pick<IMessage['u'], 'name' | 'username'>) => { normalizedUsername: string; showUsername: boolean };
 	highlights?: {
 		highlight: string;
 		regex: RegExp;
 		urlRegex: RegExp;
 	}[];
-	katex?: {
-		dollarSyntaxEnabled: boolean;
-		parenthesisSyntaxEnabled: boolean;
-	};
 	autoTranslateLanguage?: string;
-	showColors: boolean;
+	/** Stable for the list: changes only when a setting or the room's auto-translate state does, never per message. */
+	normalizeMessage: MessageNormalizer;
 	jumpToMessageParam?: string;
 	username: string | undefined;
 	apiEmbedEnabled: boolean;
@@ -49,25 +55,25 @@ export const messageListContextDefaultValue: MessageListContextValue = {
 		autoTranslateLanguage: undefined,
 		autoTranslateEnabled: false,
 	},
-	useShowStarred: () => false,
-	useShowFollowing: () => false,
-	useUserHasReacted: () => (): boolean => false,
-	useMessageDateFormatter:
+	showStarred: () => false,
+	showFollowing: () => false,
+	userHasReacted: () => (): boolean => false,
+	messageDateFormatter:
 		() =>
 		(date: Date): string =>
 			date.toString(),
-	useOpenEmojiPicker: () => (): void => undefined,
+	openEmojiPicker: () => (): void => undefined,
 	showRoles: false,
+	isBroadcast: false,
 	showRealName: false,
-	showUsername: false,
-	showColors: false,
+	getAuthorUsername: ({ username }) => ({ normalizedUsername: normalizeUsername(username), showUsername: false }),
+	normalizeMessage: createMessageNormalizer({ emoticons: true }, { showAutoTranslate: () => false, autoTranslateEnabled: false }),
 	username: undefined,
 	apiEmbedEnabled: false,
 	readReceipts: {
 		enabled: false,
 		storeUsers: false,
 	},
-	autoLinkDomains: '',
 	formatDateAndTime: () => '',
 	formatTime: () => '',
 	formatDate: () => '',
@@ -77,36 +83,36 @@ export const MessageListContext = createContext<MessageListContextValue>(message
 
 export const useShowTranslated: MessageListContextValue['autoTranslate']['showAutoTranslate'] = (...args) =>
 	useContext(MessageListContext).autoTranslate.showAutoTranslate(...args);
-export const useShowStarred: MessageListContextValue['useShowStarred'] = (...args) =>
-	useContext(MessageListContext).useShowStarred(...args);
-export const useShowFollowing: MessageListContextValue['useShowFollowing'] = (...args) =>
-	useContext(MessageListContext).useShowFollowing(...args);
-export const useMessageDateFormatter: MessageListContextValue['useMessageDateFormatter'] = (...args) =>
-	useContext(MessageListContext).useMessageDateFormatter(...args);
+export const useShowStarred: MessageListContextValue['showStarred'] = (...args) => useContext(MessageListContext).showStarred(...args);
+export const useShowFollowing: MessageListContextValue['showFollowing'] = (...args) =>
+	useContext(MessageListContext).showFollowing(...args);
+export const useMessageDateFormatter: MessageListContextValue['messageDateFormatter'] = (...args) =>
+	useContext(MessageListContext).messageDateFormatter(...args);
+export const useMessageListIsBroadcast = (): MessageListContextValue['isBroadcast'] => useContext(MessageListContext).isBroadcast;
 export const useMessageListShowRoles = (): MessageListContextValue['showRoles'] => useContext(MessageListContext).showRoles;
+export const useMessageListUserRoles = (uid: string, rid: string) => {
+	const { userRoles } = useContext(MessageListContext);
+	return userRoles?.rid === rid ? userRoles.get(uid) : undefined;
+};
 export const useMessageListShowRealName = (): MessageListContextValue['showRealName'] => useContext(MessageListContext).showRealName;
-export const useMessageListShowUsername = (): MessageListContextValue['showUsername'] => useContext(MessageListContext).showUsername;
+export const useMessageListAuthorUsername: MessageListContextValue['getAuthorUsername'] = (author) =>
+	useContext(MessageListContext).getAuthorUsername(author);
 export const useMessageListHighlights = (): MessageListContextValue['highlights'] => useContext(MessageListContext).highlights;
 export const useMessageListJumpToMessageParam = (): MessageListContextValue['jumpToMessageParam'] =>
 	useContext(MessageListContext).jumpToMessageParam;
 
-export const useUserHasReacted: MessageListContextValue['useUserHasReacted'] = (message: IMessage) =>
-	useContext(MessageListContext).useUserHasReacted(message);
-export const useOpenEmojiPicker: MessageListContextValue['useOpenEmojiPicker'] = (...args) =>
-	useContext(MessageListContext).useOpenEmojiPicker(...args);
+export const useUserHasReacted: MessageListContextValue['userHasReacted'] = (message: IMessage) =>
+	useContext(MessageListContext).userHasReacted(message);
+export const useOpenEmojiPicker: MessageListContextValue['openEmojiPicker'] = (...args) =>
+	useContext(MessageListContext).openEmojiPicker(...args);
 
-export const useMessageListShowColors = (): MessageListContextValue['showColors'] => useContext(MessageListContext).showColors;
-
-export const useMessageListKatex = (): MessageListContextValue['katex'] => useContext(MessageListContext).katex;
+export const useMessageListNormalizer = (): MessageListContextValue['normalizeMessage'] => useContext(MessageListContext).normalizeMessage;
 
 export const useMessageListReadReceipts = (): MessageListContextValue['readReceipts'] => useContext(MessageListContext).readReceipts;
 
 export const useMessageListAutoTranslate = (): MessageListContextValue['autoTranslate'] => useContext(MessageListContext).autoTranslate;
 
 export const useMessageListOembedEnabled = (): MessageListContextValue['apiEmbedEnabled'] => useContext(MessageListContext).apiEmbedEnabled;
-
-export const useMessageListAutoLinkDomains = (): MessageListContextValue['autoLinkDomains'] =>
-	useContext(MessageListContext).autoLinkDomains;
 
 export const useMessageListFormatDateAndTime = (): MessageListContextValue['formatDateAndTime'] =>
 	useContext(MessageListContext).formatDateAndTime;

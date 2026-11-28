@@ -31,7 +31,7 @@ export const processDirectEmail = async function (email: ParsedMail): Promise<vo
 
 	let msg = email.text.split('\n\n').join('\n');
 
-	if (msg && msg.length > (settings.get('Message_MaxAllowedSize') as number)) {
+	if (msg && msg.length > settings.get<number>('Message_MaxAllowedSize')) {
 		return;
 	}
 	const emailAdress = email.from.value[0].address;
@@ -80,18 +80,6 @@ export const processDirectEmail = async function (email: ParsedMail): Promise<vo
 		msg = `@${prevMessage.u.username} ${msg}`;
 	}
 
-	// reply message link WE HA THREADS KNOW DONT NEED TO QUOTE THE previous message
-	// let prevMessageLink = `[ ](${ Meteor.absoluteUrl().replace(/\/$/, '') }`;
-	// if (roomInfo.t === 'c') {
-	// 	prevMessageLink += `/channel/${ roomInfo.name }?msg=${ mid }) `;
-	// } else if (roomInfo.t === 'd') {
-	// 	prevMessageLink += `/direct/${ prevMessage.u.username }?msg=${ mid }) `;
-	// } else if (roomInfo.t === 'p') {
-	// 	prevMessageLink += `/group/${ roomInfo.name }?msg=${ mid }) `;
-	// }
-	// // add reply message link
-	// msg = prevMessageLink + msg;
-
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(prevMessage.rid, user._id);
 	if (subscription && (subscription.blocked || subscription.blocker)) {
 		// room is blocked
@@ -134,5 +122,6 @@ export const processDirectEmail = async function (email: ParsedMail): Promise<vo
 	metrics.messagesSent.inc();
 	metrics.messagesSentTotal.inc();
 
+	// oxlint-disable-next-line typescript/no-unsafe-return -- passes through the any-typed result of the legacy sendMessage from a Promise<void> function
 	return result;
 };

@@ -4,7 +4,7 @@ import { TextAreaInput, FieldGroup, Field, FieldRow, FieldError, FieldLabel, Fie
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../../components/MarkdownText';
@@ -28,15 +28,12 @@ const wordBreak = css`
 const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps) => {
 	const { t } = useTranslation();
 	const reasonForReportId = useId();
-	const {
-		control,
-		formState: { errors },
-		handleSubmit,
-	} = useForm<ReportMessageModalsFields>({
+	const { control, handleSubmit } = useForm<ReportMessageModalsFields>({
 		defaultValues: {
 			description: '',
 		},
 	});
+	const { errors } = useFormState({ control });
 	const dispatchToastMessage = useToastMessageDispatch();
 	const reportMessage = useEndpoint('POST', '/v1/chat.reportMessage');
 
@@ -57,7 +54,7 @@ const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps) => {
 
 	return (
 		<GenericModal
-			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleReportMessage)} {...props} />}
+			onSubmit={handleSubmit(handleReportMessage)}
 			variant='danger'
 			title={t('Report_message')}
 			onCancel={onClose}

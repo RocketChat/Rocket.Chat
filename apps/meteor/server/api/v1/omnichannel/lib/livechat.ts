@@ -2,11 +2,11 @@ import type { ILivechatAgent, ILivechatDepartment, ILivechatTrigger, ILivechatVi
 import { License } from '@rocket.chat/license';
 import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 import { makeFunction } from '@rocket.chat/patch-injection';
-import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { normalizeAgent } from '../../../../lib/omnichannel/Helper';
 import { getInitSettings } from '../../../../lib/omnichannel/settings';
+import { getWorkspaceURL } from '../../../../lib/utils/getURL';
 
 async function findTriggers(): Promise<Pick<ILivechatTrigger, '_id' | 'actions' | 'conditions' | 'runOnce'>[]> {
 	const triggers = await LivechatTrigger.findEnabled().toArray();
@@ -104,16 +104,14 @@ export function normalizeHttpHeaderData(headers: Headers = new Headers()): {
 	return { httpHeaders };
 }
 
-export async function settings({ businessUnit = '', userId }: { businessUnit?: string; userId?: string } = {}): Promise<
-	Record<string, string | number | any>
-> {
+export async function settings({ businessUnit = '', userId }: { businessUnit?: string; userId?: string } = {}) {
 	const [initSettings, triggers, departments, emojis] = await Promise.all([
 		getInitSettings(),
 		findTriggers(),
 		findDepartments(businessUnit, userId),
 		EmojiCustom.find().toArray(),
 	]);
-	const sound = `${Meteor.absoluteUrl()}sounds/chime.mp3`;
+	const sound = getWorkspaceURL('sounds/chime.mp3');
 	return {
 		enabled: initSettings.Livechat_enabled,
 		settings: {
@@ -194,5 +192,3 @@ export const getExtraConfigInfo = makeFunction(
 		room?: IOmnichannelRoom;
 	}> => options,
 );
-
-export const onCheckRoomParams = makeFunction((params: any) => params);

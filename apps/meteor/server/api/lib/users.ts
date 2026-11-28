@@ -66,7 +66,7 @@ export async function findUsersToAutocomplete({
  * Returns a new query object with the inclusive fields only
  */
 export function getInclusiveFields(query: Record<string, 1 | 0>): Record<string, 1> {
-	const newQuery = Object.create(null);
+	const newQuery: Record<string, 1> = Object.create(null);
 
 	for (const [key, value] of Object.entries(query)) {
 		if (value === 1) {

@@ -1,10 +1,10 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 
-import DeviceMenu from './DeviceMenu';
-import type { DeviceMenuChoices } from './DeviceMenu';
-import { DeviceSelectionProvider } from './DeviceSelectionContext';
+import DeviceMenu from './DeviceMenu.js';
+import type { DeviceMenuChoices } from './DeviceMenu.js';
+import { DeviceSelectionProvider } from './DeviceSelectionContext.js';
 
 const devices = [
 	{ deviceId: 'brio', kind: 'videoinput', label: 'Logitech BRIO (046d:085e)', groupId: 'brio' },

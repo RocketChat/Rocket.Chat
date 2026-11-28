@@ -1,6 +1,6 @@
 # The DDP server lives in a CE package
 
-- **Status:** accepted
+- **Status:** accepted; what stays in ddp-streamer revised by [ADR 0010](0010-own-http-server-in-front-of-meteor.md)
 - **Date:** 2026-10
 - **Scope:** `packages/ddp-server`, `ee/apps/ddp-streamer`, later `apps/meteor`
 

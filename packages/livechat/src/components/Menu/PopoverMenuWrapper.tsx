@@ -2,7 +2,7 @@ import { Component, type ComponentChildren } from 'preact';
 import type { TargetedEvent } from 'preact/compat';
 
 import Menu from './Menu';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { normalizeDOMRect } from '../../helpers/normalizeDOMRect';
 
 type PopoverMenuWrapperProps = {

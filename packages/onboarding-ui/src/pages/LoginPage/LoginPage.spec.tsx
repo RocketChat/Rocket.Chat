@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react';
 
-import LoginPage from './LoginPage';
+import LoginPage from './LoginPage.js';
 
 it('renders without crashing', () => {
-	render(
+	const { container } = render(
 		<LoginPage
 			isMfa={false}
 			initialValues={undefined}
@@ -14,4 +14,6 @@ it('renders without crashing', () => {
 			onCreateAccount={() => undefined}
 		/>,
 	);
+
+	expect(container).not.toBeEmptyDOMElement();
 });

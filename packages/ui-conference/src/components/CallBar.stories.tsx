@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import CallBar from './CallBar';
-import CallControls from '../call/CallControls';
-import { remoteParticipants, withCall } from '../fixtures/callFixtures';
-import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../fixtures/storyFixtures';
+import CallBar from './CallBar.js';
+import CallControls from '../call/CallControls.js';
+import { remoteParticipants, withCall } from '../fixtures/callFixtures.js';
+import { CallSurface, conferenceAppRoot, withConferenceWindow } from '../fixtures/storyFixtures.js';
 
 /** The in-call control bar along the bottom of the conference window, holding the call's own controls. */
 const meta = {

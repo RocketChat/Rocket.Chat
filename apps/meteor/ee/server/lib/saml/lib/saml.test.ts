@@ -1,10 +1,10 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 import zlib from 'node:zlib';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
+import { mockModel } from '@rocket.chat/models/testing';
 import { isTruthy } from '@rocket.chat/tools';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { SAMLUtils } from './Utils';
@@ -14,6 +14,7 @@ import { LogoutResponse } from './generators/LogoutResponse';
 import { LogoutRequestParser } from './parsers/LogoutRequest';
 import { LogoutResponseParser } from './parsers/LogoutResponse';
 import { ResponseParser } from './parsers/Response';
+import { getURLWithoutSettings } from '../../../../../lib/getURL';
 import {
 	serviceProviderOptions,
 	simpleMetadata,
@@ -50,20 +51,19 @@ import {
 	makeLogoutResponseEnvelope,
 } from '../../../../../tests/mocks/server/lib/saml/helpers';
 
-const meteorStub = {
-	'meteor/meteor': {
-		'@global': true,
-		'Meteor': {
-			absoluteUrl() {
-				return 'http://localhost:3000/';
-			},
-		},
-	},
+const getURLStub = {
+	getWorkspaceURL: (path = '') => getURLWithoutSettings(path, { full: true, cdn: false }, '', 'http://localhost:3000', ''),
 };
 
-const { ServiceProviderMetadata } = proxyquire.noCallThru().load('./generators/ServiceProviderMetadata', meteorStub);
+let ServiceProviderMetadata: any;
+let SAMLServiceProvider: any;
 
-const { SAMLServiceProvider } = proxyquire.noCallThru().load('./ServiceProvider', meteorStub);
+before(async () => {
+	mock.module('../../../../../server/lib/utils/getURL', { exports: getURLStub });
+	({ ServiceProviderMetadata } = await import('./generators/ServiceProviderMetadata'));
+	({ SAMLServiceProvider } = await import('./ServiceProvider'));
+	mock.restoreAll();
+});
 
 describe('SAML', () => {
 	describe('[AuthorizeRequest]', () => {
@@ -164,9 +164,9 @@ describe('SAML', () => {
 					expect(data).to.be.an('object');
 					expect(data).to.have.property('idpSession');
 					expect(data).to.have.property('nameID');
-					// @ts-ignore -- chai already ensured the object exists
+					// @ts-expect-error -- chai already ensured the object exists
 					expect(data.idpSession).to.be.equal('_d6ad0e25459aaddd0433a81e159aa79e55dc52c280');
-					// @ts-ignore -- chai already ensured the object exists
+					// @ts-expect-error -- chai already ensured the object exists
 					expect(data.nameID).to.be.equal('_ab7e1d9a603473e92148d569d50176bafa60bcb2e9');
 				});
 			});
@@ -290,7 +290,11 @@ describe('SAML', () => {
 		});
 
 		describe('logoutResponseToUrl', () => {
-			const serviceProvider = new SAMLServiceProvider(serviceProviderOptions);
+			let serviceProvider: any;
+
+			before(() => {
+				serviceProvider = new SAMLServiceProvider(serviceProviderOptions);
+			});
 
 			const generateUrl = (relayState: string | undefined): Promise<string> =>
 				new Promise((resolve, reject) => {
@@ -1196,28 +1200,23 @@ describe('SAML', () => {
 			end: () => undefined,
 		};
 
-		const loadSAML = () =>
-			proxyquire.noCallThru().load('./SAML', {
-				'@rocket.chat/models': {
-					SamlUsedAssertions: { markUsed },
-					CredentialTokens: { create: credentialCreate },
-					Users: {},
-					Rooms: {},
-					Roles: {},
-				},
-				'@rocket.chat/core-services': { ClientSafeError },
-				'@rocket.chat/random': { Random: { id: () => '__credentialToken__' } },
-				'@rocket.chat/tools': { escapeRegExp: (s: string) => s, escapeHTML: (s: string) => s },
-				'meteor/accounts-base': { Accounts: { _generateStampedLoginToken: () => ({ token: 't' }) } },
-				'meteor/meteor': { Meteor: { absoluteUrl: (path = '') => `http://localhost:3000/${path}` } },
-				'./ServiceProvider': {
+		const loadSAML = () => {
+			mock.module('@rocket.chat/core-services', { exports: { ClientSafeError } });
+			mock.module('@rocket.chat/random', { exports: { Random: { id: () => '__credentialToken__' } } });
+			mock.module('@rocket.chat/tools', { exports: { escapeRegExp: (s: string) => s, escapeHTML: (s: string) => s } });
+			mock.module('../../../../../server/lib/auth/insertUser', { exports: {} });
+			mock.module('../../../../../server/lib/utils/getURL', { exports: getURLStub });
+			mock.module('./ServiceProvider', {
+				exports: {
 					SAMLServiceProvider: class {
 						validateResponse(_envelope: unknown, cb: (err: Error | null, profile: any) => Promise<void>) {
 							pending = cb(null, replayProfile);
 						}
 					},
 				},
-				'./Utils': {
+			});
+			mock.module('./Utils', {
+				exports: {
 					SAMLUtils: {
 						relayState: null,
 						error: sinon.stub(),
@@ -1227,19 +1226,30 @@ describe('SAML', () => {
 						decodeAuthorizeRelayState: (provider: string) => ({ provider }),
 					},
 				},
-				'./getSAMLEnvelope': { getSAMLEnvelope: async () => ({ relayState: null }) },
-				'../../../../../lib/utils/arrayUtils': { ensureArray: (v: any) => v },
-				'../../../../../server/lib/logger/system': { SystemLogger: { error: sinon.stub(), warn: sinon.stub() } },
-				'../../../../../server/lib/rooms/addUserToRoom': { addUserToRoom: sinon.stub() },
-				'../../../../../server/lib/rooms/createRoom': { createRoom: sinon.stub() },
-				'../../../../../server/lib/users/getUsernameSuggestion': { generateUsernameSuggestion: sinon.stub() },
-				'../../../../../server/lib/users/saveUserIdentity': { saveUserIdentity: sinon.stub() },
-				'../../../../../server/settings': { settings: { get: sinon.stub() } },
-				'../../../../../lib/i18n': { i18n: { t: (s: string) => s, languages: [] } },
-			}).SAML;
+			});
+			mock.module('./getSAMLEnvelope', { exports: { getSAMLEnvelope: async () => ({ relayState: null }) } });
+			mock.module('../../../../../lib/utils/arrayUtils', { exports: { ensureArray: (v: any) => v } });
+			mock.module('../../../../../server/lib/logger/system', { exports: { SystemLogger: { error: sinon.stub(), warn: sinon.stub() } } });
+			mock.module('../../../../../server/lib/rooms/addUserToRoom', { exports: { addUserToRoom: sinon.stub() } });
+			mock.module('../../../../../server/lib/rooms/createRoom', { exports: { createRoom: sinon.stub() } });
+			mock.module('../../../../../server/lib/users/getUsernameSuggestion', { exports: { generateUsernameSuggestion: sinon.stub() } });
+			mock.module('../../../../../server/lib/users/saveUserIdentity', { exports: { saveUserIdentity: sinon.stub() } });
+			mock.module('../../../../../server/settings', { exports: { settings: { get: sinon.stub() } } });
+			mock.module('../../../../../lib/i18n', { exports: { i18n: { t: (s: string) => s, languages: [] } } });
+			delete require.cache[require.resolve('./SAML')];
+			// oxlint-disable-next-line @typescript-eslint/no-require-imports
+			const { SAML } = require('./SAML');
+			mock.restoreAll();
+			return SAML;
+		};
 
 		const service = { ...serviceProviderOptions } as any;
 		const samlObject = { actionName: 'validate', serviceName: 'test-sp', credentialToken: '' } as any;
+
+		before(() => {
+			mockModel('SamlUsedAssertions', { markUsed });
+			mockModel('CredentialTokens', { create: credentialCreate });
+		});
 
 		beforeEach(() => {
 			markUsed.reset();

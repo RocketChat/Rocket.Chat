@@ -1,8 +1,8 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import * as coreServices from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 import type { AbacEvaluableUser } from '../../../../server/lib/rooms/filterUsersAllowedInRoom';
@@ -24,23 +24,28 @@ type Patched = (
 let filterUsers: Patched;
 let filterUsersOrThrow: Patched;
 
-p.noCallThru().load('./filterUsersAllowedInRoom.ts', {
-	'@rocket.chat/core-services': { Abac: abacMock },
-	'@rocket.chat/license': { License: licenseMock },
-	'../../../../server/lib/authorization/getRoomAbacLockContext': { getRoomAbacLockContext: getRoomAbacLockContextMock },
-	'../../../../server/lib/rooms/filterUsersAllowedInRoom': {
-		filterUsersAllowedInRoom: {
-			patch: (fn: Patched) => {
-				filterUsers = fn;
+before(async () => {
+	mock.module('@rocket.chat/core-services', { exports: { ...coreServices, Abac: abacMock } });
+	mock.module('@rocket.chat/license', { exports: { License: licenseMock } });
+	mock.module('../../../../server/lib/authorization/getRoomAbacLockContext', {
+		exports: { getRoomAbacLockContext: getRoomAbacLockContextMock },
+	});
+	mock.module('../../../../server/lib/rooms/filterUsersAllowedInRoom', {
+		exports: {
+			filterUsersAllowedInRoom: {
+				patch: (fn: Patched) => {
+					filterUsers = fn;
+				},
+			},
+			filterUsersAllowedInRoomOrThrow: {
+				patch: (fn: Patched) => {
+					filterUsersOrThrow = fn;
+				},
 			},
 		},
-		filterUsersAllowedInRoomOrThrow: {
-			patch: (fn: Patched) => {
-				filterUsersOrThrow = fn;
-			},
-		},
-	},
-	'../../../../server/settings': { settings: settingsMock },
+	});
+	mock.module('../../../../server/settings', { exports: { settings: settingsMock } });
+	await import('./filterUsersAllowedInRoom');
 });
 
 const room = { _id: 'p1', t: 'p', abacAttributes: [{ key: 'dept', values: ['eng'] }] } as IRoom;

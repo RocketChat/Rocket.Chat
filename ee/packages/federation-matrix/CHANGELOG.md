@@ -1,5 +1,102 @@
 # @rocket.chat/federation-matrix
 
+## 0.4.0-rc.0
+
+### Minor Changes
+
+- ([#43738](https://github.com/RocketChat/Rocket.Chat/pull/43738)) Supports federated rooms on Matrix room version 12: invites to version 12 rooms and DMs created on other homeservers reach Rocket.Chat users, who can accept them and exchange messages as in rooms on earlier versions. Rooms joined from an invite sent by a user on a different server than the one that created the room now show the creating server after the room name, as they already did once the room was renamed.
+
+### Patch Changes
+
+- ([#43738](https://github.com/RocketChat/Rocket.Chat/pull/43738)) Rejects incoming federated events over the Matrix limits (more than 20 `prev_events`, more than 10 `auth_events`, or larger than 64 KiB) before validating them, so oversized events are cheap to refuse and no longer produce unbounded log lines
+
+- ([#43738](https://github.com/RocketChat/Rocket.Chat/pull/43738)) Fixes rooms joined from a federated invite showing up as a DM named after the inviter instead of under the room's name, when the inviting homeserver (such as tuwunel) sends the invite without `unsigned` data
+
+- ([#43738](https://github.com/RocketChat/Rocket.Chat/pull/43738)) Fixes messages sent to a federated room failing for good with "Unable to process event, we don't have complete state yet" after joining it, when the remote server delivered the join while the room's history was still being fetched
+
+- ([#43738](https://github.com/RocketChat/Rocket.Chat/pull/43738)) Fixes federated events, such as a remote user joining, being permanently rejected when they arrive before the events that authorize them; the missing events are now fetched from the sending server and the event is processed once they are stored
+
+- ([#43657](https://github.com/RocketChat/Rocket.Chat/pull/43657)) Fixes federated invites failing when the inviting server sends a room join rule without a value; such rooms are now treated as invite-only
+
+- <details><summary>Updated dependencies [9a6c98b451d84dd15d9cf7b628641b7bbb5924d1, 9971f492da4960edce747fa9feb07c7fc332dbac, 68c51e1a876bd00a7588d45014b682d9a154d722, 68c51e1a876bd00a7588d45014b682d9a154d722, 68c51e1a876bd00a7588d45014b682d9a154d722, 68c51e1a876bd00a7588d45014b682d9a154d722, 1cb836204af9f9e59b64db1dba9df53836e927a0, 46cba6391140d334aecbe764a0fc3341feb27ce9, 17b9f5a0a07f83c42e4b198c38a6bf2fc9d5589e, 25a232e58bd49fa2cbad86f13a8e935c0a703170, fe0c8f942f64643988f6f0a089c4402fcdb5a55b, c5122522318b69d930199043b89ce2aadcbf51ae, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809, 42f9f7efa463480e5168ff054a66f9c086bbf809]:</summary>
+  - @rocket.chat/models@3.1.0-rc.0
+  - @rocket.chat/emitter@0.34.0-rc.0
+  - @rocket.chat/core-services@1.1.0-rc.0
+  - @rocket.chat/core-typings@9.1.0-rc.0
+  - @rocket.chat/rest-typings@9.1.0-rc.0
+  - @rocket.chat/network-broker@0.2.42-rc.0
+  - @rocket.chat/license@1.2.3-rc.0
+  - @rocket.chat/http-router@7.9.26-rc.0
+
+  </details>
+
+## 0.3.1
+
+### Patch Changes
+
+- ([#42363](https://github.com/RocketChat/Rocket.Chat/pull/42363)) Updates the native emoji set to Emoji 17.0 (emojibase 17), adding the newly released emojis to the emoji picker, shortcodes, PDF chat transcripts and federated reactions
+
+- ([#42415](https://github.com/RocketChat/Rocket.Chat/pull/42415)) Fixes local users' typing indicators never being sent to federated rooms in microservices deployments.
+
+- ([#42927](https://github.com/RocketChat/Rocket.Chat/pull/42927)) Changes the room version of newly created federated rooms from 10 to 11; existing rooms keep their version
+
+- ([#42927](https://github.com/RocketChat/Rocket.Chat/pull/42927)) Fixes message edits and deletions received from federated rooms being applied without first checking them against the Matrix rules for edits and redactions
+
+- Fixes federated requests being rejected when the remote server sends unquoted parameters in its `X-Matrix` authorization header
+
+- ([#43147](https://github.com/RocketChat/Rocket.Chat/pull/43147)) Fixes the Matrix federation answering every `/.well-known` path with an error, which hid other discovery documents the workspace serves there
+
+- <details><summary>Updated dependencies [4f350b4ffb76024d9bf44c02f3322c8f9071f1cf, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 687d88ff58975ac7d21ec059a0d151dcb75d8bd6, 12f0c0a9d48ded61bd12ba2e3dcee7b3d877e860, dd082311778ac467d36a72589bc675f1ab2b2cbe, 6bb0d3bca9b5da401050697d51bc99e89871bbb7, 857482ad1e0c6330fb57f96db40d2b08676bbf7e, 575d467b826f8057995e4cabad4c8369cfd45409, 575d467b826f8057995e4cabad4c8369cfd45409, 203d5ff96b613a12f85d9e59c57b4d177a4858c0, 6be3614cd2660ab4024635802fdf9cd7dd7b502f, 3dcddc61941c7896bc750220220cc7d5b72b9b46, 588311c49bfce08e7106e7c0bb32741334fa5321, 10b4e00e08951ace8f9c27d83fc0c48be010bdc7, a11ffff8acb74fd016e9ddb972da6eebda0c3e5e, 5e82e67eaa4c998870d3eb0597f485b30c244f02, a9b2bb76d88e4d2743e0817b15e6447e7c9c46eb, cdd948cb67ecf282f6cc8f411615c3de0db0b9f1, 6b3ec3e667c99015e381a4e8ea43146accb5f7f7, a11ffff8acb74fd016e9ddb972da6eebda0c3e5e, 4c152661022d34bfbe9bf78811eac286a31c47a5, cc5554d63e7341925dd7fd5844d77bd51834b572, 2559423eb2c897c5f1fe8c968c02380009a97df9, eaf5cedcce9f8e800415b4c49bce242f661462ea, 9a520fcd54321e154374182698c825aa09e87cc7, 1df95ff2d31f1e077084596f0024c3e2c53ca1df, f3fa7abd6b9d311f76619d0fe27793ac68f6d208, 40243c4ba0ed19120a571d37883aec203af1b747, daa677895dad92d6aab1e84a09f190efd2755ef9, 642d9e528a8572208e2f0bb51f45ea78400bcea3, bd92e8abc5a8f0161f3de5308979a0f88d09f351, 39a6e6e1397e1e89bc631fe4ab1cc10fa93b59e8, eb808dd70cfbd41a127d8655c62a21c4658fd2c0, bff76c34b21caddbc316d69b62fac858a73d7164, 61bdf0d5afb6714ea3cef087758f1d0eb3bfef45, 857482ad1e0c6330fb57f96db40d2b08676bbf7e, a39b03fe5c248079365162e31994e1dece63e7c2, 6c23db12912236374f41ae8f43ca7409b7b8b56c, 5feb08c8d83883c4142fda5d98cd1e1435d5d3b8]:</summary>
+  - @rocket.chat/core-typings@9.0.0
+  - @rocket.chat/rest-typings@9.0.0
+  - @rocket.chat/core-services@1.0.0
+  - @rocket.chat/models@3.0.0
+  - @rocket.chat/emitter@0.33.1
+  - @rocket.chat/license@1.2.2
+  - @rocket.chat/network-broker@0.2.41
+  - @rocket.chat/http-router@7.9.25
+
+  </details>
+
+## 0.3.1-rc.1
+
+### Patch Changes
+
+- Fixes federated requests being rejected when the remote server sends unquoted parameters in its `X-Matrix` authorization header
+
+- <details><summary>Updated dependencies [203d5ff96b613a12f85d9e59c57b4d177a4858c0]:</summary>
+  - @rocket.chat/core-services@1.0.0-rc.1
+  - @rocket.chat/core-typings@9.0.0-rc.6
+  - @rocket.chat/rest-typings@9.0.0-rc.6
+
+  </details>
+
+## 0.3.1-rc.0
+
+### Patch Changes
+
+- ([#42363](https://github.com/RocketChat/Rocket.Chat/pull/42363)) Updates the native emoji set to Emoji 17.0 (emojibase 17), adding the newly released emojis to the emoji picker, shortcodes, PDF chat transcripts and federated reactions
+
+- ([#42415](https://github.com/RocketChat/Rocket.Chat/pull/42415)) Fixes local users' typing indicators never being sent to federated rooms in microservices deployments.
+
+- ([#42927](https://github.com/RocketChat/Rocket.Chat/pull/42927)) Changes the room version of newly created federated rooms from 10 to 11; existing rooms keep their version
+
+- ([#42927](https://github.com/RocketChat/Rocket.Chat/pull/42927)) Fixes message edits and deletions received from federated rooms being applied without first checking them against the Matrix rules for edits and redactions
+
+- ([#43147](https://github.com/RocketChat/Rocket.Chat/pull/43147)) Fixes the Matrix federation answering every `/.well-known` path with an error, which hid other discovery documents the workspace serves there
+
+- <details><summary>Updated dependencies [4f350b4ffb76024d9bf44c02f3322c8f9071f1cf, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 12f0c0a9d48ded61bd12ba2e3dcee7b3d877e860, dd082311778ac467d36a72589bc675f1ab2b2cbe, 6bb0d3bca9b5da401050697d51bc99e89871bbb7, 857482ad1e0c6330fb57f96db40d2b08676bbf7e, 575d467b826f8057995e4cabad4c8369cfd45409, 575d467b826f8057995e4cabad4c8369cfd45409, 6be3614cd2660ab4024635802fdf9cd7dd7b502f, 588311c49bfce08e7106e7c0bb32741334fa5321, 10b4e00e08951ace8f9c27d83fc0c48be010bdc7, a11ffff8acb74fd016e9ddb972da6eebda0c3e5e, 5e82e67eaa4c998870d3eb0597f485b30c244f02, a9b2bb76d88e4d2743e0817b15e6447e7c9c46eb, cdd948cb67ecf282f6cc8f411615c3de0db0b9f1, 6b3ec3e667c99015e381a4e8ea43146accb5f7f7, a11ffff8acb74fd016e9ddb972da6eebda0c3e5e, cc5554d63e7341925dd7fd5844d77bd51834b572, 2559423eb2c897c5f1fe8c968c02380009a97df9, eaf5cedcce9f8e800415b4c49bce242f661462ea, 9a520fcd54321e154374182698c825aa09e87cc7, 1df95ff2d31f1e077084596f0024c3e2c53ca1df, f3fa7abd6b9d311f76619d0fe27793ac68f6d208, 40243c4ba0ed19120a571d37883aec203af1b747, daa677895dad92d6aab1e84a09f190efd2755ef9, 642d9e528a8572208e2f0bb51f45ea78400bcea3, bd92e8abc5a8f0161f3de5308979a0f88d09f351, 39a6e6e1397e1e89bc631fe4ab1cc10fa93b59e8, eb808dd70cfbd41a127d8655c62a21c4658fd2c0, 61bdf0d5afb6714ea3cef087758f1d0eb3bfef45, 857482ad1e0c6330fb57f96db40d2b08676bbf7e, a39b03fe5c248079365162e31994e1dece63e7c2, 6c23db12912236374f41ae8f43ca7409b7b8b56c, 5feb08c8d83883c4142fda5d98cd1e1435d5d3b8]:</summary>
+  - @rocket.chat/core-typings@9.0.0-rc.0
+  - @rocket.chat/rest-typings@9.0.0-rc.0
+  - @rocket.chat/core-services@1.0.0-rc.0
+  - @rocket.chat/models@3.0.0-rc.0
+  - @rocket.chat/emitter@0.33.1-rc.0
+  - @rocket.chat/network-broker@0.2.41-rc.0
+  - @rocket.chat/license@1.2.2-rc.0
+  - @rocket.chat/http-router@7.9.25-rc.0
+
+  </details>
+
 ## 0.3.0
 
 ### Minor Changes

@@ -1,5 +1,6 @@
 import type { IAppServerOrchestrator, IAppsRoom, IAppsLivechatRoom, IAppsRoomRaw } from '@rocket.chat/apps';
 import { secureFieldsMapper } from '@rocket.chat/apps/dist/lib/SecureFields';
+import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatDepartment, Users, LivechatContacts } from '@rocket.chat/models';
 import * as z from 'zod';
@@ -11,7 +12,7 @@ import { mappedDecodeAsync } from './mappedData';
 // `IRoom` union, so the transform inputs are treated as loose records (as the legacy converter did).
 type RoomData = Record<string, any>;
 
-const mapUserLookup = (user: any) =>
+const mapUserLookup = (user: { _id?: string; id?: string; username?: string; name?: string } | null | undefined) =>
 	user && {
 		_id: user._id ?? user.id,
 		...(user.username && { username: user.username }),
@@ -51,7 +52,7 @@ export async function decodeRoomRaw(room: IRoom): Promise<IAppsRoomRaw> {
 		parentRoomId: 'prid',
 		isFederated: 'federated',
 		federation: 'federation',
-		visitor: (data: RoomData) => {
+		visitor: (data: RoomData): unknown => {
 			const { v } = data;
 			if (!v) {
 				return undefined;
@@ -66,13 +67,13 @@ export async function decodeRoomRaw(room: IRoom): Promise<IAppsRoomRaw> {
 				...rest,
 			};
 		},
-		displaySystemMessages: (data: RoomData) => {
+		displaySystemMessages: (data: RoomData): unknown => {
 			const { sysMes } = data;
 			delete data.sysMes;
 			return typeof sysMes === 'undefined' ? true : sysMes;
 		},
 		type: (data: RoomData) => {
-			const result = z.decode(RoomTypeCodec, data.t);
+			const result: string = z.decode(RoomTypeCodec, data.t);
 			delete data.t;
 			return result;
 		},
@@ -130,7 +131,13 @@ async function getCreator(user: string | undefined) {
 	};
 }
 
-async function getVisitor({ visitor: roomVisitor, visitorChannelInfo }: any) {
+async function getVisitor({
+	visitor: roomVisitor,
+	visitorChannelInfo,
+}: {
+	visitor?: { id: string };
+	visitorChannelInfo?: IAppsLivechatRoom['visitorChannelInfo'];
+}) {
 	if (!roomVisitor) {
 		return;
 	}
@@ -212,6 +219,22 @@ async function getDepartment({ department }: any) {
 	return dept?._id;
 }
 
+function mapAppRoomBaseFields(room: Partial<IAppsRoomRaw>): Record<string, unknown> {
+	return {
+		...(room.id && { _id: room.id }),
+		...(typeof room.type !== 'undefined' && { t: room.type }),
+		...(typeof room.createdAt !== 'undefined' && { ts: room.createdAt }),
+		...(typeof room.messageCount !== 'undefined' && { msgs: room.messageCount || 0 }),
+		...(typeof room.updatedAt !== 'undefined' && { _updatedAt: room.updatedAt }),
+		...(room.displayName && { fname: room.displayName }),
+		...(room.type !== RoomType.DIRECT_MESSAGE && room.slugifiedName && { name: room.slugifiedName }),
+		...(room.members && { members: room.members }),
+		...(typeof room.isDefault !== 'undefined' && { default: room.isDefault }),
+		...(typeof room.isReadOnly !== 'undefined' && { ro: room.isReadOnly }),
+		...(typeof room.displaySystemMessages !== 'undefined' && { sysMes: room.displaySystemMessages }),
+	};
+}
+
 /**
  * Apps-Engine -> Rocket.Chat room transform. Mirrors the legacy `convertAppRoom`, including the
  * `isPartial` behaviour (skip `_unmappedProperties_` merge). Cross-converter independent — it reads
@@ -231,17 +254,7 @@ export async function appRoomToRocketChat(room: any, isPartial = false): Promise
 	const contactId = await getContactId(room);
 
 	const newRoom = {
-		...(room.id && { _id: room.id }),
-		...(typeof room.type !== 'undefined' && { t: room.type }),
-		...(typeof room.createdAt !== 'undefined' && { ts: room.createdAt }),
-		...(typeof room.messageCount !== 'undefined' && { msgs: room.messageCount || 0 }),
-		...(typeof room.updatedAt !== 'undefined' && { _updatedAt: room.updatedAt }),
-		...(room.displayName && { fname: room.displayName }),
-		...(room.type !== 'd' && room.slugifiedName && { name: room.slugifiedName }),
-		...(room.members && { members: room.members }),
-		...(typeof room.isDefault !== 'undefined' && { default: room.isDefault }),
-		...(typeof room.isReadOnly !== 'undefined' && { ro: room.isReadOnly }),
-		...(typeof room.displaySystemMessages !== 'undefined' && { sysMes: room.displaySystemMessages }),
+		...mapAppRoomBaseFields(room),
 		...(u && { u }),
 		...(v && { v }),
 		...(departmentId && { departmentId }),
@@ -270,6 +283,7 @@ export async function appRoomToRocketChat(room: any, isPartial = false): Promise
 		Object.assign(newRoom, room._unmappedProperties_);
 	}
 
+	// oxlint-disable-next-line typescript/no-unnecessary-type-assertion -- tsc needs this cast; oxlint type-aware disagrees
 	return newRoom as unknown as Partial<IRoom>;
 }
 
@@ -315,7 +329,7 @@ export function createRoomCodec(orch: IAppServerOrchestrator) {
 					delete room.ro;
 					return result;
 				},
-				displaySystemMessages: (room: RoomData) => {
+				displaySystemMessages: (room: RoomData): unknown => {
 					const { sysMes } = room;
 
 					if (typeof sysMes === 'undefined') {
@@ -326,7 +340,7 @@ export function createRoomCodec(orch: IAppServerOrchestrator) {
 					return sysMes;
 				},
 				type: (room: RoomData) => {
-					const result = z.decode(RoomTypeCodec, room.t);
+					const result: string = z.decode(RoomTypeCodec, room.t);
 					delete room.t;
 					return result;
 				},
@@ -365,7 +379,7 @@ export function createRoomCodec(orch: IAppServerOrchestrator) {
 				// let's call X and Y. Then if the contact sends a message using X phone number,
 				// then room.v.phoneNo would be X and correspondingly we'll store the timestamp of
 				// the last message from this visitor from X phone no on room.v.lastMessageTs
-				visitorChannelInfo: (room: RoomData) => {
+				visitorChannelInfo: (room: RoomData): unknown => {
 					const { v } = room;
 
 					if (!v) {

@@ -1,8 +1,8 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const sandbox = sinon.createSandbox();
@@ -18,14 +18,16 @@ const notifyOnSubscriptionChangedByUserId = sandbox.stub();
 const settingsGet = sandbox.stub();
 const getFixedT = sandbox.stub();
 
-const { resetUserE2EEncriptionKey } = proxyquire.noCallThru().load('./resetUserE2EKey', {
-	'@rocket.chat/core-services': { api: { broadcast }, ClientSafeError },
-	'@rocket.chat/models': { Users, Subscriptions, Rooms },
-	'./i18n': { i18n: { getFixedT } },
-	'./isUserIdFederated': { isUserIdFederated },
-	'./notifications/email/api': { send: sendEmail },
-	'./notifyListener': { notifyOnUserChange, notifyOnSubscriptionChangedByUserId },
-	'../settings': { settings: { get: settingsGet } },
+let resetUserE2EEncriptionKey: any;
+
+before(async () => {
+	mock.module('@rocket.chat/core-services', { exports: { api: { broadcast }, ClientSafeError } });
+	mock.module('./i18n', { exports: { i18n: { getFixedT } } });
+	mock.module('./isUserIdFederated', { exports: { isUserIdFederated } });
+	mock.module('./notifications/email/api', { exports: { send: sendEmail } });
+	mock.module('./notifyListener', { exports: { notifyOnUserChange, notifyOnSubscriptionChangedByUserId } });
+	mock.module('../settings', { exports: { settings: { get: settingsGet } } });
+	({ resetUserE2EEncriptionKey } = await import('./resetUserE2EKey'));
 });
 
 const UID = 'user-id';
@@ -46,6 +48,12 @@ const expectNoKeyOrSessionCleanup = () => {
 };
 
 describe('resetUserE2EEncriptionKey', () => {
+	before(() => {
+		mockModel('Users', Users);
+		mockModel('Subscriptions', Subscriptions);
+		mockModel('Rooms', Rooms);
+	});
+
 	beforeEach(() => {
 		sandbox.reset();
 

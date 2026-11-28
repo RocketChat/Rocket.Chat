@@ -2,6 +2,7 @@ import type {
 	AvailableAgentsAggregation,
 	AtLeast,
 	DeepWritable,
+	EmailVerificationTokenRecord,
 	ILivechatAgent,
 	ILoginToken,
 	IMeteorLoginToken,
@@ -9,6 +10,7 @@ import type {
 	IRole,
 	IRoom,
 	IUser,
+	PasswordTokenRecord,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus, UserStatus } from '@rocket.chat/core-typings';
@@ -37,11 +39,11 @@ import type {
 	AnyBulkWriteOperation,
 } from 'mongodb';
 
-import { Rooms, Subscriptions } from '../index';
+import { Rooms, Subscriptions } from '../proxies';
 import { BaseRaw } from './BaseRaw';
 import { queryAvailableAgentsForSelection, queryStatusAgentOnline } from '../helpers';
 
-const usersDefaultFields = { __rooms: 0 } as const;
+const usersDefaultFields = { __rooms: 0, roomRolePriorities: 0 } as const;
 
 export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IUsersModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUser>>) {
@@ -254,7 +256,9 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	addRolesByUserId(uid: string, roles: string | string[]) {
 		if (!Array.isArray(roles)) {
 			roles = [roles];
-			process.env.NODE_ENV === 'development' && console.warn('[WARN] Users.addRolesByUserId: roles should be an array');
+			if (process.env.NODE_ENV === 'development') {
+				console.warn('[WARN] Users.addRolesByUserId: roles should be an array');
+			}
 		}
 
 		const query = {
@@ -631,6 +635,21 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		} as unknown as O);
 	}
 
+	findOneByUsernameIgnoringCaseExceptId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		username: string,
+		exceptUserId: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
+		const query = { username, _id: { $ne: exceptUserId } };
+
+		// safe to merge into `O`: only `O['projection']` feeds the return type, and it survives the spread.
+		// note the model's `collation` wins over a caller-supplied one, so the lookup stays case insensitive.
+		return this.findOne<T, O>(query, {
+			...options,
+			collation: { locale: 'en', strength: 2 }, // Case insensitive
+		} as unknown as O);
+	}
+
 	findOneWithoutLDAPByUsernameIgnoringCase<
 		T extends Document = IUser,
 		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
@@ -682,6 +701,21 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			active: true,
 			_id: {
 				$nin: userIds,
+			},
+		};
+
+		return this.find<T, O>(query, options);
+	}
+
+	findActiveLDAPUsersByIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userIds: IUser['_id'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		const query = {
+			ldap: true,
+			active: true,
+			_id: {
+				$in: userIds,
 			},
 		};
 
@@ -1316,6 +1350,17 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			},
 			{
 				returnDocument: 'after',
+				projection: {
+					_id: 1,
+					username: 1,
+					name: 1,
+					status: 1,
+					statusText: 1,
+					statusSource: 1,
+					statusExpiresAt: 1,
+					roles: 1,
+					xmppFederation: 1,
+				},
 			},
 		);
 	}
@@ -1551,6 +1596,44 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		};
 
 		return this.col.updateOne({ _id }, update);
+	}
+
+	addLoginToken(userId: IUser['_id'], loginToken: IMeteorLoginToken) {
+		return this.col.updateOne(
+			{ _id: userId },
+			{
+				$addToSet: {
+					'services.resume.loginTokens': loginToken,
+				},
+			},
+		);
+	}
+
+	findWithLoginTokensOlderThan<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		date: Date,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		// login tokens created by old Meteor versions stamp `when` as a number
+		const query = {
+			$or: [{ 'services.resume.loginTokens.when': { $lt: date } }, { 'services.resume.loginTokens.when': { $lt: +date } }],
+		};
+
+		return this.find<T, O>(query, options);
+	}
+
+	removeLoginTokensOlderThan(date: Date) {
+		return this.col.updateMany(
+			{
+				$or: [{ 'services.resume.loginTokens.when': { $lt: date } }, { 'services.resume.loginTokens.when': { $lt: +date } }],
+			},
+			{
+				$pull: {
+					'services.resume.loginTokens': {
+						$or: [{ when: { $lt: date } }, { when: { $lt: +date } }],
+					},
+				},
+			},
+		);
 	}
 
 	unsetLoginTokens(userId: IUser['_id']) {
@@ -2466,6 +2549,29 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		} as unknown as O);
 	}
 
+	findOneByEmailAddressExceptId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		emailAddress: string,
+		exceptUserId: IUser['_id'],
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
+		const query = { 'emails.address': String(emailAddress).trim(), '_id': { $ne: exceptUserId } };
+
+		// safe to merge into `O`: only `O['projection']` feeds the return type, and it survives the spread.
+		// note the model's `collation` wins over a caller-supplied one, so the lookup stays case insensitive.
+		return this.findOne<T, O>(query, {
+			...options,
+			collation: { locale: 'en', strength: 2 }, // Case insensitive
+		} as unknown as O);
+	}
+
+	findOneByServiceId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		serviceName: string,
+		serviceId: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
+		return this.findOne<T, O>({ [`services.${serviceName}.id`]: serviceId }, options);
+	}
+
 	findOneWithoutLDAPByEmailAddress<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		emailAddress: string,
 		options?: O,
@@ -2532,12 +2638,12 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne<T, O>(query, options);
 	}
 
-	findOneByRolesAndType<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
-		roles: IRole['_id'][],
+	findOneByRoleAndType<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		role: IRole['_id'],
 		type: string,
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null> {
-		const query = { roles, type };
+		const query = { roles: role, type };
 
 		return this.findOne<T, O>(query, options);
 	}
@@ -2900,6 +3006,12 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne({ _id }, update);
 	}
 
+	setServiceDataById(_id: IUser['_id'], serviceName: string, serviceData: Record<string, unknown>) {
+		const fields = Object.fromEntries(Object.entries(serviceData).map(([key, value]) => [`services.${serviceName}.${key}`, value]));
+
+		return this.updateOne({ _id }, { $set: fields });
+	}
+
 	setUsername(_id: IUser['_id'], username: string, options?: UpdateOptions) {
 		const update = { $set: { username } };
 
@@ -3063,6 +3175,24 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		};
 
 		return this.updateOne({ _id }, update);
+	}
+
+	setPasswordHash(_id: IUser['_id'], passwordHash: string) {
+		return this.updateOne(
+			{ _id },
+			{
+				$set: { 'services.password.bcrypt': passwordHash },
+				$unset: { 'services.password.reset': 1, 'services.password.argon2': 1 },
+			},
+		);
+	}
+
+	setPasswordResetToken(_id: IUser['_id'], tokenRecord: PasswordTokenRecord) {
+		return this.updateOne({ _id }, { $set: { 'services.password.reset': tokenRecord } });
+	}
+
+	setPasswordEnrollToken(_id: IUser['_id'], tokenRecord: PasswordTokenRecord) {
+		return this.updateOne({ _id }, { $set: { 'services.password.enroll': tokenRecord } });
 	}
 
 	resetPasswordAndSetRequirePasswordChange(_id: IUser['_id'], requirePasswordChange: boolean, requirePasswordChangeReason: string) {
@@ -3302,6 +3432,20 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.insertOne(user);
 	}
 
+	createIfNotExists({ _id, ...data }: Partial<IUser> & Pick<IUser, '_id'>): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id },
+			{
+				$setOnInsert: {
+					createdAt: new Date(),
+					avatarOrigin: 'none',
+					...data,
+				},
+			},
+			{ upsert: true },
+		);
+	}
+
 	// REMOVE
 	override removeById(_id: IUser['_id']) {
 		return this.deleteOne({ _id });
@@ -3434,6 +3578,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			return 0;
 		}
 		return this.countDocuments({ _id: { $in: room.uids }, active: true });
+	}
+
+	addEmailVerificationToken(_id: IUser['_id'], tokenRecord: EmailVerificationTokenRecord) {
+		return this.updateOne({ _id }, { $push: { 'services.email.verificationTokens': tokenRecord } });
 	}
 
 	verifyEmailByAddress(_id: IUser['_id'], emailAddress: string) {

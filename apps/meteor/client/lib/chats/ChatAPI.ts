@@ -102,21 +102,21 @@ export type DataAPI = {
 	getDiscussionByID(drid: IRoom['_id']): Promise<IRoom>;
 	findSubscription(): Promise<ISubscription | undefined>;
 	getSubscription(): Promise<ISubscription>;
-	findSubscriptionFromMessage(message: IMessage): Promise<ISubscription | undefined>;
-	getSubscriptionFromMessage(message: IMessage): Promise<ISubscription>;
 };
 
 export type EncryptedFileUploadContent = {
 	rawFile: File;
 	fileContent: { raw: Partial<IUpload>; encrypted?: IE2EEMessage['content'] };
 	encryptedFile: EncryptedFile;
+	imageDimensions?: { height: number; width: number };
 };
 
 export type UploadsAPI = {
 	get(): readonly Upload[];
 	subscribe(callback: () => void): () => void;
 	wipeFailedOnes(): void;
-	clear(): void;
+	attach(): void;
+	detach(): void;
 	getProcessingUploads(): boolean;
 	setProcessingUploads(processing: boolean): void;
 	cancel(id: Upload['id']): void;
@@ -131,6 +131,7 @@ export type ChatAPI = {
 	readonly uid: string | undefined;
 	readonly composer?: ComposerAPI;
 	readonly setComposerAPI: (composer?: ComposerAPI) => void;
+	readonly subscribeToComposer: (callback: () => void) => () => void;
 	readonly data: DataAPI;
 	readonly readStateManager: ReadStateManager;
 	readonly messageEditing: {

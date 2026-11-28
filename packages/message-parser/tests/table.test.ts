@@ -1,6 +1,6 @@
-import type { Table } from '../src';
-import { parse } from '../src';
-import { bold, link, plain, table, tableCell, tableRow } from './helpers';
+import { bold, link, plain, table, tableCell, tableRow } from './helpers.js';
+import type { Table } from '../src/index.js';
+import { parse } from '../src/index.js';
 
 // `fallback` is the [start, end] offset span of the table in the source; since
 // each input is exactly the table, that span is [0, input.length].
@@ -84,7 +84,7 @@ test('exposes the source offsets as fallback for renderers without table support
 	const [node] = parse(input) as [ReturnType<typeof table>];
 	expect(node.fallback).toEqual([0, input.length]);
 	// the offsets slice back to the original markup
-	expect(input.slice(node.fallback![0], node.fallback![1])).toBe(input);
+	expect(input.slice(node.fallback?.[0], node.fallback?.[1])).toBe(input);
 });
 
 test.each([

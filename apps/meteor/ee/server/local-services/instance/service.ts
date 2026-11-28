@@ -9,6 +9,7 @@ import EJSON from 'ejson';
 import type { BrokerNode } from 'moleculer';
 import { ServiceBroker, Transporters, Serializers } from 'moleculer';
 
+import { getEncryption, getEncryptionWarning } from './getEncryption';
 import { getLogger } from './getLogger';
 import { getTransporter } from './getTransporter';
 import { SystemLogger } from '../../../../server/lib/logger/system';
@@ -83,6 +84,11 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 		const isTransporterTCP = typeof transporter !== 'string';
 
+		const encryptionWarning = getEncryptionWarning(process.env.MOLECULER_ENCRYPTION_SECRET, isTransporterTCP ? 'tcp' : 'nats');
+		if (encryptionWarning) {
+			SystemLogger.warn(encryptionWarning);
+		}
+
 		this.transporter = isTransporterTCP ? new Transporters.TCP(transporter) : new Transporters.NATS({ url: transporter });
 
 		this.broker = new ServiceBroker({
@@ -92,6 +98,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 			heartbeatInterval: defaultPingInterval,
 			heartbeatTimeout: indexExpire,
 			...getLogger(process.env),
+			...getEncryption(process.env),
 		});
 
 		const { localBroker } = this;
@@ -145,11 +152,14 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 		const { host, tcpPort } = record.extraInformation;
 
+		// oxlint-disable-next-line typescript/no-unsafe-call -- TcpTransporter internals are not in moleculer's types
 		(this.broker?.transit?.tx as any).addOfflineNode(record._id, host, tcpPort);
 	}
 
 	private disconnectNode(nodeId: string) {
+		// oxlint-disable-next-line typescript/no-unsafe-call -- TcpTransporter internals are not in moleculer's types
 		(this.broker.transit?.tx as any).nodes.disconnected(nodeId, false);
+		// oxlint-disable-next-line typescript/no-unsafe-call -- TcpTransporter internals are not in moleculer's types
 		(this.broker.transit?.tx as any).nodes.nodes.delete(nodeId);
 	}
 

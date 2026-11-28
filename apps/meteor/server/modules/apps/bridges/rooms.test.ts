@@ -1,10 +1,10 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { suppliesAbacAttributes } from '@rocket.chat/apps/dist/server/bridges/RoomBridge';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const createPrivateGroupMethod = sinon.stub();
@@ -12,19 +12,19 @@ const createChannelMethod = sinon.stub();
 const createDirectMessage = sinon.stub();
 const getSetting = sinon.stub();
 
-const { AppRoomBridge } = proxyquire.noCallThru().load('./rooms', {
-	'@rocket.chat/apps/dist/server/bridges/RoomBridge': { RoomBridge: class {}, suppliesAbacAttributes },
-	'@rocket.chat/models': {
-		Users: { findOneById: async (_id: string) => ({ _id, username: 'creator' }) },
-	},
-	'../../../lib/rooms/addUserToRoom': {},
-	'../../../lib/rooms/deleteRoom': {},
-	'../../../lib/rooms/removeUserFromRoom': {},
-	'../../../meteor-methods/messages/createDirectMessage': { createDirectMessage },
-	'../../../meteor-methods/messages/createDiscussion': {},
-	'../../../meteor-methods/rooms/createChannel': { createChannelMethod },
-	'../../../meteor-methods/rooms/createPrivateGroup': { createPrivateGroupMethod },
-	'../../../settings': { settings: { get: getSetting } },
+let AppRoomBridge: any;
+
+before(async () => {
+	mock.module('@rocket.chat/apps/dist/server/bridges/RoomBridge', { exports: { RoomBridge: class {}, suppliesAbacAttributes } });
+	mock.module('../../../lib/rooms/addUserToRoom', { exports: {} });
+	mock.module('../../../lib/rooms/deleteRoom', { exports: {} });
+	mock.module('../../../lib/rooms/removeUserFromRoom', { exports: {} });
+	mock.module('../../../meteor-methods/messages/createDirectMessage', { exports: { createDirectMessage } });
+	mock.module('../../../meteor-methods/messages/createDiscussion', { exports: {} });
+	mock.module('../../../meteor-methods/rooms/createChannel', { exports: { createChannelMethod } });
+	mock.module('../../../meteor-methods/rooms/createPrivateGroup', { exports: { createPrivateGroupMethod } });
+	mock.module('../../../settings', { exports: { settings: { get: getSetting } } });
+	({ AppRoomBridge } = await import('./rooms'));
 });
 
 const orchestrator = {
@@ -46,7 +46,11 @@ const buildRoom = (type: RoomType, attributes?: IRoom['abacAttributes']): IRoom 
 	}) as IRoom;
 
 describe('AppRoomBridge.create', () => {
-	let bridge: InstanceType<typeof AppRoomBridge>;
+	let bridge: any;
+
+	before(() => {
+		mockModel('Users', { findOneById: async (_id: string) => ({ _id, username: 'creator' }) });
+	});
 
 	beforeEach(() => {
 		for (const stub of [createPrivateGroupMethod, createChannelMethod, createDirectMessage]) {

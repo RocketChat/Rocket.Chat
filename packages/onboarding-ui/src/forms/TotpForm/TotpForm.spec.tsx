@@ -1,7 +1,9 @@
 import { render } from '@testing-library/react';
 
-import TotpForm from './TotpForm';
+import TotpForm from './TotpForm.js';
 
 it('renders without crashing', () => {
-	render(<TotpForm onChangeTotpForm={() => undefined} isBackupCode={false} onSubmit={() => undefined} />);
+	const { container } = render(<TotpForm onChangeTotpForm={() => undefined} isBackupCode={false} onSubmit={() => undefined} />);
+
+	expect(container).not.toBeEmptyDOMElement();
 });

@@ -266,7 +266,7 @@ export class SAMLUtils {
 			map = JSON.parse(userDataFieldMap);
 		} catch (err) {
 			SAMLUtils.log({ userDataFieldMap, err });
-			throw new Error('Failed to parse custom user field map');
+			throw new Error('Failed to parse custom user field map', { cause: err });
 		}
 
 		const parsedMap: IUserDataMap = {
@@ -288,7 +288,7 @@ export class SAMLUtils {
 		let identifier = immutableProperty.toLowerCase();
 
 		for (const spFieldName in map) {
-			if (!map.hasOwnProperty(spFieldName)) {
+			if (!Object.hasOwn(map, spFieldName)) {
 				continue;
 			}
 
@@ -311,7 +311,7 @@ export class SAMLUtils {
 			// If it's a complex type, let's check what's in it
 			if (typeof attribute === 'object') {
 				// A fieldName is mandatory for complex fields. If it's missing, let's skip this one.
-				if (!attribute.hasOwnProperty('fieldName') && !attribute.hasOwnProperty('fieldNames')) {
+				if (!Object.hasOwn(attribute, 'fieldName') && !Object.hasOwn(attribute, 'fieldNames')) {
 					continue;
 				}
 
@@ -412,7 +412,7 @@ export class SAMLUtils {
 			}
 		}
 
-		if (mapping.regex && mainValue?.match) {
+		if (mapping.regex && typeof mainValue === 'string') {
 			let regexValue;
 			const match = mainValue.match(new RegExp(mapping.regex));
 			if (match?.length) {
@@ -505,7 +505,7 @@ export class SAMLUtils {
 		if (profile.channels) {
 			if (Array.isArray(profile.channels)) {
 				userObject.channels = profile.channels;
-			} else {
+			} else if (typeof profile.channels === 'string') {
 				userObject.channels = profile.channels.split(',');
 			}
 		}

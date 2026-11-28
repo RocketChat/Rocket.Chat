@@ -1,7 +1,11 @@
 import { render } from '@testing-library/react';
 
-import LoginForm from './LoginForm';
+import LoginForm from './LoginForm.js';
 
 it('renders without crashing', () => {
-	render(<LoginForm onChangeForm={() => undefined} isPasswordLess={false} onResetPassword={() => undefined} onSubmit={() => undefined} />);
+	const { container } = render(
+		<LoginForm onChangeForm={() => undefined} isPasswordLess={false} onResetPassword={() => undefined} onSubmit={() => undefined} />,
+	);
+
+	expect(container).not.toBeEmptyDOMElement();
 });

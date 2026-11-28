@@ -1,12 +1,20 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 
-import { Sidepanel, SidepanelSection, SidepanelHeader, SidepanelHeaderTitle, SidepanelList, SidepanelListItem } from '.';
+import {
+	Sidepanel,
+	SidepanelHeader,
+	SidepanelHeaderActions,
+	SidepanelHeaderTitle,
+	SidepanelList,
+	SidepanelListItem,
+	SidepanelSearch,
+} from '.';
 import {
 	Avatar,
 	Box,
 	Icon,
 	IconButton,
-	InputBox,
+	Sidebar,
 	SidebarItemTitle,
 	SidebarItemCol,
 	SidebarItemBadge,
@@ -47,9 +55,7 @@ const render: Story['render'] = (args) => (
 			<SidepanelHeaderTitle>Title Lorem Ipsum Indolor Ipsum Dolor Ipsum Ipsum</SidepanelHeaderTitle>
 			<IconButton icon='burger-menu' title='menu' />
 		</SidepanelHeader>
-		<SidepanelSection>
-			<InputBox type='text' placeholder='Search' endAddon={<Icon name='magnifier' size='x18' />} />
-		</SidepanelSection>
+		<SidepanelSearch placeholder='Search' />
 		<Box overflowY='auto' height='full'>
 			<SidepanelList>
 				{new Array(20).fill(null).map((_, index) => {
@@ -72,8 +78,10 @@ const render: Story['render'] = (args) => (
 												Team title
 											</Tag>
 										</Box>
-										<SidebarItemBadge title='unread messages' children={index + 3} />
-										<SidebarItemMenu children={<MenuTemplate />} />
+										<SidebarItemBadge title='unread messages'>{index + 3}</SidebarItemBadge>
+										<SidebarItemMenu>
+											<MenuTemplate />
+										</SidebarItemMenu>
 									</SidebarItemRow>
 								</SidebarItemCol>
 							</SidebarItem>
@@ -87,4 +95,20 @@ const render: Story['render'] = (args) => (
 
 export const Default: Story = {
 	render,
+};
+
+export const InSidebar: Story = {
+	render: () => (
+		<Sidebar>
+			<SidepanelHeader>
+				<SidepanelHeaderTitle role='heading' aria-level={2}>
+					Inbox
+				</SidepanelHeaderTitle>
+				<SidepanelHeaderActions>
+					<IconButton icon='magnifier' size='small' title='Search' pressed />
+				</SidepanelHeaderActions>
+			</SidepanelHeader>
+			<SidepanelSearch variant='rooms-list' small placeholder='Search rooms' aria-label='Search rooms' />
+		</Sidebar>
+	),
 };

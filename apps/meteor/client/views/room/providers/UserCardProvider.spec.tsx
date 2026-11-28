@@ -1,6 +1,7 @@
 import type { UserCardContextValue } from '@rocket.chat/ui-contexts';
 import { useUserCard } from '@rocket.chat/ui-contexts';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { useEffect, useRef, type ReactNode, type UIEvent } from 'react';
 
 import UserCardProvider from './UserCardProvider';
@@ -31,6 +32,9 @@ const Trigger = () => {
 	);
 };
 
+// oxlint-disable-next-line testing-library/no-node-access -- the hover handlers sit on the card's unlabelled wrapper
+const getCardContainer = () => screen.getByTestId('user-card').parentElement as HTMLElement;
+
 // Stands in for a contextual bar / search panel that closes on a bubbling Escape.
 const EscapeListener = ({ onEscape, children }: { onEscape: () => void; children: ReactNode }) => {
 	const ref = useRef<HTMLDivElement>(null);
@@ -48,6 +52,7 @@ const EscapeListener = ({ onEscape, children }: { onEscape: () => void; children
 };
 
 it('consumes Escape while the card is open so an underlying handler does not also fire', async () => {
+	const user = userEvent.setup();
 	const underlyingEscape = jest.fn();
 
 	render(
@@ -58,16 +63,18 @@ it('consumes Escape while the card is open so an underlying handler does not als
 		</EscapeListener>,
 	);
 
-	fireEvent.click(screen.getByText('open'));
-	await screen.findByTestId('user-card');
+	await user.click(screen.getByText('open'));
+	expect(await screen.findByTestId('user-card')).toBeInTheDocument();
 
-	fireEvent.keyDown(screen.getByText('open'), { key: 'Escape' });
+	act(() => screen.getByText('open').focus());
+	await user.keyboard('{Escape}');
 
 	await waitFor(() => expect(screen.queryByTestId('user-card')).not.toBeInTheDocument());
 	expect(underlyingEscape).not.toHaveBeenCalled();
 });
 
 it('does not consume Escape while a menu is open, leaving the card as it is', async () => {
+	const user = userEvent.setup();
 	const underlyingEscape = jest.fn();
 
 	render(
@@ -81,10 +88,11 @@ it('does not consume Escape while a menu is open, leaving the card as it is', as
 		</EscapeListener>,
 	);
 
-	fireEvent.click(screen.getByText('open'));
-	await screen.findByTestId('user-card');
+	await user.click(screen.getByText('open'));
+	expect(await screen.findByTestId('user-card')).toBeInTheDocument();
 
-	fireEvent.keyDown(screen.getByText('open'), { key: 'Escape' });
+	act(() => screen.getByText('open').focus());
+	await user.keyboard('{Escape}');
 
 	// The provider neither stops the event nor closes the card: the stand-in is inert,
 	// so the event reaching the underlying listener proves it went through untouched.
@@ -104,6 +112,7 @@ const HoverTrigger = () => {
 it('cancels a pending hover open when Escape dismisses the card', async () => {
 	jest.useFakeTimers();
 	try {
+		const user = userEvent.setup({ delay: null });
 		render(
 			<UserCardProvider>
 				<Trigger />
@@ -111,15 +120,16 @@ it('cancels a pending hover open when Escape dismisses the card', async () => {
 			</UserCardProvider>,
 		);
 
-		fireEvent.click(screen.getByText('open'));
+		await user.click(screen.getByText('open'));
 		await act(async () => {
 			await jest.advanceTimersByTimeAsync(0);
 		});
 		expect(screen.getByTestId('user-card')).toBeInTheDocument();
 
 		// pointer reaches another author: an open is now pending behind the hover delay
-		fireEvent.mouseEnter(screen.getByText('hover'));
-		fireEvent.keyDown(screen.getByText('open'), { key: 'Escape' });
+		await user.hover(screen.getByText('hover'));
+		act(() => screen.getByText('open').focus());
+		await user.keyboard('{Escape}');
 
 		await act(async () => {
 			await jest.advanceTimersByTimeAsync(1000);
@@ -135,20 +145,21 @@ it('cancels a pending hover open when Escape dismisses the card', async () => {
 it('opens on hover after the intent delay, and not if the pointer leaves first', async () => {
 	jest.useFakeTimers();
 	try {
+		const user = userEvent.setup({ delay: null });
 		render(
 			<UserCardProvider>
 				<HoverTrigger />
 			</UserCardProvider>,
 		);
 
-		fireEvent.mouseEnter(screen.getByText('hover'));
-		fireEvent.mouseLeave(screen.getByText('hover'));
+		await user.hover(screen.getByText('hover'));
+		await user.unhover(screen.getByText('hover'));
 		await act(async () => {
 			await jest.advanceTimersByTimeAsync(1000);
 		});
 		expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
 
-		fireEvent.mouseEnter(screen.getByText('hover'));
+		await user.hover(screen.getByText('hover'));
 		await act(async () => {
 			await jest.advanceTimersByTimeAsync(499);
 		});
@@ -164,6 +175,7 @@ it('opens on hover after the intent delay, and not if the pointer leaves first',
 });
 
 it('keeps the context value stable when a card opens and closes', async () => {
+	const user = userEvent.setup();
 	const values: UserCardContextValue[] = [];
 
 	const RecordingTrigger = () => {
@@ -187,10 +199,10 @@ it('keeps the context value stable when a card opens and closes', async () => {
 		</UserCardProvider>,
 	);
 
-	fireEvent.click(screen.getByText('open'));
+	await user.click(screen.getByText('open'));
 	expect(await screen.findByTestId('user-card')).toBeInTheDocument();
 
-	fireEvent.click(screen.getByText('close'));
+	await user.click(screen.getByText('close'));
 	await waitFor(() => expect(screen.queryByTestId('user-card')).not.toBeInTheDocument());
 
 	expect(new Set(values).size).toBe(1);
@@ -200,7 +212,8 @@ it('keeps the context value stable when a card opens and closes', async () => {
 it.each([
 	['the member list when it is available', [{ id: 'members-list' }], 'members-list'],
 	['the profile on its own when the member list is hidden', [{ id: 'thread' }], 'user-info'],
-])('opens a channel member info through %s', (_, actions, expectedTab) => {
+])('opens a channel member info through %s', async (_, actions, expectedTab) => {
+	const user = userEvent.setup();
 	mockActions = actions;
 	mockOpenTab.mockClear();
 
@@ -219,7 +232,7 @@ it.each([
 		</UserCardProvider>,
 	);
 
-	fireEvent.click(screen.getByText('info'));
+	await user.click(screen.getByText('info'));
 
 	expect(mockOpenTab).toHaveBeenCalledWith(expectedTab, 'john');
 });
@@ -241,6 +254,7 @@ const advance = (ms: number) =>
 it('closes shortly after the pointer leaves the card and its trigger', async () => {
 	jest.useFakeTimers();
 	try {
+		const user = userEvent.setup({ delay: null });
 		render(
 			<UserCardProvider>
 				<AuthorTrigger username='jane' />
@@ -248,18 +262,17 @@ it('closes shortly after the pointer leaves the card and its trigger', async () 
 		);
 
 		const trigger = screen.getByText('author jane');
-		fireEvent.mouseEnter(trigger);
+		await user.hover(trigger);
 		await advance(1000);
-		const card = screen.getByTestId('user-card').parentElement as HTMLElement;
+		const card = getCardContainer();
 
 		// from the trigger into the card: it stays open
-		fireEvent.mouseLeave(trigger);
-		fireEvent.mouseEnter(card);
+		await user.hover(card);
 		await advance(1000);
 		expect(screen.getByTestId('user-card')).toHaveTextContent('jane');
 
 		// out of the card: it lingers, then closes
-		fireEvent.mouseLeave(card);
+		await user.unhover(card);
 		await advance(299);
 		expect(screen.getByTestId('user-card')).toBeInTheDocument();
 		await advance(1);
@@ -272,6 +285,7 @@ it('closes shortly after the pointer leaves the card and its trigger', async () 
 it('makes the next author wait out the full hover delay, even with a card showing', async () => {
 	jest.useFakeTimers();
 	try {
+		const user = userEvent.setup({ delay: null });
 		render(
 			<UserCardProvider>
 				<AuthorTrigger username='jane' />
@@ -279,12 +293,11 @@ it('makes the next author wait out the full hover delay, even with a card showin
 			</UserCardProvider>,
 		);
 
-		fireEvent.mouseEnter(screen.getByText('author jane'));
+		await user.hover(screen.getByText('author jane'));
 		await advance(1000);
 		expect(screen.getByTestId('user-card')).toHaveTextContent('jane');
 
-		fireEvent.mouseLeave(screen.getByText('author jane'));
-		fireEvent.mouseEnter(screen.getByText('author john'));
+		await user.hover(screen.getByText('author john'));
 
 		// jane's card lingers, then closes; john's waits for the whole delay
 		await advance(300);
@@ -301,6 +314,7 @@ it('makes the next author wait out the full hover delay, even with a card showin
 it('does not open cards right away for authors the pointer sweeps past after one closed', async () => {
 	jest.useFakeTimers();
 	try {
+		const user = userEvent.setup({ delay: null });
 		render(
 			<UserCardProvider>
 				<AuthorTrigger username='jane' />
@@ -308,17 +322,17 @@ it('does not open cards right away for authors the pointer sweeps past after one
 			</UserCardProvider>,
 		);
 
-		fireEvent.mouseEnter(screen.getByText('author jane'));
+		await user.hover(screen.getByText('author jane'));
 		await advance(1000);
-		fireEvent.mouseLeave(screen.getByText('author jane'));
+		await user.unhover(screen.getByText('author jane'));
 		await advance(300);
 		expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
 
 		// passing over another author shortly after
-		fireEvent.mouseEnter(screen.getByText('author john'));
+		await user.hover(screen.getByText('author john'));
 		await advance(100);
 		expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
-		fireEvent.mouseLeave(screen.getByText('author john'));
+		await user.unhover(screen.getByText('author john'));
 		await advance(1000);
 		expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
 	} finally {
@@ -329,6 +343,7 @@ it('does not open cards right away for authors the pointer sweeps past after one
 it('does not bring the card back after scrolling dismisses it', async () => {
 	jest.useFakeTimers();
 	try {
+		const user = userEvent.setup({ delay: null });
 		render(
 			<UserCardProvider>
 				<AuthorTrigger username='jane' />
@@ -336,12 +351,12 @@ it('does not bring the card back after scrolling dismisses it', async () => {
 			</UserCardProvider>,
 		);
 
-		fireEvent.mouseEnter(screen.getByText('author jane'));
+		await user.hover(screen.getByText('author jane'));
 		await advance(1000);
 		expect(screen.getByTestId('user-card')).toBeInTheDocument();
 
 		// an open for john is pending when scrolling the list (which holds the trigger) dismisses the card
-		fireEvent.mouseEnter(screen.getByText('author john'));
+		await user.hover(screen.getByText('author john'));
 		fireEvent.scroll(document.body);
 		await advance(0);
 		expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
@@ -356,6 +371,7 @@ it('does not bring the card back after scrolling dismisses it', async () => {
 it('keeps the card open while its own menu is open, and closes once that menu closes with the pointer elsewhere', async () => {
 	jest.useFakeTimers();
 	try {
+		const user = userEvent.setup({ delay: null });
 		render(
 			<UserCardProvider>
 				<AuthorTrigger username='jane' />
@@ -363,16 +379,15 @@ it('keeps the card open while its own menu is open, and closes once that menu cl
 		);
 
 		const trigger = screen.getByText('author jane');
-		fireEvent.mouseEnter(trigger);
+		await user.hover(trigger);
 		await advance(1000);
 		const content = screen.getByTestId('user-card');
-		const card = content.parentElement as HTMLElement;
+		const card = getCardContainer();
 
 		// the card's kebab opens its menu, portaled outside the card, and the pointer follows it there
-		fireEvent.mouseLeave(trigger);
-		fireEvent.mouseEnter(card);
+		await user.hover(card);
 		await act(async () => content.setAttribute('aria-expanded', 'true'));
-		fireEvent.mouseLeave(card);
+		await user.unhover(card);
 		await advance(1000);
 		expect(screen.getByTestId('user-card')).toBeInTheDocument();
 
@@ -388,6 +403,7 @@ it('keeps the card open while its own menu is open, and closes once that menu cl
 it('opens a hover card as a pointer-only preview that neither takes focus nor marks its trigger', async () => {
 	jest.useFakeTimers();
 	try {
+		const user = userEvent.setup({ delay: null });
 		render(
 			<UserCardProvider>
 				<AuthorTrigger username='jane' />
@@ -396,7 +412,7 @@ it('opens a hover card as a pointer-only preview that neither takes focus nor ma
 
 		const trigger = screen.getByText('author jane');
 		trigger.focus();
-		fireEvent.mouseEnter(trigger);
+		await user.hover(trigger);
 		await advance(1000);
 
 		expect(screen.getByTestId('user-card')).toHaveTextContent('jane');
@@ -410,13 +426,14 @@ it('opens a hover card as a pointer-only preview that neither takes focus nor ma
 it('stays open while the pointer is on the trigger and the card renders its collapsed menu trigger', async () => {
 	jest.useFakeTimers();
 	try {
+		const user = userEvent.setup({ delay: null });
 		render(
 			<UserCardProvider>
 				<AuthorTrigger username='jane' />
 			</UserCardProvider>,
 		);
 
-		fireEvent.mouseEnter(screen.getByText('author jane'));
+		await user.hover(screen.getByText('author jane'));
 		await advance(1000);
 
 		// the loaded card brings its kebab, collapsed
@@ -431,6 +448,7 @@ it('stays open while the pointer is on the trigger and the card renders its coll
 it('stays open when the pointer jumps straight from the trigger onto the card', async () => {
 	jest.useFakeTimers();
 	try {
+		const user = userEvent.setup({ delay: null });
 		render(
 			<UserCardProvider>
 				<AuthorTrigger username='jane' />
@@ -438,15 +456,17 @@ it('stays open when the pointer jumps straight from the trigger onto the card', 
 		);
 
 		const trigger = screen.getByText('author jane');
-		fireEvent.mouseEnter(trigger);
+		await user.hover(trigger);
 		await advance(1000);
-		const card = screen.getByTestId('user-card').parentElement as HTMLElement;
+		const card = getCardContainer();
 
 		// a single fast move: the browser fires every pointer event before the matching mouse events
+		/* oxlint-disable testing-library/prefer-user-event -- userEvent.hover/unhover fire each element's pointer and mouse events together, so they cannot reproduce this order */
 		fireEvent.pointerLeave(trigger);
 		fireEvent.pointerEnter(card);
 		fireEvent.mouseLeave(trigger);
 		fireEvent.mouseEnter(card);
+		/* oxlint-enable testing-library/prefer-user-event */
 		await advance(1000);
 
 		expect(screen.getByTestId('user-card')).toBeInTheDocument();

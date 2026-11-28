@@ -1,8 +1,7 @@
 import { EventEmitter } from 'events';
-import { beforeEach, describe, it } from 'node:test';
+import { beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 class MockIncomingMessage extends EventEmitter {
@@ -43,24 +42,14 @@ const createMockHttpModule = (responseFactory: () => MockIncomingMessage, errorO
 });
 
 const createPendingFileImporter = (httpMock: ReturnType<typeof createMockHttpModule>) => {
-	const { PendingFileImporter } = proxyquire.noCallThru().load('./PendingFileImporter', {
-		'node:http': httpMock,
-		'node:https': httpMock,
-		'@rocket.chat/core-services': { api: { broadcast: sinon.stub() } },
-		'@rocket.chat/models': {
-			Messages: {
-				countAllImportedMessagesWithFilesToDownload: sinon.stub().resolves(0),
-				findAllImportedMessagesWithFilesToDownload: sinon.stub().returns([]),
-				setImportFileRocketChatAttachment: sinon.stub().resolves(),
-			},
-			Users: {
-				findOneById: sinon.stub().resolves(null),
-			},
-		},
-		'@rocket.chat/random': { Random: { id: () => 'random-id' } },
-		'../../media/file-upload': { FileUpload: { getStore: sinon.stub(), getPath: sinon.stub() } },
-		'../../../meteor-methods/messages/sendFileMessage': { parseFileIntoMessageAttachments: sinon.stub() },
-		'..': {
+	mock.module('node:http', { exports: { default: httpMock } });
+	mock.module('node:https', { exports: { default: httpMock } });
+	mock.module('@rocket.chat/core-services', { exports: { api: { broadcast: sinon.stub() } } });
+	mock.module('@rocket.chat/random', { exports: { Random: { id: () => 'random-id' } } });
+	mock.module('../../media/file-upload', { exports: { FileUpload: { getStore: sinon.stub(), getPath: sinon.stub() } } });
+	mock.module('../../../meteor-methods/messages/sendFileMessage', { exports: { parseFileIntoMessageAttachments: sinon.stub() } });
+	mock.module('..', {
+		exports: {
 			Importer: class MockImporter {
 				logger = { debug: sinon.stub(), error: sinon.stub(), info: sinon.stub() };
 
@@ -102,6 +91,10 @@ const createPendingFileImporter = (httpMock: ReturnType<typeof createMockHttpMod
 			},
 		},
 	});
+	delete require.cache[require.resolve('./PendingFileImporter')];
+	// oxlint-disable-next-line @typescript-eslint/no-require-imports
+	const { PendingFileImporter } = require('./PendingFileImporter');
+	mock.restoreAll();
 
 	const info = { key: 'pending-files', name: 'Pending Files' };
 	const importRecord = { _id: 'test-import' };

@@ -1,7 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const sandbox = sinon.createSandbox();
@@ -12,18 +12,26 @@ const pushTokenModelStub = {
 };
 const registerPushTokenStub = sandbox.stub();
 
-const { PushService } = proxyquire.noCallThru().load('./service', {
-	'@rocket.chat/models': { PushToken: pushTokenModelStub },
-	'./tokenManagement/registerPushToken': { registerPushToken: registerPushTokenStub },
-	'@rocket.chat/core-services': {
-		ServiceClassInternal: class {
-			onEvent = (): void => undefined;
+let PushService: typeof import('./service').PushService;
+
+before(async () => {
+	mock.module('./tokenManagement/registerPushToken', { exports: { registerPushToken: registerPushTokenStub } });
+	mock.module('@rocket.chat/core-services', {
+		exports: {
+			ServiceClassInternal: class {
+				onEvent = (): void => undefined;
+			},
 		},
-	},
+	});
+	({ PushService } = await import('./service'));
 });
 
 describe('PushService.registerPushToken()', () => {
 	let service: any;
+
+	before(() => {
+		mockModel('PushToken', pushTokenModelStub);
+	});
 
 	beforeEach(() => {
 		sandbox.reset();

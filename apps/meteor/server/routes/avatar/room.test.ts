@@ -1,7 +1,7 @@
-import { afterEach, describe, it } from 'node:test';
+import { afterEach, before, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const mocks = {
@@ -17,21 +17,18 @@ const mocks = {
 	getRoomName: sinon.stub(),
 };
 
-const { roomAvatar } = proxyquire.noCallThru().load('./room', {
-	'@rocket.chat/models': {
-		Rooms: {
-			findOneById: mocks.findOneById,
+let roomAvatar: any;
+
+before(async () => {
+	mock.module('./utils', { exports: { default: mocks.utils } });
+	mock.module('../../lib/rooms/roomCoordinator', {
+		exports: {
+			roomCoordinator: {
+				getRoomName: mocks.getRoomName,
+			},
 		},
-		Avatars: {
-			findOneByRoomId: mocks.avatarFindOneByRoomId,
-		},
-	},
-	'./utils': mocks.utils,
-	'../../lib/rooms/roomCoordinator': {
-		roomCoordinator: {
-			getRoomName: mocks.getRoomName,
-		},
-	},
+	});
+	({ roomAvatar } = await import('./room'));
 });
 
 describe('#roomAvatar()', () => {
@@ -41,6 +38,11 @@ describe('#roomAvatar()', () => {
 		end: sinon.spy(),
 	};
 	const next = sinon.spy();
+
+	before(() => {
+		mockModel('Rooms', { findOneById: mocks.findOneById });
+		mockModel('Avatars', { findOneByRoomId: mocks.avatarFindOneByRoomId });
+	});
 
 	afterEach(() => {
 		mocks.settingsGet.reset();

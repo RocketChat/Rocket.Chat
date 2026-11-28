@@ -1,12 +1,11 @@
+import { hashPassword } from '@rocket.chat/account-utils';
 import type { IImportUser, IImportUserRecord, IUser, IUserEmail } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { SHA256 } from '@rocket.chat/sha256';
-import { hash as bcryptHash } from 'bcrypt';
-import { Accounts } from 'meteor/accounts-base';
 
 import { RecordConverter, type RecordConverterOptions } from './RecordConverter';
 import { generateTempPassword } from './generateTempPassword';
+import { insertUser } from '../../../auth/insertUser';
 import { callbacks as systemCallbacks } from '../../../callbacks';
 import { notifyOnUserChange } from '../../../notifyListener';
 import { addUserToDefaultChannels } from '../../../rooms/addUserToDefaultChannels';
@@ -109,7 +108,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 	}
 
 	private async insertUserBatch(users: IUser[], { afterBatchFn }: IConversionCallbacks): Promise<string[]> {
-		let newIds: string[] | null = null;
+		let newIds: string[];
 
 		try {
 			newIds = Object.values((await Users.insertMany(users, { ordered: false })).insertedIds);
@@ -202,7 +201,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 
 		const subset = (source: Record<string, any>, currentPath: string): void => {
 			for (const key in source) {
-				if (!source.hasOwnProperty(key) || source[key] === undefined) {
+				if (!Object.hasOwn(source, key) || source[key] === undefined) {
 					continue;
 				}
 
@@ -254,6 +253,27 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 		}
 	}
 
+	private buildUserUpdateData(userData: IImportUser): Record<string, any> {
+		const updateData: Record<string, unknown> = Object.create(null);
+		return Object.assign(updateData, {
+			$set: Object.assign(Object.create(null), {
+				...(userData.roles && { roles: userData.roles }),
+				...(userData.type && { type: userData.type }),
+				...(userData.statusText && { statusText: userData.statusText }),
+				...(userData.bio && { bio: userData.bio }),
+				...(userData.services?.ldap && { ldap: true }),
+				...(userData.avatarUrl && { _pendingAvatarUrl: userData.avatarUrl }),
+				...(this._options.syncVoipExtension && userData.voipExtension && { sipExtension: userData.voipExtension }),
+			}),
+			...(this._options.syncVoipExtension &&
+				!userData.voipExtension && {
+					$unset: {
+						sipExtension: 1,
+					},
+				}),
+		});
+	}
+
 	async updateUser(existingUser: IUser, userData: IImportUser): Promise<void> {
 		const { _id } = existingUser;
 		if (!_id) {
@@ -273,23 +293,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 			userData.type = 'user';
 		}
 
-		const updateData: Record<string, any> = Object.assign(Object.create(null), {
-			$set: Object.assign(Object.create(null), {
-				...(userData.roles && { roles: userData.roles }),
-				...(userData.type && { type: userData.type }),
-				...(userData.statusText && { statusText: userData.statusText }),
-				...(userData.bio && { bio: userData.bio }),
-				...(userData.services?.ldap && { ldap: true }),
-				...(userData.avatarUrl && { _pendingAvatarUrl: userData.avatarUrl }),
-				...(this._options.syncVoipExtension && userData.voipExtension && { sipExtension: userData.voipExtension }),
-			}),
-			...(this._options.syncVoipExtension &&
-				!userData.voipExtension && {
-					$unset: {
-						sipExtension: 1,
-					},
-				}),
-		});
+		const updateData = this.buildUserUpdateData(userData);
 
 		this.addCustomFields(updateData, userData);
 		this.addUserServices(updateData, userData);
@@ -311,7 +315,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 
 		const localUsername = userData.federated ? undefined : userData.username;
 		if (userData.name || localUsername) {
-			await saveUserIdentity({ _id, name: userData.name, username: localUsername } as Parameters<typeof saveUserIdentity>[0]);
+			await saveUserIdentity({ _id, name: userData.name, username: localUsername });
 		}
 
 		if (userData.importIds.length) {
@@ -329,7 +333,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 	}
 
 	async hashPassword(password: string): Promise<string> {
-		return bcryptHash(SHA256(password), Accounts._bcryptRounds());
+		return hashPassword(password);
 	}
 
 	generateTempPassword(userData: IImportUser): string {
@@ -397,10 +401,9 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 	async insertUser(userData: IImportUser): Promise<IUser['_id']> {
 		const user = await this.buildNewUserObject(userData);
 
-		return Accounts.insertUserDoc(
+		return insertUser(
 			{
 				joinDefaultChannels: false,
-				skipEmailValidation: true,
 				skipAdminCheck: true,
 				skipAdminEmail: true,
 				skipOnCreateUserCallback: this._options.skipUserCallbacks,

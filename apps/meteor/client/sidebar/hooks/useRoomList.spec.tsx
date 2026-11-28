@@ -333,6 +333,54 @@ it('should keep unread rooms visible (and show no header badge) when a group is 
 	});
 });
 
+it('should ignore a "Show unreads" flag stored for the Unread group, which has no menu to turn it off', async () => {
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Unread'] }), {
+		wrapper: getWrapperSettings({
+			sidebarGroupByType: true,
+			sidebarShowUnread: true,
+			isEnterprise: true,
+			sidebarCategories: [
+				{ _id: 'Channels', name: 'Channels', default: true, showUnreads: true },
+				{ _id: 'Unread', name: 'Unread', default: true, showUnreads: true },
+			],
+		}).build(),
+	});
+
+	const groupByKey = (key: string) => result.current.groups[groupsListOf(result.current.groups).indexOf(key)];
+
+	// isEnterprise resolves asynchronously from the mock endpoint: the stored flag only takes effect once it does.
+	await waitFor(() => expect(groupByKey('Channels').showUnreads).toBe(true));
+
+	expect(groupByKey('Unread').showUnreads).toBe(false);
+	// Collapsing the group hides its rooms and falls back to the header badge, as it would without the flag.
+	expect(result.current.groupsCount[groupsListOf(result.current.groups).indexOf('Unread')]).toEqual(0);
+	expect(groupByKey('Unread').unreadInfo.unread).toBeGreaterThan(0);
+});
+
+it('should ignore a "Show unreads" flag stored for the Unread group as a custom category', async () => {
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Unread'] }), {
+		wrapper: getWrapperSettings({
+			sidebarGroupByType: true,
+			sidebarShowUnread: true,
+			isEnterprise: true,
+			// An entry without `default` is read as a custom category, which no longer buys the Unread group
+			// the options its own entry cannot hold.
+			sidebarCategories: [
+				{ _id: 'Channels', name: 'Channels', default: true, showUnreads: true },
+				{ _id: 'Unread', name: 'Unread', showUnreads: true },
+			],
+		}).build(),
+	});
+
+	const groupByKey = (key: string) => result.current.groups[groupsListOf(result.current.groups).indexOf(key)];
+
+	// isEnterprise resolves asynchronously from the mock endpoint.
+	await waitFor(() => expect(groupByKey('Channels').showUnreads).toBe(true));
+
+	expect(groupByKey('Unread').showUnreads).toBe(false);
+	expect(result.current.groupsCount[groupsListOf(result.current.groups).indexOf('Unread')]).toEqual(0);
+});
+
 it('should always return groupsCount and groupsList with the same length', async () => {
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
 		wrapper: getWrapperSettings({ sidebarGroupByType: true }).build(),
@@ -439,4 +487,29 @@ describe('the Incoming calls group', () => {
 		expect(roomListOf(renderWithRingingCall(false).result.current.groups)).toHaveLength(1);
 		expect(roomListOf(renderWithRingingCall(true).result.current.groups)).toHaveLength(1);
 	});
+});
+
+it('should list only the rooms whose name matches the filter, expanding collapsed groups and leaving out groups without a match', async () => {
+	const namedRoom = (t: 'c' | 'd', name: string, fname = name) =>
+		({
+			...createFakeSubscription({ t, name, fname, ...emptyUnread }),
+			...createFakeRoom({ t, name, fname }),
+		}) as unknown as SubscriptionWithRoom;
+	const supportChannel = namedRoom('c', 'support');
+	const supportDirect = namedRoom('d', 'u1', 'Support Bot');
+	const supportByUsername = namedRoom('d', 'sup.agent', 'Agent');
+	const wrapper = getWrapperSettings({
+		sidebarGroupByType: true,
+		isDiscussionEnabled: true,
+		isEnterprise: true,
+		rooms: [supportChannel, namedRoom('c', 'general'), supportDirect, supportByUsername],
+	}).build();
+
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Channels'], filterText: ' SUP ' }), { wrapper });
+
+	await waitFor(() => expect(result.current.groupKeys).toContain('Discussions'));
+	expect(result.current.filtering).toBe(true);
+	expect(groupsListOf(result.current.groups)).toEqual(['Channels', 'Direct_Messages']);
+	expect(result.current.groups.map((group) => group.collapsed)).toEqual([false, false]);
+	expect(roomListOf(result.current.groups)).toEqual([supportChannel, supportDirect, supportByUsername]);
 });

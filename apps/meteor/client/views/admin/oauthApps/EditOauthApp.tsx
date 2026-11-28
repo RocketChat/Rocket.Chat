@@ -1,6 +1,5 @@
 import type { IOAuthApps, Serialized } from '@rocket.chat/core-typings';
 import {
-	Box,
 	Button,
 	ButtonGroup,
 	TextInput,
@@ -15,11 +14,14 @@ import {
 	FieldGroup,
 } from '@rocket.chat/fuselage';
 import { GenericModal, ContextualbarScrollableContent } from '@rocket.chat/ui-client';
-import { useSetModal, useToastMessageDispatch, useRoute, useAbsoluteUrl, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useRoute, useAbsoluteUrl, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useCallback, useId, useMemo } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+
+import ContentColumn from '../../../components/ContentColumn';
 
 type EditOAuthAddAppPayload = {
 	name: string;
@@ -33,7 +35,7 @@ export type EditOauthAppProps = {
 } & Omit<ComponentProps<typeof ContextualbarScrollableContent>, 'data'>;
 
 const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const {
@@ -107,7 +109,7 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps) => {
 
 	return (
 		<ContextualbarScrollableContent width='full' {...props}>
-			<Box maxWidth='x600' width='full' alignSelf='center'>
+			<ContentColumn>
 				<FieldGroup>
 					<Field>
 						<FieldRow>
@@ -180,7 +182,7 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps) => {
 						</FieldRow>
 					</Field>
 				</FieldGroup>
-			</Box>
+			</ContentColumn>
 		</ContextualbarScrollableContent>
 	);
 };

@@ -1,3 +1,4 @@
+import { hashPassword } from '@rocket.chat/account-utils';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ILDAPEntry, LDAPLoginResult, ILDAPUniqueIdentifierField, IUser, LoginUsername, IImportUser } from '@rocket.chat/core-typings';
 import { Users as UsersRaw } from '@rocket.chat/models';
@@ -150,7 +151,7 @@ export class LDAPManager {
 			return;
 		}
 
-		const hash = SHA256(avatar.toString());
+		const hash = SHA256(String(avatar));
 		if (user.avatarETag === hash) {
 			return;
 		}
@@ -179,7 +180,7 @@ export class LDAPManager {
 		};
 	}
 
-	protected static mapUserData(ldapUser: ILDAPEntry, usedUsername?: string | undefined): IImportUser {
+	protected static mapUserData(ldapUser: ILDAPEntry, usedUsername?: string): IImportUser {
 		const uniqueId = this.getLdapUserUniqueID(ldapUser);
 		if (!uniqueId) {
 			throw new Error('Failed to generate unique identifier for ldap entry');
@@ -335,7 +336,7 @@ export class LDAPManager {
 	): Promise<void> {
 		logger.debug('running onLDAPLogin');
 		if (settings.get<boolean>('LDAP_Login_Fallback') && typeof password === 'string' && password.trim() !== '') {
-			await Accounts.setPasswordAsync(user._id, password, { logout: false });
+			await UsersRaw.setPasswordHash(user._id, await hashPassword(password));
 		}
 
 		await this.syncUserAvatar(user, ldapUser);
@@ -372,7 +373,7 @@ export class LDAPManager {
 	private static async syncUserForLogin(
 		ldapUser: ILDAPEntry,
 		existingUser?: IUser,
-		usedUsername?: string | undefined,
+		usedUsername?: string,
 	): Promise<IUser | undefined | null> {
 		logger.debug({
 			msg: 'Syncing user data',
@@ -423,9 +424,10 @@ export class LDAPManager {
 
 		const key = uniqueIdentifierField.find((field) => !_.isEmpty(ldapUser._raw[field]));
 		if (key) {
+			const rawValue: unknown = ldapUser._raw[key];
 			return {
 				attribute: key,
-				value: ldapUser._raw[key].toString('hex'),
+				value: Buffer.isBuffer(rawValue) ? rawValue.toString('hex') : String(rawValue),
 			};
 		}
 
@@ -461,11 +463,12 @@ export class LDAPManager {
 			}
 		}
 
-		if (settings.get('LDAP_Default_Domain') !== '' && username) {
-			return [`${username}@${settings.get('LDAP_Default_Domain')}`];
+		const defaultDomain = settings.get<string>('LDAP_Default_Domain');
+		if (defaultDomain !== '' && username) {
+			return [`${username}@${defaultDomain}`];
 		}
 
-		if (ldapUser.mail?.includes('@')) {
+		if (typeof ldapUser.mail === 'string' && ldapUser.mail.includes('@')) {
 			return [ldapUser.mail];
 		}
 

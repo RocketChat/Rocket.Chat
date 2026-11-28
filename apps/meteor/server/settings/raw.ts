@@ -21,6 +21,7 @@ export const getValue = async (_id: string) => {
 		return setFromDB(_id);
 	}
 
+	// oxlint-disable-next-line typescript/no-unsafe-return -- the cache holds values of every setting type
 	return cache.get(_id);
 };
 

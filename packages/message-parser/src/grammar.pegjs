@@ -346,7 +346,9 @@ InlineEmoticon = emo:Emoticon & (EmoticonNeighbor / InlineItemPattern) { return 
 // Match "-" only when "-_-" is followed by more (so "-_-italic" → plain+italic); don't match when "-_-" is the full emoticon
 PlainRunBeforeEmoticon = "-" &("_" "-" .) { return plain('-'); }
 
-PlainRun = run:$[^*_~`:\n<\[\]! \t()\\|]+ { return plain(run); }
+PlainWordUnderscore = value:$([a-zA-Z0-9]+ [\x5F] [\x5F]?) { return plain(value); }
+
+PlainRun = run:$[^*_~`:\n<\[\]! \t\u00a0()\\|]+ { return plain(run); }
 
 EscapedTimestampRules
   = "\\" "<t:" rawDate:$(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ":" format:TimestampType ">" {
@@ -358,8 +360,10 @@ EscapedTimestampRules
 
 // First-character dispatch: skip the full alternative chain by routing
 // each character to only the rules that can start with it.
+// Every ASCII char that can start an inline rule is dispatched here;
+// only non-ASCII (Unicode emoji) falls to the final catch-all.
 InlineItemPattern
-  = & [ \t]  @Whitespace
+  = & [ \t\u00a0] @Whitespace
   / & "\\"   @(EscapedTimestampRules / KatexInline / Escaped)
   / & "["    @MaybeReferences
   / & "<"    @(TimestampRules / MaybeReferences / InlineEmoticon)
@@ -367,33 +371,55 @@ InlineItemPattern
   / & "|"    @Spoiler
   / & "@"    @UserMentionDirect
   / & "`"    @InlineCode
-  / & "+"    @AutolinkedPhone
+  / & "+"    @(AutolinkedPhone / AutolinkedEmail / PlainRun)
   / & "$"    @KatexInline
-  / & ":"    @(InlineEmoji / InlineEmoticon)
+  / & ":"    @(InlineEmoji / InlineEmoticon / ChannelMention)
   / & "*"    @(EmphasisWithWhitespace / Emphasis / InlineEmoticon)
   / & "~"    @(EmphasisWithWhitespace / Emphasis)
   / & "-"    @(PlainRunBeforeEmoticon / InlineEmoticon)
-  / InlineItemSlowPath
+  / & "_"    @(PlainUnderscoreThenDomain / EmphasisWithWhitespace / Emphasis)
+  / & "#"    @(ChannelMention / InlineEmoticon)
+  / & ";"    @(InlineEmoticon / PlainRun)
+  / & "="    @(InlineEmoticon / PlainRun)
+  / & ">"    @(InlineEmoticon / PlainRun)
+  / & "'"    @(InlineEmoticon / PlainRun)
+  / & "%"    @(InlineEmoticon / PlainRun)
+  / & "("    @InlineEmoticon
+  / & [BDOX] @InlineItemAlphaOrEmoticon
+  / & [bdox] @InlineItemAlphaPath
+  / & [08]       @InlineItemAlphaOrEmoticon
+  / & "c"        @InlineItemAlphaOrColor
+  / & [a-zA-Z1-79]  @InlineItemAlphaPath
+  / InlineItemNonAlphaSlowPath
 
-// Non-dispatched chars: emphasis with _, URLs, emails, emoticons, color, plain text
-// Preserves original rule ordering to maintain parsing behavior
-InlineItemSlowPath
-  = AutolinkedEmail
-  / PlainUnderscoreThenDomain
-  / AutolinkedURL
-  / EmphasisWithWhitespace
-  / Emphasis
-  / ChannelMention
-  / InlineEmoji
-  / PlainRunBeforeEmoticon
-  / InlineEmoticon
-  / Color
-  / PlainRun
-
-// Letters/digits: try email/URL (with cheap guards), then plain text
+// Letters/digits: email, URL, channel(text#), then plain
+// Emphasis removed: alpha can't start ** ~~ or _x_ (underscore dispatched separately)
 InlineItemAlphaPath
   = AutolinkedEmail
   / AutolinkedURL
+  / ChannelMention
+  / PlainWordUnderscore
+  / PlainRun
+
+// Alpha chars that can also start emoticons (B D O X 0 8 b d o x)
+InlineItemAlphaOrEmoticon
+  = AutolinkedEmail
+  / AutolinkedURL
+  / PlainWordUnderscore
+  / InlineEmoticon
+  / ChannelMention
+  / PlainRun
+
+// 'c' can start "color:#..."
+InlineItemAlphaOrColor
+  = Color
+  / InlineItemAlphaPath
+
+// Remaining: non-ASCII, rare punct not dispatched above
+InlineItemNonAlphaSlowPath
+  = AutolinkedEmail
+  / AutolinkedURL
+  / InlineEmoji
   / PlainRun
 
 /**
@@ -532,8 +558,8 @@ LocalPartChar = AlphaNumericOrMarkChar+ LocalPartSpecialChars*
 
 LocalPartSpecialChars = [!#$%&'*+/=?^_\`{|}~-]
 
-// Guard: only attempt email parse if @ exists ahead on this line
-AutolinkedEmail = &([^ \t\r\n@]* "@") e:Email { return autoEmail(e); }
+// Guard: only attempt email parse if @ exists ahead
+AutolinkedEmail = &("mailto:"? [^ \t\r\n@]+ "@") e:Email { return autoEmail(e); }
 
 /**
  *
@@ -649,15 +675,15 @@ StrikethroughContent = text:(StrikePlainRunFull / EscapedTimestampRules / Timest
 StrikePlainRunFull = run:$[^\x0a\~ *_:`@#\[\]\\<!\x7C\uD83C\uD83D\uD83E\u2300-\u27BF\u2600-\u26FF]+ { return plain(run); }
 
 // Exclude _ and ~ so nested italic/strike can be parsed
-BoldPlainRun = run:$[^\x0a\* _~ ]+ { return plain(run); }
+BoldPlainRun = run:$[^\x0a\* _~ \u00a0]+ { return plain(run); }
 AnyBold = t:[^\x0a\* ] { return plain(t); }
 
 // Exclude * and ~ so nested bold/strike can be parsed
-ItalicPlainRun = run:$[^\x0a\_ *~]+ { return plain(run); }
+ItalicPlainRun = run:$[^\x0a\_ \u00a0*~]+ { return plain(run); }
 AnyItalic = t:[^\x0a\_ ] { return plain(t); }
 
 // Exclude * and _ so nested bold/italic can be parsed
-StrikePlainRun = run:$[^\x0a\~ *_]+ { return plain(run); }
+StrikePlainRun = run:$[^\x0a\~ \u00a0*_]+ { return plain(run); }
 AnyStrike = t:[^\x0a\~ ] { return plain(t); }
 
 /**
@@ -920,7 +946,7 @@ Whitespace = w:$Space+ { return plain(w); }
 
 EndOfLine = "\r\n" / "\n" / "\r"
 
-Space = " " / "\t"
+Space = " " / "\t" / "\u00a0"
 
 Escaped = "\\" t:[*_~`#.] { return plain(t); }
 

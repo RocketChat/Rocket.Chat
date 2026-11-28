@@ -1,9 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
 
 import { exampleAvatar, blankAvatar } from '../../../.storybook/helpers';
 import { Box } from '../Box';
-import { Margins } from '../Margins';
 import Chip from './Chip';
 
 export default {
@@ -112,13 +111,11 @@ export const Label: Story = {
 
 export const WithThumb: Story = {
 	render: () => (
-		<Box display='flex' margin='-x4'>
-			<Margins all='x4'>
-				<Chip thumbUrl={blankAvatar}>Chip</Chip>
-				<Chip thumbUrl={blankAvatar} onClick={action('click')}>
-					Chip
-				</Chip>
-			</Margins>
+		<Box display='flex' gap='x8'>
+			<Chip thumbUrl={blankAvatar}>Chip</Chip>
+			<Chip thumbUrl={blankAvatar} onClick={action('click')}>
+				Chip
+			</Chip>
 		</Box>
 	),
 };

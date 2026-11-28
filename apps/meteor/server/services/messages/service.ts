@@ -88,6 +88,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	}
 
 	async sendMessage({ fromId, rid, msg }: { fromId: string; rid: string; msg: string }): Promise<IMessage> {
+		// oxlint-disable-next-line typescript/no-unsafe-return -- executeSendMessage result is untyped (any)
 		return executeSendMessage(fromId, { rid, msg });
 	}
 
@@ -119,6 +120,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		thread?: { tmid: string; tshow: boolean };
 		ts: Date;
 	}): Promise<IMessage> {
+		// oxlint-disable-next-line typescript/no-unsafe-return -- executeSendMessage result is untyped (any)
 		return executeSendMessage(
 			fromId,
 			{
@@ -143,6 +145,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	}
 
 	async sendMessageWithValidation(user: IUser, message: Partial<IMessage>, room: Partial<IRoom>, upsert = false): Promise<IMessage> {
+		// oxlint-disable-next-line typescript/no-unsafe-return -- lib sendMessage is untyped (any parameters, any result)
 		return sendMessage(user, message, room, { upsert });
 	}
 

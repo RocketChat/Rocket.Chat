@@ -16,7 +16,9 @@ export class AnalyticsRaw extends BaseRaw<IAnalytics> implements IAnalyticsModel
 	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { date: 1 } },
-			{ key: { 'room._id': 1, 'date': 1 }, unique: true, partialFilterExpression: { type: 'rooms' } },
+			// No document has type 'rooms', so this index is always empty; drop it with a migration in the next major.
+			// { key: { 'room._id': 1, 'date': 1 }, unique: true, partialFilterExpression: { type: 'rooms' } },
+			{ key: { 'room._id': 1, 'date': 1 }, name: 'room._id_1_date_1_messages', partialFilterExpression: { type: 'messages' } },
 			{ key: { 'room.t': 1, 'date': 1 }, partialFilterExpression: { type: 'messages' } },
 		];
 	}
@@ -61,7 +63,7 @@ export class AnalyticsRaw extends BaseRaw<IAnalytics> implements IAnalyticsModel
 
 	saveMessageDeleted({ room, date }: { room: { _id: string }; date: IAnalytics['date'] }): Promise<Document | UpdateResult> {
 		return this.updateMany(
-			{ date, 'room._id': room._id },
+			{ date, 'room._id': room._id, 'type': 'messages' },
 			{
 				$inc: { messages: -1 },
 			},

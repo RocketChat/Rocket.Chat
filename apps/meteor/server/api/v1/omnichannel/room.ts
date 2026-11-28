@@ -1,13 +1,5 @@
 import { Omnichannel, isClientSafeError } from '@rocket.chat/core-services';
-import type {
-	ILivechatAgent,
-	IOmnichannelInquiryExtraData,
-	IOmnichannelRoom,
-	IUser,
-	SelectedAgent,
-	TransferByData,
-	TransferData,
-} from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IOmnichannelRoom, IUser, SelectedAgent, TransferByData, TransferData } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users, LivechatRooms } from '@rocket.chat/models';
 import {
@@ -25,12 +17,12 @@ import {
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 	ajv,
+	isGETLivechatRoomParams,
+	isPOSTLivechatVisitorDepartmentTransferParams,
 } from '@rocket.chat/rest-typings';
-import { isPOSTLivechatVisitorDepartmentTransferParams } from '@rocket.chat/rest-typings/src/v1/omnichannel';
-import { check, Match } from 'meteor/check';
 
 import { API } from '../..';
-import { findGuest, findRoom, settings, findAgent, onCheckRoomParams } from './lib/livechat';
+import { findGuest, findRoom, settings, findAgent } from './lib/livechat';
 import { canAccessRoomAsync } from '../../../lib/authorization';
 import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
 import { callbacks } from '../../../lib/callbacks';
@@ -57,18 +49,10 @@ API.v1.addRoute(
 			numRequestsAllowed: 5,
 			intervalTimeInMS: 60000,
 		},
+		validateParams: isGETLivechatRoomParams,
 	},
 	{
 		async get() {
-			// I'll temporary use check for validation, as validateParams doesnt support what's being done here
-			const extraCheckParams = onCheckRoomParams({
-				token: String,
-				rid: Match.Maybe(String),
-				agentId: Match.Maybe(String),
-			});
-
-			check(this.queryParams, extraCheckParams);
-
 			const { token, rid, agentId, ...extraParams } = this.queryParams;
 
 			const guest = token && (await findGuest(token));
@@ -96,7 +80,7 @@ API.v1.addRoute(
 				const roomInfo = {
 					source: {
 						...(isWidget(this.request.headers)
-							? { type: OmnichannelSourceType.WIDGET, destination: this.request.headers.get('host')! }
+							? { type: OmnichannelSourceType.WIDGET, destination: this.request.headers.get('host') ?? undefined }
 							: { type: OmnichannelSourceType.API }),
 					},
 				};
@@ -105,7 +89,7 @@ API.v1.addRoute(
 					visitor: guest,
 					roomInfo,
 					agent,
-					extraData: extraParams as IOmnichannelInquiryExtraData,
+					extraData: extraParams,
 				});
 
 				return API.v1.success({
@@ -394,7 +378,7 @@ const livechatVisitorDepartmentTransfer = API.v1.post(
 
 type LivechatAnalyticsEndpoints = ExtractRoutesFromAPI<typeof livechatVisitorDepartmentTransfer>;
 declare module '@rocket.chat/rest-typings' {
-	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line typescript/no-empty-interface, typescript/no-empty-object-type
 	interface Endpoints extends LivechatAnalyticsEndpoints {}
 }
 
@@ -535,6 +519,6 @@ const livechatRoomsEndpoints = API.v1
 type LivechatRoomsEndpoints = ExtractRoutesFromAPI<typeof livechatRoomsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line typescript/no-empty-interface, typescript/no-empty-object-type
 	interface Endpoints extends LivechatRoomsEndpoints {}
 }

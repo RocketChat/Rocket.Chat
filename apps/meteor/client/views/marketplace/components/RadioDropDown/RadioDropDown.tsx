@@ -3,11 +3,11 @@ import { useToggle } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps } from 'react';
 import { useCallback, useRef } from 'react';
 
-import RadioDropDownAnchor from './RadioDownAnchor';
 import type { RadioDropDownProps } from '../../definitions/RadioDropDownDefinitions';
 import { isValidReference } from '../../helpers/isValidReference';
 import { onMouseEventPreventSideEffects } from '../../helpers/onMouseEventPreventSideEffects';
-import DropDownListWrapper from '../DropDownListWrapper';
+import DropDownListWrapper from '../../layout/DropDownListWrapper';
+import RadioDropDownAnchor from '../../layout/RadioDropDownAnchor';
 import RadioButtonList from '../RadioButtonList';
 
 const RadioDropDown = ({ group, onSelected, ...props }: RadioDropDownProps & Omit<ComponentProps<typeof Button>, 'onClick'>) => {

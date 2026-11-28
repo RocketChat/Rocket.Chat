@@ -26,7 +26,7 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 			const writeStream: GridFSBucketWriteStream = this.bucket
 				.openUploadStream(filename)
 				.on('finish', () => resolve(this.idToPath(writeStream.id)))
-				.on('error', (error: any) => reject(error));
+				.on('error', (error: Error) => reject(error));
 
 			writeStream.write(zip);
 			writeStream.end();
@@ -49,7 +49,7 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 					this.remove(item).catch(() => {});
 				})
 
-				.on('error', (error: any) => reject(error));
+				.on('error', (error: Error) => reject(error));
 
 			writeStream.write(zip);
 			writeStream.end();
@@ -59,8 +59,8 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 	public async remove(item: IAppStorageItem): Promise<void> {
 		try {
 			await this.bucket.delete(this.itemToObjectId(item));
-		} catch (error: any) {
-			if (error.message.includes('File not found for id')) {
+		} catch (error) {
+			if ((error as Error).message.includes('File not found for id')) {
 				console.warn(
 					`This instance could not remove the ${item.info.name} app package. If you are running Rocket.Chat in a cluster with multiple instances, possibly other instance removed the package. If this is not the case, it is possible that the file in the database got renamed or removed manually.`,
 				);
@@ -75,7 +75,7 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 	}
 
 	private idToPath(id: GridFSBucketWriteStream['id']): string {
-		return this.pathPrefix + id;
+		return this.pathPrefix + String(id);
 	}
 
 	private itemToObjectId(item: IAppStorageItem): ObjectId {

@@ -2,13 +2,13 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { handleIdentityToken } from './handleIdentityToken';
 import { settings } from '../../../settings';
+import { updateOrCreateUserFromExternalService } from '../../auth/updateOrCreateUserFromExternalService';
 
 jest.mock(
 	'meteor/accounts-base',
 	() => ({
 		Accounts: {
 			registerLoginHandler: jest.fn(),
-			updateOrCreateUserFromExternalService: jest.fn(),
 			LoginCancelledError: { numericError: 400 },
 		},
 	}),
@@ -19,6 +19,10 @@ jest.mock('../../../settings', () => ({
 	settings: {
 		get: jest.fn(),
 	},
+}));
+
+jest.mock('../../auth/updateOrCreateUserFromExternalService', () => ({
+	updateOrCreateUserFromExternalService: jest.fn(),
 }));
 
 jest.mock('./handleIdentityToken', () => ({
@@ -54,11 +58,11 @@ describe('Apple OAuth loginHandler', () => {
 			fullName: { givenName: 'Alice', familyName: 'Sender' },
 		};
 
-		jest.mocked(Accounts.updateOrCreateUserFromExternalService).mockResolvedValue({ userId: 'new-user-id' });
+		jest.mocked(updateOrCreateUserFromExternalService).mockResolvedValue({ type: 'apple', userId: 'new-user-id' });
 
 		await loginHandlerCallback(maliciousLoginRequest);
 
-		expect(Accounts.updateOrCreateUserFromExternalService).toHaveBeenCalledWith(
+		expect(updateOrCreateUserFromExternalService).toHaveBeenCalledWith(
 			'apple',
 			{ id: 'apple-sub-123' },
 			{ profile: { name: 'Alice Sender' } },
@@ -76,11 +80,11 @@ describe('Apple OAuth loginHandler', () => {
 			fullName: { givenName: 'John', familyName: 'Doe' },
 		};
 
-		jest.mocked(Accounts.updateOrCreateUserFromExternalService).mockResolvedValue({ userId: 'user-id' });
+		jest.mocked(updateOrCreateUserFromExternalService).mockResolvedValue({ type: 'apple', userId: 'user-id' });
 
 		await loginHandlerCallback(legitLoginRequest);
 
-		expect(Accounts.updateOrCreateUserFromExternalService).toHaveBeenCalledWith(
+		expect(updateOrCreateUserFromExternalService).toHaveBeenCalledWith(
 			'apple',
 			{ id: 'apple-sub-123', email: 'legit@email.tld' },
 			{ profile: { name: 'John Doe' } },
@@ -95,7 +99,7 @@ describe('Apple OAuth loginHandler', () => {
 		});
 
 		jest.mocked(handleIdentityToken).mockResolvedValue({ id: 'apple-sub-123' });
-		jest.mocked(Accounts.updateOrCreateUserFromExternalService).mockResolvedValue({ userId: 'user-id' });
+		jest.mocked(updateOrCreateUserFromExternalService).mockResolvedValue({ type: 'apple', userId: 'user-id' });
 
 		await loginHandlerCallback({
 			identityToken: 'valid.token.with_mobile_default_audience',

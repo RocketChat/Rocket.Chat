@@ -4,7 +4,6 @@ import type { ILivechatBusinessHoursModel, IUsersModel } from '@rocket.chat/mode
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
 import type { IWorkHoursCronJobsWrapper } from '@rocket.chat/models';
 import moment from 'moment-timezone';
-import type { UpdateFilter } from 'mongodb';
 
 import { notifyOnUserChange } from '../../notifyListener';
 
@@ -81,12 +80,15 @@ export abstract class AbstractBusinessHourType {
 		businessHourData.active = Boolean(businessHourData.active);
 		businessHourData = this.convertWorkHours(businessHourData);
 		if (businessHourData._id) {
-			await this.BusinessHourRepository.updateOne({ _id: businessHourData._id }, {
-				$set: businessHourData,
-			} as UpdateFilter<ILivechatBusinessHour>); // TODO: Remove this cast when TypeScript is updated
+			await this.BusinessHourRepository.updateOne(
+				{ _id: businessHourData._id },
+				{
+					$set: businessHourData,
+				},
+			);
 			return businessHourData._id;
 		}
-		const { insertedId } = await this.BusinessHourRepository.insertOne(businessHourData);
+		const { insertedId }: { insertedId: string } = await this.BusinessHourRepository.insertOne(businessHourData);
 		return insertedId;
 	}
 
@@ -136,7 +138,7 @@ export abstract class AbstractBusinessHourType {
 		return moment.tz(timezone).format('Z');
 	}
 
-	private formatDayOfTheWeekFromServerTimezoneAndUtcHour(utc: any, format: string): string {
+	private formatDayOfTheWeekFromServerTimezoneAndUtcHour(utc: moment.Moment, format: string): string {
 		return moment(utc.format('dddd:HH:mm'), 'dddd:HH:mm')
 			.add(moment().utcOffset() / 60, 'hours')
 			.format(format);

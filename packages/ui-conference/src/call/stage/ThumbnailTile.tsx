@@ -1,6 +1,6 @@
-import type { StageTile } from '../lib/stageTiles';
-import ParticipantThumbnail from '../tile/ParticipantThumbnail';
-import SelfThumbnail from '../tile/SelfThumbnail';
+import type { StageTile } from '../lib/stageTiles.js';
+import ParticipantThumbnail from '../tile/ParticipantThumbnail.js';
+import SelfThumbnail from '../tile/SelfThumbnail.js';
 
 export type ThumbnailTileProps = {
 	tile: StageTile;
@@ -18,6 +18,7 @@ const ThumbnailTile = ({ tile }: ThumbnailTileProps) =>
 			audioStream={tile.audioStream}
 			handPosition={tile.handPosition}
 			reaction={tile.reaction}
+			participantId={tile.id}
 			sendHeight={tile.sendHeight}
 		/>
 	) : (
@@ -30,6 +31,7 @@ const ThumbnailTile = ({ tile }: ThumbnailTileProps) =>
 			audioStream={tile.audioStream}
 			handPosition={tile.handPosition}
 			reaction={tile.reaction}
+			participantId={tile.id}
 		/>
 	);
 

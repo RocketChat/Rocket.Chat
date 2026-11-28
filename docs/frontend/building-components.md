@@ -13,6 +13,8 @@ A component that starts in one application and turns out useful in others (as `V
 
 How screens use components, and why they compose named containers instead of `Box`, is in [Layout in the app](layout.md).
 
+Moving a Fuselage component to Tamagui follows [Fuselage components on Tamagui](fuselage-tamagui-components.md).
+
 ## Layout containers
 
 A layout container arranges other components: `Page`, `FieldGroup`, `Stack`, `ChatsFilterBar`. It is the one place where `Box` and raw layout belong, so screens don't need them.
@@ -50,6 +52,12 @@ An application component built on a Fuselage one types its props from that compo
 type ResetSettingButtonProps = Omit<ComponentProps<typeof IconButton>, 'icon'>;
 ```
 
+### Where `className`, `style` and the rest land
+
+The root element receives `className`, `style`, `data-*` and `ref`. A component with more than one element gives the inner ones an explicit `xxxProps` prop (`Bubble.contentProps`, `AudioPlayer.trackProps`).
+
+Form controls and media are the exception: `CheckBox`, `RadioButton`, `ToggleSwitch` and `Avatar` put `className` on the outer `<label>` or `<figure>` and every other attribute on the inner `<input>` or `<img>`, because that is the element a form or a test targets. `InputBox` follows the same idea: `className` lands on the wrapper when there is an addon, and on the `<input>` otherwise. `AudioPlayer` keeps `className` and the HTML attributes on its root, but its `ref` targets the inner `<audio>`, the element a caller controls playback through.
+
 ## No outer spacing
 
 A component never sets its own outer margin, width or flex behavior. Those belong to the container (see [Layout in the app](layout.md)). A component that needs room for something it draws (a focus ring, a badge) makes that room inside its own box.
@@ -81,6 +89,9 @@ Simple components are atomic elements such as buttons or inputs.
   ```
 
 - Document every variation in Storybook, with a note on the non-obvious ones.
+- Look at every variation in the light, dark and high-contrast themes. The Theme menu of the Storybook toolbar switches
+  them, and `globals=theme:dark` (or `light`, `high-contrast`) in the URL opens a story in one, so a link reproduces
+  what you saw; Fuselage's Storybook also takes `direction:rtl`. The visual regression captures the light theme only.
 - Unit test every behavior: rendering, interactions, keyboard, and accessible names.
 
 ## Complex components

@@ -1,7 +1,11 @@
 import { render } from '@testing-library/react';
 
-import RegisterServerPage from './RegisterServerPage';
+import RegisterServerPage from './RegisterServerPage.js';
 
 it('renders without crashing', () => {
-	render(<RegisterServerPage currentStep={1} stepCount={1} onSubmit={() => undefined} onClickRegisterOffline={() => undefined} />);
+	const { container } = render(
+		<RegisterServerPage currentStep={1} stepCount={1} onSubmit={() => undefined} onClickRegisterOffline={() => undefined} />,
+	);
+
+	expect(container).not.toBeEmptyDOMElement();
 });

@@ -2,11 +2,11 @@ import { Box } from '@rocket.chat/fuselage';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import CallReactions, { type CallReaction } from './CallReactions';
-import CallStage, { type StageLayout } from './CallStage';
-import { useCallActions, useCallState } from './context';
-import { handPositionsOf } from './lib/raisedHands';
-import { latestReactionBySender } from './lib/reactions';
+import CallReactions, { type CallReaction } from './CallReactions.js';
+import CallStage, { type StageLayout } from './CallStage.js';
+import { useCallActions, useCallPins, useCallState } from './context.js';
+import { handPositionsOf } from './lib/raisedHands.js';
+import { latestReactionBySender } from './lib/reactions.js';
 
 export type CallStageAreaProps = {
 	layout: StageLayout;
@@ -17,6 +17,7 @@ const CallStageArea = ({ layout }: CallStageAreaProps) => {
 	const { t } = useTranslation();
 	const { self, remoteParticipants, raisedHands, activeReactions } = useCallState();
 	const { toggleScreenShare } = useCallActions();
+	const { pinnedId, shares, screenOnStage } = useCallPins();
 
 	const localParticipant = useMemo(
 		() => ({
@@ -74,6 +75,9 @@ const CallStageArea = ({ layout }: CallStageAreaProps) => {
 					handPositions={handPositions}
 					reactions={tileReactions}
 					layout={layout}
+					pinnedId={pinnedId}
+					shares={shares}
+					screenOnStage={screenOnStage}
 				/>
 				<CallReactions reactions={reactions} />
 			</Box>

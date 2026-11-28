@@ -6,10 +6,10 @@ import { exec } from '@actions/exec';
 import * as github from '@actions/github';
 import semver from 'semver';
 
-import { createNpmFile } from './createNpmFile';
-import { fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish';
-import { checkoutBranch, commitChanges, createTag, getCurrentBranch, mergeBranch, pushChanges } from './gitUtils';
-import { setupOctokit } from './setupOctokit';
+import { createNpmFile } from './createNpmFile.js';
+import { fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish.js';
+import { checkoutBranch, commitChanges, createTag, getCurrentBranch, mergeBranch, pushChanges } from './gitUtils.js';
+import { setupOctokit } from './setupOctokit.js';
 import {
 	MAX_RELEASE_BODY_LENGTH,
 	bumpFileVersions,
@@ -20,7 +20,7 @@ import {
 	isPreRelease,
 	readPackageJson,
 	truncateReleaseNotes,
-} from './utils';
+} from './utils.js';
 
 export async function publishRelease({
 	githubToken,
@@ -83,6 +83,9 @@ export async function publishRelease({
 
 	core.info('update version in all files to new');
 	await bumpFileVersions(cwd, currentVersion, newVersion);
+
+	core.info('update lockfile after version bump');
+	await exec('yarn', ['install', '--no-immutable']);
 
 	await commitChanges(`Release ${newVersion}\n\n[no ci]`);
 

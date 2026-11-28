@@ -4,7 +4,9 @@ import type { ElementProps } from '../../types/ElementProps';
 import { Box } from '../Box';
 
 export type DividerProps = ElementProps<HTMLElement> & {
+	/** Colors the rule. Ignored when the divider has `children`. */
 	variation?: 'danger' | 'light';
+	/** Labels the divider, which then renders as a horizontal separator; `vertical`, `variation`, `flush`, `small` and `stretch` do not apply. */
 	children?: ReactNode;
 	vertical?: boolean;
 	/** Removes the divider's own margin, leaving the spacing to its container. */

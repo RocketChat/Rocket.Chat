@@ -19,6 +19,6 @@
 		"@xmldom/xmldom": "^0.8.15"
 	},
 	"overrides": {
-		"undici": "6.28.1"
+		"undici": "6.29.1"
 	}
 }

@@ -5,6 +5,7 @@ import type {
 	IOmnichannelServiceLevelAgreements,
 	InquiryWithAgentInfo,
 } from '@rocket.chat/core-typings';
+import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import {
 	Rooms as RoomRaw,
@@ -155,7 +156,8 @@ export const isAgentWithinChatLimits = async ({
 const getWaitingQueueMessage = async (departmentId?: string) => {
 	const department = departmentId ? await LivechatDepartmentRaw.findOneById(departmentId) : null;
 	if (department?.waitingQueueMessage) {
-		return department.waitingQueueMessage;
+		const message: string = department.waitingQueueMessage;
+		return message;
 	}
 
 	return settings.get<string>('Livechat_waiting_queue_message');
@@ -265,7 +267,7 @@ export const setPredictedVisitorAbandonmentTime = async (
 
 	const willBeAbandonedAt = moment(room.responseBy.firstResponseTs).add(Number(secondsToAdd), 'seconds').toDate();
 	if (roomUpdater) {
-		await LivechatRooms.getPredictedVisitorAbandonmentByRoomIdUpdateQuery(willBeAbandonedAt, roomUpdater);
+		LivechatRooms.getPredictedVisitorAbandonmentByRoomIdUpdateQuery(willBeAbandonedAt, roomUpdater);
 	} else {
 		await LivechatRooms.setPredictedVisitorAbandonmentByRoomId(room._id, willBeAbandonedAt);
 	}
@@ -358,7 +360,7 @@ export const getLivechatQueueInfo = async (room?: IOmnichannelRoom) => {
 	}
 
 	const { _id, status } = inquiry;
-	if (status !== 'queued') {
+	if (status !== LivechatInquiryStatus.QUEUED) {
 		return null;
 	}
 

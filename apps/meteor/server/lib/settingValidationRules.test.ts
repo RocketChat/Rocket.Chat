@@ -1,7 +1,6 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 import { registerSettingSchema } from '../settings/functions/settingSchemas';
@@ -16,13 +15,19 @@ const settingsGetMock = sinon.stub();
 const settingsGetSettingMock = sinon.stub();
 const loggerErrorMock = sinon.stub();
 
-const { validateSettingRules, SettingValidationError } = p.noCallThru().load('./settingValidationRules.ts', {
-	'@rocket.chat/logger': {
-		Logger: class {
-			error = loggerErrorMock;
+let validateSettingRules: any;
+let SettingValidationError: any;
+
+before(async () => {
+	mock.module('@rocket.chat/logger', {
+		exports: {
+			Logger: class {
+				error = loggerErrorMock;
+			},
 		},
-	},
-	'../settings': { settings: { get: settingsGetMock, getSetting: settingsGetSettingMock } },
+	});
+	mock.module('../settings', { exports: { settings: { get: settingsGetMock, getSetting: settingsGetSettingMock } } });
+	({ validateSettingRules, SettingValidationError } = await import('./settingValidationRules'));
 });
 
 const validationBySettingId: Record<string, unknown> = {
@@ -43,6 +48,36 @@ describe('validateSettingRules', () => {
 		}));
 	});
 
+	it('accepts valid cron expressions and rejects invalid expressions for cron rules', () => {
+		settingsGetSettingMock.withArgs('Cron_Setting').returns({
+			_id: 'Cron_Setting',
+			type: 'string',
+			validation: JSON.stringify([{ type: 'cron' }]),
+		});
+
+		['0 0 * * *', '*/5 1-5 * * 1,3'].forEach((value) => {
+			expect(() => validateSettingRules([{ _id: 'Cron_Setting', value }])).to.not.throw();
+		});
+		['', 'invalid', '60 * * * *', '* * * * * *'].forEach((value) => {
+			expect(() => validateSettingRules([{ _id: 'Cron_Setting', value }])).to.throw('Cron_Setting_Invalid');
+		});
+	});
+
+	it('rejects an invalid cron when a batch contains the same setting twice', () => {
+		settingsGetSettingMock.withArgs('Cron_Setting').returns({
+			_id: 'Cron_Setting',
+			type: 'string',
+			validation: JSON.stringify([{ type: 'cron' }]),
+		});
+
+		expect(() =>
+			validateSettingRules([
+				{ _id: 'Cron_Setting', value: '0 0 * * *' },
+				{ _id: 'Cron_Setting', value: 'invalid' },
+			]),
+		).to.throw('Cron_Setting_Invalid');
+	});
+
 	it('rejects an incoherent batch with the failed rule i18n key as the error message', () => {
 		const error = (() => {
 			try {
@@ -57,6 +92,23 @@ describe('validateSettingRules', () => {
 
 		expect(error).to.be.instanceOf(SettingValidationError);
 		expect(error?.message).to.equal('Accounts_Password_Policy_MinLength_Invalid');
+	});
+
+	it('evaluates explicitly typed query rules', () => {
+		settingsGetSettingMock.withArgs('Query_Setting').returns({
+			_id: 'Query_Setting',
+			type: 'int',
+			validation: JSON.stringify([{ type: 'query', query: { value: { $gte: 1 } } }]),
+		});
+
+		expect(() => validateSettingRules([{ _id: 'Query_Setting', value: 1 }])).to.not.throw();
+		expect(() => validateSettingRules([{ _id: 'Query_Setting', value: 0 }])).to.throw('Query_Setting_Invalid');
+		expect(() =>
+			validateSettingRules([
+				{ _id: 'Query_Setting', value: 1 },
+				{ _id: 'Query_Setting', value: 0 },
+			]),
+		).to.throw('Query_Setting_Invalid');
 	});
 
 	it('resolves values batch-first, not from the stale cached value', () => {
@@ -165,11 +217,11 @@ describe('validateSettingRules', () => {
 			'[{"query":{"value":{"$gte":1}},"appliesWhen":{"_id":"Gate"}}]',
 		];
 
-		for (const validation of malformed) {
+		malformed.forEach((validation) => {
 			settingsGetSettingMock.withArgs('Malformed_Setting').returns({ _id: 'Malformed_Setting', type: 'int', validation });
 
 			expect(() => validateSettingRules([{ _id: 'Malformed_Setting', value: 0 }]), validation).to.not.throw();
-		}
+		});
 	});
 
 	it('does not enforce the value type, leaving those checks to each save path', () => {

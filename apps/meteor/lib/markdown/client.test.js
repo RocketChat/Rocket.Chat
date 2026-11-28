@@ -459,23 +459,3 @@ describe('Filtered', () => {
 
 	describe('blockcodeFilter', () => testObject(blockcodeFiltered, filtered));
 });
-
-// describe('Marked', function() {
-// 	describe('Bold', () => testObject(bold, marked));
-
-// 	describe('Italic', () => testObject(italic, marked));
-
-// 	describe('Strike', () => testObject(strike, marked));
-
-// 	describe('Headers', () => {
-// 		describe('Level 1', () => testObject(headersLevel1, marked));
-
-// 		describe('Level 2', () => testObject(headersLevel2, marked));
-
-// 		describe('Level 3', () => testObject(headersLevel3, marked));
-
-// 		describe('Level 4', () => testObject(headersLevel4, marked));
-// 	});
-
-// 	describe('Quote', () => testObject(quote, marked));
-// });

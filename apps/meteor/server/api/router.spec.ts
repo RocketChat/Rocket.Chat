@@ -1,14 +1,19 @@
+import { createNodeServer, createRootApp, mountRouter } from '@rocket.chat/http-router';
 import Ajv from 'ajv';
-import express from 'express';
 import request from 'supertest';
 
 import type { APIActionContext } from './router';
 import { RocketChatAPIRouter } from './router';
 
+const serve = (router: Parameters<typeof mountRouter>[1]) => {
+	const app = createRootApp();
+	mountRouter(app, router);
+	return createNodeServer(app);
+};
+
 describe('Router use method', () => {
 	it('should parse nested query params into object for GET requests', async () => {
 		const ajv = new Ajv();
-		const app = express();
 
 		const isTestQueryParams = ajv.compile({
 			type: 'object',
@@ -45,7 +50,7 @@ describe('Router use method', () => {
 			},
 		);
 
-		app.use(api.router);
+		const app = serve(api);
 
 		const response1 = await request(app).get('/api/test?outerProperty[innerProperty]=test');
 

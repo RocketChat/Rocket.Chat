@@ -10,13 +10,14 @@ const setupComposer = (initialValue: string, cursor: { start: number; end: numbe
 	const input = document.createElement('textarea');
 	document.body.appendChild(input);
 
+	const persistDraft = jest.fn();
 	const discardDraft = jest.fn();
-	const composer = createComposerAPI(input, jest.fn(), discardDraft, '', Number.MAX_SAFE_INTEGER, { current: null }, { rid: 'GENERAL' });
+	const composer = createComposerAPI(input, persistDraft, discardDraft, '', Number.MAX_SAFE_INTEGER, { current: null }, { rid: 'GENERAL' });
 
 	input.value = initialValue;
 	input.setSelectionRange(cursor.start, cursor.end);
 
-	return { composer, input, discardDraft };
+	return { composer, input, persistDraft, discardDraft };
 };
 
 describe('ChatMessages Composer API - replaceText', () => {
@@ -74,6 +75,24 @@ describe('ChatMessages Composer API - clear', () => {
 		composer.clear();
 
 		expect(discardDraft).toHaveBeenCalledTimes(1);
+	});
+});
+
+describe('ChatMessages Composer API - draft', () => {
+	afterEach(() => {
+		document.body.innerHTML = '';
+		jest.useRealTimers();
+	});
+
+	it('should not store the text of a message being edited as the room draft', () => {
+		jest.useFakeTimers();
+		const { composer, persistDraft } = setupComposer('', { start: 0, end: 0 });
+
+		composer.setEditingMode(true);
+		composer.setText('edited message');
+		jest.runAllTimers();
+
+		expect(persistDraft).not.toHaveBeenCalled();
 	});
 });
 

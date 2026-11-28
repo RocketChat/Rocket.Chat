@@ -1,11 +1,11 @@
 import type { UsePositionOptions } from '@rocket.chat/fuselage-hooks';
 import { usePosition, usePreventScrollOutside } from '@rocket.chat/fuselage-hooks';
 import type { RefObject, ReactElement } from 'react';
-import { useRef, useMemo, cloneElement, useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import { useRef, useMemo, cloneElement } from 'react';
 
-import { useOwnerDocument } from '../../contexts';
+import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
+import { Overlay } from '../Overlay';
 
 export type PositionProps = Omit<ElementProps<HTMLElement>, 'children'> & {
 	anchor: RefObject<Element | null>;
@@ -16,7 +16,7 @@ export type PositionProps = Omit<ElementProps<HTMLElement>, 'children'> & {
 	preventScroll?: boolean;
 };
 
-const Position = ({ anchor, children, placement, margin, preventScroll = false, className: _className, ...props }: PositionProps) => {
+const Position = ({ anchor, children, placement, margin, preventScroll = false, className, ...props }: PositionProps) => {
 	const target = useRef<Element>(null);
 	const { style: positionStyle, placement: positionPlacement } =
 		usePosition(
@@ -29,39 +29,16 @@ const Position = ({ anchor, children, placement, margin, preventScroll = false, 
 
 	const style = useMemo(() => ({ position: 'fixed', ...positionStyle }), [positionStyle]);
 
-	const { document: ownerDocument } = useOwnerDocument();
-
-	const [portalContainer] = useState(() => {
-		const prev = ownerDocument.getElementById('position-container');
-		if (prev) {
-			return prev;
-		}
-		const element = ownerDocument.createElement('div');
-
-		element.id = 'position-container';
-
-		ownerDocument.body.appendChild(element);
-		return element;
-	});
-
-	useEffect(
-		() => () => {
-			// Another positioned element leaving in the same commit may have removed the shared container already.
-			if (!portalContainer.hasChildNodes()) {
-				portalContainer.remove();
-			}
-		},
-		[portalContainer],
-	);
-
-	return createPortal(
-		cloneElement(children, {
-			ref: target,
-			style: { ...children.props.style, ...style },
-			...props,
-			placement: positionPlacement,
-		}),
-		portalContainer,
+	return (
+		<Overlay containerId='position-container'>
+			{cloneElement(children, {
+				ref: target,
+				style: { ...children.props.style, ...style },
+				...props,
+				className: cx(children.props.className, className) || undefined,
+				placement: positionPlacement,
+			})}
+		</Overlay>
 	);
 };
 

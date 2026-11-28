@@ -51,8 +51,8 @@ export const useHandleUnread = (
 
 	const chat = useChat();
 
-	const findFirstMessage = Messages.use((state) => state.findFirst);
-	const filterMessages = Messages.use((state) => state.filter);
+	const findFirstMessage = Messages.useStore((state) => state.findFirst);
+	const filterMessages = Messages.useStore((state) => state.filter);
 
 	if (!chat) {
 		throw new Error('No ChatContext provided');

@@ -1,7 +1,7 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const sandbox = sinon.createSandbox();
@@ -16,9 +16,7 @@ const mocks = {
 	},
 	serverFetch: sandbox.stub(),
 	getWorkspaceAccessToken: sandbox.stub().resolves('workspace-token'),
-	Meteor: {
-		absoluteUrl: sandbox.stub().returns('http://localhost:3000/'),
-	},
+	getWorkspaceURL: sandbox.stub().returns('http://localhost:3000'),
 	logger: {
 		error: sandbox.stub(),
 	},
@@ -27,16 +25,22 @@ const mocks = {
 	},
 };
 
-const { sendUsageReport } = proxyquire.noCallThru().load('./sendUsageReport', {
-	'@rocket.chat/models': { Statistics: mocks.Statistics },
-	'@rocket.chat/server-fetch': { serverFetch: mocks.serverFetch },
-	'../index': { statistics: mocks.statistics },
-	'../../cloud': { getWorkspaceAccessToken: mocks.getWorkspaceAccessToken },
-	'meteor/meteor': { Meteor: mocks.Meteor },
-	'../../../../rocketchat.info': { Info: mocks.Info },
+let sendUsageReport: any;
+
+before(async () => {
+	mock.module('@rocket.chat/server-fetch', { exports: { serverFetch: mocks.serverFetch } });
+	mock.module('../index', { exports: { statistics: mocks.statistics } });
+	mock.module('../../cloud', { exports: { getWorkspaceAccessToken: mocks.getWorkspaceAccessToken } });
+	mock.module('../../utils/getURL', { exports: { getWorkspaceURL: mocks.getWorkspaceURL } });
+	mock.module('../../../../rocketchat.info', { exports: { Info: mocks.Info } });
+	({ sendUsageReport } = await import('./sendUsageReport'));
 });
 
 describe('sendUsageReport', () => {
+	before(() => {
+		mockModel('Statistics', mocks.Statistics);
+	});
+
 	beforeEach(() => {
 		sandbox.resetHistory();
 	});
@@ -63,6 +67,7 @@ describe('sendUsageReport', () => {
 		expect(mocks.statistics.save.called).to.be.true;
 		expect(mocks.serverFetch.calledOnce).to.be.true;
 		expect(mocks.serverFetch.calledWith('https://collector.rocket.chat/', sinon.match({ method: 'POST' }))).to.be.true;
+		expect(mocks.serverFetch.firstCall.args[1].body.host).to.equal('http://localhost:3000/');
 		expect(result).to.be.undefined;
 	});
 

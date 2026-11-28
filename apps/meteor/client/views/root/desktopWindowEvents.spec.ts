@@ -69,14 +69,14 @@ const loadStartup = () => {
 		isAuthError: jest.fn(),
 	}));
 	jest.doMock('../../lib/sdk/storage', () => ({ STORAGE_KEYS: {}, getStoredItem: () => 'token' }));
-	jest.doMock('../../lib/user', () => ({ userIdStore: { getState: () => 'uid', subscribe: jest.fn() } }));
+	jest.doMock('../../lib/user', () => ({ useUserIdStore: { getState: () => 'uid', subscribe: jest.fn() } }));
 	jest.doMock('../../lib/userData', () => ({
 		removeLocalUserData: jest.fn(),
 		synchronizeUserData: async () => ({ _id: 'uid', status: 'online', utcOffset: -new Date().getTimezoneOffset() / 60 }),
 	}));
 	jest.doMock('../../stores', () => ({
 		Users: {
-			use: {
+			useStore: {
 				getState: () => mockUsers,
 				subscribe: (listener: () => void) => mockUsersListeners.push(listener),
 			},

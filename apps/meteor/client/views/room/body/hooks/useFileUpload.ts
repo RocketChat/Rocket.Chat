@@ -9,21 +9,31 @@ const getEmptyUploads = () => emptyUploads;
 const getEmptyBool = () => false;
 
 export const useFileUpload = () => {
+	'use no memo';
+
 	const chat = useChat();
 
 	if (!chat) {
 		throw new Error('No ChatContext provided');
 	}
 
-	const store = chat.composer?.uploads;
+	// Follows the composer as it comes and goes, so its uploads are attached as soon as it exists.
+	const getComposer = useCallback(() => chat.composer, [chat]);
+	const composer = useSyncExternalStore(chat.subscribeToComposer, getComposer);
+	const store = composer?.uploads;
+	const isEditing = useSyncExternalStore(composer?.editing.subscribe ?? emptySubscribe, composer?.editing.get ?? getEmptyBool);
 
-	const uploads = useSyncExternalStore(store?.subscribe ?? emptySubscribe, store?.get ?? getEmptyUploads);
-	const isProcessingUploads = useSyncExternalStore(store?.subscribe ?? emptySubscribe, store?.getProcessingUploads ?? getEmptyBool);
+	// Uploads are put aside while a message is edited, and come back as they are once the edit ends.
+	const storedUploads = useSyncExternalStore(store?.subscribe ?? emptySubscribe, store?.get ?? getEmptyUploads);
+	const uploads = isEditing ? emptyUploads : storedUploads;
+	const storeIsProcessingUploads = useSyncExternalStore(store?.subscribe ?? emptySubscribe, store?.getProcessingUploads ?? getEmptyBool);
+	const isProcessingUploads = !isEditing && storeIsProcessingUploads;
 
 	useEffect(() => {
+		store?.attach();
 		store?.wipeFailedOnes();
 
-		return () => store?.clear();
+		return () => store?.detach();
 	}, [chat.action, store]);
 
 	const handleUploadFiles = useCallback(

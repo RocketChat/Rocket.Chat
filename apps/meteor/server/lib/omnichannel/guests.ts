@@ -17,7 +17,6 @@ import UAParser from 'ua-parser-js';
 import { parseAgentCustomFields } from './Helper';
 import type { ICRMData } from './localTypes';
 import { livechatLogger } from './logger';
-import { trim } from '../../../lib/utils/stringUtils';
 import { hasPermissionAsync } from '../authorization/hasPermission';
 import { i18n } from '../i18n';
 import { FileUpload } from '../media/file-upload';
@@ -47,10 +46,12 @@ export async function saveGuest(
 	if ((!userId || (await hasPermissionAsync(userId, 'edit-livechat-room-customfields'))) && Object.keys(livechatData).length) {
 		livechatLogger.debug({ msg: 'Saving custom fields for visitor', visitorId: _id, livechatData });
 		for await (const field of LivechatCustomField.findByScope('visitor')) {
-			if (!livechatData.hasOwnProperty(field._id)) {
+			if (!Object.hasOwn(livechatData, field._id)) {
 				continue;
 			}
-			const value = trim(livechatData[field._id]);
+			const rawValue = livechatData[field._id];
+			// oxlint-disable-next-line typescript/no-base-to-string -- TODO: reject non-string values on the next major; clients still send arrays (['VIP'] is saved as 'VIP')
+			const value = rawValue ? String(rawValue).trim() : '';
 			if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
 				const regexp = new RegExp(field.regexp);
 				if (!regexp.test(value)) {
@@ -90,8 +91,8 @@ export async function removeContactsByVisitorId({ _id }: { _id: string }) {
 
 	// And a contact shouldn't have many channels associated, so we can do this
 	livechatLogger.debug({ msg: 'Removing channels for contacts', visitorId: _id, contacts: contacts.map(({ _id }) => _id) });
-	for await (const contact of contacts) {
-		for await (const { visitor } of contact.channels) {
+	for (const contact of contacts) {
+		for (const { visitor } of contact.channels) {
 			await removeGuest({ _id: visitor.visitorId });
 		}
 

@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 
-import { MessageSystemLeftContainer } from '.';
 import { Avatar } from '../../Avatar';
 import { Box } from '../../Box';
 import { MessageDivider } from '../MessageDivider';
+import MessageLeftContainer from '../MessageLeftContainer';
 import MessageNameContainer from '../MessageNameContainer';
 import MessageUsername from '../MessageUsername';
 import MessageSystem from './MessageSystem';
@@ -47,7 +47,7 @@ export const Default: Story = {
 		<Box overflow='hidden'>
 			<MessageDivider>May, 24, 2020</MessageDivider>
 			<MessageSystem>
-				<MessageSystemLeftContainer>
+				<MessageLeftContainer>
 					<Avatar
 						alt=''
 						url='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC
@@ -63,7 +63,7 @@ export const Default: Story = {
                 UH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z'
 						size='x18'
 					/>
-				</MessageSystemLeftContainer>
+				</MessageLeftContainer>
 				<MessageSystemContainer>
 					<MessageSystemBlock>
 						<MessageNameContainer>
@@ -80,7 +80,7 @@ export const Default: Story = {
 			</MessageSystem>
 			<MessageDivider unreadLabel='Unread'>May, 24, 2020</MessageDivider>
 			<MessageSystem>
-				<MessageSystemLeftContainer>
+				<MessageLeftContainer>
 					<Avatar
 						alt=''
 						url='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC
@@ -96,7 +96,7 @@ export const Default: Story = {
                 UH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z'
 						size='x18'
 					/>
-				</MessageSystemLeftContainer>
+				</MessageLeftContainer>
 				<MessageSystemContainer>
 					<MessageSystemBlock>
 						<MessageNameContainer>
@@ -112,7 +112,7 @@ export const Default: Story = {
 				</MessageSystemContainer>
 			</MessageSystem>
 			<MessageSystem>
-				<MessageSystemLeftContainer>
+				<MessageLeftContainer>
 					<Avatar
 						alt=''
 						url='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC
@@ -128,7 +128,7 @@ export const Default: Story = {
                 UH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z'
 						size='x18'
 					/>
-				</MessageSystemLeftContainer>
+				</MessageLeftContainer>
 				<MessageSystemContainer>
 					<MessageSystemBlock>
 						<MessageNameContainer>
@@ -144,7 +144,7 @@ export const Default: Story = {
 				</MessageSystemContainer>
 			</MessageSystem>
 			<MessageSystem>
-				<MessageSystemLeftContainer>
+				<MessageLeftContainer>
 					<Avatar
 						alt=''
 						url='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC
@@ -160,7 +160,7 @@ export const Default: Story = {
                 UH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z'
 						size='x18'
 					/>
-				</MessageSystemLeftContainer>
+				</MessageLeftContainer>
 				<MessageSystemContainer>
 					<MessageSystemBlock>
 						<MessageNameContainer>
@@ -176,7 +176,7 @@ export const Default: Story = {
 				</MessageSystemContainer>
 			</MessageSystem>
 			<MessageSystem isSelected>
-				<MessageSystemLeftContainer>
+				<MessageLeftContainer>
 					<Avatar
 						alt=''
 						url='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC
@@ -192,7 +192,7 @@ export const Default: Story = {
                 UH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z'
 						size='x18'
 					/>
-				</MessageSystemLeftContainer>
+				</MessageLeftContainer>
 				<MessageSystemContainer>
 					<MessageSystemBlock>
 						<MessageNameContainer>
@@ -215,7 +215,7 @@ export const WithClickableAuthorName: Story = {
 	render: () => (
 		<Box overflow='hidden'>
 			<MessageSystem>
-				<MessageSystemLeftContainer>
+				<MessageLeftContainer>
 					<Avatar
 						alt=''
 						url='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC
@@ -231,7 +231,7 @@ export const WithClickableAuthorName: Story = {
                 UH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z'
 						size='x18'
 					/>
-				</MessageSystemLeftContainer>
+				</MessageLeftContainer>
 				<MessageSystemContainer>
 					<MessageSystemBlock>
 						<MessageNameContainer role='button' tabIndex={0}>
@@ -253,7 +253,7 @@ export const WithLongTopic: Story = {
 	render: () => (
 		<Box overflow='hidden'>
 			<MessageSystem>
-				<MessageSystemLeftContainer>
+				<MessageLeftContainer>
 					<Avatar
 						alt=''
 						url='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC
@@ -269,7 +269,7 @@ export const WithLongTopic: Story = {
                 UH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z'
 						size='x18'
 					/>
-				</MessageSystemLeftContainer>
+				</MessageLeftContainer>
 				<MessageSystemContainer>
 					<MessageSystemBlock>
 						<MessageNameContainer>

@@ -1,6 +1,5 @@
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom, LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { SidebarItemIcon } from '@rocket.chat/fuselage';
-import { escapeHTML } from '@rocket.chat/tools';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
@@ -30,14 +29,13 @@ const InquireSidePanelItem = ({ room, openedRoom, ...props }: InquireSidePanelIt
 
 	const time = 'lastMessage' in room ? room.lastMessage?.ts : undefined;
 	const message =
-		room.lastMessage &&
-		`${escapeHTML(room.lastMessage.u.name || room.lastMessage.u.username)}: ${normalizeMessagePreview(room.lastMessage, t)}`;
+		room.lastMessage && `${room.lastMessage.u.name || room.lastMessage.u.username}: ${normalizeMessagePreview(room.lastMessage, t)}`;
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 
 	const badges = <>{isOmnichannelRoom(room) && <SidePanelOmnichannelBadges room={room} />}</>;
 
-	const isQueued = room.status === 'queued';
+	const isQueued = room.status === LivechatInquiryStatus.QUEUED;
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 
 	const menu =
@@ -69,7 +67,7 @@ const InquireSidePanelItem = ({ room, openedRoom, ...props }: InquireSidePanelIt
 			}
 			unread={highlighted}
 			time={time}
-			subtitle={message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null}
+			subtitle={message ? <span className='message-body--unstyled'>{message}</span> : null}
 			badges={badges}
 			menu={menu}
 			{...props}

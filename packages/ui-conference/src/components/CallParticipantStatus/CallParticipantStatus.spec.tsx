@@ -1,8 +1,8 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 
-import CallParticipantStatus from './CallParticipantStatus';
-import type { PluginParticipant } from '../../lib/providerPlugin';
+import CallParticipantStatus from './CallParticipantStatus.js';
+import type { PluginParticipant } from '../../lib/providerPlugin.js';
 
 const buildParticipant = (overrides: Partial<PluginParticipant> = {}): PluginParticipant =>
 	({

@@ -11,6 +11,7 @@ import { useCategoryModals } from './hooks/useCategoryModals';
 import { useMoveRoomCategory } from './hooks/useMoveRoomCategory';
 import { useToggleUnreads } from './hooks/useToggleUnreads';
 import { useCreateNewItems } from '../../navbar/NavBarPagesGroup/hooks/useCreateNewItems';
+import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
 
 type CategoryMenuProps = {
 	category?: ISidebarCategory;
@@ -41,7 +42,11 @@ const CategoryMenu = ({
 	const moveRoomCategory = useMoveRoomCategory();
 	const { toggleShowUnreads, toggleKeepUnreadsOnTop } = useToggleUnreads();
 	const sidebarShowUnread = useUserPreference<boolean>('sidebarShowUnread', false);
-	const disableAlwaysDisplay = Boolean(sidebarShowUnread) && groupKey !== 'Unread';
+	const disableUnreadItems = Boolean(sidebarShowUnread);
+	// Dynamic groups are pinned above the rest of the list and cannot be reordered by any means.
+	const isReorderable = !SIDEBAR_DYNAMIC_GROUP_KEYS.includes(groupKey);
+	// The Unread group already holds every unread room, so neither unread option changes anything there.
+	const hasUnreadItems = groupKey !== 'Unread';
 
 	const onCreateSuccess = async (rid: string, name?: string) => {
 		if (!category) {
@@ -54,31 +59,37 @@ const CategoryMenu = ({
 	const rawCreateItems = useCreateNewItems({ onCreateSuccess });
 	const createItems = category ? rawCreateItems : [];
 
-	const handleToggleShowUnreads = async () => toggleShowUnreads(category?._id ?? groupKey);
-	const handleToggleKeepUnreadsOnTop = async () => toggleKeepUnreadsOnTop(category?._id ?? groupKey);
+	const handleToggleShowUnreads = () => {
+		void toggleShowUnreads(category?._id ?? groupKey);
+	};
+	const handleToggleKeepUnreadsOnTop = () => {
+		void toggleKeepUnreadsOnTop(category?._id ?? groupKey);
+	};
 
-	const orderItems: GenericMenuItemProps[] = [
-		{
-			id: 'move-up',
-			icon: 'arrow-up',
-			content: t('Move_up'),
-			disabled: !canMoveUp,
-			onClick: () => {
-				close();
-				onMoveUp();
-			},
-		},
-		{
-			id: 'move-down',
-			icon: 'arrow-down',
-			content: t('Move_down'),
-			disabled: !canMoveDown,
-			onClick: () => {
-				close();
-				onMoveDown();
-			},
-		},
-	];
+	const orderItems: GenericMenuItemProps[] = isReorderable
+		? [
+				{
+					id: 'move-up',
+					icon: 'arrow-up',
+					content: t('Move_up'),
+					disabled: !canMoveUp,
+					onClick: () => {
+						close();
+						onMoveUp();
+					},
+				},
+				{
+					id: 'move-down',
+					icon: 'arrow-down',
+					content: t('Move_down'),
+					disabled: !canMoveDown,
+					onClick: () => {
+						close();
+						onMoveDown();
+					},
+				},
+			]
+		: [];
 
 	const manageItems: GenericMenuItemProps[] = category
 		? [
@@ -103,28 +114,33 @@ const CategoryMenu = ({
 			]
 		: [];
 
-	const unreadItems: GenericMenuItemProps[] = [
-		{
-			id: 'show-unreads',
-			icon: 'flag',
-			content: t('Always_display'),
-			onClick: handleToggleShowUnreads,
-			addon: <ToggleSwitch disabled={disableAlwaysDisplay} checked={!disableAlwaysDisplay && showUnreads} onChange={() => undefined} />,
-			disabled: disableAlwaysDisplay,
-			tooltip: disableAlwaysDisplay ? t('Disabled_by_unread_group_see_display_options') : undefined,
-		},
-		{
-			id: 'keep-unreads-on-top',
-			icon: 'sort-amount-down',
-			content: t('Keep_on_top'),
-			onClick: handleToggleKeepUnreadsOnTop,
-			addon: <ToggleSwitch disabled={sidebarShowUnread} checked={!sidebarShowUnread && keepUnreadsOnTop} onChange={() => undefined} />,
-			disabled: sidebarShowUnread,
-			tooltip: sidebarShowUnread ? t('Disabled_by_unread_group_see_display_options') : undefined,
-		},
-	];
+	const unreadItems: GenericMenuItemProps[] = hasUnreadItems
+		? [
+				{
+					id: 'show-unreads',
+					icon: 'flag',
+					content: t('Always_display'),
+					onClick: handleToggleShowUnreads,
+					addon: <ToggleSwitch disabled={disableUnreadItems} checked={!disableUnreadItems && showUnreads} onChange={() => undefined} />,
+					disabled: disableUnreadItems,
+					tooltip: disableUnreadItems ? t('Disabled_by_unread_group_see_display_options') : undefined,
+				},
+				{
+					id: 'keep-unreads-on-top',
+					icon: 'sort-amount-down',
+					content: t('Keep_on_top'),
+					onClick: handleToggleKeepUnreadsOnTop,
+					addon: (
+						<ToggleSwitch disabled={disableUnreadItems} checked={!disableUnreadItems && keepUnreadsOnTop} onChange={() => undefined} />
+					),
+					disabled: disableUnreadItems,
+					tooltip: disableUnreadItems ? t('Disabled_by_unread_group_see_display_options') : undefined,
+				},
+			]
+		: [];
 
 	const allItems = [...orderItems, ...(category ? manageItems : []), ...createItems, ...unreadItems];
+	const hasMainSection = orderItems.length > 0 || Boolean(category);
 	const disabledKeys = allItems.filter(({ disabled }) => disabled).map(({ id }) => id);
 
 	const handleAction = useHandleMenuAction(allItems);
@@ -141,42 +157,50 @@ const CategoryMenu = ({
 			onAction={handleAction}
 		>
 			{[
-				<MenuSection key='main' aria-label={t('Options')}>
-					<>
-						{orderItems.map((item) => (
-							<MenuItem key={item.id}>
-								<GenericMenuItem {...item} />
-							</MenuItem>
-						))}
-						{category && createItems.length > 0 && (
-							<MenuSubmenuTrigger key='create-new' textValue={t('Create_new')}>
-								<MenuItem aria-label={t('Create_new')}>
-									<GenericMenuItem id='create-new' icon='plus' content={t('Create_new')} />
-								</MenuItem>
-								<MenuSection items={createItems}>
-									{(item) => (
+				...(hasMainSection
+					? [
+							<MenuSection key='main' aria-label={t('Options')}>
+								<>
+									{orderItems.map((item) => (
 										<MenuItem key={item.id}>
 											<GenericMenuItem {...item} />
 										</MenuItem>
+									))}
+									{category && createItems.length > 0 && (
+										<MenuSubmenuTrigger key='create-new' textValue={t('Create_new')}>
+											<MenuItem aria-label={t('Create_new')}>
+												<GenericMenuItem id='create-new' icon='plus' content={t('Create_new')} />
+											</MenuItem>
+											<MenuSection items={createItems}>
+												{(item) => (
+													<MenuItem key={item.id}>
+														<GenericMenuItem {...item} />
+													</MenuItem>
+												)}
+											</MenuSection>
+										</MenuSubmenuTrigger>
 									)}
-								</MenuSection>
-							</MenuSubmenuTrigger>
-						)}
-						{category &&
-							manageItems.map((item) => (
-								<MenuItem key={item.id}>
-									<GenericMenuItem {...item} />
-								</MenuItem>
-							))}
-					</>
-				</MenuSection>,
-				<MenuSection key='unreads' title={t('Unreads')} items={unreadItems}>
-					{(item) => (
-						<MenuItem key={item.id}>
-							<GenericMenuItem {...item} />
-						</MenuItem>
-					)}
-				</MenuSection>,
+									{category &&
+										manageItems.map((item) => (
+											<MenuItem key={item.id}>
+												<GenericMenuItem {...item} />
+											</MenuItem>
+										))}
+								</>
+							</MenuSection>,
+						]
+					: []),
+				...(unreadItems.length
+					? [
+							<MenuSection key='unreads' title={t('Unreads')} items={unreadItems}>
+								{(item: GenericMenuItemProps) => (
+									<MenuItem key={item.id}>
+										<GenericMenuItem {...item} />
+									</MenuItem>
+								)}
+							</MenuSection>,
+						]
+					: []),
 			]}
 		</Menu>
 	);

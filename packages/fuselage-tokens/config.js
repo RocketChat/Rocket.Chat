@@ -14,6 +14,8 @@ const categories = [
 	'surface',
 	'border',
 	'spacing',
+	'size',
+	'zIndex',
 ];
 
 const filterByCategory = (root) => (token) => token.attributes.category === root;

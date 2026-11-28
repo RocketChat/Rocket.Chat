@@ -1,9 +1,9 @@
 import { composeStories } from '@storybook/react';
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen, waitFor, within } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
-import * as stories from './OngoingCallsDropdown.stories';
+import * as stories from './OngoingCallsDropdown.stories.js';
 
 /**
  * Whether the button is there at all and what colour it is — red while something rings, blue while something
@@ -101,7 +101,7 @@ describe('OngoingCallsDropdown', () => {
 
 		expect(button).toHaveAttribute('aria-expanded', 'true');
 		await waitFor(() =>
-			expect(screen.getByRole('list', { name: 'Ongoing calls' })).toContainElement(document.activeElement as HTMLElement),
+			expect(within(screen.getByRole('list', { name: 'Ongoing calls' })).getByRole('link', { name: /Daily standup/ })).toHaveFocus(),
 		);
 	});
 
@@ -111,7 +111,7 @@ describe('OngoingCallsDropdown', () => {
 
 		const button = await screen.findByRole('button', { name: /ongoing call/i });
 		await userEvent.click(button);
-		await screen.findByRole('list', { name: 'Ongoing calls' });
+		expect(await screen.findByRole('list', { name: 'Ongoing calls' })).toBeInTheDocument();
 
 		await userEvent.keyboard('{Escape}');
 

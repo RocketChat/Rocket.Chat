@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import type { AssetSettingInputProps } from './AssetSettingInput';
@@ -34,11 +34,8 @@ const setup = (props: Partial<AssetSettingInputProps> = {}) => {
 	});
 
 	const getFileInput = () => {
-		const input = view.container.querySelector('input');
+		const input = screen.getByLabelText('Site logo', { selector: 'input' });
 		expect(input).toHaveAttribute('type', 'file');
-		if (!input) {
-			throw new Error('File input was not rendered');
-		}
 		return input;
 	};
 
@@ -73,7 +70,7 @@ describe('AssetSettingInput', () => {
 		const { getFileInput, upload, remove, dispatchToast } = setup({ asset: 'favicon' });
 		const file = new File(['image contents'], 'favicon.png', { type: 'image/png' });
 
-		fireEvent.change(getFileInput(), { target: { files: [file] } });
+		await userEvent.upload(getFileInput(), file);
 
 		await waitFor(() => expect(upload).toHaveBeenCalledTimes(1));
 		expect(upload).toHaveBeenCalledWith('/v1/assets.setAsset', expect.any(FormData));
@@ -83,10 +80,43 @@ describe('AssetSettingInput', () => {
 		expect(remove).not.toHaveBeenCalled();
 	});
 
+	it('names the select file button after the setting label', () => {
+		setup();
+
+		const labelId = screen.getByText('Site logo').id;
+		const button = screen.getByRole('button', { name: /Select file/ });
+		expect(labelId).toBeTruthy();
+		expect(button.getAttribute('aria-labelledby')?.split(' ')).toEqual([labelId, button.id]);
+	});
+
+	it('uploads a file dropped on the select file button', async () => {
+		const { upload } = setup();
+		const file = new File(['image contents'], 'logo.png', { type: 'image/png' });
+
+		fireEvent.drop(screen.getByRole('button', { name: /Select file/ }), { dataTransfer: { files: [file] } });
+
+		await waitFor(() => expect(upload).toHaveBeenCalledTimes(1));
+		expectUploadedFile(upload.mock.calls[0][1], file);
+	});
+
+	it('ignores a file dropped on the disabled select file button', () => {
+		const { upload } = setup({ disabled: true });
+
+		fireEvent.drop(screen.getByRole('button', { name: /Select file/ }), {
+			dataTransfer: { files: [new File(['image'], 'logo.png', { type: 'image/png' })] },
+		});
+
+		expect(upload).not.toHaveBeenCalled();
+	});
+
 	it.each([[], null])('does not upload or show a toast when input files are %p', (files) => {
 		const { getFileInput, upload, remove, dispatchToast } = setup();
 
-		fireEvent.change(getFileInput(), { target: { files } });
+		const input = getFileInput();
+		Object.defineProperty(input, 'files', { configurable: true, value: files });
+		act(() => {
+			input.dispatchEvent(new Event('change', { bubbles: true }));
+		});
 
 		expect(upload).not.toHaveBeenCalled();
 		expect(remove).not.toHaveBeenCalled();
@@ -99,7 +129,7 @@ describe('AssetSettingInput', () => {
 		upload.mockRejectedValueOnce(error);
 		const file = new File(['image contents'], 'logo.png', { type: 'image/png' });
 
-		fireEvent.change(getFileInput(), { target: { files: [file] } });
+		await userEvent.upload(getFileInput(), file);
 
 		await waitFor(() => expect(dispatchToast).toHaveBeenCalledWith({ type: 'error', message: error }));
 		expect(upload).toHaveBeenCalledTimes(1);
@@ -120,11 +150,11 @@ describe('AssetSettingInput', () => {
 	});
 
 	it('replaces file selection with an enabled delete button when an asset exists', () => {
-		const { container } = setup({ value: { url: '/logo.png' } });
+		setup({ value: { url: '/logo.png' } });
 
 		expect(screen.getByRole('button', { name: 'Delete' })).toBeEnabled();
 		expect(screen.queryByText('Select file')).not.toBeInTheDocument();
-		expect(container.querySelector('input')).not.toBeInTheDocument();
+		expect(screen.queryByLabelText('Site logo', { selector: 'input' })).not.toBeInTheDocument();
 	});
 
 	it('removes the configured asset when Delete is clicked', async () => {
@@ -177,7 +207,7 @@ describe('AssetSettingInput', () => {
 		const { getFileInput, upload, dispatchToast } = setup({ disabled: true });
 
 		expect(getFileInput()).toBeDisabled();
-		expect(screen.getByText('Select file')).toHaveClass('is-disabled');
+		expect(screen.getByRole('button', { name: /Select file/ })).toBeDisabled();
 		await userEvent.upload(getFileInput(), new File(['image'], 'logo.png', { type: 'image/png' }));
 		expect(upload).not.toHaveBeenCalled();
 		expect(dispatchToast).not.toHaveBeenCalled();

@@ -1,22 +1,18 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
-import { useDebouncedCallback, useSafely } from '@rocket.chat/fuselage-hooks';
-import type { CSSProperties, MutableRefObject } from 'react';
-import { useRef, useState } from 'react';
+import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import type { MutableRefObject } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
+import type { BubbleDateStore } from '../BubbleDate/bubbleDateStore';
+import { createBubbleDateStore, initialBubbleDateState } from '../BubbleDate/bubbleDateStore';
 import { useDateListController } from '../providers/DateListProvider';
 
 type useDateScrollReturn = {
 	handleDateScroll: (topMessage: IMessage | undefined, offset: number) => void;
 	bubbleRef: MutableRefObject<HTMLElement | null>;
-	listStyle?: ReturnType<typeof css>;
-} & BubbleDateProps;
-
-export type BubbleDateProps = {
-	bubbleDate: string | undefined;
-	bubbleDateClassName?: ReturnType<typeof css>;
-	showBubble: boolean;
-	bubbleDateStyle?: CSSProperties;
+	bubbleDateStore: BubbleDateStore;
+	/** Brings the bubble back to its initial state, dropping any pending update for the list it was showing. */
+	resetBubbleDate: () => void;
 };
 
 // The threshold in pixels to consider a date divider as "visible" when scrolling.
@@ -26,23 +22,8 @@ const DATE_DIVIDER_VISIBILITY_THRESHOLD = 100;
 type Matched = [date: string, divider: HTMLElement | undefined, style: { [key: string]: string | number }, showDivider: boolean] | [];
 
 export const useDateScroll = (margin = 8): useDateScrollReturn => {
-	const [bubbleDate, setBubbleDate] = useSafely(
-		useState<{
-			date: string;
-			show: boolean;
-			style?: CSSProperties;
-			bubbleDateClassName?: ReturnType<typeof css>;
-			offset: number;
-			showDivider: boolean;
-		}>({
-			date: '',
-			show: false,
-			style: undefined,
-			bubbleDateClassName: undefined,
-			offset: 0,
-			showDivider: true,
-		}),
-	);
+	const [bubbleDateStore] = useState(createBubbleDateStore);
+	const setBubbleDate = bubbleDateStore.set;
 
 	const { list } = useDateListController();
 
@@ -136,13 +117,6 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 				show: Boolean(date),
 				style,
 				showDivider: showDivider ?? true,
-				bubbleDateClassName: css`
-					opacity: 0;
-					transition: opacity 0.6s;
-					&.bubble-visible {
-						opacity: 1;
-					}
-				`,
 			}));
 
 			if (divider) {
@@ -165,24 +139,17 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 		5,
 		[list, margin, setBubbleDate],
 	);
-	// FIXME: This should be handled at the component level
-	const listStyle =
-		bubbleDate.show && bubbleDate.date && !bubbleDate.showDivider
-			? css`
-					position: relative;
-					& [data-time='${bubbleDate.date.replaceAll(/[-T:.]/g, '').substring(0, 8)}'] {
-						opacity: 0;
-					}
-				`
-			: undefined;
 
-	return {
-		handleDateScroll,
-		bubbleRef,
-		listStyle,
-		bubbleDate: bubbleDate.date,
-		bubbleDateStyle: bubbleDate.style,
-		showBubble: Boolean(bubbleDate.show),
-		bubbleDateClassName: bubbleDate.bubbleDateClassName,
-	};
+	const cancelDateScroll = handleDateScroll.cancel;
+
+	const resetBubbleDate = useCallback(() => {
+		cancelDateScroll();
+		if (hideBubbleTimeoutRef.current) {
+			clearTimeout(hideBubbleTimeoutRef.current);
+			hideBubbleTimeoutRef.current = null;
+		}
+		setBubbleDate(() => initialBubbleDateState);
+	}, [cancelDateScroll, setBubbleDate]);
+
+	return { handleDateScroll, bubbleRef, bubbleDateStore, resetBubbleDate };
 };

@@ -1,7 +1,9 @@
 import { render } from '@testing-library/react';
 
-import ResetPasswordConfirmationPage from './ResetPasswordConfirmationPage';
+import ResetPasswordConfirmationPage from './ResetPasswordConfirmationPage.js';
 
 it('renders without crashing', () => {
-	render(<ResetPasswordConfirmationPage />);
+	const { container } = render(<ResetPasswordConfirmationPage />);
+
+	expect(container).not.toBeEmptyDOMElement();
 });

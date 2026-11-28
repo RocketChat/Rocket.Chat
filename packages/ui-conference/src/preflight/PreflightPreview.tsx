@@ -2,11 +2,11 @@ import { Box } from '@rocket.chat/fuselage';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { usePreviewMedia } from './PreviewMediaContext';
-import VoiceActivity from '../call/VoiceActivity';
-import { usePreviewVideo } from '../call/previewVideo';
-import PreflightCameraPlaceholder from '../components/PreflightCameraPlaceholder';
-import { useCallDevicesInitialState } from '../hooks/useCallDevicesInitialState';
+import { usePreviewMedia } from './PreviewMediaContext.js';
+import VoiceActivity from '../call/VoiceActivity.js';
+import { usePreviewVideo } from '../call/previewVideo.js';
+import PreflightCameraPlaceholder from '../components/PreflightCameraPlaceholder.js';
+import { useCallDevicesInitialState } from '../hooks/useCallDevicesInitialState.js';
 
 const PreflightPreview = () => {
 	const { t } = useTranslation();

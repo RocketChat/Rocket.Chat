@@ -1,4 +1,5 @@
 import { Omnichannel, ClientSafeError } from '@rocket.chat/core-services';
+import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 
 import { RoutingManager } from './RoutingManager';
@@ -19,7 +20,7 @@ export const takeInquiry = async (
 		});
 	}
 
-	if (inquiry.status === 'taken') {
+	if (inquiry.status === LivechatInquiryStatus.TAKEN) {
 		throw new ClientSafeError('error-inquiry-taken', 'Inquiry already taken', {
 			method: 'livechat:takeInquiry',
 		});

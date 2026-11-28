@@ -18,8 +18,13 @@ import type {
 	IOmnichannelRoomExtraData,
 	ILivechatContact,
 } from '@rocket.chat/core-typings';
-import { LivechatInquiryStatus, OmnichannelSourceType, DEFAULT_SLA_CONFIG, UserStatus } from '@rocket.chat/core-typings';
-import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
+import {
+	LivechatInquiryStatus,
+	LivechatPriorityWeight,
+	OmnichannelSourceType,
+	DEFAULT_SLA_CONFIG,
+	UserStatus,
+} from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import {
@@ -32,7 +37,6 @@ import {
 	LivechatContacts,
 } from '@rocket.chat/models';
 import { removeEmpty, validateEmail as validatorFunc } from '@rocket.chat/tools';
-import { Match, check } from 'meteor/check';
 import type { ClientSession } from 'mongodb';
 import { ObjectId } from 'mongodb';
 
@@ -163,23 +167,15 @@ export const createLivechatInquiry = async ({
 }: {
 	rid: string;
 	name?: string;
-	guest?: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'department' | 'name' | 'token' | 'activity'>;
+	guest: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'department' | 'name' | 'token' | 'activity'>;
 	message?: string;
 	initialStatus?: LivechatInquiryStatus;
 	extraData?: IOmnichannelInquiryExtraData;
 	session?: ClientSession;
 }) => {
-	check(name, String);
-	check(
-		guest,
-		Match.ObjectIncluding({
-			_id: String,
-			username: String,
-			status: Match.Maybe(String),
-			department: Match.Maybe(String),
-			activity: Match.Maybe([String]),
-		}),
-	);
+	if (typeof name !== 'string') {
+		throw new Error('error-invalid-inquiry-name');
+	}
 
 	const extraInquiryInfo = await callbacks.run('livechat.beforeInquiry', extraData);
 
@@ -280,7 +276,7 @@ export const createLivechatSubscription = async (
 		},
 		ts: new Date(),
 		...(department && { department }),
-	} as InsertionModel<ISubscription>;
+	};
 
 	const response = await Subscriptions.insertOne(subscriptionData);
 
@@ -482,7 +478,7 @@ export const forwardRoomToAgent = async (room: IOmnichannelRoom, transferData: T
 		throw new Error('error-invalid-inquiry');
 	}
 
-	if (oldServedBy && agentId === oldServedBy._id) {
+	if (agentId === oldServedBy?._id) {
 		throw new Error('error-selected-agent-room-agent-are-same');
 	}
 
@@ -579,6 +575,41 @@ export const updateChatDepartment = async ({
 		newDepartmentId,
 		oldDepartmentId,
 	});
+};
+
+const forwardToFallbackDepartment = async (
+	room: IOmnichannelRoom,
+	guest: ILivechatVisitor,
+	transferData: TransferData,
+	department: Pick<ILivechatDepartment, 'allowReceiveForwardOffline' | 'fallbackForwardDepartment' | 'name'> | null,
+	servedBy: NonNullable<IOmnichannelRoom['servedBy']>,
+	oldServedBy: NonNullable<IOmnichannelRoom['servedBy']>,
+) => {
+	if (!department?.fallbackForwardDepartment?.length) {
+		logger.debug({
+			msg: 'Cannot forward room. Chat assigned to agent instead',
+			roomId: room._id,
+			agentId: servedBy._id,
+			previousAgentId: oldServedBy._id,
+		});
+		throw new Error('error-no-agents-available-for-service-on-department');
+	}
+
+	if (!transferData.originalDepartmentName) {
+		transferData.originalDepartmentName = department.name;
+	}
+	// if a chat has a fallback department, attempt to redirect chat to there [EE]
+	const transferSuccess = !!(await callbacks.run('livechat:onTransferFailure', room, { guest, transferData, department }));
+	// On CE theres no callback so it will return the room
+	if (typeof transferSuccess !== 'boolean' || !transferSuccess) {
+		logger.debug({
+			msg: 'Cannot forward room. Unable to delegate inquiry',
+			roomId: room._id,
+		});
+		return false;
+	}
+
+	return true;
 };
 
 export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILivechatVisitor, transferData: TransferData) => {
@@ -700,31 +731,7 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 
 	const { servedBy, chatQueued } = roomTaken;
 	if (!chatQueued && oldServedBy && oldServedBy._id === servedBy?._id) {
-		if (!department?.fallbackForwardDepartment?.length) {
-			logger.debug({
-				msg: 'Cannot forward room. Chat assigned to agent instead',
-				roomId: room._id,
-				agentId: servedBy._id,
-				previousAgentId: oldServedBy._id,
-			});
-			throw new Error('error-no-agents-available-for-service-on-department');
-		}
-
-		if (!transferData.originalDepartmentName) {
-			transferData.originalDepartmentName = department.name;
-		}
-		// if a chat has a fallback department, attempt to redirect chat to there [EE]
-		const transferSuccess = !!(await callbacks.run('livechat:onTransferFailure', room, { guest, transferData, department }));
-		// On CE theres no callback so it will return the room
-		if (typeof transferSuccess !== 'boolean' || !transferSuccess) {
-			logger.debug({
-				msg: 'Cannot forward room. Unable to delegate inquiry',
-				roomId: room._id,
-			});
-			return false;
-		}
-
-		return true;
+		return forwardToFallbackDepartment(room, guest, transferData, department, servedBy, oldServedBy);
 	}
 
 	// Send just 1 message to the room to inform the user that the chat was transferred
@@ -816,25 +823,6 @@ export const updateDepartmentAgents = async (
 	},
 	departmentEnabled: boolean,
 ) => {
-	check(agents, {
-		upsert: Match.Maybe([
-			Match.ObjectIncluding({
-				agentId: String,
-				username: Match.Maybe(String),
-				count: Match.Maybe(Match.Integer),
-				order: Match.Maybe(Match.Integer),
-			}),
-		]),
-		remove: Match.Maybe([
-			Match.ObjectIncluding({
-				agentId: String,
-				username: Match.Maybe(String),
-				count: Match.Maybe(Match.Integer),
-				order: Match.Maybe(Match.Integer),
-			}),
-		]),
-	});
-
 	const { upsert = [], remove = [] } = agents;
 
 	const agentsUpdated = [];
@@ -864,7 +852,7 @@ export const updateDepartmentAgents = async (
 		callbacks.runAsync('livechat.removeAgentDepartment', { departmentId, agentsId: agentsRemoved });
 	}
 
-	for await (const agent of upsert) {
+	for (const agent of upsert) {
 		const agentFromDb = await Users.findOneById(agent.agentId, { projection: { _id: 1, username: 1 } });
 		if (!agentFromDb) {
 			continue;

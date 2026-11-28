@@ -27,13 +27,13 @@ const LinearScaleElement = ({ className, block, context, surfaceRenderer }: Line
 				</Box>
 			)}
 			<Box>
-				<ButtonGroup className={className as string} align='center'>
+				<ButtonGroup className={className} align='center'>
 					{points.map((point, i) => (
 						<Button
 							key={i}
-							className={point === String(value) ? 'active' : undefined}
 							disabled={loading}
-							variant={error ? 'danger' : undefined}
+							variant={(error && 'danger') || (point === String(value) && 'primary') || undefined}
+							aria-pressed={point === String(value)}
 							compact
 							size='small'
 							value={point}

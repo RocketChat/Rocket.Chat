@@ -1,9 +1,8 @@
 import { Badge, IconButton, SidebarCollapseGroup, SidebarCollapseGroupMenu } from '@rocket.chat/fuselage';
-import { useDeferredMenuMount } from '@rocket.chat/ui-client';
+import { useDeferredMenuMount, useIsEnterprise } from '@rocket.chat/ui-client';
 import type { HTMLAttributes, KeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useIsEnterprise } from '../../hooks/useIsEnterprise';
 import { usePreventPropagation } from '../../hooks/usePreventPropagation';
 import CategoryMenu from '../categories/CategoryMenu';
 import type { SidebarRoomListGroup } from '../hooks/useRoomList';
@@ -16,6 +15,7 @@ type RoomListCollapserProps = {
 	onMoveUp: () => void;
 	onMoveDown: () => void;
 	onClick: () => void;
+	dragging?: boolean;
 } & Omit<HTMLAttributes<HTMLDivElement>, 'onClick' | 'onKeyDown'>;
 
 const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown, onClick, ...props }: RoomListCollapserProps) => {
@@ -26,6 +26,8 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 	const preventPropagation = usePreventPropagation();
 
 	const title = group.translateTitle ? t(group.title) : group.title;
+	// The Unread group can neither be reordered nor hold unread options, so it has nothing to open a menu for.
+	const hasMenu = isEnterprise && group.key !== 'Unread';
 
 	const toggleOnEnterOrSpace = (event: KeyboardEvent<HTMLDivElement>) => {
 		if (event.repeat || !['Enter', 'Space'].includes(event.code)) {
@@ -50,7 +52,7 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 				) : undefined
 			}
 			menu={
-				isEnterprise ? (
+				hasMenu ? (
 					<SidebarCollapseGroupMenu onClick={preventPropagation} onKeyDown={preventPropagation}>
 						{menuVisibility ? (
 							<CategoryMenu

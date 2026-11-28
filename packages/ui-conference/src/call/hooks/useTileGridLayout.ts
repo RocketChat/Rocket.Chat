@@ -1,9 +1,9 @@
 import type { RefCallback } from 'react';
 import { useCallback } from 'react';
 
-import { useElementSize } from './useElementSize';
-import type { TileGridLayout } from '../lib/tileGrid';
-import { tileGridLayout } from '../lib/tileGrid';
+import { useElementSize } from './useElementSize.js';
+import type { TileGridLayout } from '../lib/tileGrid.js';
+import { tileGridLayout } from '../lib/tileGrid.js';
 
 /**
  * The grid for a number of tiles in the element the returned ref is on, kept current as it resizes. A function of

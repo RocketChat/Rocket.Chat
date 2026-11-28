@@ -1,7 +1,9 @@
+/* oxlint-disable typescript/no-unsafe-call -- the legacy markdown parser is untyped; it will be typed in a separate change */
 /*
  * code() is a named function that will parse `inline code` and ```codeblock``` syntaxes
  * @param {Object} message - The message object
  */
+import type { IMessage } from '@rocket.chat/core-typings';
 import { unescapeHTML } from '@rocket.chat/tools';
 
 import { addAsToken } from './token';
@@ -9,7 +11,7 @@ import hljs, { register } from '../../hljs';
 
 const inlinecode = (message: any) => {
 	// Support `text`
-	message.html = message.html.replace(/\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, (match: string, p1: string, p2: string) =>
+	message.html = message.html.replace(/`([^`\r\n]+)`([<_*~]|\B|\b|$)/gm, (match: string, p1: string, p2: string) =>
 		addAsToken(
 			message,
 			`<span class="copyonly">\`</span><span><code class="code-colors inline">${p1}</code></span><span class="copyonly">\`</span>${p2}`,
@@ -36,7 +38,7 @@ const codeblocks = (message: any) => {
 		for (let index = 0; index < msgParts.length; index++) {
 			// Verify if this part is code
 			const part = msgParts[index];
-			const codeMatch = part.match(/^```[\r\n]*(.*[\r\n\ ]?)[\r\n]*([\s\S]*?)```+?$/);
+			const codeMatch = part.match(/^```[\r\n]*(.*[\r\n ]?)[\r\n]*([\s\S]*?)```+?$/);
 
 			if (codeMatch) {
 				// Process highlight if this part is code
@@ -77,7 +79,7 @@ const codeblocks = (message: any) => {
 	}
 };
 
-export const code = (message: any) => {
+export const code = <T extends { html?: string }>(message: T): T & { html?: string } & Pick<IMessage, 'tokens'> => {
 	if (message.html?.trim()) {
 		codeblocks(message);
 		inlinecode(message);

@@ -1,15 +1,16 @@
-import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
+import { ButtonGroup, Button, Stack } from '@rocket.chat/fuselage';
 import { SHA256 } from '@rocket.chat/sha256';
 import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useUser, useLogout, useEndpoint, useSetting, useLayout } from '@rocket.chat/ui-contexts';
 import { useId, useState, useCallback } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import AccountProfileForm from './AccountProfileForm';
 import ActionConfirmModal from './ActionConfirmModal';
 import { getProfileInitialValues } from './getProfileInitialValues';
 import ConfirmOwnerChangeModal from '../../../components/ConfirmOwnerChangeModal';
+import ContentColumn from '../../../components/ContentColumn';
 import { useAllowPasswordChange } from '../security/useAllowPasswordChange';
 
 // TODO: enforce useMutation
@@ -34,10 +35,8 @@ const AccountProfilePage = () => {
 		reValidateMode: 'onBlur',
 	});
 
-	const {
-		reset,
-		formState: { isDirty, isSubmitting },
-	} = methods;
+	const { reset, control } = methods;
+	const { isDirty, isSubmitting } = useFormState({ control });
 
 	const logoutOtherClients = useEndpoint('POST', '/v1/users.logoutOtherClients');
 	const deleteOwnAccount = useEndpoint('POST', '/v1/users.deleteOwnAccount');
@@ -112,11 +111,11 @@ const AccountProfilePage = () => {
 		<Page>
 			<PageHeader title={t('Profile')} />
 			<PageScrollableContentWithShadow>
-				<Box maxWidth='600px' width='full' alignSelf='center'>
-					<FormProvider {...methods}>
-						<AccountProfileForm id={profileFormId} />
-					</FormProvider>
-					<Box marginBlock={12} marginBlockStart={24}>
+				<ContentColumn>
+					<Stack gap='x24'>
+						<FormProvider {...methods}>
+							<AccountProfileForm id={profileFormId} />
+						</FormProvider>
 						<ButtonGroup stretch={isMobile} vertical={isMobile}>
 							<Button onClick={handleLogoutOtherLocations} loading={loggingOut}>
 								{t('Logout_Others')}
@@ -127,8 +126,8 @@ const AccountProfilePage = () => {
 								</Button>
 							)}
 						</ButtonGroup>
-					</Box>
-				</Box>
+					</Stack>
+				</ContentColumn>
 			</PageScrollableContentWithShadow>
 			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>

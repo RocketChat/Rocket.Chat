@@ -2,12 +2,13 @@
 import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { useContentBoxSize, useMediaQuery, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { Options } from '@rocket.chat/message-parser';
-import { useFormatDateAndTime } from '@rocket.chat/ui-client';
+import { useFormatDateAndTime, useMergedRefsV2 } from '@rocket.chat/ui-client';
 import { MessageComposerHint, RichTextComposerInputExpandable } from '@rocket.chat/ui-composer';
-import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useLayout, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
 import { memo, useRef, useReducer, useCallback, useState, useSyncExternalStore, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { MessageBoxProps } from './MessageBox';
 import MessageBoxBase from './MessageBoxBase';
@@ -30,7 +31,6 @@ import {
 import { handleRichTextSelectionWrapping } from './wrapSelection';
 import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
-import { useMergedRefsV2 } from '../../../../hooks/useMergedRefsV2';
 import { createRichTextComposerAPI } from '../../../../lib/createRichTextComposerAPI';
 import { emoji } from '../../../../lib/emoji';
 import { formattingButtons } from '../../../../lib/messageBoxFormatting';
@@ -78,9 +78,12 @@ const RichTextMessageBox = ({
 	previewUrls,
 	threadExists,
 }: MessageBoxProps): ReactElement => {
+	'use no memo';
+
 	const chat = useChat();
 	const room = useRoom();
-	const t = useTranslation();
+	const { t } = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 	const e2eEnabled = useSetting('E2E_Enable', false);
 	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
 	const isSlashCommandAllowed = !e2eEnabled || !room.encrypted || unencryptedMessagesAllowed;
@@ -210,6 +213,9 @@ const RichTextMessageBox = ({
 
 	const { hasUploads, handleUploadFiles, isUploading, isProcessingUploads } = useFileUpload();
 
+	const popupOptions = useComposerPopupOptions();
+	const popup = useComposerBoxPopup(popupOptions);
+
 	const handleSendMessage = useStableCallback(() => {
 		if (isUploading || isProcessingUploads) {
 			return;
@@ -278,7 +284,7 @@ const RichTextMessageBox = ({
 	const isRecording = isRecordingAudio || isRecordingVideo;
 
 	const federationMatrixEnabled = useIsFederationEnabled();
-	const subscribeSubscriptions = useCallback((onStoreChange: () => void) => Subscriptions.use.subscribe(onStoreChange), []);
+	const subscribeSubscriptions = useCallback((onStoreChange: () => void) => Subscriptions.useStore.subscribe(onStoreChange), []);
 	const canSend = useSyncExternalStore(subscribeSubscriptions, () => {
 		if (!room.t) {
 			return false;
@@ -403,10 +409,10 @@ const RichTextMessageBox = ({
 
 		const files = extractImageFilesFromClipboard(event, format);
 
-		if (files.length) {
-			event.preventDefault();
+		if (isEditing) {
+			dispatchToastMessage({ type: 'error', message: t('Files_cannot_be_attached_while_editing') });
+		} else {
 			handleUploadFiles?.(files);
-			return;
 		}
 
 		const pastedText = extractPastedPlainText(event);
@@ -440,17 +446,17 @@ const RichTextMessageBox = ({
 
 	const handleMouseLeave = useStableCallback(() => setLinkModifier(false));
 
-	const popupOptions = useComposerPopupOptions();
-	const popup = useComposerBoxPopup(popupOptions);
+	const keyDownHandlerCallbackRef = useCallback(
+		(node: HTMLDivElement) => {
+			const eventHandler = (e: KeyboardEvent) => keyboardEventHandler(e);
+			node.addEventListener('keydown', eventHandler);
 
-	const keyDownHandlerCallbackRef = useCallback((node: HTMLDivElement) => {
-		const eventHandler = (e: KeyboardEvent) => keyboardEventHandler(e);
-		node.addEventListener('keydown', eventHandler);
-
-		return () => {
-			node.removeEventListener('keydown', eventHandler);
-		};
-	}, []);
+			return () => {
+				node.removeEventListener('keydown', eventHandler);
+			};
+		},
+		[keyboardEventHandler],
+	);
 
 	const beforeInputHandlerCallbackRef = useCallback(
 		(node: HTMLDivElement) => {

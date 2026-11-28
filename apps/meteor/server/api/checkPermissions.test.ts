@@ -1,19 +1,22 @@
-import { describe, it } from 'node:test';
+import { before, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import mock from 'proxyquire';
 import Sinon from 'sinon';
 
 import type { PermissionsPayload } from './api.helpers';
 
-const mocks = {
-	'../lib/deprecationWarningLogger': {
-		apiDeprecationLogger: {
-			endpoint: Sinon.stub(),
+let checkPermissions: any;
+
+before(async () => {
+	mock.module('../lib/deprecationWarningLogger', {
+		exports: {
+			apiDeprecationLogger: {
+				endpoint: Sinon.stub(),
+			},
 		},
-	},
-};
-const { checkPermissions } = mock.noCallThru().load('./api.helpers', mocks);
+	});
+	({ checkPermissions } = await import('./api.helpers'));
+});
 
 describe('checkPermissions', () => {
 	it('should return false when no options.permissionsRequired key is present', () => {

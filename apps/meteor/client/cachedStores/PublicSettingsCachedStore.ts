@@ -8,7 +8,7 @@ class PublicSettingsCachedStore extends PublicCachedStore<ISetting> {
 		super({
 			name: 'public-settings',
 			eventType: 'notify-all',
-			store: PublicSettings.use,
+			store: PublicSettings.useStore,
 		});
 	}
 }

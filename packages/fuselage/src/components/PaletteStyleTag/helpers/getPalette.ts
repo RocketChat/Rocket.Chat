@@ -62,6 +62,8 @@ export const getThemePalette = (theme: Themes) => {
 				{ name: 'surface-featured-hover', color: surface.featuredHover },
 				{ name: 'surface-overlay', color: surface.overlay },
 				{ name: 'surface-sidebar', color: surface.sidebar },
+				{ name: 'surface-scrollbar-thumb', color: surface.scrollbarThumb },
+				{ name: 'surface-scrollbar-thumb-hover', color: surface.scrollbarThumbHover },
 			],
 		},
 		{
@@ -70,6 +72,7 @@ export const getThemePalette = (theme: Themes) => {
 			list: [
 				{ name: 'shadow-highlight', color: shadow.highlight },
 				{ name: 'shadow-danger', color: shadow.danger },
+				{ name: 'shadow-extra-light-error', color: shadow['extra-light-error'] },
 				{ name: 'shadow-elevation-border', color: shadow['elevation-border'] },
 				{ name: 'shadow-elevation-1', color: shadow['elevation-1'] },
 				{
@@ -138,11 +141,11 @@ export const getThemePalette = (theme: Themes) => {
 					color: status['font-on-service-1'],
 				},
 				{
-					name: 'status-font-on-service-2 ',
+					name: 'status-font-on-service-2',
 					color: status['font-on-service-2'],
 				},
 				{
-					name: 'status-font-on-service-3 ',
+					name: 'status-font-on-service-3',
 					color: status['font-on-service-3'],
 				},
 			],
@@ -254,7 +257,7 @@ export const getThemePalette = (theme: Themes) => {
 				},
 				{
 					name: 'button-background-secondary-danger-disabled',
-					color: button.backgroundDangerDisabled,
+					color: button.backgroundSecondaryDangerDisabled,
 				},
 			],
 		},
@@ -317,6 +320,39 @@ export const getThemePalette = (theme: Themes) => {
 			],
 		},
 		{
+			description: 'Warning Background',
+			list: [
+				{ name: 'button-background-warning-default', color: button.backgroundWarningDefault },
+				{ name: 'button-background-warning-hover', color: button.backgroundWarningHover },
+				{ name: 'button-background-warning-press', color: button.backgroundWarningPress },
+				{ name: 'button-background-warning-focus', color: button.backgroundWarningFocus },
+				{ name: 'button-background-warning-keyfocus', color: button.backgroundWarningKeyfocus },
+				{ name: 'button-background-warning-disabled', color: button.backgroundWarningDisabled },
+			],
+		},
+		{
+			description: 'Secondary Warning Background',
+			list: [
+				{ name: 'button-background-secondary-warning-default', color: button.backgroundSecondaryWarningDefault },
+				{ name: 'button-background-secondary-warning-hover', color: button.backgroundSecondaryWarningHover },
+				{ name: 'button-background-secondary-warning-press', color: button.backgroundSecondaryWarningPress },
+				{ name: 'button-background-secondary-warning-focus', color: button.backgroundSecondaryWarningFocus },
+				{ name: 'button-background-secondary-warning-keyfocus', color: button.backgroundSecondaryWarningKeyfocus },
+				{ name: 'button-background-secondary-warning-disabled', color: button.backgroundSecondaryWarningDisabled },
+			],
+		},
+		{
+			description: 'Secondary Success Background',
+			list: [
+				{ name: 'button-background-secondary-success-default', color: button.backgroundSecondarySuccessDefault },
+				{ name: 'button-background-secondary-success-hover', color: button.backgroundSecondarySuccessHover },
+				{ name: 'button-background-secondary-success-press', color: button.backgroundSecondarySuccessPress },
+				{ name: 'button-background-secondary-success-focus', color: button.backgroundSecondarySuccessFocus },
+				{ name: 'button-background-secondary-success-keyfocus', color: button.backgroundSecondarySuccessKeyfocus },
+				{ name: 'button-background-secondary-success-disabled', color: button.backgroundSecondarySuccessDisabled },
+			],
+		},
+		{
 			description: 'Font',
 			list: [
 				{ name: 'button-font-on-primary', color: button.fontOnPrimary },
@@ -350,6 +386,12 @@ export const getThemePalette = (theme: Themes) => {
 					name: 'button-font-on-success-disabled',
 					color: button.fontOnSuccessDisabled,
 				},
+				{ name: 'button-font-on-warning', color: button.fontOnWarning },
+				{ name: 'button-font-on-warning-disabled', color: button.fontOnWarningDisabled },
+				{ name: 'button-font-on-secondary-warning', color: button.fontOnSecondaryWarning },
+				{ name: 'button-font-on-secondary-warning-disabled', color: button.fontOnSecondaryWarningDisabled },
+				{ name: 'button-font-on-secondary-success', color: button.fontOnSecondarySuccess },
+				{ name: 'button-font-on-secondary-success-disabled', color: button.fontOnSecondarySuccessDisabled },
 			],
 		},
 	];

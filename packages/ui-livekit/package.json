@@ -1,7 +1,14 @@
 {
 	"name": "@rocket.chat/ui-livekit",
-	"version": "0.0.1",
+	"version": "2.0.0-rc.0",
 	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
@@ -44,7 +51,7 @@
 		"typescript": "~7.0.2"
 	},
 	"peerDependencies": {
-		"@rocket.chat/fuselage-hooks": "*",
+		"@rocket.chat/fuselage-hooks": "0.44.1-rc.0",
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-conference": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",

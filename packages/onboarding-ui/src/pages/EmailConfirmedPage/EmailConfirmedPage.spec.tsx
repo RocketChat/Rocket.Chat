@@ -1,7 +1,9 @@
 import { render } from '@testing-library/react';
 
-import EmailConfirmedPage from './EmailConfirmedPage';
+import EmailConfirmedPage from './EmailConfirmedPage.js';
 
 it('renders without crashing', () => {
-	render(<EmailConfirmedPage />);
+	const { container } = render(<EmailConfirmedPage />);
+
+	expect(container).not.toBeEmptyDOMElement();
 });

@@ -68,21 +68,23 @@ The map is named after the category in kebab case: `$colors`, `$surface`, `$stat
 
 Every category is available as `dist/<category>.json`, `dist/<category>.d.json.ts` and `dist/<category>.scss`.
 
-| Category       | Contents                                                                                                                                                  |
-| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `colors`       | The base palette: `white` and graded scales for neutral (`n100`–`n900`), red (`r`), orange (`o`), purple (`p`), yellow (`y`), green (`g`) and blue (`b`). |
-| `surface`      | Background colors (`light`, `tint`, `room`, `hover`, `selected`, `sidebar`…).                                                                             |
-| `font`         | Text and icon colors (`default`, `titlesLabels`, `hint`, `info`, `danger`…).                                                                              |
-| `stroke`       | Border colors (`extraLight`, `light`, `medium`, `dark`, `highlight`, `error`…).                                                                           |
-| `status`       | Status backgrounds and the text color to use on each (`info`, `font-on-info`, `success`, `danger`, `warning`, `service-1`…).                              |
-| `statusBullet` | User presence colors (`online`, `away`, `busy`, `disabled`, `offline`, `loading`).                                                                        |
-| `badge`        | Badge backgrounds (`level-0` to `level-4`).                                                                                                               |
-| `button`       | Button background and text colors per variant and state.                                                                                                  |
-| `shadow`       | Shadow colors (`highlight`, `danger`, `elevation-1`…).                                                                                                    |
-| `typography`   | `fontFamily` (`sans`, `mono`) and `fontScale` (`hero`, `h1`–`h5`, `p1`, `p1m`, `p1b`, `p2`, `p2m`, `p2b`, `c1`, `c2`, `micro`).                           |
-| `breakpoints`  | `xs`, `sm`, `md`, `lg`, `xl`, `xxl` and `xxxl`, each with `minViewportWidth`, `columns` and `gutterWidth`.                                                |
-| `border`       | `radius` (`none`, `default`, `small`, `medium`, `large`, `extra-large`, `full`) and `width` (`none`, `default`, `medium`, `large`, `extra-large`).        |
-| `spacing`      | The spacing scale for margins, paddings and gaps: `x4`, `x8`, `x12`, `x16`, `x20`, `x24`, `x32` and `x40`. The SCSS map holds them in `px`.               |
+| Category       | Contents                                                                                                                                                               |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `colors`       | The base palette: `white` and graded scales for neutral (`n100`–`n900`), red (`r`), orange (`o`), purple (`p`), yellow (`y`), green (`g`) and blue (`b`).              |
+| `surface`      | Background colors (`light`, `tint`, `room`, `hover`, `selected`, `sidebar`…).                                                                                          |
+| `font`         | Text and icon colors (`default`, `titlesLabels`, `hint`, `info`, `danger`…).                                                                                           |
+| `stroke`       | Border colors (`extraLight`, `light`, `medium`, `dark`, `highlight`, `error`…).                                                                                        |
+| `status`       | Status backgrounds and the text color to use on each (`info`, `font-on-info`, `success`, `danger`, `warning`, `service-1`…).                                           |
+| `statusBullet` | User presence colors (`online`, `away`, `busy`, `disabled`, `offline`, `loading`).                                                                                     |
+| `badge`        | Badge backgrounds (`level-0` to `level-4`).                                                                                                                            |
+| `button`       | Button background and text colors per variant and state.                                                                                                               |
+| `shadow`       | Shadow colors (`highlight`, `danger`, `elevation-1`…).                                                                                                                 |
+| `typography`   | `fontFamily` (`sans`, `mono`) and `fontScale` (`hero`, `h1`–`h5`, `p1`, `p1m`, `p1b`, `p2`, `p2m`, `p2b`, `c1`, `c2`, `micro`).                                        |
+| `breakpoints`  | `xs`, `sm`, `md`, `lg`, `xl`, `xxl` and `xxxl`, each with `minViewportWidth`, `columns` and `gutterWidth`.                                                             |
+| `border`       | `radius` (`none`, `default`, `small`, `medium`, `large`, `extra-large`, `full`) and `width` (`none`, `default`, `medium`, `large`, `extra-large`).                     |
+| `spacing`      | The spacing scale for margins, paddings and gaps: `x4`, `x8`, `x12`, `x16`, `x20`, `x24`, `x32` and `x40`. The SCSS map holds them in `px`.                            |
+| `size`         | The size scale for widths and heights: `x1`, `x2`, the multiples of 4 from `x4` to `x64`, and the icon steps `x15`, `x18` and `x22`. The SCSS map holds them in `rem`. |
+| `zIndex`       | Stacking layers: `raised` (1), `overlap` (2), `sticky` (10) and `overlay` (100).                                                                                       |
 
 `surface`, `font`, `stroke`, `status`, `statusBullet`, `badge`, `button` and `shadow` are split by theme: `light`, `dark` and `high-contrast`.
 

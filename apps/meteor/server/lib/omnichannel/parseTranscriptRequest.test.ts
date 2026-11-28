@@ -1,7 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import p from 'proxyquire';
 import sinon from 'sinon';
 
 const modelsMock = {
@@ -17,12 +17,19 @@ const settingsGetMock = {
 	get: sinon.stub(),
 };
 
-const { parseTranscriptRequest } = p.noCallThru().load('./parseTranscriptRequest', {
-	'@rocket.chat/models': modelsMock,
-	'../../settings': { settings: settingsGetMock },
+let parseTranscriptRequest: any;
+
+before(async () => {
+	mock.module('../../settings', { exports: { settings: settingsGetMock } });
+	({ parseTranscriptRequest } = await import('./parseTranscriptRequest'));
 });
 
 describe('parseTranscriptRequest', () => {
+	before(() => {
+		mockModel('Users', modelsMock.Users);
+		mockModel('LivechatVisitors', modelsMock.LivechatVisitors);
+	});
+
 	beforeEach(() => {
 		settingsGetMock.get.reset();
 		modelsMock.Users.findOneById.reset();

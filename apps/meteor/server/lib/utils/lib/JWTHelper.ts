@@ -34,7 +34,7 @@ export const validateAndDecodeJWT = (jwt: string, secret: string, options?: { au
 			return null;
 		}
 
-		const payload = decoded.payloadObj as Record<string, any>;
+		const payload = decoded.payloadObj as { exp?: number; nbf?: number; aud?: string; context?: Record<string, any> };
 
 		const now = Math.floor(Date.now() / 1000);
 		if (typeof payload.exp === 'number' && now >= payload.exp) {

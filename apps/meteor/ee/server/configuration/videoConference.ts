@@ -3,7 +3,6 @@ import type { IRoom, IUser, VideoConference } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Rooms } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../server/lib/callbacks';
 import { CORE_PROVIDER_APP_ID, videoConfProviders } from '../../../server/lib/videoConfProviders';
@@ -20,13 +19,13 @@ import { addSettings } from '../settings/video-conference';
  */
 const refreshLiveKitProviderRegistration = (): void => {
 	if (isLiveKitLicensed() && isLiveKitFullyConfigured() && settings.get<boolean>('VideoConf_Conference_Window_Enabled')) {
-		videoConfProviders.registerProvider('livekit', LIVEKIT_CAPABILITIES, CORE_PROVIDER_APP_ID);
+		videoConfProviders.registerProvider('livekit', LIVEKIT_CAPABILITIES, CORE_PROVIDER_APP_ID, 'Rocket.Chat Native (LiveKit)');
 	} else {
 		videoConfProviders.unRegisterProvider('livekit');
 	}
 };
 
-Meteor.startup(async () => {
+export const configureVideoConferenceEnterprise = async (): Promise<void> => {
 	await License.onLicense('videoconference-enterprise', async () => {
 		await addSettings();
 
@@ -73,4 +72,4 @@ Meteor.startup(async () => {
 			down: refreshLiveKitProviderRegistration,
 		});
 	});
-});
+};

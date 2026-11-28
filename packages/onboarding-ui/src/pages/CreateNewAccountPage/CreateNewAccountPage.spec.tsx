@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react';
 
-import CreateNewAccountPage from './CreateNewAccountPage';
+import CreateNewAccountPage from './CreateNewAccountPage.js';
 
 it('renders without crashing', () => {
-	render(
+	const { container } = render(
 		<CreateNewAccountPage
 			validateEmail={() => undefined}
 			validatePassword={() => undefined}
@@ -12,4 +12,6 @@ it('renders without crashing', () => {
 			onLogin={() => undefined}
 		/>,
 	);
+
+	expect(container).not.toBeEmptyDOMElement();
 });

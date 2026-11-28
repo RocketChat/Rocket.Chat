@@ -5,6 +5,7 @@ import { ClientSafeError } from '@rocket.chat/core-services';
 import ejson from 'ejson';
 import WebSocket from 'ws';
 
+import type { Publication } from './Publication';
 import { Server } from './Server';
 import { Session } from './Session';
 import { SERVER_ID, preframe } from './codec';
@@ -225,7 +226,7 @@ describe('Session', () => {
 		});
 
 		it('stops the matching subscription on unsub and ignores unknown ids', () => {
-			const subscription = { stop: jest.fn() };
+			const subscription = { stop: jest.fn() } as unknown as Publication;
 			session.subscriptions.set('s1', subscription);
 
 			receive(ws, { msg: 'unsub', id: 'unknown' });
@@ -330,7 +331,7 @@ describe('Session', () => {
 			const session = new Session(server, lifecycle, ws, false, makeRequest());
 			const onClose = jest.fn();
 			session.connection.onClose(onClose);
-			session.subscriptions.set('s1', { stop: jest.fn() });
+			session.subscriptions.set('s1', { stop: jest.fn() } as unknown as Publication);
 
 			ws.emit('close', 1000, 'bye');
 

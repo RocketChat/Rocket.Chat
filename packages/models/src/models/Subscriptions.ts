@@ -23,7 +23,7 @@ import type {
 	ClientSession,
 } from 'mongodb';
 
-import { Rooms, Users } from '../index';
+import { Rooms, Users } from '../proxies';
 import { BaseRaw } from './BaseRaw';
 
 export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscriptionsModel {
@@ -265,7 +265,9 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	addRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][], rid?: IRoom['_id']): Promise<UpdateResult> {
 		if (!Array.isArray(roles)) {
 			roles = [roles];
-			process.env.NODE_ENV === 'development' && console.warn('[WARN] Subscriptions.addRolesByUserId: roles should be an array');
+			if (process.env.NODE_ENV === 'development') {
+				console.warn('[WARN] Subscriptions.addRolesByUserId: roles should be an array');
+			}
 		}
 
 		const query = {
@@ -516,7 +518,12 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			.toArray();
 	}
 
-	incUnreadForRoomIdExcludingUserIds(roomId: IRoom['_id'], userIds: IUser['_id'][], inc: number): Promise<UpdateResult | Document> {
+	incUnreadForRoomIdExcludingUserIds(
+		roomId: IRoom['_id'],
+		userIds: IUser['_id'][],
+		inc: number,
+		senderId: IUser['_id'],
+	): Promise<UpdateResult | Document> {
 		if (inc == null) {
 			inc = 1;
 		}
@@ -525,6 +532,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			'u._id': {
 				$nin: userIds,
 			},
+			'ignored': { $ne: senderId },
 		};
 
 		const update = {
@@ -540,12 +548,13 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
-	setAlertForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateResult | Document> {
+	setAlertForRoomIdExcludingUserId(roomId: IRoom['_id'], senderId: IUser['_id']): Promise<UpdateResult | Document> {
 		const query = {
 			'rid': roomId,
 			'u._id': {
-				$ne: userId,
+				$ne: senderId,
 			},
+			'ignored': { $ne: senderId },
 			'alert': { $ne: true },
 		};
 
@@ -1412,15 +1421,16 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 
 	incGroupMentionsAndUnreadForRoomIdExcludingUserId(
 		roomId: IRoom['_id'],
-		userId: IUser['_id'],
+		senderId: IUser['_id'],
 		incGroup = 1,
 		incUnread = 1,
 	): Promise<UpdateResult | Document> {
 		const query = {
 			'rid': roomId,
 			'u._id': {
-				$ne: userId,
+				$ne: senderId,
 			},
+			'ignored': { $ne: senderId },
 		};
 
 		const update: UpdateFilter<ISubscription> = {
@@ -1440,14 +1450,16 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	incUserMentionsAndUnreadForRoomIdAndUserIds(
 		roomId: IRoom['_id'],
 		userIds: IUser['_id'][],
-		incUser = 1,
-		incUnread = 1,
+		incUser: number,
+		incUnread: number,
+		senderId: IUser['_id'],
 	): Promise<UpdateResult | Document> {
 		const query = {
 			'rid': roomId,
 			'u._id': {
 				$in: userIds,
 			},
+			'ignored': { $ne: senderId },
 		};
 
 		const update: UpdateFilter<ISubscription> = {
@@ -1478,10 +1490,15 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateOne(query, update);
 	}
 
-	setAlertForRoomIdAndUserIds(roomId: ISubscription['rid'], uids: ISubscription['u']['_id'][]): Promise<UpdateResult | Document> {
+	setAlertForRoomIdAndUserIds(
+		roomId: ISubscription['rid'],
+		uids: ISubscription['u']['_id'][],
+		senderId: IUser['_id'],
+	): Promise<UpdateResult | Document> {
 		const query = {
 			'rid': roomId,
 			'u._id': { $in: uids },
+			'ignored': { $ne: senderId },
 			'alert': { $ne: true },
 		};
 
@@ -1857,6 +1874,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		rid: string,
 		users: string[],
 		tmid: string,
+		senderId: IUser['_id'],
 		{ groupMention = false, userMention = false }: { groupMention?: boolean; userMention?: boolean } = {},
 	): Promise<UpdateResult | Document | void> {
 		if (!users) {
@@ -1867,6 +1885,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			{
 				'u._id': { $in: users },
 				rid,
+				'ignored': { $ne: senderId },
 			},
 			{
 				$addToSet: {

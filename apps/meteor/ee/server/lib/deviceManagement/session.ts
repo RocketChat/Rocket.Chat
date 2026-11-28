@@ -1,12 +1,11 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ISocketConnection } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import { UAParser } from 'ua-parser-js';
 
 import { t } from '../../../../lib/i18n';
+import { getAccountEmailSender } from '../../../../server/lib/auth/accountEmails';
 import * as Mailer from '../../../../server/lib/notifications/email/api';
 import { UAParserDesktop, UAParserMobile } from '../../../../server/lib/statistics/lib/UAParserCustom';
 import { getUserPreference } from '../../../../server/lib/utils/lib/getUserPreference';
@@ -15,21 +14,20 @@ import { settings } from '../../../../server/settings';
 
 let mailTemplates: string;
 
-Meteor.startup(() => {
-	Mailer.getTemplate('Device_Management_Email_Body', (template) => {
-		mailTemplates = template;
-	});
+Mailer.getTemplate('Device_Management_Email_Body', (template) => {
+	mailTemplates = template;
 });
 
 const uaParser = async (
 	uaString: ISocketConnection['httpHeaders']['user-agent'],
 ): Promise<UAParser.IResult & { app?: { name: string; version: string; bundle: string } }> => {
 	const ua = new UAParser(uaString);
-	return {
+	const result: UAParser.IResult & { app?: { name: string; version: string; bundle: string } } = {
 		...ua.getResult(),
 		...(uaString && UAParserMobile.isMobileApp(uaString) && UAParserMobile.uaObject(uaString)),
 		...(uaString && UAParserDesktop.isDesktopApp(uaString) && UAParserDesktop.uaObject(uaString)),
 	};
+	return result;
 };
 
 export const listenSessionLogin = () => {
@@ -56,7 +54,7 @@ export const listenSessionLogin = () => {
 			return;
 		}
 
-		const dateFormat = settings.get('Message_TimeAndDateFormat');
+		const dateFormat = settings.get<string>('Message_TimeAndDateFormat');
 
 		const {
 			name,
@@ -76,7 +74,7 @@ export const listenSessionLogin = () => {
 			}`,
 			ipInfo: clientAddress,
 			userAgent: '',
-			date: moment().format(String(dateFormat)),
+			date: moment().format(dateFormat),
 		};
 
 		switch (device.type) {
@@ -105,7 +103,7 @@ export const listenSessionLogin = () => {
 		try {
 			await Mailer.send({
 				to: `${name} <${email}>`,
-				from: Accounts.emailTemplates.from,
+				from: getAccountEmailSender(),
 				subject: settings.get('Device_Management_Email_Subject'),
 				html: mailTemplates,
 				data: mailData,

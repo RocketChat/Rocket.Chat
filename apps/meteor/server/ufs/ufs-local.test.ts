@@ -1,8 +1,7 @@
 import fs from 'node:fs';
-import { afterEach, before, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it, mock } from 'node:test';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 import type { SinonStub } from 'sinon';
 
@@ -15,62 +14,16 @@ const fakeCollection = {
 	findOne: sinon.stub(),
 };
 
-// Proxyquire chain to mock all Meteor dependencies
-const ufsFilterMock = proxyquire.noCallThru().load('./ufs-filter', {
-	'meteor/meteor': {},
-	'meteor/check': {},
-	'meteor/mongo': {},
-});
+let LocalStore: typeof LocalStoreClass;
 
-const { UploadFS } = proxyquire.noCallThru().load('./ufs', {
-	'meteor/meteor': {},
-	'meteor/check': {},
-	'meteor/mongo': {},
-	'./ufs-filter': ufsFilterMock,
-	'./ufs-store': {
-		Store: Object,
-	},
-});
+before(async () => {
+	mock.module('./ufs-store', { exports: { Store: Object } });
+	const { UploadFS } = await import('./ufs');
+	mock.restoreAll();
 
-// Create the UploadFS mock object as a callable function with properties
-// function UploadFS() {
-// 	return UploadFS;
-// }
-// Object.assign(UploadFS, {
-// 	store: {},
-// 	config: new Config(),
-// 	addStore: sinon.stub(),
-// 	getStore: sinon.stub().returns(undefined),
-// 	getTempFilePath: sinon.stub().returns('/tmp/mockfile'),
-// });
-// The module must export { UploadFS: ... }
-const ufsMock = { UploadFS };
-const ufsMockModule = { UploadFS };
-const ufsIndexMock = { UploadFS };
-
-const ufsStoreMockRaw = proxyquire.noCallThru().load('./ufs-store', {
-	'meteor/meteor': {},
-	'meteor/check': {},
-	'meteor/mongo': {},
-	'./ufs': ufsMockModule,
-	'./ufs-filter': ufsFilterMock,
-	'./index': ufsIndexMock,
+	mock.module('./index', { exports: { UploadFS } });
+	({ LocalStore } = await import('./ufs-local'));
 });
-// Patch ufsStoreMock to export all possible ways (default, named, etc)
-const ufsStoreMock = Object.assign({}, ufsStoreMockRaw, { default: ufsStoreMockRaw, ufsStoreMock: ufsStoreMockRaw });
-const localStoreProxy = proxyquire.noCallThru().load('./ufs-local', {
-	// 'mkdirp': sinon.stub(),
-	'meteor/meteor': {},
-	'meteor/check': {},
-	'meteor/mongo': {},
-	'./ufs': ufsMock,
-	'./ufs-store': ufsStoreMock,
-	'./index': ufsIndexMock,
-});
-
-const { LocalStore } = localStoreProxy as {
-	LocalStore: typeof LocalStoreClass;
-};
 
 describe('LocalStore', () => {
 	let store: LocalStoreClass;

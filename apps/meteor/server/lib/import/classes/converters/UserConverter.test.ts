@@ -1,7 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const settingsStub = sinon.stub();
@@ -14,62 +14,39 @@ const modelsMock = {
 };
 const addUserToDefaultChannels = sinon.stub();
 const generateUsernameSuggestion = sinon.stub();
-const insertUserDoc = sinon.stub();
+const insertUser = sinon.stub();
 const callbacks = {
 	run: sinon.stub(),
 };
-const bcryptHash = sinon.stub();
-const sha = sinon.stub();
+const hashPasswordMock = sinon.stub();
 const generateTempPassword = sinon.stub();
 
-const { UserConverter } = proxyquire.noCallThru().load('./UserConverter', {
-	'../../../callbacks': {
-		callbacks,
-	},
-	'../../../rooms/addUserToDefaultChannels': {
-		addUserToDefaultChannels,
-	},
-	'../../../users/getUsernameSuggestion': {
-		generateUsernameSuggestion,
-	},
-	'../../../users/saveUserIdentity': {
-		saveUserIdentity: sinon.stub(),
-	},
-	'../../../users/setUserActiveStatus': {
-		setUserActiveStatus: sinon.stub(),
-	},
-	'../../../notifyListener': {
-		notifyOnUserChange: sinon.stub(),
-	},
-	'./generateTempPassword': {
-		generateTempPassword,
-		'@global': true,
-	},
-	'bcrypt': {
-		'hash': bcryptHash,
-		'@global': true,
-	},
-	'meteor/check': sinon.stub(),
-	'meteor/meteor': sinon.stub(),
-	'@rocket.chat/sha256': {
-		SHA256: sha,
-	},
-	'meteor/accounts-base': {
-		Accounts: {
-			insertUserDoc,
-			_bcryptRounds: () => 10,
-		},
-	},
-	'@rocket.chat/models': { ...modelsMock, '@global': true },
+let UserConverter: any;
+
+before(async () => {
+	mock.module('../../../callbacks', { exports: { callbacks } });
+	mock.module('../../../rooms/addUserToDefaultChannels', { exports: { addUserToDefaultChannels } });
+	mock.module('../../../users/getUsernameSuggestion', { exports: { generateUsernameSuggestion } });
+	mock.module('../../../users/saveUserIdentity', { exports: { saveUserIdentity: sinon.stub() } });
+	mock.module('../../../users/setUserActiveStatus', { exports: { setUserActiveStatus: sinon.stub() } });
+	mock.module('../../../notifyListener', { exports: { notifyOnUserChange: sinon.stub() } });
+	mock.module('./generateTempPassword', { exports: { generateTempPassword } });
+	mock.module('@rocket.chat/account-utils', { exports: { hashPassword: hashPasswordMock } });
+	mock.module('../../../auth/insertUser', { exports: { insertUser } });
+	({ UserConverter } = await import('./UserConverter'));
 });
 
 describe('User Converter', () => {
+	before(() => {
+		mockModel('Users', modelsMock.Users);
+	});
+
 	beforeEach(() => {
 		modelsMock.Users.findOneByEmailAddress.reset();
 		modelsMock.Users.findOneByUsernameIgnoringCase.reset();
 		modelsMock.Users.findOneById.reset();
 		callbacks.run.reset();
-		insertUserDoc.reset();
+		insertUser.reset();
 		addUserToDefaultChannels.reset();
 		generateUsernameSuggestion.reset();
 		settingsStub.reset();
@@ -134,13 +111,14 @@ describe('User Converter', () => {
 			...expectedData,
 		});
 
-		const converter = new UserConverter({ workInMemory: true });
-		const hashPassword = sinon.stub(converter, 'hashPassword');
+		let converter: any;
+
+		before(() => {
+			converter = new UserConverter({ workInMemory: true });
+		});
 
 		generateTempPassword.returns('tempPassword');
-		hashPassword.callsFake(async (pass) => `hashed=${pass}`);
-		bcryptHash.callsFake((pass: string) => `hashed=${pass}`);
-		sha.callsFake((pass: string) => pass);
+		hashPasswordMock.callsFake(async (pass: string) => `hashed=${pass}`);
 
 		it('should map an empty object', async () => {
 			expect(
@@ -411,11 +389,11 @@ describe('User Converter', () => {
 			expect(addUserToDefaultChannels.getCall(0).args).to.be.an('array').that.deep.contains({ newUser: true });
 		});
 
-		it('should call insertUserDoc with the mapped data and roles', async () => {
+		it('should call insertUser with the mapped data and roles', async () => {
 			const converter = new UserConverter({ workInMemory: true });
 			let insertedUser = null;
 
-			insertUserDoc.callsFake((_options, data) => {
+			insertUser.callsFake((_options, data) => {
 				insertedUser = {
 					...data,
 					_id: 'Id1',
@@ -427,10 +405,10 @@ describe('User Converter', () => {
 
 			await (converter as any).insertUser({ ...userToImport, roles: ['role1', 'role2'] });
 
-			expect(insertUserDoc.getCalls()).to.be.an('array').with.lengthOf(1);
-			expect(insertUserDoc.getCall(0).args).to.be.an('array').with.lengthOf(2);
+			expect(insertUser.getCalls()).to.be.an('array').with.lengthOf(1);
+			expect(insertUser.getCall(0).args).to.be.an('array').with.lengthOf(2);
 
-			const usedParams = insertUserDoc.getCall(0).args[1];
+			const usedParams = insertUser.getCall(0).args[1];
 			expect(usedParams).to.deep.include({
 				type: 'user',
 				username: 'username1',

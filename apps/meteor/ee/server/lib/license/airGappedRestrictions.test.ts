@@ -1,9 +1,8 @@
-import { afterEach, describe, it } from 'node:test';
+import { afterEach, before, describe, it, mock } from 'node:test';
 
 import { Emitter } from '@rocket.chat/emitter';
-import { registerModel } from '@rocket.chat/models';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 let promises: Array<Promise<any>> = [];
@@ -44,38 +43,47 @@ const licenseMock = {
 	},
 };
 
-registerModel('IServerEventsModel', {
-	insertOne: () => undefined,
-	createAuditServerEvent: () => undefined,
-} as any);
-
-proxyquire.noCallThru().load('./airGappedRestrictions.ts', {
-	'@rocket.chat/license': {
-		AirGappedRestriction: airgappedRestrictionObj,
-		License: licenseMock,
-	},
-	'@rocket.chat/models': {
-		Settings: {
-			updateValueById: mocks.settingsUpdate,
+before(async () => {
+	mock.module('@rocket.chat/license', {
+		exports: {
+			AirGappedRestriction: airgappedRestrictionObj,
+			License: licenseMock,
 		},
-		Statistics: {
-			findLastStatsToken: mocks.findLastToken,
+	});
+	mock.module('../../../../server/lib/notifyListener', {
+		exports: {
+			notifyOnSettingChangedById: mocks.notifySetting,
 		},
-	},
-	'../../../../server/lib/notifyListener': {
-		notifyOnSettingChangedById: mocks.notifySetting,
-	},
-	'../../../../server/lib/i18n': {
-		i18n: {
-			t: mocks.i18n,
+	});
+	mock.module('../../../../server/lib/i18n', {
+		exports: {
+			i18n: {
+				t: mocks.i18n,
+			},
 		},
-	},
-	'../../../../server/lib/sendMessagesToAdmins': {
-		sendMessagesToAdmins: mocks.sendMessagesToAdmins,
-	},
+	});
+	mock.module('../../../../server/lib/sendMessagesToAdmins', {
+		exports: {
+			sendMessagesToAdmins: mocks.sendMessagesToAdmins,
+		},
+	});
+	await import('./airGappedRestrictions');
 });
 
 describe('airgappedRestrictions', () => {
+	before(() => {
+		mockModel('ServerEvents', {
+			insertOne: () => undefined,
+			createAuditServerEvent: () => undefined,
+		});
+		mockModel('Settings', {
+			updateValueById: mocks.settingsUpdate,
+		});
+		mockModel('Statistics', {
+			findLastStatsToken: mocks.findLastToken,
+		});
+	});
+
 	afterEach(() => {
 		Object.values(mocks).forEach((mock) => {
 			if ('resetHistory' in mock) {

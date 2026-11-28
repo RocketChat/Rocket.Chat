@@ -1,7 +1,9 @@
 import { render } from '@testing-library/react';
 
-import LoginLinkEmailPage from './LoginLinkEmailPage';
+import LoginLinkEmailPage from './LoginLinkEmailPage.js';
 
 it('renders without crashing', () => {
-	render(<LoginLinkEmailPage onResendEmailRequest={() => undefined} onChangeEmailRequest={() => undefined} />);
+	const { container } = render(<LoginLinkEmailPage onResendEmailRequest={() => undefined} onChangeEmailRequest={() => undefined} />);
+
+	expect(container).not.toBeEmptyDOMElement();
 });

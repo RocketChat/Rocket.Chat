@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 
-import CreateFirstMemberPage from './CreateFirstMemberPage';
+import CreateFirstMemberPage from './CreateFirstMemberPage.js';
 
 const onSubmit = jest.fn();
 const onBackButtonClick = jest.fn();
@@ -18,5 +18,7 @@ const props = {
 };
 
 it('renders without crashing', () => {
-	render(<CreateFirstMemberPage {...props} />);
+	const { container } = render(<CreateFirstMemberPage {...props} />);
+
+	expect(container).not.toBeEmptyDOMElement();
 });

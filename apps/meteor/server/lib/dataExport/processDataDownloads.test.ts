@@ -1,9 +1,9 @@
 import fs from 'node:fs';
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it, mock } from 'node:test';
 
 import type { IExportOperation } from '@rocket.chat/core-typings';
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import Sinon from 'sinon';
 
 let exportOperation: IExportOperation | null = null;
@@ -106,104 +106,99 @@ const modelsMock = {
 	},
 };
 
-const { exportRoomMessagesToFile } = proxyquire.noCallThru().load('./exportRoomMessagesToFile.ts', {
-	'@rocket.chat/models': modelsMock,
-	'../../settings': {
-		settings: {
-			get: (_key: string) => {
-				return undefined;
+let requestDataDownload: (args: { userData: { _id: string }; fullExport?: boolean }) => Promise<{
+	requested: boolean;
+	exportOperation: IExportOperation;
+	url: string | null;
+	pendingOperationsBeforeMyRequest: number;
+}>;
+let processDataDownloads: (typeof import('./processDataDownloads'))['processDataDownloads'];
+
+before(async () => {
+	mock.module('../../settings', {
+		exports: {
+			settings: {
+				get: (_key: string) => {
+					return undefined;
+				},
 			},
 		},
-	},
-	'../i18n': {
-		i18n: {
-			t: (key: string) => key,
+	});
+	mock.module('../i18n', {
+		exports: {
+			i18n: {
+				t: (key: string) => key,
+			},
 		},
-	},
+	});
+	mock.module('./index', {
+		exports: {
+			getPath: (fileId: string) => `/data-download/${fileId}`,
+		},
+	});
+	mock.module('../media/file-upload', {
+		exports: {
+			FileUpload: {
+				copy: async (fileId: string, _options: any) => {
+					return `copied-${fileId}`;
+				},
+			},
+		},
+	});
+	mock.module('../utils/getURL', {
+		exports: {
+			getURL: (path: string) => `https://example.com${path}`,
+		},
+	});
+	mock.module('./copyFileUpload', {
+		exports: {
+			copyFileUpload: (_attachmentData: { _id: string; name: string }, _assetsPath: string) => {
+				return Promise.resolve();
+			},
+		},
+	});
+	mock.module('./getRoomData', {
+		exports: {
+			getRoomData: Sinon.stub().resolves({
+				roomId: 'GENERAL',
+				roomName: 'general',
+				type: 'c',
+				exportedCount: 0,
+				status: 'pending',
+				userId: 'user1',
+				targetFile: 'general.json',
+			}),
+		},
+	});
+	mock.module('./sendEmail', {
+		exports: {
+			sendEmail: Sinon.stub().resolves(),
+		},
+	});
+	mock.module('./uploadZipFile', {
+		exports: {
+			uploadZipFile: Sinon.stub().resolves({ _id: 'file1' }),
+		},
+	});
+	({ requestDataDownload } = (await import('../../meteor-methods/platform/requestDataDownload')) as unknown as {
+		requestDataDownload: typeof requestDataDownload;
+	});
+	({ processDataDownloads } = await import('./processDataDownloads'));
 });
-
-const { requestDataDownload } = proxyquire.noCallThru().load('../../meteor-methods/platform/requestDataDownload.ts', {
-	'@rocket.chat/models': modelsMock,
-	'../../settings': {
-		settings: {
-			get: (_key: string) => {
-				return undefined;
-			},
-		},
-	},
-	'../../lib/dataExport': {
-		getPath: (fileId: string) => `/data-download/${fileId}`,
-	},
-	'meteor/meteor': {
-		Meteor: {
-			methods: Sinon.stub(),
-		},
-	},
-}) as {
-	requestDataDownload: (args: { userData: { _id: string }; fullExport?: boolean }) => Promise<{
-		requested: boolean;
-		exportOperation: IExportOperation;
-		url: string | null;
-		pendingOperationsBeforeMyRequest: number;
-	}>;
-};
-
-const { processDataDownloads } = proxyquire.noCallThru().load('./processDataDownloads.ts', {
-	'@rocket.chat/models': modelsMock,
-	'../media/file-upload': {
-		FileUpload: {
-			copy: async (fileId: string, _options: any) => {
-				return `copied-${fileId}`;
-			},
-		},
-	},
-	'../../settings': {
-		settings: {
-			get: (_key: string) => {
-				return undefined;
-			},
-		},
-	},
-	'../utils/getURL': {
-		getURL: (path: string) => `https://example.com${path}`,
-	},
-	'../i18n': {
-		i18n: {
-			t: (key: string) => key,
-		},
-	},
-	'./copyFileUpload': {
-		copyFileUpload: (_attachmentData: { _id: string; name: string }, _assetsPath: string) => {
-			return Promise.resolve();
-		},
-	},
-	'./exportRoomMessagesToFile': {
-		exportRoomMessagesToFile,
-	},
-	'./getRoomData': {
-		getRoomData: Sinon.stub().resolves({
-			roomId: 'GENERAL',
-			roomName: 'general',
-			type: 'c',
-			exportedCount: 0,
-			status: 'pending',
-			userId: 'user1',
-			targetFile: 'general.json',
-		}),
-	},
-	'./sendEmail': {
-		sendEmail: Sinon.stub().resolves(),
-	},
-	'./uploadZipFile': {
-		uploadZipFile: Sinon.stub().resolves({ _id: 'file1' }),
-	},
-}) as {
-	processDataDownloads: () => Promise<void>;
-};
 
 const userData = { _id: 'user1', username: 'userone' };
 
+const registerModels = () => {
+	mockModel('ExportOperations', modelsMock.ExportOperations);
+	mockModel('UserDataFiles', modelsMock.UserDataFiles);
+	mockModel('Avatars', modelsMock.Avatars);
+	mockModel('Subscriptions', modelsMock.Subscriptions);
+	mockModel('Messages', modelsMock.Messages);
+};
+
 describe('requestDataDownload', () => {
+	before(registerModels);
+
 	beforeEach(() => {
 		exportOperation = null;
 	});
@@ -222,6 +217,8 @@ describe('requestDataDownload', () => {
 });
 
 describe('export user data', async () => {
+	before(registerModels);
+
 	beforeEach(() => {
 		exportOperation = null;
 	});

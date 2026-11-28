@@ -108,8 +108,8 @@ describe('RecipientForm', () => {
 
 		await waitFor(() => expect(screen.getByLabelText('Contact*')).toBeEnabled());
 		await waitFor(() => expect(screen.getByLabelText('Channel*')).toBeDisabled());
-		expect(screen.getByLabelText('To*')).toHaveClass('disabled');
-		expect(screen.getByLabelText('From*')).toHaveClass('disabled');
+		expect(screen.getByLabelText('To*')).toBeDisabled();
+		expect(screen.getByLabelText('From*')).toBeDisabled();
 	});
 
 	it('should pass accessibility tests', async () => {
@@ -128,7 +128,9 @@ describe('RecipientForm', () => {
 
 		render(<RecipientForm defaultValues={defaultValues} {...defaultProps} />, { wrapper: appRoot.build() });
 
+		// oxlint-disable-next-line testing-library/no-node-access -- the selected value renders beside the input, inside an unlabelled field row
 		await waitFor(() => expect(screen.getByLabelText('Contact*').parentElement).toHaveTextContent('Contact 1'));
+		// oxlint-disable-next-line testing-library/no-node-access -- the selected value renders beside the input, inside an unlabelled field row
 		await waitFor(() => expect(screen.getByLabelText('Channel*').parentElement).toHaveTextContent('Provider 1'));
 		expect(screen.getByLabelText('To*')).toHaveTextContent(/\+1 212-555-4567/);
 		expect(screen.getByLabelText('From*')).toHaveTextContent(/\+1 212-777-4567/);
@@ -146,7 +148,7 @@ describe('RecipientForm', () => {
 		render(<RecipientForm {...defaultProps} defaultValues={defaultValues} />, { wrapper: appRoot.build() });
 
 		await waitFor(() => expect(screen.getByLabelText('Channel*')).toBeEnabled());
-		expect(screen.getByLabelText('To*')).toHaveClass('disabled');
+		expect(screen.getByLabelText('To*')).toBeDisabled();
 	});
 
 	it('should disable sender selection when no recipient is selected', async () => {
@@ -154,8 +156,8 @@ describe('RecipientForm', () => {
 
 		render(<RecipientForm {...defaultProps} defaultValues={defaultValues} />, { wrapper: appRoot.build() });
 
-		await waitFor(() => expect(screen.getByLabelText('To*')).not.toHaveClass('disabled'));
-		expect(screen.getByLabelText('From*')).toHaveClass('disabled');
+		await waitFor(() => expect(screen.getByLabelText('To*')).toBeEnabled());
+		expect(screen.getByLabelText('From*')).toBeDisabled();
 	});
 
 	it('should show retry button when contact fetch fails', async () => {
@@ -190,7 +192,7 @@ describe('RecipientForm', () => {
 		render(<RecipientForm defaultValues={defaultValues} {...defaultProps} />, { wrapper: appRoot.build() });
 
 		await waitFor(() => expect(screen.getByLabelText('To*')).not.toHaveTextContent('Loading...'));
-		expect(screen.getByLabelText('To*')).toHaveClass('disabled');
+		expect(screen.getByLabelText('To*')).toBeDisabled();
 	});
 
 	it('should show retry button when provider fetch fails', async () => {
@@ -215,7 +217,7 @@ describe('RecipientForm', () => {
 		});
 
 		await waitFor(() => expect(screen.getByLabelText('From*')).not.toHaveTextContent('Loading...'));
-		expect(screen.getByLabelText('From*')).toHaveClass('disabled');
+		expect(screen.getByLabelText('From*')).toBeDisabled();
 	});
 
 	it('should call retry contact fetch when retry button is clicked', async () => {

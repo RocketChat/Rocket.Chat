@@ -22,7 +22,8 @@ import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom, getRoomInfo } from '../../data/rooms.helper';
 import { deleteTeam } from '../../data/teams.helper';
 import { adminEmail, adminUsername, password } from '../../data/user';
-import { createUser, deleteUser, login } from '../../data/users.helper';
+import type { TestUser } from '../../data/users.helper';
+import { createUser, deleteUser, getUserByUsername, login } from '../../data/users.helper';
 import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('[ABAC] (Enterprise Only)', () => {
@@ -87,7 +88,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 
@@ -528,7 +529,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		});
 
 		describe('Audit messages by user and ABAC-managed rooms', () => {
-			let auditUser: IUser;
+			let auditUser: TestUser<IUser>;
 			let auditUserCreds: Credentials;
 			let auditRoom: IRoom;
 			const auditAttrKey = `audit_attr_${Date.now()}`;
@@ -551,7 +552,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				await addAbacAttributesToUserDirectly(connection, auditUser._id, [{ key: auditAttrKey, values: ['v1'] }]);
 				await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: auditAttrKey, values: ['v1'] }]);
 
-				const roomRes = await createRoom({ type: 'p', name: `abac-audit-user-room-${Date.now()}`, members: [auditUser.username!] });
+				const roomRes = await createRoom({ type: 'p', name: `abac-audit-user-room-${Date.now()}`, members: [auditUser.username] });
 				auditRoom = roomRes.body.group as IRoom;
 
 				await request
@@ -582,7 +583,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 						startDate: startDate.toISOString(),
 						endDate: endDate.toISOString(),
 						rid: '',
-						users: [auditUser.username!],
+						users: [auditUser.username],
 						visitor: '',
 						agent: '',
 					})
@@ -611,7 +612,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 						startDate: startDate.toISOString(),
 						endDate: endDate.toISOString(),
 						rid: '',
-						users: [auditUser.username!],
+						users: [auditUser.username],
 						visitor: '',
 						agent: '',
 					})
@@ -646,7 +647,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 						startDate: startDate.toISOString(),
 						endDate: endDate.toISOString(),
 						rid: '',
-						users: [auditUser.username!],
+						users: [auditUser.username],
 						visitor: '',
 						agent: '',
 					})
@@ -2976,6 +2977,105 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				});
 		});
 
+		describe('/abac/users/sync only applies LDAP attributes to LDAP-linked users', () => {
+			const staleAttributes = [{ key: 'department', values: ['stale'] }];
+			const localAttributes = [{ key: 'department', values: ['local'] }];
+			let ldapUser: IUser;
+			let ldapUserLdapId: string;
+			let ldapNamesake: IUser;
+			let localUser: IUser;
+
+			before(async () => {
+				ldapUser = await getUserByUsername('alan.bean');
+				const ldapUserDocument = await connection.db().collection<IUser>('users').findOne({ _id: ldapUser._id });
+				expect(ldapUserDocument?.services?.ldap?.id).to.be.a('string');
+				ldapUserLdapId = ldapUserDocument?.services?.ldap?.id as string;
+
+				ldapNamesake = await getUserByUsername('james.irwin');
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({ userId: ldapNamesake._id, data: { username: 'james.irwin.ldap' } })
+					.expect(200);
+				localUser = await createUser({ username: 'james.irwin' });
+			});
+
+			beforeEach(async () => {
+				await addAbacAttributesToUserDirectly(connection, ldapUser._id, staleAttributes);
+				await addAbacAttributesToUserDirectly(connection, localUser._id, localAttributes);
+			});
+
+			after(async () => {
+				await deleteUser(localUser);
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({ userId: ldapNamesake._id, data: { username: 'james.irwin' } })
+					.expect(200);
+			});
+
+			it('should leave a non-LDAP account sharing an LDAP username unchanged', async () => {
+				await request
+					.post(api('abac/users/sync'))
+					.set(credentials)
+					.send({ usernames: ['james.irwin'] })
+					.expect(200);
+
+				expect((await getUserByUsername('james.irwin')).abacAttributes).to.deep.equal(localAttributes);
+			});
+
+			it('should refresh an LDAP-linked user named by username', async () => {
+				await request
+					.post(api('abac/users/sync'))
+					.set(credentials)
+					.send({ usernames: ['alan.bean'] })
+					.expect(200);
+
+				expect((await getUserByUsername('alan.bean')).abacAttributes).to.deep.equal([{ key: 'department', values: ['navControl'] }]);
+			});
+
+			it('should refresh an LDAP-linked user named by id', async () => {
+				await request
+					.post(api('abac/users/sync'))
+					.set(credentials)
+					.send({ ids: [ldapUser._id] })
+					.expect(200);
+
+				expect((await getUserByUsername('alan.bean')).abacAttributes).to.deep.equal([{ key: 'department', values: ['navControl'] }]);
+			});
+
+			it('should refresh an LDAP-linked user named by email', async () => {
+				await request
+					.post(api('abac/users/sync'))
+					.set(credentials)
+					.send({ emails: ['alan.bean@space.air'] })
+					.expect(200);
+
+				expect((await getUserByUsername('alan.bean')).abacAttributes).to.deep.equal([{ key: 'department', values: ['navControl'] }]);
+			});
+
+			it('should refresh an LDAP-linked user named by LDAP id', async () => {
+				await request
+					.post(api('abac/users/sync'))
+					.set(credentials)
+					.send({ ldapIds: [ldapUserLdapId] })
+					.expect(200);
+
+				expect((await getUserByUsername('alan.bean')).abacAttributes).to.deep.equal([{ key: 'department', values: ['navControl'] }]);
+			});
+
+			it('should refresh only the LDAP-linked user in a mixed request', async () => {
+				await request
+					.post(api('abac/users/sync'))
+					.set(credentials)
+					.send({ usernames: ['alan.bean', 'james.irwin'] })
+					.expect(200);
+
+				expect((await getUserByUsername('alan.bean')).abacAttributes).to.deep.equal([{ key: 'department', values: ['navControl'] }]);
+				expect((await getUserByUsername('james.irwin')).abacAttributes).to.deep.equal(localAttributes);
+			});
+		});
+
 		describe('LDAP ABAC room membership sync', () => {
 			let roomIdWithAbac: string;
 
@@ -3090,7 +3190,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				updateSetting('LDAP_AD_User_Search_Field', ''),
 				updateSetting('LDAP_AD_Username_Field', ''),
 				updateSetting('LDAP_Background_Sync_ABAC_Attributes', false),
-				updateSetting('LDAP_Background_Sync_ABAC_Attributes_Interval', ''),
+				updateSetting('LDAP_Background_Sync_ABAC_Attributes_Interval', '0 0 * * *'),
 				updateSetting('LDAP_ABAC_AttributeMap', ''),
 			]);
 		});
@@ -3411,9 +3511,9 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				.send({ values: ['secret'] })
 				.expect(200);
 
-			const res = await request.get(`${v1}/rooms.info`).set(credentials).query({ roomId: adminReadableRoom._id }).expect(400);
+			const res = await request.get(`${v1}/rooms.info`).set(credentials).query({ roomId: adminReadableRoom._id }).expect(403);
 
-			expect(res.body).to.have.property('error', 'not-allowed');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 	});
 
@@ -3806,7 +3906,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			await request
 				.post('/api/v1/groups.invite')
 				.set(credentials)
-				.send({ roomId: room._id, usernames: [newUser.username!] })
+				.send({ roomId: room._id, usernames: [newUser.username] })
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);

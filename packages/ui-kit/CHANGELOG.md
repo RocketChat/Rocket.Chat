@@ -1,5 +1,156 @@
 # Change Log
 
+## 3.0.0-rc.0
+
+### Minor Changes
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the `rich_text` layout block and the `rich_text_input` element to UiKit. `rich_text` renders structured text (styled text, lists, quotes, code, mentions by id, links, emoji, dates) in messages, modals and contextual bars; `rich_text_input` lets the user type Markdown and reports the value as a `rich_text` block.
+
+- ([#43538](https://github.com/RocketChat/Rocket.Chat/pull/43538)) Declares itself an ES module. `dist` already held ES module syntax, but the package didn't say so, so Node.js could only load it by detecting the syntax. It now sets `"type": "module"` and declares an `exports` map, so deep imports into `dist` no longer resolve. CommonJS consumers need a Node.js version that can `require()` ES modules (20.19 or 22.12 and later).
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the UiKit `alert` block: a short notice of up to 200 characters, styled by its `level` (`default`, `info`, `warning`, `error` or `success`), for messages, modals and contextual bars.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Types the alternative element names `checkboxes`, `radio_buttons` and `timepicker` that the parser already accepts, so apps and `validateLayoutBlocks` accept them like `checkbox`, `radio_button` and `time_picker`.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the UiKit `card` block, with an optional hero image, icon, title, subtitle, body, subtext and up to 3 buttons, and the `carousel` block, a row of 1 to 10 cards that scrolls sideways with previous and next buttons.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the UiKit `container` block, a titled and optionally collapsible frame around other blocks, and the `layout` block, which arranges blocks in rows of up to 3 weighted items. Livechat draws the `fallback` blocks of a layout.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the UiKit `data_table` block, a table with a caption that the reader can filter, sort by column and page through, whose cells hold text, numbers, rich text or a button (`action_cell`).
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the UiKit `data_visualization` block, a pie, bar, area or line chart under a title, for messages, modals and contextual bars. A message can hold up to 2 of them.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds `external_select` and `multi_external_select` UiKit elements. The options come from the app: as the user types, Rocket.Chat sends a `blockSuggestion` interaction and the app answers through the new `executeBlockSuggestionHandler` method with the options to show.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the UiKit `file_input` element, which lets apps collect files in modals and contextual bars, and the `file` block, which shows an uploaded file in a message. Files picked in a view are uploaded as temporary files of the room and kept when the view is submitted.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Logs a warning when an app sends UiKit blocks that do not match their types, in a message or in a view it opens or updates, with where each mismatch is. The blocks are still accepted and rendered as before.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds `on_enter_pressed` to `dispatchActionConfig`, so an input element sends a `blockAction` with its current value when the user presses Enter
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the `UiKit_Reject_Invalid_Blocks` setting, which rejects messages with invalid blocks and drops invalid views from apps instead of only logging them, and checks block count, text length and option count limits when blocks are validated
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the `color`, `tag`, `citation`, `message_mention`, `attachment_mention`, `usergroup` and `team` inline elements to the UiKit `rich_text` block. Tags are drawn as chips, citations as numbered links, and message, team and user group mentions resolve their targets by id.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds `focus_on_load` to `static_select` and `multi_static_select`, and makes the Fuselage filtered selects focus their input when given `autoFocus`.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds the UiKit `task_card` and `plan` blocks and the `url` source element, for apps that show the progress of a multi-step task, such as an AI agent. A task card has a title, a status (`pending`, `in_progress`, `complete` or `error`), optional details and output, and links to its sources; a plan shows up to 50 tasks together under a title. An app updates the message or view to change their statuses.
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds an optional `timezone` to the time picker, naming the IANA time zone of its value; the picker shows the zone's short name next to the time
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Adds alternative UiKit element type names (`checkboxes`, `radio_buttons`, `timepicker`), widens the icons available to `icon` and `icon_button`, and renders emoji-only `mrkdwn` text at normal size outside the `markdown` block
+
+- ([#43485](https://github.com/RocketChat/Rocket.Chat/pull/43485)) Lets apps drive multi-step forms with UiKit modals. An app can push a modal on top of the current one (up to 3 stacked), close one or all of its modals, keep `private_metadata`, `callback_id` and `external_id` on a view, disable the submit button with `submit_disabled`, update a view by `external_id`, and drop stale updates through the view `hash`. `notifyOnClose` and `clearOnClose` are honored, and `viewClosed` now carries the `triggerId` so the app can open a modal in response.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [183bca8af1fc26ab280120fef087f72f92982302, fb49d8906cdd4d36825b87ae7d6cf962647c12e6, ea30eb21dba8e27ed7b2899190942095506d35b4]:</summary>
+  - @rocket.chat/icons@0.53.0-rc.0
+
+  </details>
+
+## 2.0.0
+
+### Minor Changes
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds `accessibility_label` to UiKit buttons: screen readers announce it instead of the button text, for buttons whose visible text is ambiguous on its own.
+
+- ([#42854](https://github.com/RocketChat/Rocket.Chat/pull/42854)) Adds the UiKit `context_actions` block: a compact row of icon buttons attached to the end of a message, for actions about it.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds `filter.include` and `default_to_current_conversation` to the UiKit conversations selects: apps can list only public channels, private groups or direct messages, and start with the room the view was opened from already selected.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds rendering for the UiKit `conversations_select` and `multi_conversations_select` elements. They list the conversations the user belongs to (channels, private groups and direct messages), and their value is the room id or the list of room ids. Both elements now also accept a `placeholder`.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds the UiKit `datetimepicker` element, which picks a date and a time together in `actions` and `input` blocks. Its `initial_date_time` and value are Unix timestamps in seconds, shown in the user's time zone.
+
+- ([#42854](https://github.com/RocketChat/Rocket.Chat/pull/42854)) Adds the UiKit `feedback_buttons` element to `context_actions`: a thumbs up and a thumbs down button that send the chosen value to the app, to rate a message such as an answer.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds `focus_on_load` to the UiKit users, channels and conversations selects (single and multi), checkboxes and radio buttons.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds `focus_on_load` to UiKit text, number, email, URL, date, time and date-time inputs, so an app can choose which field has focus when a modal or contextual bar opens.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds the UiKit `number_input`, `email_text_input` and `url_text_input` elements for `input` blocks. `number_input` supports `is_decimal_allowed`, `min_value` and `max_value`; all three accept `placeholder` and `initial_value`, and submit their value as a string.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds the UiKit `header` block: a large plain-text title that separates sections of messages, modals and contextual bars.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds the UiKit `markdown` block: a longer piece of Markdown, rendered like a chat message, in messages, modals and contextual bars.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds `max_selected_items` to the UiKit multi users, channels and conversations selects; once that many entries are selected, no others can be picked.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Lets UiKit `section` blocks take checkboxes, radio buttons, a time picker and the users, channels and conversations selects (single and multi) as their accessory.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds initial selections to the UiKit users, channels and conversations selects: `initial_user`/`initial_users` (usernames), `initial_channel`/`initial_channels` and `initial_conversation`/`initial_conversations` (room ids). Selected entries now keep their chips even when the current search does not return them.
+
+- ([#42564](https://github.com/RocketChat/Rocket.Chat/pull/42564)) Fixes UiKit `callout` blocks not rendering in banners and in messages. Each UiKit surface now has a single list of accepted layout blocks, exported by `@rocket.chat/ui-kit` (`messageSurfaceLayoutBlockTypes`, `modalSurfaceLayoutBlockTypes`, `bannerSurfaceLayoutBlockTypes`, `contextualBarSurfaceLayoutBlockTypes`, `attachmentSurfaceLayoutBlockTypes`) and shared by the surface types, the `UiKitParser*` classes and the Fuselage renderers. The surface types now also include every block the web client already rendered: `input` and `info_card` in messages, `preview` in modals, `preview` and `info_card` in banners, and `callout`, `preview` and `tab_navigation` in the contextual bar.
+
+- ([#42854](https://github.com/RocketChat/Rocket.Chat/pull/42854)) Adds the UiKit `table` block: rows of plain or formatted cells, with a header row and per-column alignment and wrapping, in messages, modals and contextual bars.
+
+- ([#42560](https://github.com/RocketChat/Rocket.Chat/pull/42560)) Fixes UiKit buttons, icon buttons and overflow options opening `javascript:`, `data:` and `vbscript:` URLs sent by apps. Those URLs are now ignored; every other URL, including app deep links and relative URLs, still opens. Overflow options in the web client, which never opened their URL, now open it in a new tab without access to the opener. `@rocket.chat/ui-kit` exports the check as `isSafeUrl`.
+
+- ([#42854](https://github.com/RocketChat/Rocket.Chat/pull/42854)) Adds the UiKit `video` block: a video shown as its thumbnail with a title, description and provider, which plays in place from an `https` embeddable page once clicked, in messages, modals and contextual bars.
+
+### Patch Changes
+
+- ([#43036](https://github.com/RocketChat/Rocket.Chat/pull/43036)) Fixes UI Kit buttons in messages sending the clicker's credentials to an endpoint other than the app's interaction endpoint when their `appId` is not a valid app ID
+
+- ([#42558](https://github.com/RocketChat/Rocket.Chat/pull/42558)) Fixes apps not being able to close a UiKit modal with a `modal.close` response; the client now closes the modal named by the response's `view.id` or `viewId`.
+
+- <details><summary>Updated dependencies [0285f08c086dae6beb0f1365a85f522fb4818435, a838cc5af0652f59d0ab30aa1a488abded0622b1]:</summary>
+  - @rocket.chat/icons@0.52.0
+
+  </details>
+
+## 2.0.0-rc.0
+
+### Minor Changes
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds `accessibility_label` to UiKit buttons: screen readers announce it instead of the button text, for buttons whose visible text is ambiguous on its own.
+
+- ([#42854](https://github.com/RocketChat/Rocket.Chat/pull/42854)) Adds the UiKit `context_actions` block: a compact row of icon buttons attached to the end of a message, for actions about it.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds `filter.include` and `default_to_current_conversation` to the UiKit conversations selects: apps can list only public channels, private groups or direct messages, and start with the room the view was opened from already selected.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds rendering for the UiKit `conversations_select` and `multi_conversations_select` elements. They list the conversations the user belongs to (channels, private groups and direct messages), and their value is the room id or the list of room ids. Both elements now also accept a `placeholder`.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds the UiKit `datetimepicker` element, which picks a date and a time together in `actions` and `input` blocks. Its `initial_date_time` and value are Unix timestamps in seconds, shown in the user's time zone.
+
+- ([#42854](https://github.com/RocketChat/Rocket.Chat/pull/42854)) Adds the UiKit `feedback_buttons` element to `context_actions`: a thumbs up and a thumbs down button that send the chosen value to the app, to rate a message such as an answer.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds `focus_on_load` to the UiKit users, channels and conversations selects (single and multi), checkboxes and radio buttons.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds `focus_on_load` to UiKit text, number, email, URL, date, time and date-time inputs, so an app can choose which field has focus when a modal or contextual bar opens.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds the UiKit `number_input`, `email_text_input` and `url_text_input` elements for `input` blocks. `number_input` supports `is_decimal_allowed`, `min_value` and `max_value`; all three accept `placeholder` and `initial_value`, and submit their value as a string.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds the UiKit `header` block: a large plain-text title that separates sections of messages, modals and contextual bars.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds the UiKit `markdown` block: a longer piece of Markdown, rendered like a chat message, in messages, modals and contextual bars.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds `max_selected_items` to the UiKit multi users, channels and conversations selects; once that many entries are selected, no others can be picked.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Lets UiKit `section` blocks take checkboxes, radio buttons, a time picker and the users, channels and conversations selects (single and multi) as their accessory.
+
+- ([#42562](https://github.com/RocketChat/Rocket.Chat/pull/42562)) Adds initial selections to the UiKit users, channels and conversations selects: `initial_user`/`initial_users` (usernames), `initial_channel`/`initial_channels` and `initial_conversation`/`initial_conversations` (room ids). Selected entries now keep their chips even when the current search does not return them.
+
+- ([#42564](https://github.com/RocketChat/Rocket.Chat/pull/42564)) Fixes UiKit `callout` blocks not rendering in banners and in messages. Each UiKit surface now has a single list of accepted layout blocks, exported by `@rocket.chat/ui-kit` (`messageSurfaceLayoutBlockTypes`, `modalSurfaceLayoutBlockTypes`, `bannerSurfaceLayoutBlockTypes`, `contextualBarSurfaceLayoutBlockTypes`, `attachmentSurfaceLayoutBlockTypes`) and shared by the surface types, the `UiKitParser*` classes and the Fuselage renderers. The surface types now also include every block the web client already rendered: `input` and `info_card` in messages, `preview` in modals, `preview` and `info_card` in banners, and `callout`, `preview` and `tab_navigation` in the contextual bar.
+
+- ([#42854](https://github.com/RocketChat/Rocket.Chat/pull/42854)) Adds the UiKit `table` block: rows of plain or formatted cells, with a header row and per-column alignment and wrapping, in messages, modals and contextual bars.
+
+- ([#42560](https://github.com/RocketChat/Rocket.Chat/pull/42560)) Fixes UiKit buttons, icon buttons and overflow options opening `javascript:`, `data:` and `vbscript:` URLs sent by apps. Those URLs are now ignored; every other URL, including app deep links and relative URLs, still opens. Overflow options in the web client, which never opened their URL, now open it in a new tab without access to the opener. `@rocket.chat/ui-kit` exports the check as `isSafeUrl`.
+
+- ([#42854](https://github.com/RocketChat/Rocket.Chat/pull/42854)) Adds the UiKit `video` block: a video shown as its thumbnail with a title, description and provider, which plays in place from an `https` embeddable page once clicked, in messages, modals and contextual bars.
+
+### Patch Changes
+
+- ([#43036](https://github.com/RocketChat/Rocket.Chat/pull/43036)) Fixes UI Kit buttons in messages sending the clicker's credentials to an endpoint other than the app's interaction endpoint when their `appId` is not a valid app ID
+
+- ([#42558](https://github.com/RocketChat/Rocket.Chat/pull/42558)) Fixes apps not being able to close a UiKit modal with a `modal.close` response; the client now closes the modal named by the response's `view.id` or `viewId`.
+
+- <details><summary>Updated dependencies [0285f08c086dae6beb0f1365a85f522fb4818435, a838cc5af0652f59d0ab30aa1a488abded0622b1]:</summary>
+  - @rocket.chat/icons@0.52.0-rc.0
+
+  </details>
+
 ## 1.2.0
 
 ### Minor Changes

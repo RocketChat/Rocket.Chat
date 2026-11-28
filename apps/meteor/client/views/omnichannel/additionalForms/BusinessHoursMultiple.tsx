@@ -1,10 +1,10 @@
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, ToggleSwitch } from '@rocket.chat/fuselage';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useId } from 'react';
 import type { ComponentProps } from 'react';
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller, useFormContext, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import type { BusinessHoursFormData } from '../businessHours/BusinessHoursForm';
 import AutoCompleteDepartmentMultiple from '../components/AutoCompleteDepartmentMultiple';
 
@@ -12,10 +12,8 @@ export type BusinessHoursMultipleProps = { className?: ComponentProps<typeof Fie
 
 const BusinessHoursMultiple = ({ className }: BusinessHoursMultipleProps) => {
 	const { t } = useTranslation();
-	const {
-		control,
-		formState: { errors },
-	} = useFormContext<BusinessHoursFormData>();
+	const { control } = useFormContext<BusinessHoursFormData>();
+	const { errors } = useFormState({ control });
 	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
 
 	const enabledField = useId();

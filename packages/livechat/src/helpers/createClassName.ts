@@ -15,7 +15,7 @@ const flatMap = <T, U>(arr: T[], mapFunc: (elem: T, index: number, arr: T[]) => 
 export const createClassName = (
 	styles: Record<string, string>,
 	elementName: string,
-	modifiers = {},
+	modifiers: Record<string, string | number | boolean | null | undefined> = {},
 	classes: (string | undefined)[] = [],
 ) => {
 	return [

@@ -1,11 +1,12 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { AuthorizationContext, useUserId } from '@rocket.chat/ui-contexts';
 import type { ContextType, ReactNode } from 'react';
-import { useMemo, useSyncExternalStore } from 'react';
+import { useEffect, useMemo, useSyncExternalStore } from 'react';
 
 import { PermissionsCachedStore } from '../cachedStores';
 import { createAuthorizationFunctions } from '../lib/authorization/createAuthorizationFunctions';
 import { Permissions, Roles, Subscriptions, Users } from '../stores';
+import PageLoading from '../views/root/PageLoading';
 
 // Only the slice of IUser that the authorization helpers actually read.
 // Snapshotting just `roles` (instead of the full user document) keeps the
@@ -19,30 +20,33 @@ export type AuthorizationProviderProps = {
 
 const noopSubscribe = (): (() => void) => () => undefined;
 
-const subscribeToSubscriptions = (onStoreChange: () => void): (() => void) => Subscriptions.use.subscribe(onStoreChange);
+const subscribeToSubscriptions = (onStoreChange: () => void): (() => void) => Subscriptions.useStore.subscribe(onStoreChange);
 
 const selectUserRoles = (userId: IUser['_id'] | undefined): AuthorizableUser['roles'] | undefined => {
 	if (!userId) return undefined;
-	return Users.use.getState().get(userId)?.roles;
+	return Users.useStore.getState().get(userId)?.roles;
 };
 
 const AuthorizationProvider = ({ children }: AuthorizationProviderProps) => {
+	// waits for permissions without suspending, see ../../../../docs/features/client-boot.md
 	const isReady = PermissionsCachedStore.useReady();
 
-	if (!isReady) {
-		throw (async () => {
-			PermissionsCachedStore.listen();
-			await PermissionsCachedStore.init();
-		})();
-	}
+	useEffect(() => {
+		if (isReady) {
+			return;
+		}
+
+		PermissionsCachedStore.listen();
+		void PermissionsCachedStore.init();
+	}, [isReady]);
 
 	const userId = useUserId();
 
 	// Permissions and Roles change infrequently (admin-driven or login-time only);
 	// observing the whole map is cheap and re-renders propagate the new auth
 	// answers through context to every consumer.
-	const permissionsState = useSyncExternalStore(Permissions.use.subscribe, () => Permissions.use.getState());
-	const rolesState = useSyncExternalStore(Roles.use.subscribe, () => Roles.use.getState());
+	const permissionsState = useSyncExternalStore(Permissions.useStore.subscribe, () => Permissions.useStore.getState());
+	const rolesState = useSyncExternalStore(Roles.useStore.subscribe, () => Roles.useStore.getState());
 	// For Users, only the current user's `roles` array is relevant for auth
 	// decisions (hooks dispatch via getCurrentUserId; `userHasAllPermission` with
 	// an arbitrary userId has no real callers). Subscribing to the full Users map
@@ -50,8 +54,8 @@ const AuthorizationProvider = ({ children }: AuthorizationProviderProps) => {
 	// custom getSnapshot returns the same array reference until the current
 	// user's roles actually change, so useSyncExternalStore short-circuits via
 	// Object.is and the provider stays still through unrelated user churn.
-	const currentUserRoles = useSyncExternalStore(Users.use.subscribe, () => selectUserRoles(userId));
-	// Subscriptions.use is intentionally NOT observed here — it updates on every
+	const currentUserRoles = useSyncExternalStore(Users.useStore.subscribe, () => selectUserRoles(userId));
+	// Subscriptions.useStore is intentionally NOT observed here — it updates on every
 	// incoming message, member change, and unread-count flip. Subscription-scoped
 	// permission checks subscribe per-call below.
 
@@ -61,12 +65,12 @@ const AuthorizationProvider = ({ children }: AuthorizationProviderProps) => {
 				getCurrentUserId: () => userId,
 				// Fast path for the only userId hook consumers ever pass; live read for
 				// any other userId (only userHasAllPermission can reach this branch).
-				getUserRoles: (id) => (id === userId ? currentUserRoles : Users.use.getState().get(id)?.roles),
+				getUserRoles: (id) => (id === userId ? currentUserRoles : Users.useStore.getState().get(id)?.roles),
 				getPermission: (id) => permissionsState.get(id),
 				getRoleScope: (id) => rolesState.get(id)?.scope,
 				// Read Subscriptions live — reactivity for scoped checks is wired through
 				// the per-call subscribe returned by queryPermission/queryRole below.
-				getSubscriptionRoles: (rid) => Subscriptions.use.getState().find((s) => s.rid === rid)?.roles ?? [],
+				getSubscriptionRoles: (rid) => Subscriptions.useStore.getState().find((s) => s.rid === rid)?.roles ?? [],
 				isReady: () => true,
 			}),
 		[userId, currentUserRoles, permissionsState, rolesState],
@@ -97,10 +101,14 @@ const AuthorizationProvider = ({ children }: AuthorizationProviderProps) => {
 				() => !!userId && auth.hasRole(userId, String(role), scope),
 			],
 			getRoles: () => Roles.state.records,
-			subscribeToRoles: (callback) => Roles.use.subscribe(callback),
+			subscribeToRoles: (callback) => Roles.useStore.subscribe(callback),
 		}),
 		[auth, userId],
 	);
+
+	if (!isReady) {
+		return <PageLoading />;
+	}
 
 	return <AuthorizationContext.Provider value={contextValue}>{children}</AuthorizationContext.Provider>;
 };

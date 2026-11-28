@@ -1,4 +1,3 @@
-import type { ISetting } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 
 import { SystemLogger } from '../../lib/logger/system';
@@ -15,10 +14,8 @@ addMigration({
 		const newLdapDefault = 'every_24_hours';
 		const newCrowdDefault = 'every_1_hours';
 
-		const ldapSyncInterval = await Settings.findOneById<Pick<ISetting, 'value'>>('LDAP_Background_Sync_Interval', {
-			projection: { value: 1 },
-		});
-		const crowdSyncInterval = await Settings.findOneById<Pick<ISetting, 'value'>>('CROWD_Sync_Interval', { projection: { value: 1 } });
+		const ldapSyncInterval = await Settings.getValueById<string>('LDAP_Background_Sync_Interval');
+		const crowdSyncInterval = await Settings.getValueById<string>('CROWD_Sync_Interval');
 
 		// update setting values
 		await updateAuditedBySystem({
@@ -30,15 +27,15 @@ addMigration({
 
 		// notify user about the changes if the value was different from the default
 
-		if (ldapSyncInterval && ldapSyncInterval.value !== oldLdapDefault) {
+		if (ldapSyncInterval !== undefined && ldapSyncInterval !== oldLdapDefault) {
 			SystemLogger.warn(
-				`The value of the setting 'LDAP background synchronization interval' has changed from "${ldapSyncInterval.value}" to "${newLdapDefault}". Please review your settings.`,
+				`The value of the setting 'LDAP background synchronization interval' has changed from "${ldapSyncInterval}" to "${newLdapDefault}". Please review your settings.`,
 			);
 		}
 
-		if (crowdSyncInterval && crowdSyncInterval.value !== oldCrowdDefault) {
+		if (crowdSyncInterval !== undefined && crowdSyncInterval !== oldCrowdDefault) {
 			SystemLogger.warn(
-				`The value of the setting 'CROWD background synchronization interval' has changed from "${crowdSyncInterval.value}" to "${newCrowdDefault}". Please review your settings.`,
+				`The value of the setting 'CROWD background synchronization interval' has changed from "${crowdSyncInterval}" to "${newCrowdDefault}". Please review your settings.`,
 			);
 		}
 	},

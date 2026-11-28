@@ -1,7 +1,7 @@
-import { afterEach, describe, it } from 'node:test';
+import { afterEach, describe, it, mock } from 'node:test';
 
+import { mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 type RestrictQueryParams = {
@@ -11,8 +11,6 @@ type RestrictQueryParams = {
 };
 
 describe('restrictQuery', () => {
-	const modulePath = './restrictQuery';
-
 	// Helper to require the SUT with injected stubs
 	const loadSut = ({
 		getUnitsFromUserResult,
@@ -37,17 +35,14 @@ describe('restrictQuery', () => {
 
 		const debugStub = sinon.stub();
 
-		const { restrictQuery } = proxyquire.noCallThru().load(modulePath, {
-			'@rocket.chat/models': {
-				LivechatDepartment: { find: findStub },
-			},
-			'@rocket.chat/omni-core-ee': {
-				getUnitsFromUser: getUnitsFromUserStub,
-			},
-			'./logger': {
-				cbLogger: { debug: debugStub },
-			},
-		});
+		mockModel('LivechatDepartment', { find: findStub });
+
+		mock.module('@rocket.chat/omni-core-ee', { exports: { getUnitsFromUser: getUnitsFromUserStub } });
+		mock.module('./logger', { exports: { cbLogger: { debug: debugStub } } });
+		delete require.cache[require.resolve('./restrictQuery')];
+		// oxlint-disable-next-line @typescript-eslint/no-require-imports
+		const { restrictQuery } = require('./restrictQuery');
+		mock.restoreAll();
 
 		return { restrictQuery, getUnitsFromUserStub, findStub, debugStub, findArgs };
 	};

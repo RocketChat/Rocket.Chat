@@ -1,10 +1,10 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Palette } from '@rocket.chat/fuselage';
+import { Box, Palette, borderRadius } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
-import { CALL_TOP_BAR_MIN_HEIGHT } from './CallTopBar';
-import { CONFERENCE_THEMED_CLASS } from '../lib/panelStyles';
+import { CALL_TOP_BAR_MIN_HEIGHT } from './CallTopBar.js';
+import { CONFERENCE_THEMED_CLASS } from '../lib/panelStyles.js';
 
 type CallPanelProps = {
 	visible: boolean;
@@ -87,8 +87,8 @@ const CallPanel = ({ visible, sheet = false, children }: CallPanelProps) => {
 			`
 		: // Rounded only where it meets the call: the borderRadius prop names whole-box tokens, not corners.
 			css`
-				border-start-start-radius: 0.25rem;
-				border-end-start-radius: 0.25rem;
+				border-start-start-radius: ${borderRadius('large')};
+				border-end-start-radius: ${borderRadius('large')};
 
 				visibility: ${visible ? 'visible' : 'hidden'};
 				transition:

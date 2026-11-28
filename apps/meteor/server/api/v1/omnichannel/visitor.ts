@@ -2,7 +2,7 @@ import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors as VisitorsRaw, LivechatRooms } from '@rocket.chat/models';
 import { registerGuest } from '@rocket.chat/omni-core';
-import { Match, check } from 'meteor/check';
+import { isLivechatVisitorStatusProps, isPOSTLivechatVisitorProps } from '@rocket.chat/rest-typings';
 
 import { API } from '../..';
 import { findGuest, normalizeHttpHeaderData } from './lib/livechat';
@@ -20,29 +20,13 @@ API.v1.addRoute(
 			numRequestsAllowed: 5,
 			intervalTimeInMS: 60000,
 		},
+		validateParams: isPOSTLivechatVisitorProps,
 	},
 	{
 		async post() {
-			check(this.bodyParams, {
-				visitor: Match.ObjectIncluding({
-					token: String,
-					name: Match.Maybe(String),
-					email: Match.Maybe(String),
-					department: Match.Maybe(String),
-					phone: Match.Maybe(String),
-					username: Match.Maybe(String),
-					customFields: Match.Maybe([
-						Match.ObjectIncluding({
-							key: String,
-							value: String,
-							overwrite: Boolean,
-						}),
-					]),
-				}),
-			});
-
 			const { customFields, id, token, name, email, department, phone, username, connectionData } = this.bodyParams.visitor;
 
+			// oxlint-disable-next-line typescript/no-unsafe-call -- TODO: legacy addRoute types the body as any once the return value depends on it; fix when moving this endpoint to API.v1.post()
 			if (!token?.trim()) {
 				throw new ClientSafeError('error-invalid-token', 'Token cannot be empty', { method: 'livechat/visitor' });
 			}
@@ -55,7 +39,7 @@ API.v1.addRoute(
 				...(department && { department }),
 				...(username && { username }),
 				...(connectionData && { connectionData }),
-				...(phone && typeof phone === 'string' && { phone: { number: phone as string } }),
+				...(phone && typeof phone === 'string' && { phone: { number: phone } }),
 				connectionData: normalizeHttpHeaderData(this.request.headers),
 			};
 
@@ -177,22 +161,21 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute('livechat/visitor.status', {
-	async post() {
-		check(this.bodyParams, {
-			token: String,
-			status: String,
-		});
+API.v1.addRoute(
+	'livechat/visitor.status',
+	{ validateParams: isLivechatVisitorStatusProps },
+	{
+		async post() {
+			const { token, status } = this.bodyParams;
 
-		const { token, status } = this.bodyParams;
+			const guest = await findGuest(token);
+			if (!guest) {
+				throw new ClientSafeError('invalid-token');
+			}
 
-		const guest = await findGuest(token);
-		if (!guest) {
-			throw new ClientSafeError('invalid-token');
-		}
+			await notifyGuestStatusChanged(token, status);
 
-		await notifyGuestStatusChanged(token, status);
-
-		return API.v1.success({ token, status });
+			return API.v1.success({ token, status });
+		},
 	},
-});
+);

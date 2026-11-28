@@ -14,7 +14,7 @@ Pages are built with [Fuselage](https://www.npmjs.com/package/@rocket.chat/fusel
 npm install @rocket.chat/onboarding-ui @rocket.chat/fuselage @rocket.chat/fuselage-hooks @rocket.chat/icons @rocket.chat/layout @rocket.chat/logo @rocket.chat/styled react react-dom react-i18next i18next react-virtuoso
 ```
 
-All the packages after `@rocket.chat/onboarding-ui` are peer dependencies, except two: `i18next`, which `react-i18next` needs and the setup below imports, and `react-virtuoso`, a peer dependency of Fuselage. The package ships both CommonJS and ES modules, with TypeScript declarations.
+All the packages after `@rocket.chat/onboarding-ui` are peer dependencies, except two: `i18next`, which `react-i18next` needs and the setup below imports, and `react-virtuoso`, a peer dependency of Fuselage. The package ships ES modules only, with TypeScript declarations.
 
 Load Fuselage's styles and the icon font once in your app:
 
@@ -199,7 +199,7 @@ yarn workspace @rocket.chat/onboarding-ui typecheck
 yarn workspace @rocket.chat/onboarding-ui lint
 ```
 
-Pages are developed in Storybook, which loads the English strings from `.i18n/en.i18n.json`:
+Pages are developed in Storybook. Its Language toolbar control renders them in any language Rocket.Chat ships, with the `onboarding.*` strings from `@rocket.chat/i18n`; English comes from `.i18n/en.i18n.json`, and strings missing in another language fall back to it:
 
 ```sh
 yarn workspace @rocket.chat/onboarding-ui storybook

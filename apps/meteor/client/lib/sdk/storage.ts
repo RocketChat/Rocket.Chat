@@ -78,6 +78,12 @@ export const subscribeStoredItem = (listener: () => void): (() => void) => {
 	};
 };
 
+/**
+ * The storage the login keys live in, for anything else that has to disappear with them: `sessionStorage` on a
+ * workspace that forgets the user session when the window closes, `localStorage` otherwise.
+ */
+export const getActiveStorage = (): Storage | undefined => getStorage();
+
 export const getStoredItem = (key: StorageKey): string | null => getStorage()?.getItem(key) ?? null;
 
 export const setStoredItem = (key: StorageKey, value: string): void => {

@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react';
 
-import OauthAuthorizationPage from './OauthAuthorizationPage';
+import OauthAuthorizationPage from './OauthAuthorizationPage.js';
 
 it('renders without crashing', () => {
-	render(
+	const { container } = render(
 		<OauthAuthorizationPage
 			clientName={undefined}
 			onClickAuthorizeOAuth={() => undefined}
@@ -13,4 +13,6 @@ it('renders without crashing', () => {
 			}}
 		/>,
 	);
+
+	expect(container).not.toBeEmptyDOMElement();
 });

@@ -1,49 +1,10 @@
-import { api } from '@rocket.chat/core-services';
-import { Settings, Users } from '@rocket.chat/models';
-import { getLoginExpirationInMs } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { MongoInternals } from 'meteor/mongo';
 
-const { _expireTokens: expireTokensOriginal } = Accounts;
+import { expireLoginTokens } from '../../lib/auth/expireLoginTokens';
 
-Accounts._expireTokens = async () => {
-	const loginExpiration: number | undefined = await Settings.getValueById('Accounts_LoginExpiration');
-	const oldestValidDate = new Date(Date.now() - getLoginExpirationInMs(loginExpiration));
-
-	const users = await Users.find(
-		{
-			$or: [
-				{ 'services.resume.loginTokens.when': { $lt: oldestValidDate } },
-				{ 'services.resume.loginTokens.when': { $lt: +oldestValidDate } },
-			],
-		},
-		{ projection: { services: 1 } },
-	).toArray();
-
-	const updates: { _id: string; validTokens: any[] }[] = [];
-
-	users.forEach(({ _id, services }) => {
-		const loginTokens = services?.resume?.loginTokens;
-
-		// remove all tokens that are expired
-		const validTokens = loginTokens?.filter((token: any) => token.when >= oldestValidDate) || [];
-
-		updates.push({ _id, validTokens });
-	});
-
-	await expireTokensOriginal.call(Accounts);
-
-	updates.forEach(({ _id, validTokens }) => {
-		void api.broadcast('watch.users', {
-			clientAction: 'updated',
-			id: _id,
-			diff: {
-				'services.resume.loginTokens': validTokens,
-			},
-			unset: {},
-		});
-	});
-};
+// Meteor's accounts-base still runs the expiry interval and calls this
+Accounts._expireTokens = expireLoginTokens;
 
 type Callbacks = {
 	added(id: string, record: object): void;
@@ -51,10 +12,8 @@ type Callbacks = {
 	removed(id: string): void;
 };
 
-export const serviceConfigCallbacks = new Set<Callbacks>();
-
 // Stores the callbacks for the disconnection reactivity bellow
-const userCallbacks = new Map();
+const userCallbacks = new Map<string, Set<{ hashedToken: string; callbacks: Callbacks }>>();
 
 // Overrides the native observe changes to prevent database polling and stores the callbacks
 // for the users' tokens to re-implement the reactivity based on our database listeners
@@ -101,16 +60,11 @@ MongoInternals.Connection.prototype._observeChanges = async function (
 		}
 	}
 
-	if (collectionName === 'meteor_accounts_loginServiceConfiguration') {
-		serviceConfigCallbacks.add(callbacks);
-	}
-
 	return {
 		stop(): void {
 			if (cbs) {
 				cbs.delete(data);
 			}
-			serviceConfigCallbacks.delete(callbacks);
 		},
 	};
 };

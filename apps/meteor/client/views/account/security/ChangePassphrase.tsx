@@ -1,5 +1,4 @@
 import {
-	Box,
 	Button,
 	ButtonGroup,
 	Field,
@@ -8,16 +7,19 @@ import {
 	FieldHint,
 	FieldLabel,
 	FieldRow,
+	LinkButton,
 	PasswordInput,
+	Stack,
 	Text,
 } from '@rocket.chat/fuselage';
 import { PasswordVerifierList } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, usePasswordPolicy } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useEffect, useId } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useWatch, useFormState } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
+import SecuritySection from './layout/SecuritySection';
 import { e2e } from '../../../lib/e2ee/rocketchat.e2e';
 import { useE2EEState } from '../../room/hooks/useE2EEState';
 
@@ -67,20 +69,15 @@ export const ChangePassphrase = () => {
 	const passphraseVerifierId = `verifier-${uniqueId}`;
 	const e2ePasswordExplanationId = `explanation-${uniqueId}`;
 
-	const {
-		watch,
-		formState: { errors, isValid },
-		handleSubmit,
-		reset,
-		resetField,
-		control,
-		trigger,
-	} = useForm({
+	const { handleSubmit, reset, resetField, control, trigger } = useForm({
 		defaultValues,
 		mode: 'all',
 	});
+	const { errors, isValid } = useFormState({ control });
 
-	const { passphrase, confirmationPassphrase } = watch();
+	const watched = useWatch({ control });
+	const passphrase = watched.passphrase ?? '';
+	const confirmationPassphrase = watched.confirmationPassphrase ?? '';
 	const { validations, valid } = useValidatePassphrase(passphrase);
 	useEffect(() => {
 		if (!valid) {
@@ -109,14 +106,11 @@ export const ChangePassphrase = () => {
 	};
 
 	return (
-		<>
+		<Stack gap='x32'>
 			<Text is='p' fontScale='p1' id={e2ePasswordExplanationId}>
 				<Trans i18nKey='E2E_Encryption_Password_Explanation' />
 			</Text>
-			<Box marginBlockStart='x32' width='full' display='flex' flexDirection='column' gap='x12'>
-				<Text is='h3' fontScale='h4'>
-					{t('Change_E2EE_password')}
-				</Text>
+			<SecuritySection title={t('Change_E2EE_password')} headingLevel='h3'>
 				<FieldGroup>
 					<Field>
 						<FieldLabel htmlFor={passphraseId}>{t('New_E2EE_password')}</FieldLabel>
@@ -157,16 +151,7 @@ export const ChangePassphrase = () => {
 							<FieldHint id={passphraseHintId}>
 								<Trans i18nKey='Enter_current_E2EE_password_to_set_new'>
 									To set a new password, first
-									<Box
-										is='a'
-										href='#'
-										onClick={async (e) => {
-											e.preventDefault();
-											await e2e.decodePrivateKeyFlow();
-										}}
-									>
-										enter your current E2EE password.
-									</Box>
+									<LinkButton onClick={() => e2e.decodePrivateKeyFlow()}>enter your current E2EE password.</LinkButton>
 								</Trans>
 							</FieldHint>
 						)}
@@ -208,7 +193,7 @@ export const ChangePassphrase = () => {
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>
-			</Box>
-		</>
+			</SecuritySection>
+		</Stack>
 	);
 };

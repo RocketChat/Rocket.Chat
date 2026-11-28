@@ -1,11 +1,20 @@
 {
 	"$schema": "./node_modules/oxlint/configuration_schema.json",
 	"extends": ["./packages/lint-config/oxlint.json"],
+	"settings": {
+		"react": {
+			"version": "19.2"
+		}
+	},
 	"options": {
 		"typeAware": true,
 		"reportUnusedDisableDirectives": "error"
 	},
 	"ignorePatterns": [
+		"**/dist",
+		"**/coverage",
+		"**/storybook-static",
+		".yarn/**",
 		"apps/meteor/**/public",
 		"apps/meteor/**/private/moment-locales",
 		"apps/meteor/**/imports",
@@ -117,7 +126,26 @@
 					}
 				],
 				"import/named": "error",
-				"react/exhaustive-deps": "warn"
+				"react/exhaustive-deps": "error",
+				"no-restricted-imports": [
+					"error",
+					{
+						"paths": [
+							{
+								"name": "meteor/check",
+								"message": "Validate with an ajv schema (endpoint `body`/`query` from @rocket.chat/rest-typings) or a type guard instead."
+							},
+							{
+								"name": "meteor/service-configuration",
+								"message": "Use the LoginServiceConfiguration model, then notifyOnLoginServiceConfigurationChanged or notifyOnLoginServiceConfigurationChangedByService so connected clients see the change."
+							},
+							{
+								"name": "meteor/email",
+								"message": "Send email with the Mailer from 'server/lib/notifications/email/api'."
+							}
+						]
+					}
+				]
 			},
 			"globals": {
 				"__meteor_runtime_config__": "readonly",
@@ -145,6 +173,34 @@
 			}
 		},
 		{
+			"files": ["apps/meteor/**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}"],
+			"rules": {
+				"jest/expect-expect": ["error", { "assertFunctionNames": ["expect", "expectListKeyboard"] }]
+			},
+			"plugins": ["jest"]
+		},
+		{
+			"files": ["packages/fuselage/**/*.spec.{ts,tsx}"],
+			"rules": {
+				"jest/expect-expect": [
+					"error",
+					{
+						"assertFunctionNames": [
+							"expect",
+							"expectForwards",
+							"expectKeyboardActivation",
+							"expectTabOrder",
+							"expectCompositeList",
+							"expectCombobox",
+							"expectMenu",
+							"Story.run"
+						]
+					}
+				]
+			},
+			"plugins": ["jest"]
+		},
+		{
 			"files": ["apps/meteor/tests/{end-to-end,unit}/**/*.spec.ts"],
 			"rules": {
 				"jest/expect-expect": "off",
@@ -162,7 +218,15 @@
 			"plugins": ["jest"]
 		},
 		{
-			"files": ["apps/meteor/tests/{end-to-end,unit}/**/*.ts"],
+			"files": ["ee/packages/federation-matrix/tests/end-to-end/**/*.spec.ts"],
+			"rules": {
+				"jest-js/no-standalone-expect": "off",
+				"jest/expect-expect": ["error", { "assertFunctionNames": ["expect", "expectRemotePresence", "expectRemoteTyping", "expectLocalTypingIndicator", "assert"] }]
+			},
+			"plugins": ["jest"]
+		},
+		{
+			"files": ["apps/meteor/tests/{end-to-end,unit}/**/*.ts", "apps/meteor/**/*.{test,spec}.ts"],
 			"rules": {
 				"no-unused-expressions": "off"
 			}
@@ -223,6 +287,20 @@
 			}
 		},
 		{
+			"files": ["packages/apps/**/*.ts"],
+			"rules": {
+				"typescript/only-throw-error": ["error", { "allow": ["JsonRpcError", "ErrorObject"] }]
+			}
+		},
+		{
+			"files": ["packages/apps/**/*.test.ts"],
+			"rules": {
+				"testing-library/no-await-sync-queries": "off",
+				"testing-library/no-debugging-utils": "off",
+				"testing-library/prefer-explicit-assert": "off"
+			}
+		},
+		{
 			"files": ["packages/apps-engine/tests/**/*", "packages/apps/tests/**/*"],
 			"rules": {
 				"testing-library/no-await-sync-queries": "off",
@@ -256,9 +334,10 @@
 				"apps/meteor/server/**/*.ts",
 				"packages/fuselage-ui-kit/**/*.{ts,tsx}",
 				"packages/ui-account/**/*.{ts,tsx}",
+				"packages/ui-contacts/**/*.{ts,tsx}",
 				"packages/ui-client/**/*.{ts,tsx}",
-				"packages/ui-voip/**/*.{ts,tsx}",
-				"packages/web-ui-registration/**/*.{ts,tsx}"
+				"packages/ui-registration/**/*.{ts,tsx}",
+				"packages/ui-voip/**/*.{ts,tsx}"
 			],
 			"rules": {
 				"no-unused-vars": [
@@ -271,7 +350,7 @@
 					}
 				],
 				"typescript/no-misused-promises": [
-					"warn",
+					"error",
 					{
 						"checksVoidReturn": {
 							"arguments": false,
@@ -283,7 +362,7 @@
 			}
 		},
 		{
-			"files": ["packages/{sha256,models}/**/*"],
+			"files": ["packages/{account-utils,sha256,models}/**/*"],
 			"rules": {
 				"new-cap": [
 					"error",
@@ -305,6 +384,50 @@
 					{
 						"selector": "TSQualifiedName[left.name='Meteor'][right.name='Error']",
 						"message": "Use ClientSafeError from '@rocket.chat/core-services' instead."
+					},
+					{
+						"selector": "MemberExpression[object.name='Meteor'][property.name='absoluteUrl']",
+						"message": "Use getWorkspaceURL(path) from 'server/lib/utils/getURL' instead."
+					},
+					{
+						"selector": "MemberExpression[object.name='Meteor'][property.name='startup']",
+						"message": "Register at module level, or export a function and call it from runStartupTasks() in server/startup/startupTasks.ts."
+					},
+					{
+						"selector": "MemberExpression[object.name='Accounts'][property.name=/^_(generateStampedLoginToken|insertLoginToken|insertHashedLoginToken|hashStampedToken|hashLoginToken)$/]",
+						"message": "Use issueLoginToken from 'server/lib/auth/issueLoginToken', or the helpers in '@rocket.chat/account-utils', instead."
+					},
+					{
+						"selector": "MemberExpression[object.name='Accounts'][property.name='_clearAllLoginTokens']",
+						"message": "Use Users.unsetLoginTokens(userId) instead."
+					},
+					{
+						"selector": "MemberExpression[object.name='Accounts'][property.name=/^(_checkPassword|_checkPasswordAsync|_bcryptRounds)$/]",
+						"message": "Use compareUserPassword from 'server/lib/compareUserPassword', or verifyPassword and BCRYPT_ROUNDS from '@rocket.chat/account-utils', instead."
+					},
+					{
+						"selector": "MemberExpression[object.name='Accounts'][property.name=/^setPassword(Async)?$/]",
+						"message": "Use Users.setPasswordHash(userId, await hashPassword(password)) with hashPassword from '@rocket.chat/account-utils' instead."
+					},
+					{
+						"selector": "MemberExpression[object.name='Accounts'][property.name=/^(emailTemplates|urls|generateResetToken|generateVerificationToken|generateOptionsForEmail)$/]",
+						"message": "Use the templates and senders in 'server/lib/auth/accountEmails' instead."
+					},
+					{
+						"selector": "CallExpression > MemberExpression.callee[object.name='Accounts'][property.name=/^send(ResetPassword|Verification|Enrollment)Email$/]",
+						"message": "Use sendResetPasswordEmail, sendVerificationEmail or sendEnrollmentEmail from 'server/lib/auth/accountEmails' instead."
+					},
+					{
+						"selector": "MemberExpression[object.name='Accounts'][property.name=/^(createUser|createUserAsync|createUserVerifyingEmail|insertUserDoc)$/]",
+						"message": "Use createUser from 'server/lib/auth/createUser' or insertUser from 'server/lib/auth/insertUser' instead."
+					},
+					{
+						"selector": "MemberExpression[object.name='Accounts'][property.name=/^(onCreateUser|validateNewUser)$/]",
+						"message": "Add the step to insertUser in 'server/lib/auth/insertUser' instead."
+					},
+					{
+						"selector": "MemberExpression[object.name='Accounts'][property.name='updateOrCreateUserFromExternalService']",
+						"message": "Use updateOrCreateUserFromExternalService from 'server/lib/auth/updateOrCreateUserFromExternalService' instead."
 					}
 				]
 			}
@@ -334,6 +457,51 @@
 			}
 		},
 		{
+			"files": ["apps/meteor/client/views/**/*.{ts,tsx}"],
+			"rules": {
+				"no-restricted-imports": [
+					"error",
+					{
+						"paths": [
+							{
+								"name": "meteor/check",
+								"message": "Validate with an ajv schema (endpoint `body`/`query` from @rocket.chat/rest-typings) or a type guard instead."
+							}
+						],
+						"patterns": [
+							{
+								"group": ["meteor/*"],
+								"message": "Screens reach the app through @rocket.chat/ui-contexts, not Meteor. See docs/frontend/view-isolation.md."
+							},
+							{
+								"regex": "^(?:(?:\\.\\./)+|/)(?:app|client/meteor)/|^(?:\\.\\./)+meteor/",
+								"message": "Screens reach the app through @rocket.chat/ui-contexts, not apps/meteor/app or client/meteor. See docs/frontend/view-isolation.md."
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"files": [
+				"apps/meteor/client/views/**/*.{spec,test,stories}.{ts,tsx}",
+				"apps/meteor/client/views/**/{__tests__,__mocks__,tests,testing}/**"
+			],
+			"rules": {
+				"no-restricted-imports": [
+					"error",
+					{
+						"paths": [
+							{
+								"name": "meteor/check",
+								"message": "Validate with an ajv schema (endpoint `body`/`query` from @rocket.chat/rest-typings) or a type guard instead."
+							}
+						]
+					}
+				]
+			}
+		},
+		{
 			"files": [
 				"**/*.d.ts",
 				"**/__tests__/**",
@@ -350,7 +518,7 @@
 				"packages/storybook-config/src/logo.svg.d.ts",
 				"{ee/packages,packages}/*/jest.config.ts",
 				"ee/packages/pdf-worker/.storybook/*.{ts,tsx}",
-				"packages/{gazzodown,ui-account,ui-client,ui-composer,ui-voip,web-ui-registration}/.storybook/*.{ts,tsx}"
+				"packages/{gazzodown,ui-account,ui-client,ui-composer,ui-registration,ui-voip}/.storybook/*.{ts,tsx}"
 			],
 			"rules": {
 				"typescript/prefer-optional-chain": "off",
@@ -364,21 +532,10 @@
 			}
 		},
 		{
-			"files": ["packages/fuselage/src/**/*.{ts,tsx}"],
+			"files": ["packages/fuselage/src/**/*.tsx"],
+			"jsPlugins": [{ "name": "rocket.chat", "specifier": "./packages/lint-config/rules/index.js" }],
 			"rules": {
-				"react/display-name": "warn",
-				"react-js/jsx-key": [
-					"warn",
-					{
-						"checkFragmentShorthand": true,
-						"checkKeyMustBeforeSpread": true,
-						"warnOnDuplicates": true
-					}
-				],
-				"react/no-children-prop": "warn",
-				"react/no-multi-comp": "warn",
-				"no-empty-function": "warn",
-				"react/exhaustive-deps": "warn"
+				"rocket.chat/render-element-spread": ["error", { "safeCalls": ["ariaAndDataAttributes", "pickWebPressHandlers", "pickWebInteractionHandlers"] }]
 			}
 		},
 		{
@@ -411,7 +568,31 @@
 		{
 			"files": ["packages/livechat/**/*"],
 			"rules": {
-				"react/display-name": "off"
+				"react/display-name": "off",
+				"testing-library/await-async-events": "off",
+				"testing-library/await-async-queries": "off",
+				"testing-library/await-async-utils": "off",
+				"testing-library/no-await-sync-events": "off",
+				"testing-library/no-await-sync-queries": "off",
+				"testing-library/no-container": "off",
+				"testing-library/no-debugging-utils": "off",
+				"testing-library/no-dom-import": "off",
+				"testing-library/no-global-regexp-flag-in-query": "off",
+				"testing-library/no-manual-cleanup": "off",
+				"testing-library/no-node-access": "off",
+				"testing-library/no-promise-in-fire-event": "off",
+				"testing-library/no-render-in-lifecycle": "off",
+				"testing-library/no-unnecessary-act": "off",
+				"testing-library/no-wait-for-multiple-assertions": "off",
+				"testing-library/no-wait-for-side-effects": "off",
+				"testing-library/no-wait-for-snapshot": "off",
+				"testing-library/prefer-find-by": "off",
+				"testing-library/prefer-presence-queries": "off",
+				"testing-library/prefer-query-by-disappearance": "off",
+				"testing-library/prefer-screen-queries": "off",
+				"testing-library/render-result-naming-convention": "off",
+				"testing-library/prefer-explicit-assert": "off",
+				"testing-library/prefer-user-event": "off"
 			}
 		}
 	]

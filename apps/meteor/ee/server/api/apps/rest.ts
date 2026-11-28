@@ -2,6 +2,7 @@ import type { AppManager } from '@rocket.chat/apps/dist/server/AppManager';
 import type { IMarketplaceInfo } from '@rocket.chat/apps/dist/server/marketplace/IMarketplaceInfo';
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { AppStatusReport } from '@rocket.chat/core-services';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
@@ -110,7 +111,7 @@ export class AppsRestApi {
 
 			// when there is no `response` field in the error, it means the request
 			// couldn't even make it to the server
-			if (!err.hasOwnProperty('response')) {
+			if (!Object.hasOwn(err, 'response')) {
 				orchestrator.getRocketChatLogger().warn({ msg: message, err });
 				return API.v1.internalError('Could not reach the Marketplace');
 			}
@@ -142,7 +143,7 @@ export class AppsRestApi {
 			{
 				async get() {
 					const baseUrl = orchestrator.getMarketplaceClient().getMarketplaceUrl();
-					const workspaceId = settings.get('Cloud_Workspace_Id');
+					const workspaceId = settings.get<string>('Cloud_Workspace_Id');
 					const { action, appId, appVersion } = this.queryParams;
 
 					return API.v1.success({
@@ -216,7 +217,7 @@ export class AppsRestApi {
 				async get() {
 					const baseUrl = orchestrator.getMarketplaceClient().getMarketplaceUrl();
 
-					const workspaceId = settings.get('Cloud_Workspace_Id');
+					const workspaceId = settings.get<string>('Cloud_Workspace_Id');
 
 					if (!this.queryParams.purchaseType || !purchaseTypes.has(this.queryParams.purchaseType)) {
 						return API.v1.failure({ error: 'Invalid purchase type' });
@@ -367,7 +368,7 @@ export class AppsRestApi {
 						buff = app.fileBuffer;
 						permissionsGranted = (() => {
 							try {
-								const permissions = JSON.parse(formData?.permissions || '');
+								const permissions: IPermission[] = JSON.parse(formData?.permissions || '');
 								return permissions.length ? permissions : undefined;
 							} catch {
 								return undefined;
@@ -538,6 +539,7 @@ export class AppsRestApi {
 
 					try {
 						const { event, externalComponent } = this.bodyParams;
+						// oxlint-disable-next-line typescript/no-unsafe-call -- externalComponentEvent is not declared on IListenerBridge
 						const result = (Apps.getBridges()?.getListenerBridge() as Record<string, any>).externalComponentEvent(event, externalComponent);
 
 						return API.v1.success({ result });
@@ -908,7 +910,7 @@ export class AppsRestApi {
 						buff = app.fileBuffer;
 						permissionsGranted = (() => {
 							try {
-								const permissions = JSON.parse(formData?.permissions || '');
+								const permissions: IPermission[] = JSON.parse(formData?.permissions || '');
 								return permissions.length ? permissions : undefined;
 							} catch {
 								return undefined;
@@ -1041,8 +1043,8 @@ export class AppsRestApi {
 						headers.Authorization = `Bearer ${token}`;
 					}
 
-					const workspaceIdSetting = await Settings.findOneById('Cloud_Workspace_Id');
-					if (!workspaceIdSetting) {
+					const workspaceId = await Settings.getValueById<string>('Cloud_Workspace_Id');
+					if (!workspaceId) {
 						return API.v1.failure('No workspace id found');
 					}
 
@@ -1052,7 +1054,7 @@ export class AppsRestApi {
 						const request = await orchestrator
 							.getMarketplaceClient()
 							// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
-							.fetch(`v1/workspaces/${workspaceIdSetting.value}/apps/${this.urlParams.id}`, {
+							.fetch(`v1/workspaces/${workspaceId}/apps/${this.urlParams.id}`, {
 								headers,
 								ignoreSsrfValidation: true,
 							});
@@ -1192,7 +1194,7 @@ export class AppsRestApi {
 
 					const updated = [];
 
-					for await (const s of this.bodyParams.settings) {
+					for (const s of this.bodyParams.settings) {
 						if (settings[s.id] && settings[s.id].value !== s.value) {
 							await manager.getSettingsManager().updateAppSetting(this.urlParams.id, s);
 							// Updating?
@@ -1214,14 +1216,15 @@ export class AppsRestApi {
 						const setting = manager.getSettingsManager().getAppSetting(this.urlParams.id, this.urlParams.settingId);
 
 						return API.v1.success({ setting });
-					} catch (e: any) {
-						if (e.message.includes('No setting found')) {
+					} catch (e) {
+						const message = e instanceof Error ? e.message : String(e);
+						if (message.includes('No setting found')) {
 							return API.v1.notFound(`No Setting found on the App by the id of: "${this.urlParams.settingId}"`);
 						}
-						if (e.message.includes('No App found')) {
+						if (message.includes('No App found')) {
 							return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 						}
-						return API.v1.failure(e.message);
+						return API.v1.failure(message);
 					}
 				},
 				async post() {
@@ -1233,14 +1236,15 @@ export class AppsRestApi {
 						await manager.getSettingsManager().updateAppSetting(this.urlParams.id, this.bodyParams.setting);
 
 						return API.v1.success();
-					} catch (e: any) {
-						if (e.message.includes('No setting found')) {
+					} catch (e) {
+						const message = e instanceof Error ? e.message : String(e);
+						if (message.includes('No setting found')) {
 							return API.v1.notFound(`No Setting found on the App by the id of: "${this.urlParams.settingId}"`);
 						}
-						if (e.message.includes('No App found')) {
+						if (message.includes('No App found')) {
 							return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 						}
-						return API.v1.failure(e.message);
+						return API.v1.failure(message);
 					}
 				},
 			},
@@ -1255,7 +1259,7 @@ export class AppsRestApi {
 
 					if (prl) {
 						return API.v1.success({
-							apis: (manager as Record<string, any>).apiManager.listApis(this.urlParams.id), // TODO: this is accessing a private property from the manager, we should expose a method to get the list of APIs
+							apis: manager.getApiManager().listApis(this.urlParams.id),
 						});
 					}
 					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);

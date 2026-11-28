@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react';
 
-import RegisterOfflinePage from '.';
+import RegisterOfflinePage from './index.js';
 
 it('renders without crashing', () => {
-	render(
+	const { container } = render(
 		<RegisterOfflinePage
 			termsHref=''
 			policyHref=''
@@ -13,4 +13,6 @@ it('renders without crashing', () => {
 			onBackButtonClick={() => undefined}
 		/>,
 	);
+
+	expect(container).not.toBeEmptyDOMElement();
 });

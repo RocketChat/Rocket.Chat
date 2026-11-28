@@ -56,16 +56,14 @@ class ErrorHandler {
 
 const errorHandler = new ErrorHandler();
 
-Meteor.startup(async () => {
-	settings.watch<string>('Log_Exceptions_to_Channel', async (value) => {
-		errorHandler.rid = null;
-		const roomName = value.trim();
+settings.watch<string>('Log_Exceptions_to_Channel', async (value) => {
+	errorHandler.rid = null;
+	const roomName = value.trim();
 
-		const rid = await errorHandler.getRoomId(roomName);
+	const rid = await errorHandler.getRoomId(roomName);
 
-		errorHandler.reporting = Boolean(rid);
-		errorHandler.rid = rid;
-	});
+	errorHandler.reporting = Boolean(rid);
+	errorHandler.rid = rid;
 });
 
 const originalMeteorDebug = Meteor._debug;

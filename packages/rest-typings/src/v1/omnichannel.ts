@@ -32,6 +32,7 @@ import type {
 	ILivechatContactChannel,
 	IUser,
 	OmichannelRoutingConfig,
+	UserStatus,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import type { WithId } from 'mongodb';
@@ -181,10 +182,10 @@ const LivechatDepartmentDepartmentIdAgentsPOSTSchema = {
 					},
 					name: { type: 'string' },
 					count: {
-						type: 'number',
+						type: 'integer',
 					},
 					order: {
-						type: 'number',
+						type: 'integer',
 					},
 				},
 				required: ['agentId', 'username'],
@@ -206,10 +207,10 @@ const LivechatDepartmentDepartmentIdAgentsPOSTSchema = {
 						type: 'string',
 					},
 					count: {
-						type: 'number',
+						type: 'integer',
 					},
 					order: {
-						type: 'number',
+						type: 'integer',
 					},
 					departmentEnabled: { type: 'boolean' },
 					departmentId: { type: 'string' },
@@ -300,6 +301,47 @@ const LivechatVisitorStatusSchema = {
 };
 
 export const isLivechatVisitorStatusProps = ajv.compile<LivechatVisitorStatus>(LivechatVisitorStatusSchema);
+
+type POSTLivechatVisitor = {
+	visitor: ILivechatVisitorDTO;
+};
+
+const POSTLivechatVisitorSchema = {
+	type: 'object',
+	properties: {
+		visitor: {
+			type: 'object',
+			properties: {
+				token: { type: 'string' },
+				name: { type: 'string', nullable: true },
+				email: { type: 'string', nullable: true },
+				department: { type: 'string', nullable: true },
+				phone: { type: 'string', nullable: true },
+				username: { type: 'string', nullable: true },
+				customFields: {
+					type: 'array',
+					nullable: true,
+					items: {
+						type: 'object',
+						properties: {
+							key: { type: 'string' },
+							value: { type: 'string' },
+							overwrite: { type: 'boolean' },
+						},
+						required: ['key', 'value', 'overwrite'],
+						additionalProperties: true,
+					},
+				},
+			},
+			required: ['token'],
+			additionalProperties: true,
+		},
+	},
+	required: ['visitor'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatVisitorProps = ajv.compile<POSTLivechatVisitor>(POSTLivechatVisitorSchema);
 
 type LiveChatRoomJoin = {
 	roomId: string;
@@ -712,73 +754,57 @@ type POSTLivechatDepartmentProps = {
 	departmentUnit?: { _id?: string };
 };
 
+const LivechatDepartmentDataSchema = {
+	type: 'object',
+	properties: {
+		enabled: {
+			type: 'boolean',
+		},
+		name: {
+			type: 'string',
+		},
+		description: {
+			type: 'string',
+		},
+		showOnRegistration: {
+			type: 'boolean',
+		},
+		showOnOfflineForm: {
+			type: 'boolean',
+		},
+		requestTagBeforeClosingChat: {
+			type: 'boolean',
+		},
+		chatClosingTags: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+		},
+		fallbackForwardDepartment: {
+			type: 'string',
+		},
+		email: {
+			type: 'string',
+		},
+		departmentsAllowedToForward: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+		},
+		allowReceiveForwardOffline: {
+			type: 'boolean',
+		},
+	},
+	required: ['name', 'email', 'enabled', 'showOnRegistration', 'showOnOfflineForm'],
+	additionalProperties: { type: ['string', 'integer', 'boolean'] },
+};
+
 const POSTLivechatDepartmentSchema = {
 	type: 'object',
 	properties: {
-		department: {
-			type: 'object',
-			properties: {
-				enabled: {
-					type: 'boolean',
-				},
-				name: {
-					type: 'string',
-				},
-				description: {
-					type: 'string',
-					nullable: true,
-				},
-				showOnRegistration: {
-					type: 'boolean',
-				},
-				showOnOfflineForm: {
-					type: 'boolean',
-				},
-				requestTagBeforeClosingChat: {
-					type: 'boolean',
-					nullable: true,
-				},
-				chatClosingTags: {
-					type: 'array',
-					items: {
-						type: 'string',
-					},
-					nullable: true,
-				},
-				fallbackForwardDepartment: {
-					type: 'string',
-					nullable: true,
-				},
-				email: {
-					type: 'string',
-				},
-				departmentsAllowedToForward: {
-					type: 'array',
-					items: {
-						type: 'string',
-					},
-					nullable: true,
-				},
-				allowReceiveForwardOffline: {
-					type: 'boolean',
-					nullable: true,
-				},
-				offlineMessageChannelName: {
-					type: 'string',
-					nullable: true,
-				},
-				abandonedRoomsCloseCustomMessage: {
-					type: 'string',
-					nullable: true,
-				},
-				waitingQueueMessage: {
-					type: 'string',
-					nullable: true,
-				},
-			},
-			required: ['name', 'email', 'enabled', 'showOnRegistration', 'showOnOfflineForm'],
-			additionalProperties: true,
-		},
+		department: LivechatDepartmentDataSchema,
 		agents: {
 			type: 'array',
 			items: {
@@ -788,11 +814,11 @@ const POSTLivechatDepartmentSchema = {
 						type: 'string',
 					},
 					count: {
-						type: 'number',
+						type: 'integer',
 						nullable: true,
 					},
 					order: {
-						type: 'number',
+						type: 'integer',
 						nullable: true,
 					},
 				},
@@ -816,6 +842,59 @@ const POSTLivechatDepartmentSchema = {
 };
 
 export const isPOSTLivechatDepartmentProps = ajv.compile<POSTLivechatDepartmentProps>(POSTLivechatDepartmentSchema);
+
+type PUTLivechatDepartmentProps = {
+	department: LivechatDepartmentDTO;
+	agents?: Pick<ILivechatDepartmentAgents, 'agentId' | 'count' | 'order' | 'username'>[] | null;
+	departmentUnit?: { _id?: string } | null;
+};
+
+const PUTLivechatDepartmentSchema = {
+	type: 'object',
+	properties: {
+		department: LivechatDepartmentDataSchema,
+		agents: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					agentId: {
+						type: 'string',
+					},
+					username: {
+						type: 'string',
+						nullable: true,
+					},
+					count: {
+						type: 'integer',
+						nullable: true,
+					},
+					order: {
+						type: 'integer',
+						nullable: true,
+					},
+				},
+				required: ['agentId'],
+				additionalProperties: true,
+			},
+			nullable: true,
+		},
+		departmentUnit: {
+			type: 'object',
+			properties: {
+				_id: {
+					type: 'string',
+				},
+			},
+			additionalProperties: false,
+			nullable: true,
+		},
+	},
+	required: ['department'],
+	additionalProperties: false,
+};
+
+export const isPUTLivechatDepartmentProps = ajv.compile<PUTLivechatDepartmentProps>(PUTLivechatDepartmentSchema);
 
 type LivechatDepartmentsAvailableByUnitIdProps = PaginatedRequest<{ text: string; onlyMyDepartments?: 'true' | 'false' }>;
 
@@ -1247,6 +1326,7 @@ const POSTOmnichannelContactSchema = {
 		},
 		username: {
 			type: 'string',
+			nullable: true,
 		},
 		email: {
 			type: 'string',
@@ -1268,9 +1348,11 @@ const POSTOmnichannelContactSchema = {
 					type: 'string',
 				},
 			},
+			required: ['username'],
+			additionalProperties: false,
 		},
 	},
-	required: ['token', 'name', 'username'],
+	required: ['token', 'name'],
 	additionalProperties: false,
 };
 
@@ -1617,7 +1699,7 @@ const GETOmnichannelContactSchema = {
 
 export const isGETOmnichannelContactProps = ajvQuery.compile<GETOmnichannelContactProps>(GETOmnichannelContactSchema);
 
-type GETOmnichannelContactSearchProps = { email: string } | { phone: string };
+type GETOmnichannelContactSearchProps = { email?: string; phone?: string; custom?: string };
 
 type LivechatAnalyticsAgentsAverageServiceTimeProps = PaginatedRequest<{
 	start: string;
@@ -1647,28 +1729,19 @@ export const isLivechatAnalyticsAgentsAverageServiceTimeProps = ajvQuery.compile
 );
 
 const GETOmnichannelContactSearchSchema = {
-	anyOf: [
-		{
-			type: 'object',
-			properties: {
-				email: {
-					type: 'string',
-				},
-			},
-			required: ['email'],
-			additionalProperties: false,
+	type: 'object',
+	properties: {
+		email: {
+			type: 'string',
 		},
-		{
-			type: 'object',
-			properties: {
-				phone: {
-					type: 'string',
-				},
-			},
-			required: ['phone'],
-			additionalProperties: false,
+		phone: {
+			type: 'string',
 		},
-	],
+		custom: {
+			type: 'string',
+		},
+	},
+	additionalProperties: false,
 };
 
 export const isGETOmnichannelContactSearchProps = ajvQuery.compile<GETOmnichannelContactSearchProps>(GETOmnichannelContactSearchSchema);
@@ -2564,6 +2637,8 @@ type GETLivechatRoomParams = {
 	token: string;
 	rid?: string;
 	agentId?: string;
+	sla?: string;
+	priority?: string;
 };
 
 const GETLivechatRoomParamsSchema = {
@@ -2580,9 +2655,17 @@ const GETLivechatRoomParamsSchema = {
 			type: 'string',
 			nullable: true,
 		},
+		sla: {
+			type: 'string',
+			nullable: true,
+		},
+		priority: {
+			type: 'string',
+			nullable: true,
+		},
 	},
 	required: ['token'],
-	additionalProperties: true,
+	additionalProperties: false,
 };
 
 export const isGETLivechatRoomParams = ajvQuery.compile<GETLivechatRoomParams>(GETLivechatRoomParamsSchema);
@@ -4319,11 +4402,7 @@ export type OmnichannelEndpoints = {
 			department: ILivechatDepartment;
 			agents?: ILivechatDepartmentAgents[];
 		};
-		PUT: (params: {
-			department: LivechatDepartmentDTO;
-			agents: Pick<ILivechatDepartmentAgents, 'agentId' | 'count' | 'order' | 'username'>[];
-			departmentUnit?: { _id?: string };
-		}) => {
+		PUT: (params: PUTLivechatDepartmentProps) => {
 			department: ILivechatDepartment | null;
 			agents: ILivechatDepartmentAgents[];
 		};
@@ -4660,7 +4739,7 @@ export type OmnichannelEndpoints = {
 		GET: (params: GETLivechatQueueParams) => PaginatedResult<{
 			queue: {
 				_id: string;
-				user: { _id: string; userId: string; username: string; status: string };
+				user: { _id: string; userId: string; username: string; status: UserStatus };
 				department: { _id: string; name: string };
 				chats: number;
 			}[];
