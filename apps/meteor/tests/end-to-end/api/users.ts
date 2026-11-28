@@ -4070,9 +4070,9 @@ describe('[Users]', () => {
 		});
 
 		it('should throw an error when user try change password without the actual password', async () => {
-			await request
+			const res = await request
 				.post(api('users.updateOwnBasicInfo'))
-				.set(credentials)
+				.set(userCredentials)
 				.send({
 					data: {
 						newPassword: '1Tsn3wP@ssw0rd1234.!',
@@ -4080,6 +4080,26 @@ describe('[Users]', () => {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400);
+
+			expect(res.body).to.have.property('errorType', 'totp-required');
+			expect(res.body.details).to.have.property('method', 'password');
+		});
+
+		it('should keep the password when the actual password sent is wrong', async () => {
+			const res = await request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(userCredentials)
+				.send({
+					data: {
+						newPassword: '1Tsn3wP@ssw0rd1234.!',
+						currentPassword: crypto.createHash('sha256').update('not-the-password', 'utf8').digest('hex'),
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('errorType', 'totp-invalid');
+			await login(editedUsername, newPassword);
 		});
 
 		it('should throw an error when the name is only whitespaces', async () => {
